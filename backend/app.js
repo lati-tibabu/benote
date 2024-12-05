@@ -1,6 +1,10 @@
 const express = require('express');
 const app = express();
 const sequelize = require('./models').sequelize;
+const routes = require('./routes');
+
+app.use(express.json());
+app.use('/api', routes);
 
 app.get('/', (req, res) => {
   res.send('Hello from the productivity hub!');
