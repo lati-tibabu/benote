@@ -9,7 +9,8 @@ const bcrypt = require("bcryptjs");
 // const jwt = require('jsonwebtoken');
 
 // const user = require('../models/user');
-const {user} = require('../models');
+
+const { user } = require('../models');
 
 // Create
 const createUser = async (req, res) => {
@@ -41,7 +42,10 @@ const readUsers = async (req, res) => {
 const readUser = async (req, res) => {
     try{
         const _user = await user.findByPk(req.params.id);
-        res.json(_user);
+        if (_user){
+            res.json(_user);
+        }
+        res.status(404).json({message: 'User not found'});
     }catch(error){
         res.status(500).json({ message: error.message });
     }
