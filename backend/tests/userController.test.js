@@ -1,8 +1,8 @@
 const bcrypt = require("bcryptjs");
 const userController = require('../controllers/userControllers');
-const userModel = require('../models/user'); // Adjust path as needed
+const { user } = require('../models'); // Adjust path as needed
 
-jest.mock('../models/user'); // Mock the user model
+jest.mock("../models"); // Mock the user model
 
 describe('User Controller', () => {
     afterEach(() => {
@@ -23,7 +23,7 @@ describe('User Controller', () => {
         };
         bcrypt.genSalt = jest.fn().mockResolvedValue('salt');
         bcrypt.hash = jest.fn().mockResolvedValue('hashedPassword');
-        userModel.create = jest.fn().mockResolvedValue({ 
+        user.create = jest.fn().mockResolvedValue({ 
             id: 'someGeneratedUUID',
             ...req.body, 
             password_hash: 'hashedPassword' 
@@ -33,7 +33,7 @@ describe('User Controller', () => {
 
         expect(bcrypt.genSalt).toHaveBeenCalledWith(10);
         expect(bcrypt.hash).toHaveBeenCalledWith('password123', 'salt');
-        expect(userModel.create).toHaveBeenCalledWith({
+        expect(user.create).toHaveBeenCalledWith({
             name: 'Test User',
             email: 'test@example.com',
             password_hash: 'hashedPassword'
@@ -52,7 +52,7 @@ describe('User Controller', () => {
             status: jest.fn().mockReturnThis(),
             json: jest.fn()
         };
-        userModel.create = jest.fn().mockRejectedValue(new Error('Database error'));
+        user.create = jest.fn().mockRejectedValue(new Error('Database error'));
 
         await userController.createUser(req, res);
 
@@ -65,11 +65,11 @@ describe('User Controller', () => {
             json: jest.fn()
         };
         const mockUsers = [{ id: 1 }, { id: 2 }];
-        userModel.findAll = jest.fn().mockResolvedValue(mockUsers);
+        user.findAll = jest.fn().mockResolvedValue(mockUsers);
 
         await userController.readUsers(null, res);
 
-        expect(userModel.findAll).toHaveBeenCalled();
+        expect(user.findAll).toHaveBeenCalled();
         expect(res.json).toHaveBeenCalledWith(mockUsers);
     });
 
@@ -77,11 +77,11 @@ describe('User Controller', () => {
         const req = { params: { id: '123' } };
         const res = { json: jest.fn() };
         const mockUser = { id: '123', name: 'Test User' };
-        userModel.findByPk = jest.fn().mockResolvedValue(mockUser);
+        user.findByPk = jest.fn().mockResolvedValue(mockUser);
 
         await userController.readUser(req, res);
 
-        expect(userModel.findByPk).toHaveBeenCalledWith('123');
+        expect(user.findByPk).toHaveBeenCalledWith('123');
         expect(res.json).toHaveBeenCalledWith(mockUser);
     });
 
@@ -105,11 +105,11 @@ describe('User Controller', () => {
             get: jest.fn().mockReturnValue({ id: '123', name: 'Updated Name' }) // Mock the `get` method
         };
     
-        userModel.findByPk = jest.fn().mockResolvedValue(mockUser);
+        user.findByPk = jest.fn().mockResolvedValue(mockUser);
         
         await userController.updateUser(req, res);
     
-        expect(userModel.findByPk).toHaveBeenCalledWith('123');
+        expect(user.findByPk).toHaveBeenCalledWith('123');
         expect(mockUser.update).toHaveBeenCalledWith(req.body);
         expect(res.json).toHaveBeenCalledWith({ id: '123', name: 'Updated Name' });
     });
@@ -119,11 +119,11 @@ describe('User Controller', () => {
         const req = { params: { id: '123' } };
         const res = { json: jest.fn() };
         const mockUser = { id: '123', destroy: jest.fn().mockResolvedValue(undefined) }; // Mock destroy function
-        userModel.findByPk = jest.fn().mockResolvedValue(mockUser);
+        user.findByPk = jest.fn().mockResolvedValue(mockUser);
 
         await userController.deleteUser(req, res);
 
-        expect(userModel.findByPk).toHaveBeenCalledWith('123');
+        expect(user.findByPk).toHaveBeenCalledWith('123');
         expect(mockUser.destroy).toHaveBeenCalled();
         expect(res.json).toHaveBeenCalledWith({ message: 'User deleted!' });
     });
@@ -139,7 +139,7 @@ describe('User Controller', () => {
             status: jest.fn().mockReturnThis(),
             json: jest.fn() 
         };
-        userModel.findByPk = jest.fn().mockResolvedValue(null);
+        user.findByPk = jest.fn().mockResolvedValue(null);
         
         await userController.updateUser(req,res);
   
@@ -153,7 +153,7 @@ describe('User Controller', () => {
             status: jest.fn().mockReturnThis(),
             json: jest.fn()
         };
-        userModel.findByPk = jest.fn().mockResolvedValue(null);
+        user.findByPk = jest.fn().mockResolvedValue(null);
         await userController.deleteUser(req, res);
         expect(res.status).toHaveBeenCalledWith(404);
         expect(res.json).toHaveBeenCalledWith({ message: 'User not found!' });

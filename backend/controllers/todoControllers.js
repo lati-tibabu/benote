@@ -1,0 +1,74 @@
+const { todo } = require("../models");
+
+// Create
+const createTodo = async (req, res) => {
+    try {
+        const _todo = await todo.create(req.body);
+        res.status(201).json(_todo);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Read all
+const readTodos = async (req, res) => {
+    try {
+        const _todos = await todo.findAll();
+        res.json(_todos);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Read one
+const readTodo = async (req, res) => {
+    try {
+        const _todo = await todo.findByPk(req.params.id);
+        if (_todo) {
+            res.json(_todo);
+        } else {
+            res.status(404).json({ message: "Todo not found!" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Update
+const updateTodo = async (req, res) => {
+    try {
+        const _todo = await todo.findByPk(req.params.id);
+        if (_todo) {
+            await _todo.update(req.body);
+            const updatedTodo = { ..._todo.get() };
+            res.json(updatedTodo);
+        } else {
+            res.status(404).json({ message: "Todo not found!" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Delete
+const deleteTodo = async (req, res) => {
+    try {
+        const _todo = await todo.findByPk(req.params.id);
+        if (_todo) {
+            await _todo.destroy();
+            res.json({ message: "Todo successfully deleted!" });
+        } else {
+            res.status(404).json({ message: "Todo not found!" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = {
+    createTodo,
+    readTodos,
+    readTodo,
+    updateTodo,
+    deleteTodo,
+};

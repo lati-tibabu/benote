@@ -44,8 +44,9 @@ const readUser = async (req, res) => {
         const _user = await user.findByPk(req.params.id);
         if (_user){
             res.json(_user);
+        } else{
+            res.status(404).json({message: 'User not found'});
         }
-        res.status(404).json({message: 'User not found'});
     }catch(error){
         res.status(500).json({ message: error.message });
     }
