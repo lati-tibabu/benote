@@ -11,12 +11,12 @@ app.get('/', (req, res) => {
 });
 
 app.get('/database', (req, res) => {
-  sequelize.sync({alter: true})
+  sequelize.sync({force: true})
   .then(() => {
     res.status(201).send('Database synced');
   })
   .catch(err => {
-    res.status(501).send('Error syncing database: ', err);
+    res.status(501).send(`Error syncing database: ${err}`);
     console.error('Error syncing', err);
   })
 });
