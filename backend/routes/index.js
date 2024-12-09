@@ -18,6 +18,10 @@ const timeBlockRoutes = require('./timeBlockRoutes');
 const todoRoutes = require('./todoRoutes');
 const todoItemRoutes = require('./todoItemRoutes');
 const courseRoutes = require('./courseRoutes');
+const userTeamRoutes = require('./userTeamRoutes');
+
+const authRoutes = require('./authRoutes');
+const { logoutController } = require("../middlewares/authMiddleware");
 
 
 const router = express.Router();
@@ -39,9 +43,11 @@ router.use('/timeBlocks', timeBlockRoutes);
 router.use('/todos', todoRoutes);
 router.use('/todoItems', todoItemRoutes);
 router.use('/courses', courseRoutes);
+router.use('/user-team', userTeamRoutes);
 
 
+router.use('/auth', authRoutes);
 
-
+router.post('/logout', logoutController);
 
 module.exports = router;
