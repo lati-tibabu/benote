@@ -12,6 +12,14 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.belongsTo(models.user, { foreignKey: 'created_by', as: 'user'});
+      
+      this.belongsToMany(models.user, {
+        through: 'userTeams',
+        foreignKey: 'team_id',
+        otherKey: 'user_id',
+        as: 'members'
+      });
+
       this.hasMany(models.discussion, { foreignKey: 'team_id', as: 'discussions' });
     }
   }
@@ -22,7 +30,16 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: DataTypes.UUIDV4
     },
     name: DataTypes.STRING,
-    created_by: DataTypes.UUID
+    created_by: {
+      type:DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: 'users',
+        key: 'id'
+      },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE'
+    }
   }, {
     sequelize,
     modelName: 'team',

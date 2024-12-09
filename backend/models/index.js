@@ -11,16 +11,39 @@ const DB_DIALECT = 'postgres';
 
 const db = {};
 
+// if remote database is used comment this one, cofigure information in your .env with correct credentials to use it
+
 const sequelize = new Sequelize(
   process.env.DB_DATABASE,
   process.env.DB_USER,
   process.env.DB_PASSWORD,
   {
    host: process.env.DB_HOST,
-   dialect: DB_DIALECT // Since Dialect needs to be explicitly supplied as of v4.0.0, it is not being loaded from environment variable
-   //  port: process.env.DB_PORT, 
+   dialect: DB_DIALECT,
+   port: process.env.DB_PORT, 
   }
 );
+
+// if remote database is used uncomment this one else comment this part, do not cofigure information in your .env
+
+// const sequelize = new Sequelize(
+//   process.env.REMOTE_DATABASE,
+//   process.env.REMOTE_USER,
+//   process.env.REMOTE_PASSWORD,
+//   {
+//    host: process.env.REMOTE_HOST,
+//    dialect: DB_DIALECT,
+//    port: process.env.REMOTE_PORT,
+//    dialectOptions: {
+//     ssl: {
+//       require: true,
+//       // rejectUnauthorized: false, // Allow self-signed certificates
+//       ca: fs.readFileSync('../backend/certficates/ca.pem')
+//     }
+//    }
+//   }
+// );
+
 
 fs
   .readdirSync(__dirname)

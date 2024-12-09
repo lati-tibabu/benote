@@ -16,12 +16,28 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.roadmap, { foreignKey: 'created_by', as: 'roadmaps' });
       this.hasMany(models.mindmap, { foreignKey: 'created_by', as: 'mindmaps' });
       this.hasMany(models.classroom, { foreignKey: 'teacher_id', as: 'classrooms' });
+      
       this.belongsToMany(models.classroom, {
-        through: 'studentClassroom',
+        through: 'studentClassrooms',
         foreignKey: 'student_id',
         otherKey: 'classroom_id',
         as: 'enrolledClassrooms',
       });
+
+      this.belongsToMany(models.team, {
+        through: 'userTeams',
+        foreignKey: 'user_id',
+        otherKey: 'team_id',
+        as: 'inTeams'
+      });
+
+      this.belongsToMany(models.badge, {
+        through: 'userBadges',
+        foreignKey: 'user_id',
+        otherKey: 'badge_id',
+        as: 'wonBadges',
+      });
+
       this.hasMany(models.discussion, { foreignKey: 'user_id', as: 'discussions' });
       this.hasMany(models.study_plan, { foreignKey: 'user_id', as: 'study_plans' });
       this.hasMany(models.submission, { foreignKey: 'submitted_by', as: 'submittedSubmissions' });
@@ -29,6 +45,7 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.task, { foreignKey: 'assigned_to', as: 'tasks'});
     }
   }
+  
   user.init({
     id: {
       type: DataTypes.UUID,
@@ -38,6 +55,7 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     email: {
       type: DataTypes.STRING,
+      unique: true,
       validate: {
         isEmail: true,
       },
