@@ -1,16 +1,17 @@
-// Basic CRUD operation on models...
-
-// Create
-// Read
-// Update
-// Delete
 
 const bcrypt = require("bcryptjs");
 // const jwt = require('jsonwebtoken');
 
 // const user = require('../models/user');
 
-const { user } = require('../models');
+const { user,workspace } = require('../models');
+
+// Basic CRUD operation on models...
+
+// Create
+// Read
+// Update
+// Delete
 
 // Create
 const createUser = async (req, res) => {
@@ -83,6 +84,24 @@ const deleteUser = async (req, res) => {
         res.status(500).json({ message: error.message })
     }
 };
+
+
+// getting other models for the user 
+const getWorkspaces = async (req, res) => {
+    try {
+        const _workspaces = await findByPk(req.params.id, {
+            include: [
+                {
+                    model: workspace,
+                    as: 'workspace',
+                    attributes: ['name, description']
+                },
+            ],
+        });
+    } catch (error) {
+        
+    }
+}
 
 module.exports = {
     createUser,
