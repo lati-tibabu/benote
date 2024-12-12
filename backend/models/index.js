@@ -21,6 +21,7 @@ const sequelize = new Sequelize(
    host: process.env.DB_HOST,
    dialect: DB_DIALECT,
    port: process.env.DB_PORT, 
+   logging: false
   }
 );
 

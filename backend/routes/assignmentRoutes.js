@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 
 const assignmentController = require('../controllers/assignmentControllers');
+const { authMiddleware } = require('../middlewares/authMiddleware');
 
 router.post('/', assignmentController.createAssignment);
-router.get('/', assignmentController.readAssignments);
+router.get('/', /*authMiddleware,*/ assignmentController.readAssignments);
 router.get('/:id', assignmentController.readAssignment);
 router.put('/:id', assignmentController.updateAssignment);
 router.delete('/:id', assignmentController.deleteAssignment);
