@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
 import { AiOutlineInfo } from "react-icons/ai";
+import Footer1 from "../../components/_footers/footer1";
 
 function AuthPages() {
   return (
@@ -8,7 +9,14 @@ function AuthPages() {
       {/* header */}
       <div className="p-5 justify-between flex flex-row items-center shadow-md sticky top-0 z-10 bg-white">
         <div className="flex flex-row items-center gap-3">
-          <img src="/rect19.png" alt="" width={40} className="cursor-pointer" />
+          <Link to="/">
+            <img
+              src="/rect19.png"
+              alt=""
+              width={40}
+              className="cursor-pointer"
+            />
+          </Link>
           <p>Student Productivity Hub</p>
         </div>
         <Link to={"/info"}>
@@ -21,39 +29,7 @@ function AuthPages() {
         <Outlet />
       </div>
       {/* footer */}
-      <footer className="mt-auto bg-white shadow-md p-5">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <img
-              src="/rect19.png"
-              alt="Logo"
-              width={40}
-              className="cursor-pointer"
-            />
-            <p className="text-sm">© 2024 Student Productivity Hub</p>
-          </div>
-          <div className="flex gap-5">
-            <Link
-              to="/info/about"
-              className="text-sm text-blue-700 hover:underline"
-            >
-              About
-            </Link>
-            <Link
-              to="/info/contact-us"
-              className="text-sm text-blue-700 hover:underline"
-            >
-              Contact
-            </Link>
-            <Link
-              to="/info/privacy-policy"
-              className="text-sm text-blue-700 hover:underline"
-            >
-              Privacy Policy
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <Footer1 />
     </div>
   );
 }

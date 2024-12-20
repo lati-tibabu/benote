@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Login() {
   const apiURL = import.meta.env.VITE_API_URL;
+
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -32,7 +34,8 @@ function Login() {
         const token = result.token;
         localStorage.setItem("jwt", token);
         // console.log(`Login Succesful, ${result.token}`);
-        console.log("Token is ", localStorage.getItem("jwt"));
+        // console.log("Token is ", localStorage.getItem("jwt"));
+        navigate("/app/home");
       } else {
         const result = await response.json();
         console.log(`Login Unsuccesful, ${result.message}`);
