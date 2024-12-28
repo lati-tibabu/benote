@@ -1,10 +1,13 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Footer1 from "../../components/_footers/footer1";
 import { AiOutlineArrowRight } from "react-icons/ai";
 
 function Home() {
   const arrow = document.getElementById("arrow");
+  const location = useLocation();
+
+  const page = location.pathname;
 
   const [buttonHovered, setButtonHovered] = useState(false);
 
