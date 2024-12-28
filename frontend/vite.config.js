@@ -29,7 +29,7 @@ export default defineConfig({
           },
         ],
       },
-      workbox: {
+      workbox: { //for caching
         runtimeCaching: [
           {
             urlPattern: /\.(?:js|css|html|json)$/,
