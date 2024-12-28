@@ -46,7 +46,7 @@ function Login() {
   };
 
   return (
-    <div className="m-5">
+    <div className="m-5 min-w-80">
       <div>
         <div>
           <h1 className="text-2xl font-bold">Welcome back!</h1>
@@ -85,10 +85,10 @@ function Login() {
               />
             </div>
             <div className="flex flex-row gap-10">
-              <div className="flex flex-row gap-1 items-center">
+              {/* <div className="flex flex-row gap-1 items-center">
                 <input type="checkbox" id="remember-me" className="bg-white" />
                 <label htmlFor="remember-me">Remember me</label>
-              </div>
+              </div> */}
               <div className="text-sm text-blue-700 cursor-pointer hover:underline">
                 Forgot your password?
               </div>

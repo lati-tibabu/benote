@@ -13,24 +13,23 @@ function Footer1() {
               width={40}
               className="cursor-pointer"
             />
-            <p className="text-sm">© 2024 Student Productivity Hub</p>
+            <p className="text-xs sm:text-md">
+              © 2024 Student Productivity Hub
+            </p>
           </div>
-          <div className="flex gap-5">
-            <Link
-              to="/info/about"
-              className="text-sm text-blue-700 hover:underline"
-            >
+          <div className="flex gap-5 text-xs sm:text-md">
+            <Link to="/info/about" className=" text-blue-700 hover:underline">
               About
             </Link>
             <Link
               to="/info/contact-us"
-              className="text-sm text-blue-700 hover:underline"
+              className=" text-blue-700 hover:underline"
             >
               Contact
             </Link>
             <Link
               to="/info/privacy-policy"
-              className="text-sm text-blue-700 hover:underline"
+              className=" text-blue-700 hover:underline"
             >
               Privacy Policy
             </Link>

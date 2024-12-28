@@ -11,6 +11,7 @@ export default {
       height: {
         "1/2": "2px",
         "1/4": "1px",
+        "screen/2": "50vh",
       },
     },
   },

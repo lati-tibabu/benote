@@ -73,8 +73,8 @@ function Signup() {
   };
 
   return (
-    <div className="flex flex-row">
-      <div className="p-5 px-8">
+    <div className="flex flex-row w-fit">
+      <div className="p-5 px-8 min-w-80">
         <div>
           <div>
             <h1 className="text-2xl font-bold">Create your account</h1>
@@ -194,7 +194,7 @@ function Signup() {
       <img
         src="/black-white-portrait-digital-nomads.jpg"
         alt=""
-        className="w-96 object-cover"
+        className="hidden sm:block w-96 object-cover"
       />
       <div className="relative">
         {/* Open the modal using document.getElementById('ID').showModal() method */}

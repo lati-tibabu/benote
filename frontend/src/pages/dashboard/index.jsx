@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import {
   FaHome,
@@ -8,24 +8,40 @@ import {
   FaSearch,
   FaUserCircle,
 } from "react-icons/fa";
+import { HiMenu, HiX } from "react-icons/hi";
 import Footer1 from "../../components/_footers/footer1";
 
 function Dashboard() {
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+
+  const toggleMobileNav = () => {
+    setIsMobileNavOpen(!isMobileNavOpen);
+  };
+
   return (
     <div className="bg-white text-black min-h-screen min-w-screen flex flex-col">
-      {/* top */}
-      <div className="bg-gray-200 w-full flex-1 flex flex-row">
-        {/* sidebar */}
-        <div className="bg-white w-64 p-6 shadow-md">
-          <div className="flex items-center justify-start mb-6">
-            {/* Logo */}
+      {/* Top */}
+      <div className="bg-gray-200 w-full flex-1 flex flex-col sm:flex-row">
+        {/* Sidebar */}
+        <div className="bg-white w-full sm:w-64 p-6 shadow-md">
+          {/* Logo */}
+          <div className="flex items-center justify-between sm:justify-start mb-6">
             <img src="/rect19.png" alt="Logo" className="h-16 w-auto" />
+            <button
+              onClick={toggleMobileNav}
+              className="sm:hidden focus:outline-none text-gray-600"
+              aria-label="Toggle Navigation"
+            >
+              {isMobileNavOpen ? <HiX size={28} /> : <HiMenu size={28} />}
+            </button>
           </div>
-          <hr />
-          {/* navigations */}
-          <div className="flex flex-col justify-between">
+          {/* Navigation */}
+          <div
+            className={`${
+              isMobileNavOpen ? "block" : "hidden"
+            } sm:block flex flex-col sm:flex-1`}
+          >
             <div className="flex flex-col space-y-4 my-5">
-              {/* Navigation Menu */}
               <div className="flex items-center space-x-2 text-gray-700 hover:text-blue-500 cursor-pointer">
                 <FaHome size={20} />
                 <span>Home</span>
@@ -52,9 +68,10 @@ function Dashboard() {
             </div>
           </div>
         </div>
-        {/* body */}
+
+        {/* Body */}
         <div className="w-full flex flex-col">
-          {/* top */}
+          {/* Top Bar */}
           <div className="bg-gray-200 w-full p-4 flex items-center justify-between">
             {/* Universal Search Bar */}
             <div className="flex items-center bg-white p-2 rounded-lg w-1/2 shadow-sm">
@@ -65,7 +82,7 @@ function Dashboard() {
                 className="outline-none ml-2 w-full bg-transparent text-gray-600"
               />
             </div>
-            {/* Profile Icon */}
+            {/* Profile & Logout */}
             <div className="flex items-center space-x-4">
               <FaUserCircle
                 size={30}
@@ -75,15 +92,14 @@ function Dashboard() {
             </div>
           </div>
 
-          {/* main */}
+          {/* Main Content */}
           <div className="flex-1 p-6">
-            {/* Child will append here */}
             <Outlet />
           </div>
         </div>
       </div>
 
-      {/* footer */}
+      {/* Footer */}
       <div className="bg-gray-800 text-white mt-auto">
         <Footer1 />
       </div>

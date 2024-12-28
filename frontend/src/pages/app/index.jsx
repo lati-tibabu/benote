@@ -9,7 +9,7 @@ function Home() {
   const [buttonHovered, setButtonHovered] = useState(false);
 
   return (
-    <div className="flex flex-col justify-center bg-gray-100 text-gray-800 min-h-screen">
+    <div className="flex flex-col bg-gray-100 text-gray-800 min-h-screen">
       {/* logo section */}
       <div className="p-4 shadow-sm w-full flex flex-row justify-between items-center">
         <img src="rect19.png" alt="" className="w-14" />
@@ -20,8 +20,8 @@ function Home() {
         </Link>
       </div>
       {/* Idk what to call lets call this a hero */}
-      <div className="text-center m-3 flex flex-row">
-        <div className="flex-1 w-full h-screen/ flex flex-col justify-center items-center bg-transparent">
+      <div className="h-screen/2 xl:h-fit text-center m-3 flex flex-row">
+        <div className="flex-1 flex flex-col justify-center items-center bg-transparent">
           <h1 className="text-4xl font-bold mb-6">Student Productivity Hub</h1>
           <Link to="/auth/login">
             <button
@@ -42,7 +42,7 @@ function Home() {
         </div>
 
         <div
-          className="flex-1 rounded-l-full bg-clip-content overflow-hidden right-0"
+          className="hidden md:block flex-1 rounded-l-full bg-clip-content overflow-hidden right-0"
           title="the picture"
         >
           <img
@@ -52,6 +52,7 @@ function Home() {
           />
         </div>
       </div>
+
       {/* info about the project or the app */}
       {/* guys the following needs a lot of tailwinding so, :) i am keeping for (either someone css ish or myself to finish it up) */}
       {/* just commented them up */}
