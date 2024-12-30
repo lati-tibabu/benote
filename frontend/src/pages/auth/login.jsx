@@ -5,6 +5,9 @@ function Login() {
   const apiURL = import.meta.env.VITE_API_URL;
 
   const navigate = useNavigate();
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginError, setLoginError] = useState(false);
+  const [loginErrorMessage, setLoginErrorMessage] = useState("");
 
   const [formData, setFormData] = useState({
     email: "",
@@ -20,6 +23,7 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoginLoading(true);
     try {
       const response = await fetch(`${apiURL}/api/auth`, {
         method: "POST",
@@ -36,11 +40,18 @@ function Login() {
         // console.log(`Login Succesful, ${result.token}`);
         // console.log("Token is ", localStorage.getItem("jwt"));
         navigate("/app/home");
+        setLoginLoading(false);
       } else {
         const result = await response.json();
+        setLoginLoading(false);
+        setLoginError(true);
+        setLoginErrorMessage(result.message);
         console.log(`Login Unsuccesful, ${result.message}`);
       }
     } catch (error) {
+      setLoginLoading(false);
+      setLoginError(true);
+      setLoginErrorMessage("An error occured while logging");
       console.log(`Error occured while logging in ${error}`);
     }
   };
@@ -96,7 +107,16 @@ function Login() {
 
             {/* login buttons */}
             <div className="flex flex-col gap-2 text-center">
-              <button className="btn">login</button>
+              <div>
+                {loginError && (
+                  <p className="text-red-500 text-sm">{loginErrorMessage}</p>
+                )}
+              </div>
+              {loginLoading ? (
+                <span className="loading"></span>
+              ) : (
+                <button className="btn">login</button>
+              )}
               <hr />
               <p className="text-sm">or login with</p>
               <div className="flex flex-row justify-center items-center gap-5 border-black border-1 p-2 bg-white cursor-pointer rounded-md shadow-md">

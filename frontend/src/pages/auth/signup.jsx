@@ -12,7 +12,7 @@ function Signup() {
     dialogRef.current?.showModal();
   };
 
-  // const
+  const [signUpLoading, setSignUpLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -26,11 +26,11 @@ function Signup() {
 
   const handleSignup = async (e) => {
     e.preventDefault();
-
     // Check if passwords match
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match");
     } else {
+      setSignUpLoading(true);
       try {
         // Create the new user data
         const newData = {
@@ -165,9 +165,13 @@ function Signup() {
 
               {/* Sign up button */}
               <div className="flex flex-col gap-2 text-center">
-                <button type="submit" className="btn">
-                  Sign Up
-                </button>
+                {signUpLoading ? (
+                  <span className="loading"></span>
+                ) : (
+                  <button type="submit" className="btn">
+                    Sign Up
+                  </button>
+                )}
                 <hr />
                 <p className="text-sm">or sign up with</p>
                 <div className="flex flex-row justify-center items-center gap-5 border-black border-1 p-2 bg-white cursor-pointer rounded-md shadow-md">
