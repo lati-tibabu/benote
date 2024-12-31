@@ -164,7 +164,7 @@ function Dashboard() {
       </div>
 
       {/* Footer */}
-      <div className="bg-gray-800 text-white mt-auto">
+      <div className="bg-gray-800 text-white mt-auto border-t-2 border-black">
         <Footer1 />
       </div>
     </div>
