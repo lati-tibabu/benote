@@ -37,6 +37,7 @@ function Login() {
         const result = await response.json();
         const token = result.token;
         localStorage.setItem("jwt", token);
+        localStorage.setItem("jwt_expiration", Date.now() + 60 * 60);
         // console.log(`Login Succesful, ${result.token}`);
         // console.log("Token is ", localStorage.getItem("jwt"));
         navigate("/app/home");
