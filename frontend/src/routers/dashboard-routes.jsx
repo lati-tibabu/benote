@@ -10,9 +10,11 @@ import Setting from "../pages/dashboard/contents/Setting";
 
 import ProtectedRoute from "./protected-routes";
 import Notification from "../pages/dashboard/contents/Notification";
+import Unexpected from "../pages/ErrorPages/unexpected";
 
 const dashboardRoutes = {
   path: "/app",
+  errorElement: <Unexpected />,
   // element: <Dashboard />,
   element: <ProtectedRoute component={Dashboard} />,
   children: [

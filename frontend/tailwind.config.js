@@ -13,6 +13,11 @@ export default {
         "1/4": "1px",
         "screen/2": "50vh",
       },
+      borderWidth: {
+        "1": "1px",
+        "5": "5px",
+        "1.5":"1.5px"
+      },
     },
   },
   plugins: [
