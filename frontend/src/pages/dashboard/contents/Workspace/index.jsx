@@ -1,15 +1,10 @@
 import React from "react";
-import { FaBeer, FaBriefcase, FaDesktop, FaFolder } from "react-icons/fa";
-import {
-  AiFillChrome,
-  AiOutlineFileAdd,
-  AiOutlineFolder,
-} from "react-icons/ai";
+import { AiOutlineFileAdd, AiOutlineFolder } from "react-icons/ai";
 
-function Home() {
+function Workspace() {
   return (
     <div>
-      <div className="breadcrumbs text-sm">
+      {/* <div className="breadcrumbs text-sm">
         <ul>
           <li className="flex items-center gap-1 justify-center">
             <AiOutlineFolder size={20} />
@@ -20,7 +15,6 @@ function Home() {
             <a>Dashboard</a>
           </li>
           <li className="flex items-center gap-1 justify-center">
-            {/* <FaFolder size={20} /> */}
             <AiOutlineFolder size={20} />
             <a>Workspace</a>
           </li>
@@ -29,9 +23,9 @@ function Home() {
             <a>Create new</a>
           </li>
         </ul>
-      </div>
+      </div> */}
 
-      <div className="w-full h-1/4 bg-gray-400 rounded-sm"></div>
+      {/* <div className="w-full h-1/4 bg-gray-400 rounded-sm"></div> */}
       <div className="bg-transparent p-4 rounded-md shadow-md w-fit lg:w-1/2 mx-auto mt-10">
         <div className="flex items-center gap-2 font-bold text-lg">
           <p className="text-2xl">🗂️</p>
@@ -67,4 +61,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Workspace;
