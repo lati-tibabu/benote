@@ -1,13 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
+import { AiOutlineDelete } from "react-icons/ai";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const AddNew = () => {
   const apiURL = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("jwt");
-
   const header = {
     authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
   };
+
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [emojiText, setEmojiText] = useState("");
 
   var userData;
   try {
@@ -16,17 +23,21 @@ const AddNew = () => {
     console.error(error);
   }
 
-  if (userData) {
-    console.log("This is user id: ", userData.id);
-  }
+  // testing whether user data is loaded
+  // if (userData) {
+  //   console.log("This is user id: ", userData.id);
+  // }
 
   const [teams, setTeams] = useState();
   const [workspaceData, setWorkspaceData] = useState({
+    emoji: "",
     created_by: userData.id,
     name: "",
     description: "",
-    belongs_to_team: "",
+    belongs_to_team: null,
   });
+
+  const navigate = useNavigate();
 
   const fetchTeams = async () => {
     const response = await fetch(`${apiURL}/api/teams`, {
@@ -40,14 +51,12 @@ const AddNew = () => {
     fetchTeams();
   }, []);
 
-  useEffect(() => {
-    console.log(workspaceData);
-  }, [workspaceData]);
-  //   console.log(teams);
+  // useEffect(() => {
+  //   console.log(workspaceData);
+  // }, [workspaceData]);
 
   const createWorkspace = async (e) => {
     e.preventDefault();
-    // setWorkspaceData({ ...workspaceData, created_by: userData.id });
     try {
       const response = await fetch(`${apiURL}/api/workspaces`, {
         method: "POST",
@@ -58,26 +67,42 @@ const AddNew = () => {
         },
       });
       const data = await response.json();
-      console.log(data);
+      console.log(response);
+      if (response.ok) {
+        navigate("/app/workspace");
+      }
     } catch (err) {
       console.error("Error creating workspace: ", err);
     }
   };
+
+  const handleEmojiSelect = (emoji) => {
+    setEmojiText(emoji.native);
+    setWorkspaceData({
+      ...workspaceData,
+      emoji: emoji.native,
+    });
+    setShowEmojiPicker(false);
+  };
+
+  // useEffect(() => {
+  //   console.log(workspaceData);
+  // });
   return (
     <div className="w-full flex">
-      {/* <div className="w-full h-1/4 bg-gray-400 rounded-sm"></div> */}
       <div className="bg-transparent p-4 rounded-md shadow-md lg:w-1/2 w-full mt-10 grow">
         <div className="flex items-center gap-2 font-bold text-lg">
           <p className="text-2xl">🗂️</p>
           <h1>add new workspace</h1>
         </div>
+        <hr className="h-1/2 bg-gray-500" />
         <p>Fill in the form below to create a new workspace</p>
         <form
-          className="flex flex-col gap-2"
+          className="flex flex-col gap-2 mt-3"
           onSubmit={(event) => createWorkspace(event)}
         >
           <fieldset className="fieldset flex flex-col gap-1">
-            <label htmlFor="workspaceName">workspace's name</label>
+            <label htmlFor="workspaceName"> workspace's name</label>
             <input
               type="text"
               id="workspaceName"
@@ -109,10 +134,48 @@ const AddNew = () => {
             ></textarea>
           </fieldset>
 
+          <fieldset>
+            <legend className="fieldset-legend">emoji</legend>
+            <div className="flex items-center gap-2 justify-between mb-3">
+              <input
+                type="text"
+                disabled
+                className="p-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-950 text-xl"
+                value={workspaceData.emoji}
+                onChange={(e) => {
+                  setWorkspaceData({
+                    ...workspaceData,
+                    emoji: e.target.value,
+                  });
+                }}
+              />
+              <span>
+                <AiOutlineDelete
+                  className="hover:text-red-600 cursor-pointer text-xl"
+                  onClick={() => {
+                    setWorkspaceData({
+                      ...workspaceData,
+                      emoji: "",
+                    });
+                  }}
+                />
+              </span>
+              <button
+                type="button"
+                className="btn"
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              >
+                {showEmojiPicker ? "hide emoji picker" : "show emoji picker"}
+              </button>
+            </div>
+            {showEmojiPicker && (
+              <Picker data={data} onEmojiSelect={handleEmojiSelect} />
+            )}
+          </fieldset>
+
           <fieldset className="fieldset flex flex-col gap-1">
             <legend className="fieldset-legend">Teams</legend>
             <select
-              defaultValue="Select a team"
               className="select bg-white dark:bg-black dark:text-white"
               onChange={(e) =>
                 setWorkspaceData({
@@ -121,7 +184,9 @@ const AddNew = () => {
                 })
               }
             >
-              <option disabled={true}>Pick a Team </option>
+              <option disabled selected>
+                Pick a team
+              </option>
               {teams &&
                 teams.map((team) => (
                   <option key={team.id} value={team.id}>
@@ -132,8 +197,10 @@ const AddNew = () => {
             <span className="fieldset-label">Optional</span>
           </fieldset>
 
-          {/* Add more fields as needed */}
-          <button className="btn btn-primary bg-black hover:bg-gray-800 text-white border-none">
+          <button
+            type="submit"
+            className="btn btn-primary bg-black hover:bg-gray-800 text-white border-none"
+          >
             Create Workspace
           </button>
         </form>

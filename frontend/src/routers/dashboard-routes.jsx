@@ -11,6 +11,7 @@ import Setting from "../pages/dashboard/contents/Setting";
 import ProtectedRoute from "./protected-routes";
 import Notification from "../pages/dashboard/contents/Notification";
 import Unexpected from "../pages/ErrorPages/unexpected";
+import WorkspaceOpened from "../pages/dashboard/contents/Workspace/workspace_opened";
 
 const dashboardRoutes = {
   path: "/app",
@@ -19,7 +20,11 @@ const dashboardRoutes = {
   element: <ProtectedRoute component={Dashboard} />,
   children: [
     { path: "home", element: <Home /> },
-    { path: "workspace", element: <Workspace /> },
+    {
+      path: "workspace",
+      element: <Workspace />,
+      children: [{ path: "open/:workspaceId", element: <WorkspaceOpened /> }],
+    },
     { path: "team", element: <Team /> },
     { path: "profile", element: <Profile /> },
     { path: "notification", element: <Notification /> },
