@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       this.hasMany(models.discussion, { foreignKey: 'team_id', as: 'discussions' });
+      this.hasMany(models.workspace, { foreignKey: 'belongs_to_team', as: 'workspaces' });
     }
   }
   team.init({

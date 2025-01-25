@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.belongsTo(models.user, { foreignKey: 'created_by', as: 'user' });
+      this.belongsTo(models.team, { foreignKey: 'belongs_to_team', as: 'team' });
       this.hasMany(models.task, { foreignKey: 'workspace_id', as: 'tasks' });
     }
   }
@@ -23,7 +24,31 @@ module.exports = (sequelize, DataTypes) => {
     },
     name: DataTypes.STRING,
     description: DataTypes.STRING,
-    created_by: DataTypes.UUID
+    emoji: {
+      type: DataTypes.STRING,
+      defaultValue: '🗂️'
+    },
+    created_by: {
+      type:DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id'
+      },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE'
+    },
+    belongs_to_team: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: 'teams',
+        key: 'id'
+      },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE'
+
+    },
   }, {
     sequelize,
     modelName: 'workspace',

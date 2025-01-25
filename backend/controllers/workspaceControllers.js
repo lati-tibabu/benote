@@ -1,4 +1,5 @@
 const { workspace } = require("../models");
+const { team } = require("../models");
 
 // Create
 const createWorkspace = async (req, res) => {
@@ -13,12 +14,29 @@ const createWorkspace = async (req, res) => {
 // Read
 const readWorkspaces = async (req, res) => {
     try {
-        const _workspaces = await workspace.findAll();
+        const _workspaces = await workspace.findAll({
+            include: [
+                {
+                    model: team, 
+                    as: 'team', // This should be aligned with the association name
+                    required: false, // Use `required: true` to ensure workspaces with a team are returned
+                },
+                // {
+                //     model: user, // Assuming you also want to include the user who created the workspace
+                //     as: 'user', // This should be aligned with the association name in `workspace`
+                // },
+                // {
+                //     model: task, // If you want to include tasks
+                //     as: 'tasks', // This should match the `hasMany` association name
+                // },
+            ],
+        });
         res.json(_workspaces);
     } catch (error) {
-        res.status(500).json({message: error.message});        
+        res.status(500).json({ message: error.message });
     }
 }
+
 
 const readWorkspace = async (req, res) => {
     try {

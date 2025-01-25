@@ -11,11 +11,11 @@ app.use('/api', routes);
 
 
 app.get('/', (req, res) => {
-  res.send('Hello from the productivity hub!');
+  res.send('Hello from the productivity hub backend!');
 });
 
 app.get('/database', (req, res) => {
-  sequelize.sync({force: true})
+  sequelize.sync({alter: true})
   .then(() => {
     res.status(201).send('Database synced');
   })
