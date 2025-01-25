@@ -17,7 +17,7 @@ const loginUser = async (req, res) => {
                 id: _user.id,
                 email: _user.email
             }, SECRET_KEY, 
-            {expiresIn: '1m'})
+            {expiresIn: '1h'})
             res.json({token})
             // res.status(200).json({message: 'User authenticated'});
         } else{
