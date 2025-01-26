@@ -43,7 +43,7 @@ function Workspace() {
 
   return (
     <div>
-      {location.pathname === "/app/workspace" ? (
+      {location.pathname === "/app/workspace/" ? (
         <div>
           <button
             className="p-1 font-bold hover:underline hover:text-blue-700 flex items-center gap-1"
