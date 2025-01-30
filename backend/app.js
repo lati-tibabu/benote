@@ -9,7 +9,6 @@ app.use(cors());
 
 app.use('/api', routes);
 
-
 app.get('/', (req, res) => {
   res.send('Hello from the productivity hub backend!');
 });

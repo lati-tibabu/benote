@@ -1,4 +1,5 @@
-const { task } = require("../models");
+
+const { task, workspace, user } = require("../models");
 
 // Create
 const createTask = async (req, res) => {
@@ -13,7 +14,22 @@ const createTask = async (req, res) => {
 // Read all
 const readTasks = async (req, res) => {
     try {
-        const _tasks = await task.findAll();
+        const _tasks = await task.findAll({
+            include: [
+                {
+                    model: workspace, 
+                    as: 'workspace',
+                    required: false,
+                    attributes: ['id', 'name']
+                },
+                {
+                    model: user,
+                    as: 'user',
+                    required: false,
+                    attributes: ['id', 'name', 'email']
+                }
+            ]
+        });
         res.json(_tasks);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -23,7 +39,22 @@ const readTasks = async (req, res) => {
 // Read one
 const readTask = async (req, res) => {
     try {
-        const _task = await task.findByPk(req.params.id);
+        const _task = await task.findByPk(req.params.id, {
+            include: [
+                {
+                    model: workspace, 
+                    as: 'workspace',
+                    required: false,
+                    attributes: ['id', 'name']
+                },
+                {
+                    model: user,
+                    as: 'user',
+                    required: false,
+                    attributes: ['id', 'name', 'email']
+                }
+            ]
+        });
         if (_task) {
             res.json(_task);
         } else {
