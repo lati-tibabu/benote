@@ -35,7 +35,7 @@ const WorkspaceOpened = () => {
 
   const menuItems = [
     { icon: <AiOutlineBlock />, label: "Overview", link: "overview" },
-    { icon: <AiOutlineBook />, label: "Projects", link: "projects" },
+    // { icon: <AiOutlineBook />, label: "Projects", link: "projects" },
     { icon: <AiOutlineCheckCircle />, label: "Tasks", link: "tasks" },
     {
       icon: <AiOutlineOrderedList />,

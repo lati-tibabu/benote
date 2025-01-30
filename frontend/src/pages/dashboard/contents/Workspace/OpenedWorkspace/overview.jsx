@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 const Overview = () => {
   const location2 = useLocation();
   const workspace = location2.state?.workspace || {};
-  console.log(workspace);
+  // console.log(workspace);
   return (
     <div className="sm:flex gap-2">
       {/* right side */}

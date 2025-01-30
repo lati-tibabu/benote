@@ -32,7 +32,6 @@ function Workspace() {
   const navigate = useNavigate();
 
   // console.log(location.pathname);
-
   const handleWorkspaceOpen = (workspaceId) => () => {
     navigate("/app/workspace/open/" + workspaceId, {});
   };
