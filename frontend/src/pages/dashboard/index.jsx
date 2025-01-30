@@ -142,7 +142,7 @@ function Dashboard() {
           {/* Main Content */}
           <div className="flex-1 p-6 bg-white h-2">
             {/* breadcrumb */}
-            <div>
+            <div className="h-full">
               <div className="breadcrumbs text-sm">
                 <ul>
                   {loc.map((l) => (
@@ -157,7 +157,9 @@ function Dashboard() {
                   ))}
                 </ul>
               </div>
-              <Outlet />
+              <div className="h-full">
+                <Outlet />
+              </div>
             </div>
           </div>
         </div>

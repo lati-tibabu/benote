@@ -69,7 +69,8 @@ const AddNew = () => {
       const data = await response.json();
       console.log(response);
       if (response.ok) {
-        navigate("/app/workspace");
+        // navigate("/app/workspace");
+        window.location.href = "/app/workspace";
       }
     } catch (err) {
       console.error("Error creating workspace: ", err);
