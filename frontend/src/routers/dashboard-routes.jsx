@@ -24,6 +24,14 @@ import Notification from "../pages/dashboard/contents/Notification";
 import Unexpected from "../pages/ErrorPages/unexpected";
 import WorkspaceNotFound from "../pages/ErrorPages/workspace-unexpected";
 
+import TeamOpened from "../pages/dashboard/contents/Team/team_opened";
+import TeamOverview from "../pages/dashboard/contents/Team/OpenedTeam/overview";
+import TeamWorkspaces from "../pages/dashboard/contents/Team/OpenedTeam/workspaces";
+import Discussions from "../pages/dashboard/contents/Team/OpenedTeam/discussions";
+import TeamSettings from "../pages/dashboard/contents/Team/OpenedTeam/settings";
+import Resources from "../pages/dashboard/contents/Team/OpenedTeam/resources";
+import TeamTodoLists from "../pages/dashboard/contents/Team/OpenedTeam/todo-lists";
+
 const dashboardRoutes = {
   path: "/app",
   errorElement: <Unexpected />,
@@ -52,7 +60,42 @@ const dashboardRoutes = {
         },
       ],
     },
-    { path: "team", element: <Team /> },
+    {
+      path: "team",
+      element: <Team />,
+      children: [
+        {
+          path: "open/:teamId",
+          element: <TeamOpened />,
+          children: [
+            {
+              path: "overview",
+              element: <TeamOverview />,
+            },
+            {
+              path: "workspaces",
+              element: <TeamWorkspaces />,
+            },
+            {
+              path: "discussions",
+              element: <Discussions />,
+            },
+            {
+              path: "settings",
+              element: <TeamSettings />,
+            },
+            {
+              path: "resources",
+              element: <Resources />,
+            },
+            {
+              path: "todo-lists",
+              element: <TeamTodoLists />,
+            },
+          ],
+        },
+      ],
+    },
     { path: "profile", element: <Profile /> },
     { path: "notification", element: <Notification /> },
     { path: "setting", element: <Setting /> },

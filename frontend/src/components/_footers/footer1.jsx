@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 function Footer1() {
   return (
     <>
-      <footer className="mt-auto bg-white shadow-md p-5 w-full">
+      <div className="mt-auto bg-white shadow-md p-5">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
             <img
@@ -35,7 +35,7 @@ function Footer1() {
             </Link>
           </div>
         </div>
-      </footer>
+      </div>
     </>
   );
 }

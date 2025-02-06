@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   FaHome,
@@ -13,12 +13,22 @@ import {
 import { AiOutlineClose, AiOutlineFolder } from "react-icons/ai";
 import { HiMenu, HiX } from "react-icons/hi";
 import Footer1 from "../../components/_footers/footer1";
+import { jwtDecode } from "jwt-decode";
 
 function Dashboard() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
+  const token = localStorage.getItem("jwt");
+  // const [userData, setUserData] = useState({});
+  var userData;
+  try {
+    userData = jwtDecode(token);
+  } catch (error) {
+    console.error(error);
+  }
+  // console.log("hey", userData);
   const loc = location.pathname.split("/").slice(2);
 
   const toggleMobileNav = () => {
@@ -32,9 +42,9 @@ function Dashboard() {
   };
 
   return (
-    <div className="bg-white text-black min-w-screen min-h-screen flex flex-col">
+    <div className="bg-white text-black min-h-screen flex flex-col items-stretch">
       {/* Top */}
-      <div className="bg-gray-200 w-full min-h-screen flex-1 flex flex-col sm:flex-row">
+      <div className="bg-gray-200 w-full min-h-screen flex-1 flex flex-col sm:flex-row overflow-x-scroll">
         {/* Sidebar */}
         <div className="bg-white w-full sm:w-64 p-6 shadow-md border-r-2 border-black">
           {/* Logo */}
@@ -119,7 +129,10 @@ function Dashboard() {
               />
             </div>
             {/* Profile & Logout */}
-            <div className="dropdown dropdown-end">
+            <div className="flex dropdown dropdown-end items-center gap-2">
+              <strong className="text-white font-bold">
+                {userData.email.split("@")[0]}
+              </strong>
               <label tabIndex={0} className="cursor-pointer">
                 <FaUserCircle size={30} className="text-white" />
               </label>
@@ -132,6 +145,7 @@ function Dashboard() {
                     className="flex items-center gap-2"
                     onClick={handleLogout}
                   >
+                    {/* <FaBell size={20} /> */}
                     <FaPowerOff /> Logout
                   </button>
                 </li>
@@ -166,7 +180,7 @@ function Dashboard() {
       </div>
 
       {/* Footer */}
-      <div className="bg-gray-800 text-white mt-auto border-t-2 border-black">
+      <div className="w-screen bg-white p-10 text-white mt-auto border-t-2 border-black">
         <Footer1 />
       </div>
     </div>

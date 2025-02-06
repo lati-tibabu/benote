@@ -5,82 +5,91 @@ import {
   AiOutlineCheckCircle,
   AiOutlineFileText,
   AiOutlineTeam,
-  AiOutlineCalendar,
   AiOutlineSetting,
   AiOutlineOrderedList,
-  AiOutlineBook,
 } from "react-icons/ai";
 import { FaChevronLeft } from "react-icons/fa";
-import { Outlet, useNavigate, useParams } from "react-router-dom";
+import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 
-const WorkspaceOpened = () => {
+const TeamOpened = () => {
   const apiURL = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("jwt");
   const header = {
     authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
-  const { workspaceId } = useParams();
 
-  const [workspace, setWorkspace] = useState({});
+  const location2 = useLocation();
 
-  const getWorkspaceDetails = async (id) => {
-    const response = await fetch(`${apiURL}/api/workspaces/${id}`, {
-      method: "GET",
-      headers: header,
-    });
-    const data = await response.json();
-    setWorkspace(data);
-  };
+  const { teamId } = useParams();
+  const [team, setTeam] = useState({});
 
   const menuItems = [
     { icon: <AiOutlineBlock />, label: "Overview", link: "overview" },
-    // { icon: <AiOutlineBook />, label: "Projects", link: "projects" },
-    { icon: <AiOutlineCheckCircle />, label: "Tasks", link: "tasks" },
+    { icon: <AiOutlineCheckCircle />, label: "Workspaces", link: "workspaces" },
+    { icon: <AiOutlineFileText />, label: "Discussions", link: "discussions" },
+    { icon: <AiOutlineTeam />, label: "Resource", link: "resources" },
     {
       icon: <AiOutlineOrderedList />,
       label: "TO-DO Lists",
       link: "todo-lists",
     },
-    { icon: <AiOutlineFileText />, label: "Notes", link: "notes" },
-    { icon: <AiOutlineTeam />, label: "Teams", link: "teams" },
-    { icon: <AiOutlineCalendar />, label: "Study Plan", link: "study-plans" },
     { icon: <AiOutlineSetting />, label: "Settings", link: "settings" },
   ];
 
   useEffect(() => {
-    getWorkspaceDetails(workspaceId);
-  }, []);
+    if (teamId) {
+      getTeamDetails(teamId);
+    }
+  }, [teamId]);
 
-  const handleWorkspaceDelete = (id) => async () => {
-    if (window.confirm("Are you sure you want to delete this workspace?")) {
+  useEffect(() => {
+    if (team) {
+      navigate("overview", { state: { team } });
+    }
+  }, [team]);
+
+  const getTeamDetails = async (id) => {
+    try {
+      const response = await fetch(`${apiURL}/api/teams/${id}`, {
+        method: "GET",
+        headers: header,
+      });
+      const data = await response.json();
+      setTeam(data);
+    } catch (error) {
+      console.error("Error fetching the team data", error);
+    }
+  };
+
+  const handleTeamDelete = (id) => async () => {
+    if (window.confirm("Are you sure you want to delete this team?")) {
       try {
-        const response = await fetch(`${apiURL}/api/workspaces/${id}`, {
+        const response = await fetch(`${apiURL}/api/teams/${id}`, {
           method: "DELETE",
           headers: {
             ...header,
             "Content-Type": "application/json",
           },
         });
-        // console.log(response);
         if (response.ok) {
           alert("Deleted");
-          window.location.href = "/app/workspace";
+          window.location.href = "/app/team";
         } else {
           alert("Failed to delete");
         }
       } catch (error) {
-        console.error("Failed to delete the workspace:", error);
+        console.error("Failed to delete the team:", error);
         alert("Failed to delete, check the console logs");
       }
     }
   };
 
   const navigate = useNavigate();
+
   const handleNavigation = (link) => () => {
-    // navigate(`${location.pathname}/${link}`);
     navigate(link, {
-      state: { workspace: workspace },
+      state: { team: team },
     });
   };
 
@@ -88,11 +97,13 @@ const WorkspaceOpened = () => {
     return location.pathname.endsWith(link);
   };
 
-  useEffect(() => {
-    if (workspace) {
-      navigate("overview", { state: { workspace } });
-    }
-  }, [workspace]);
+  // console.log(location2.pathname);
+  // useEffect(() => {
+  //   navigate("overview", {
+  //     state: { team: team },
+  //   });
+  // }, []);
+
   return (
     <div className="h-full flex flex-col justify-between rounded-md shadow-sm">
       <div className="flex items-center gap-2">
@@ -101,14 +112,14 @@ const WorkspaceOpened = () => {
             type="button"
             className="p-3 rounded-full m-2"
             onClick={() => {
-              navigate("/app/workspace");
+              navigate("/app/team");
             }}
           >
             <FaChevronLeft />
           </button>
           <span className="flex items-center gap-2">
-            <h1 className="text-2xl">{workspace.emoji}</h1>
-            <h1 className="text-2xl font-bold">{workspace.name}</h1>
+            <h1 className="text-2xl">{team.emoji}</h1>
+            <h1 className="text-2xl font-bold">{team.name}</h1>
           </span>
         </div>
         <button>
@@ -126,7 +137,7 @@ const WorkspaceOpened = () => {
               <li className="p-3 hover:text-blue-500">Edit</li>
               <li
                 className="p-3 hover:text-red-500"
-                onClick={handleWorkspaceDelete(workspace.id)}
+                onClick={handleTeamDelete(team.id)}
               >
                 Delete
               </li>
@@ -163,9 +174,9 @@ const WorkspaceOpened = () => {
           <Outlet />
         </div>
       </div>
-      {/* <h1>{workspace.description}</h1> */}
+      {/* <h1>{team.description}</h1> */}
     </div>
   );
 };
 
-export default WorkspaceOpened;
+export default TeamOpened;

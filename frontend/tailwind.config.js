@@ -23,4 +23,7 @@ export default {
   plugins: [
     daisyui,
   ],
+  // experimental: {
+  //   optimizeUniversalDefaults: true,
+  // }
 };

@@ -38,18 +38,20 @@ const EditTask = (props) => {
     try {
       console.log("from editing: ", props.taskId);
 
-      const response = await fetch(`${apiURL}/api/tasks/${props.taskId}`, {
-        method: "GET",
-        headers: header,
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setTaskData((prev) => ({
-          ...prev,
-          ...data,
-        }));
-        console.log("Tasks", data);
-      } else alert("Error fetching the task detail response is not ok");
+      if (props.taskId) {
+        const response = await fetch(`${apiURL}/api/tasks/${props.taskId}`, {
+          method: "GET",
+          headers: header,
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setTaskData((prev) => ({
+            ...prev,
+            ...data,
+          }));
+          console.log("Tasks", data);
+        } else alert("Error fetching the task detail response is not ok");
+      }
     } catch (error) {
       alert("Error occured check console log");
       console.log("Catched error", error);

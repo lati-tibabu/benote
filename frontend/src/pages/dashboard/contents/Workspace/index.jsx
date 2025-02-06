@@ -33,7 +33,7 @@ function Workspace() {
 
   // console.log(location.pathname);
   const handleWorkspaceOpen = (workspaceId) => () => {
-    navigate("/app/workspace/open/" + workspaceId, {});
+    navigate(`/app/workspace/open/${workspaceId}`);
   };
 
   // useEffect(() => {
@@ -58,11 +58,11 @@ function Workspace() {
               workspaces.map((workspace) => (
                 <li
                   className="grow"
-                  key={workspace.id}
-                  onClick={handleWorkspaceOpen(workspace.id)}
+                  key={workspace.workspace.id}
+                  onClick={handleWorkspaceOpen(workspace.workspace.id)}
                 >
                   <div
-                    title={workspace.description}
+                    title={workspace.workspace.description}
                     className="relative flex flex-col gap-2 items-center cursor-default border-1 border-black p-3 rounded-box hover:bg-gray-50 hover:border-r-4 hover:border-b-4 hover:cursor-pointer overflow-hidden"
                     style={{
                       transition: "all 0.09s",
@@ -73,7 +73,7 @@ function Workspace() {
                       className="absolute inset-0 filter blur-lg bg-cover bg-no-repeat bg-center opacity-30"
                       style={{
                         backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 50 50'%3E%3Ctext x='0' y='40' font-size='50'%3E${encodeURIComponent(
-                          workspace.emoji
+                          workspace.workspace.emoji
                         )}%3C/text%3E%3C/svg%3E")`,
                       }}
                     ></div>
@@ -82,32 +82,39 @@ function Workspace() {
                     <div className="relative z-10">
                       {/* Icon */}
                       <div className="text-3xl text-center m-5">
-                        {workspace.emoji}
+                        {workspace.workspace.emoji}
                       </div>
 
                       {/* Main Content */}
                       <div className="border-t-1 border-black pl-3">
                         {/* Name */}
-                        <div>{workspace.name}</div>
+                        <div>{workspace.workspace.name}</div>
+
+                        <div>
+                          {/* role */}
+                          {workspace.role}
+                        </div>
 
                         {/* Creation Date */}
                         <div className="font-bold text-sm">
-                          {new Date(workspace.createdAt).toUTCString()}
+                          {new Date(
+                            workspace.workspace.createdAt
+                          ).toUTCString()}
                         </div>
 
                         {/* Private or Team */}
                         <div>
-                          {/* {workspace.type.split("-")[0].toLowerCase().trim() === */}
-                          {workspace.belongs_to_team ? (
+                          {/* {workspace.workspace.type.split("-")[0].toLowerCase().trim() === */}
+                          {workspace.workspace.belongs_to_team ? (
                             <div className="flex items-center gap-1">
                               <div className="bg-blue-600 text-white px-1 w-fit text-xs">
-                                {/* {workspace.type.split("-")[0]} */}
-                                {/* {workspace.team.name} */}
+                                {/* {workspace.workspace.type.split("-")[0]} */}
+                                {/* {workspace.workspace.team.name} */}
                                 Team
                               </div>
                               <div className="text-xs hover:underline hover:text-blue-700">
-                                {/* {workspace.type.split("-")[1]} */}
-                                {workspace.team.name}
+                                {/* {workspace.workspace.type.split("-")[1]} */}
+                                {workspace.workspace.team.name}
                               </div>
                             </div>
                           ) : (

@@ -26,7 +26,20 @@ module.exports = (sequelize, DataTypes) => {
     status: DataTypes.STRING,
     due_date: DataTypes.DATE,
     assigned_to: DataTypes.UUID,
-    workspace_id: DataTypes.UUID
+    workspace_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: 'workspaces',
+        key: 'id'
+      },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE'
+    },
+    is_archived: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
   }, {
     sequelize,
     modelName: 'task',
