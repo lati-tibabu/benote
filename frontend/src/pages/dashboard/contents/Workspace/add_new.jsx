@@ -15,6 +15,7 @@ const AddNew = () => {
 
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [emojiText, setEmojiText] = useState("");
+  const [worskapceLoading, setWorkspaceLoading] = useState(false);
 
   var userData;
   try {
@@ -57,6 +58,7 @@ const AddNew = () => {
 
   const createWorkspace = async (e) => {
     e.preventDefault();
+    setWorkspaceLoading(true);
     try {
       const response = await fetch(`${apiURL}/api/workspaces`, {
         method: "POST",
@@ -69,11 +71,16 @@ const AddNew = () => {
       const data = await response.json();
       console.log(response);
       if (response.ok) {
-        // navigate("/app/workspace");
-        window.location.href = "/app/workspace";
+        setWorkspaceLoading(false);
+        // console.log(response.body);
+        // want to load the response body
+
+        navigate(`/app/workspace/open/${data.id}`);
+        // window.location.href = "/app/workspace";
       }
     } catch (err) {
       console.error("Error creating workspace: ", err);
+      setWorkspaceLoading(false);
     }
   };
 
@@ -137,7 +144,7 @@ const AddNew = () => {
 
           <fieldset>
             <legend className="fieldset-legend">emoji</legend>
-            <div className="flex items-center gap-2 justify-between mb-3">
+            <div className="flex items-center gap-2 justify-between mb-3 flex-col sm:flex-row">
               <input
                 type="text"
                 disabled
@@ -198,12 +205,19 @@ const AddNew = () => {
             <span className="fieldset-label">Optional</span>
           </fieldset>
 
-          <button
-            type="submit"
-            className="btn btn-primary bg-black hover:bg-gray-800 text-white border-none"
-          >
-            Create Workspace
-          </button>
+          {worskapceLoading ? (
+            <div>
+              <span className="loading loading-spinner"></span>
+              Creating workspace
+            </div>
+          ) : (
+            <button
+              type="submit"
+              className="btn btn-primary bg-black hover:bg-gray-800 text-white border-none"
+            >
+              Create Workspace
+            </button>
+          )}
         </form>
       </div>
     </div>
