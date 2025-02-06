@@ -11,7 +11,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.hasMany(models.workspace, { foreignKey: 'created_by', as: 'workspaces' });
+      this.hasMany(models.workspace, { foreignKey: 'owned_by', as: 'workspace' });
+      this.belongsToMany(models.workspace, {
+        through: 'workspace_membership', 
+        foreignKey: 'user_id', 
+        otherKey: 'workspace_id', 
+        as: 'workspaces'
+      });
       this.hasMany(models.team, { foreignKey: 'created_by', as: 'teams' });
       this.hasMany(models.roadmap, { foreignKey: 'created_by', as: 'roadmaps' });
       this.hasMany(models.mindmap, { foreignKey: 'created_by', as: 'mindmaps' });

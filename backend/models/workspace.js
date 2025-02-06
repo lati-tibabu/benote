@@ -11,9 +11,16 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsTo(models.user, { foreignKey: 'created_by', as: 'user' });
+      this.belongsTo(models.user, { foreignKey: 'owned_by', as: 'creator' });
+      this.belongsToMany(models.user, {
+        through: 'workspace_membership',
+        foreignKey: 'workspace_id', 
+        otherKey: 'user_id',
+        as: 'users'
+      });
       this.belongsTo(models.team, { foreignKey: 'belongs_to_team', as: 'team' });
       this.hasMany(models.task, { foreignKey: 'workspace_id', as: 'tasks' });
+      this.hasMany(models.workspace_membership, { foreignKey: 'workspace_id', as: 'memberships' });
     }
   }
   workspace.init({
@@ -28,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       defaultValue: '🗂️'
     },
-    created_by: {
+    owned_by: {
       type:DataTypes.UUID,
       allowNull: false,
       references: {

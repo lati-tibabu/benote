@@ -31,7 +31,7 @@ const AddNew = () => {
   const [teams, setTeams] = useState();
   const [workspaceData, setWorkspaceData] = useState({
     emoji: "",
-    created_by: userData.id,
+    owned_by: userData.id,
     name: "",
     description: "",
     belongs_to_team: null,

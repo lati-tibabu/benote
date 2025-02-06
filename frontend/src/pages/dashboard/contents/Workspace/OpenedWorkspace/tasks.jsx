@@ -3,6 +3,11 @@ import { AiOutlineMore, AiOutlinePlus } from "react-icons/ai";
 import TaskCard from "../../../../../components/_tasks/task-card";
 import AddNewTask from "./add-new-task";
 import EditTask from "./edit-task";
+import { useLocation } from "react-router-dom";
+import { Fa500Px, FaWindowMaximize, FaWindowMinimize } from "react-icons/fa";
+// /import { useReactToPdf } from "react-to-pdf";
+// import { usePDF } from "react-to-pdf";
+
 const Tasks = () => {
   const apiURL = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("jwt");
@@ -11,17 +16,24 @@ const Tasks = () => {
     "Content-Type": "application/json",
   };
 
-  const [statusUpdate, setStatusUpdate] = useState(false);
+  const location2 = useLocation();
+  const workspace = location2.state?.workspace || {};
 
+  const [statusUpdate, setStatusUpdate] = useState(false);
   const [tasks, setTasks] = useState([]);
+  const [archivedTasks, setArchivedTasks] = useState([]);
   const [editingTask, setEditingTask] = useState("");
+  const [archivedWindow, setArchivedWindow] = useState(false);
 
   const fetchTasks = async () => {
     try {
-      const response = await fetch(`${apiURL}/api/tasks`, {
-        method: "GET",
-        headers: header,
-      });
+      const response = await fetch(
+        `${apiURL}/api/tasks/workspace/${workspace.id}`,
+        {
+          method: "GET",
+          headers: header,
+        }
+      );
       if (response.ok) {
         const data = await response.json();
         setTasks(data);
@@ -37,9 +49,42 @@ const Tasks = () => {
     }
   };
 
+  const fetchArchivedTasks = async () => {
+    try {
+      const response = await fetch(
+        `${apiURL}/api/tasks/workspace/${workspace.id}/archived`,
+        {
+          method: "GET",
+          headers: header,
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setArchivedTasks(data);
+      } else {
+        alert("error fetching tasks");
+        console.log("Error while fetching the tasks");
+      }
+    } catch (error) {
+      alert(
+        "Error fetching tasks from database, check console error message for details"
+      );
+      console.error("Error fetching tasks from database :", error);
+    }
+  };
+
   useEffect(() => {
     fetchTasks();
+    fetchArchivedTasks();
   }, [statusUpdate]);
+
+  // export the current tasks as pdf
+  // const ref = useRef();
+  // const pdfName = tasks[0]?.workspace?.name || "tasks";
+
+  // const { toPDF, targetRef } = usePDF({
+  //   filename: `${pdfName}.pdf`,
+  // });
 
   const handleStatusChange = async (taskId, newStatus) => {
     try {
@@ -59,9 +104,8 @@ const Tasks = () => {
   };
 
   const handleTaskEdit = (taskId) => {
-    // alert(taskId);
     setEditingTask(taskId);
-    console.log("Editing task: ", taskId);
+    // console.log("Editing task: ", taskId);
     document.getElementById("my_modal_4").showModal();
   };
 
@@ -72,7 +116,26 @@ const Tasks = () => {
         method: "PUT",
         headers: header,
         body: JSON.stringify({
-          status: "archived",
+          is_archived: true,
+        }),
+      });
+      if (response.ok) {
+        alert("Archived");
+        setStatusUpdate((prev) => !prev);
+      }
+    } catch (error) {
+      alert("Error occured check the console log");
+      console.error("error archiving the task: ", error);
+    }
+  };
+
+  const handleTaskUnarchive = async (taskId) => {
+    try {
+      const response = await fetch(`${apiURL}/api/tasks/${taskId}`, {
+        method: "PUT",
+        headers: header,
+        body: JSON.stringify({
+          is_archived: false,
         }),
       });
       if (response.ok) {
@@ -94,7 +157,7 @@ const Tasks = () => {
       <div>
         <h1 className="text-lg font-bold">Tasks</h1>
       </div>
-      <div className="flex gap-2 justify-between">
+      <div className="flex gap-2 justify-between overflow-x-scroll">
         {/* to do */}
         <div className="flex-1 flex flex-col gap-2 p-4 border-2 rounded-md grow">
           {/* title */}
@@ -235,6 +298,67 @@ const Tasks = () => {
                 />
               )
           )}
+        </div>
+        {/* archived */}
+        <div>
+          <div className="flex-1 flex flex-col gap-2 p-4 border-2 rounded-md grow">
+            {/* title */}
+            <div className="flex justify-between items-center border-b-1 pb-2 gap-4">
+              <div className="flex gap-1 items-center">
+                <h1 className="font-bold">Archived</h1>
+                <span className="p-2 bg-blue-200 text-blue-700 w-4 h-4 text-sm rounded-full flex justify-center items-center">
+                  {archivedTasks.length}
+                </span>
+              </div>
+              {/* <AiOutlineMore /> */}
+              <div>
+                {!archivedWindow ? (
+                  <FaWindowMaximize
+                    // className="cursor-pointer p-5"
+                    onClick={() => {
+                      setArchivedWindow(true);
+                    }}
+                  />
+                ) : (
+                  <FaWindowMinimize
+                    onClick={() => {
+                      setArchivedWindow(false);
+                    }}
+                  />
+                )}
+              </div>
+            </div>
+
+            {/* task list */}
+            {archivedWindow &&
+              archivedTasks.map((task) => (
+                <TaskCard
+                  isArchived={true}
+                  onStatusChange={handleStatusChange}
+                  onTaskEdit={handleTaskEdit}
+                  onTaskUnarchive={handleTaskUnarchive}
+                  onTaskDelete={handleTaskDelete}
+                  taskId={task.id}
+                  status={task.status}
+                  taskName={task.title}
+                  taskDescription={task.description}
+                  taskAssignedTo={task.user.name}
+                  dueDate={new Date(task.due_date).toUTCString().slice(0, 16)}
+                  daysElapsed={
+                    // task.daysElapsed
+                    Math.floor(
+                      (Date.now() - new Date(task.createdAt).getTime()) /
+                        (60 * 60 * 24 * 1000)
+                    ) == 0
+                      ? "<1"
+                      : Math.floor(
+                          (Date.now() - new Date(task.createdAt).getTime()) /
+                            (60 * 60 * 24 * 1000)
+                        )
+                  }
+                />
+              ))}
+          </div>
         </div>
       </div>
       <dialog id="my_modal_3" className="modal">
