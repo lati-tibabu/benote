@@ -13,37 +13,37 @@ const db = {};
 
 // if remote database is used comment this one, cofigure information in your .env with correct credentials to use it
 
-// const sequelize = new Sequelize(
-//   process.env.DB_DATABASE,
-//   process.env.DB_USER,
-//   process.env.DB_PASSWORD,
-//   {
-//    host: process.env.DB_HOST,
-//    dialect: DB_DIALECT,
-//    port: process.env.DB_PORT, 
-//    logging: false
-//   }
-// );
+const sequelize = new Sequelize(
+  process.env.DB_DATABASE,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
+  {
+   host: process.env.DB_HOST,
+   dialect: DB_DIALECT,
+   port: process.env.DB_PORT, 
+   logging: false
+  }
+);
 
 // if remote database is used uncomment this one else comment this part, do not cofigure information in your .env
 
-const sequelize = new Sequelize(
-  process.env.REMOTE_DATABASE,
-  process.env.REMOTE_USER,
-  process.env.REMOTE_PASSWORD,
-  {
-   host: process.env.REMOTE_HOST,
-   dialect: DB_DIALECT,
-   port: process.env.REMOTE_PORT,
-   dialectOptions: {
-    ssl: {
-      require: true,
-      // rejectUnauthorized: false, // Allow self-signed certificates
-      ca: fs.readFileSync('certficates/ca.pem')
-    }
-   }
-  }
-);
+// const sequelize = new Sequelize(
+//   process.env.REMOTE_DATABASE,
+//   process.env.REMOTE_USER,
+//   process.env.REMOTE_PASSWORD,
+//   {
+//    host: process.env.REMOTE_HOST,
+//    dialect: DB_DIALECT,
+//    port: process.env.REMOTE_PORT,
+//    dialectOptions: {
+//     ssl: {
+//       require: true,
+//       // rejectUnauthorized: false, // Allow self-signed certificates
+//       ca: fs.readFileSync('certficates/ca.pem')
+//     }
+//    }
+//   }
+// );
 
 
 fs

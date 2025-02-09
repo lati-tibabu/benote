@@ -18,6 +18,7 @@ const Tasks = () => {
 
   const location2 = useLocation();
   const workspace = location2.state?.workspace || {};
+  const addTask = location2.state?.addTask || false;
 
   const [statusUpdate, setStatusUpdate] = useState(false);
   const [tasks, setTasks] = useState([]);
@@ -76,7 +77,7 @@ const Tasks = () => {
   useEffect(() => {
     fetchTasks();
     fetchArchivedTasks();
-  }, [statusUpdate]);
+  }, [statusUpdate, addTask]);
 
   // export the current tasks as pdf
   // const ref = useRef();
@@ -151,6 +152,9 @@ const Tasks = () => {
   const handleTaskDelete = (taskId) => {
     alert("Deleting task");
   };
+  useEffect(() => {
+    addTask && document.getElementById("my_modal_3").showModal();
+  }, [addTask]);
 
   return (
     <div>

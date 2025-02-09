@@ -77,6 +77,9 @@ const AddNew = () => {
 
         navigate(`/app/workspace/open/${data.id}`);
         // window.location.href = "/app/workspace";
+      } else {
+        alert("Error creating workspace");
+        setWorkspaceLoading(false);
       }
     } catch (err) {
       console.error("Error creating workspace: ", err);
@@ -225,3 +228,7 @@ const AddNew = () => {
 };
 
 export default AddNew;
+
+// I was trying to create a worskapace with this details, and eventually failed, I wrote the details or the description of the workspace in detail and the length of the description that was to be stored on the database was not that much so I keep the workspace detail here in the folloewing commented lines so when youre testing it try it out, theres my name in the name of the workspace you can change to whatever you want.
+// name: "Lati's Engineering Workspace"
+// description: "I mean Engineering when I say it is all related to software.   This workspace contains tasks, to-dos, notes and other stuffs related to my Engineering journeys. I will use this one to plan projects, to take notes on different topics related to engineering. It will stay private till I decide to publish it public or certain team. So if you are seeing and accessing this workshop it means that at least I have some proved work which can be accessed through this workspace, happy discovering. ✌️"

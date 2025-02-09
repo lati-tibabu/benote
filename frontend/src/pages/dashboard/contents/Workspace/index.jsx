@@ -14,13 +14,17 @@ function Workspace() {
   const [workspaces, setWorkspaces] = useState([]);
 
   const getWorkspace = async () => {
-    const response = await fetch(`${apiURL}/api/workspaces`, {
-      method: "GET",
-      headers: header,
-    });
-    const data = await response.json();
-    setWorkspaces(data);
-    // console.log(data);
+    try {
+      const response = await fetch(`${apiURL}/api/workspaces`, {
+        method: "GET",
+        headers: header,
+      });
+      const data = await response.json();
+      setWorkspaces(data);
+      // console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {

@@ -1,10 +1,17 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Overview = () => {
   const location2 = useLocation();
   const workspace = location2.state?.workspace || {};
-  // console.log(workspace);
+  const navigate = useNavigate();
+  // const addTask = true;
+  const handleCreateNewTask = (id) => {
+    navigate(`/app/workspace/open/${id}/tasks`, {
+      state: { addTask: true, workspace: workspace },
+    });
+  };
+
   return (
     <div className="sm:flex gap-2">
       {/* right side */}
@@ -13,16 +20,16 @@ const Overview = () => {
         {/* <div className="border-1 border-black p-2 rounded-md"> */}
         <div>
           <h1 className="font-bold text-lg">Workspace Summary</h1>
-          <div>
-            <div className="flex items-center gap-1">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-start gap-2">
               <h3 className="text-sm">Name:</h3>
               <p className="font-bold">{workspace.name}</p>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-start gap-2">
               <h3 className="text-sm">Description:</h3>
               <p>{workspace.description}</p>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-start gap-2">
               <h3 className="text-sm">Created At:</h3>
               <p className="font-bold">
                 {new Date(workspace.createdAt).toUTCString().slice(0, 16)}
@@ -35,7 +42,10 @@ const Overview = () => {
           <h1 className="font-bold text-lg">Quick Actions</h1>
           {/* buttons */}
           <div className="flex flex-col gap-2">
-            <button className="p-2 rounded-md bg-black text-white outline-none border-none hover:bg-gray-800">
+            <button
+              className="p-2 rounded-md bg-black text-white outline-none border-none hover:bg-gray-800"
+              onClick={() => handleCreateNewTask(workspace.id)}
+            >
               Create New Task
             </button>
             <button className="p-2 rounded-md btn-secondary bg-gray-200 text-gray-800 outline-none border-none hover:bg-gray-300">
