@@ -180,7 +180,7 @@ function Dashboard() {
       </div>
 
       {/* Footer */}
-      <div className="w-screen bg-white p-10 text-white mt-auto border-t-2 border-black">
+      <div className="bg-white text-white mt-auto border-t-2 border-black">
         <Footer1 />
       </div>
     </div>
