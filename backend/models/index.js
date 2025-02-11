@@ -5,6 +5,9 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
 
+const caCertPath = path.join(__dirname, '../certificates/ca.pem');
+const caCert = fs.readFileSync(caCertPath);
+
 require("dotenv").config();
 
 const DB_DIALECT = 'postgres';
@@ -39,7 +42,8 @@ const sequelize = new Sequelize(
     ssl: {
       require: true,
       // rejectUnauthorized: false, // Allow self-signed certificates
-      ca: fs.readFileSync('certificates/ca.pem')
+      // ca: fs.readFileSync('certificates/ca.pem')
+      ca: caCert
     }
    }
   }
