@@ -13,7 +13,28 @@ const createTodo = async (req, res) => {
 // Read all
 const readTodos = async (req, res) => {
     try {
-        const _todos = await todo.findAll();
+        const _todos = await todo.findAll(
+            {
+                where: {
+                    workspace_id: req.params.workspace_id
+                }
+            }
+        );
+        res.json(_todos);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const readTodosS = async (req, res) => {
+    try {
+        const _todos = await todo.findAll(
+            {
+                where: {
+                    workspace_id: req.params.workspace_id
+                }
+            }
+        );
         res.json(_todos);
     } catch (error) {
         res.status(500).json({ message: error.message });

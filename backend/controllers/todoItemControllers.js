@@ -1,4 +1,3 @@
-const { where } = require("sequelize");
 const { todo_item } = require("../models");
 
 // Create
