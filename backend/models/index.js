@@ -39,7 +39,7 @@ const sequelize = new Sequelize(
     ssl: {
       require: true,
       // rejectUnauthorized: false, // Allow self-signed certificates
-      ca: fs.readFileSync('certficates/ca.pem')
+      ca: fs.readFileSync('certificates/ca.pem')
     }
    }
   }
