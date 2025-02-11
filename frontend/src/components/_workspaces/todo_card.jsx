@@ -6,6 +6,11 @@ const ToDoCard = (props) => {
     <div className="rounded-box bg-white p-4 shadow-lg">
       {/* todo title */}
       <h1 className="font-bold text-lg">{props.todo_title}</h1>
+      <h1 className="text-sm text-gray-500">
+        {props.createdAt
+          ? new Date(props.createdAt).toUTCString().slice(0, 16)
+          : "No date"}
+      </h1>
       {/* Todo items */}
       <div className="p-2">
         <ul className="mb-2">
@@ -29,7 +34,13 @@ const ToDoCard = (props) => {
           ))}
         </ul>
         <hr className="p-2" />
-        <div className="p-2 flex items-center border-2 rounded-box">
+        <form
+          className="p-2 flex items-center border-2 rounded-box"
+          onSubmit={(e) => {
+            e.preventDefault();
+            props.addNewTodo();
+          }}
+        >
           <input
             type="text"
             className="grow bg-transparent ring-blue-200 outline-none border-none text-lg"
@@ -38,12 +49,12 @@ const ToDoCard = (props) => {
             value={props.todoContent}
           />
           <button
+            type="submit"
             className="p-3 rounded-box bg-gray-200 shadow-md"
-            onClick={props.addNewTodo}
           >
             <FaPlus />
           </button>
-        </div>
+        </form>
       </div>
     </div>
   );

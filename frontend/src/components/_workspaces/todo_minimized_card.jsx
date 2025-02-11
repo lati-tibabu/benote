@@ -6,7 +6,9 @@ const TodoMinimizedCard = (props) => {
   return (
     <div
       className={`${props.className} w-fit p-3 shadow-md flex flex-col rounded-box bg-gray-100 gap-2 h-fit`}
-      onClick={() => props.onOpenTodoList(props.id, props.title)}
+      onClick={() =>
+        props.onOpenTodoList(props.id, props.title, props.createdAt)
+      }
     >
       <div className="flex items-center justify-end">
         <div className="dropdown">
@@ -27,6 +29,9 @@ const TodoMinimizedCard = (props) => {
         </div>
       </div>
       <h1 className="font-bold text-lg">{props.title}</h1>
+      <h1 className="text-sm text-gray-500">
+        {new Date(props.createdAt).toUTCString().slice(0, 16)}
+      </h1>
       {/* <div className="flex items-center justify-start gap-2">
         <button
           className="p-3 rounded-box bg-gray-200 shadow-md flex items-center gap-2 w-fit"

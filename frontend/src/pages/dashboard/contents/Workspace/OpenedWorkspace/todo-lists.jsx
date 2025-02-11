@@ -4,6 +4,8 @@ import ToDoCard from "../../../../../components/_workspaces/todo_card";
 import TodoMinimizedCard from "../../../../../components/_workspaces/todo_minimized_card";
 import AddNewTodoList from "./add-todo-list";
 import { useLocation } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+// import React from "react";
 
 const TodoLists = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -13,8 +15,26 @@ const TodoLists = () => {
     "Content-Type": "application/json",
   };
 
+  const [userData, setUserData] = useState();
+
+  // storing the logged in user data in the userData
+  useEffect(() => {
+    try {
+      const data = jwtDecode(token);
+      setUserData(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
+
   const location = useLocation();
   const addedNewTodo = location.state?.addedTodo;
+
+  const location2 = useLocation();
+  // const workspace = location2.state?.workspace || {};
+  const [workspace, setWorkspace] = useState(location2.state?.workspace || {});
+
+  console.table(workspace);
 
   const [todoList, setTodoList] = useState([]);
   const [todoListDeleted, setTodoListDeleted] = useState(false);
@@ -23,9 +43,10 @@ const TodoLists = () => {
   const [itemUpdated, setItemUpdated] = useState(false);
 
   useEffect(() => {
-    if (todoList.length > 0) {
+    if (todoList.length > 0 && Object.keys(openedTodoList).length === 0) {
       setOpenedTodoList({
         id: todoList[0].id,
+        createdAt: todoList[0].createdAt,
         title: todoList[0].title,
       });
     }
@@ -64,13 +85,15 @@ const TodoLists = () => {
 
   const fetchTodoList = async () => {
     try {
-      const response = await fetch(`${apiURL}/api/todos`, {
+      const response = await fetch(`${apiURL}/api/todos/${workspace.id}`, {
         headers: header,
       });
       if (response.ok) {
         const data = await response.json();
         setTodoList(data);
         // console.table(todoList);
+      } else {
+        throw new Error("Error fetching todo list");
       }
     } catch (error) {
       alert("Error happened check log");
@@ -81,7 +104,7 @@ const TodoLists = () => {
   // fetching the todo list from the database and also refresh and fetch again once new todo list is added from database
   useEffect(() => {
     fetchTodoList();
-  }, [addedNewTodo, todoListDeleted]);
+  }, [addedNewTodo, todoListDeleted, openedTodoList]);
 
   // for closing the todo list adding modal automatically after it is added succesfully
   useEffect(() => {
@@ -131,11 +154,12 @@ const TodoLists = () => {
     }
   };
 
-  const handleOpenTodoList = (id, title) => {
+  const handleOpenTodoList = (id, title, createdAt) => {
     // alert(`opening todo list with id ${id} and title ${title}`);
     setOpenedTodoList({
       id: id,
       title: title,
+      createdAt: createdAt,
     });
   };
 
@@ -144,30 +168,63 @@ const TodoLists = () => {
   };
 
   const handleAddTodoItem = async () => {
-    // alert(todoContent);
     if (todoContent.length === 0) {
-      alert("no content to be added");
+      alert("No content to be added");
       return;
     }
+
     try {
-      const response = await fetch(`${apiURL}/api/todoItems`, {
+      let todoList = openedTodoList;
+
+      if (Object.keys(openedTodoList).length === 0) {
+        // Create a new untitled todo list
+        const response = await fetch(`${apiURL}/api/todos`, {
+          method: "POST",
+          headers: {
+            ...header,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_id: userData.id,
+            title: "Untitled todo list",
+            workspace_id: workspace.id,
+          }),
+        });
+
+        if (!response.ok) throw new Error("Failed to create a new todo list");
+
+        const data = await response.json();
+        todoList = {
+          id: data.id,
+          createdAt: data.createdAt,
+          title: data.title,
+        };
+
+        setOpenedTodoList(todoList);
+      }
+
+      // Add the new todo item
+      const itemResponse = await fetch(`${apiURL}/api/todoItems`, {
         method: "POST",
-        headers: header,
+        headers: {
+          ...header,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           title: todoContent,
-          todo_id: openedTodoList.id,
+          todo_id: todoList.id, // Use the updated todoList.id
           status: "not_done",
         }),
       });
-      if (response.ok) {
-        // alert("Added to the todo list");
-        setItemUpdated(!itemUpdated);
+
+      if (itemResponse.ok) {
+        setItemUpdated((prev) => !prev);
         setTodoContent("");
       } else {
-        alert("error occured while adding content check your data");
+        alert("Error occurred while adding content. Check your data.");
       }
     } catch (error) {
-      alert("Error occured check console");
+      alert("An error occurred. Check the console.");
       console.error(error);
     }
   };
@@ -197,21 +254,25 @@ const TodoLists = () => {
         {/* viewing area */}
         <div className="flex-1">
           {/* todo progress */}
-          <div className="flex items-center gap-3">
-            <progress
-              className="progress progress-success transition"
-              value={progress}
-              max="100"
-            ></progress>
-            <div className="flex items-center w-fit font-bold">
-              <span className="flex">
-                <p>{progress}</p> %
-              </span>
-              <p className="ml-1">completed</p>
+
+          {Object.keys(openedTodoList).length > 0 && (
+            <div className="flex items-center gap-3">
+              <progress
+                className="progress progress-success transition"
+                value={progress}
+                max="100"
+              ></progress>
+              <div className="flex items-center w-fit font-bold">
+                <span className="flex">
+                  <p>{progress}</p> %
+                </span>
+                <p className="ml-1">completed</p>
+              </div>
             </div>
-          </div>
+          )}
           <ToDoCard
             todo_title={openedTodoList.title}
+            createdAt={openedTodoList.createdAt}
             todo={todo}
             onChange={(id) => toggleStatus(id)} // lati check this shit out I mean there is a trick in way it works
             addNewTodo={handleAddTodoItem}
@@ -220,15 +281,18 @@ const TodoLists = () => {
           />
         </div>
         {/* selecting area */}
-        <div className="flex-1 flex flex-wrap w-96">
+        <div className="flex-1 flex flex-wrap w-96 h-fit">
           {todoList.length > 0 ? (
             todoList.map((item, index) => (
               <TodoMinimizedCard
-                className="grow m-1 hover:bg-gray-200 hover:cursor-pointer"
+                className="grow m-1 hover:bg-gray-200 hover:cursor-pointer w-fit"
                 // onClick={() => alert(`card number ${index} clicked`)}
                 title={item.title}
+                createdAt={item.createdAt}
                 deleteTodoList={() => handleTodoListDelete(item.id)}
-                onOpenTodoList={() => handleOpenTodoList(item.id, item.title)}
+                onOpenTodoList={() =>
+                  handleOpenTodoList(item.id, item.title, item.createdAt)
+                }
               />
             ))
           ) : (

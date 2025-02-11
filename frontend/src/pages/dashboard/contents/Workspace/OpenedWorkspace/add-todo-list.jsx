@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import { useLocation, useNavigate, useNavigation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const AddNewTodoList = (props) => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -11,7 +11,8 @@ const AddNewTodoList = (props) => {
   };
 
   const location2 = useLocation();
-  const workspace = location2.state?.workspace || {};
+  const [workspace, setWorkspace] = useState(location2.state?.workspace || {});
+  const [addedTodo, setAddedTodo] = useState(false);
 
   var userData;
   try {
@@ -42,9 +43,14 @@ const AddNewTodoList = (props) => {
       });
       const data = await response.json();
       if (response.ok) {
+        setAddedTodo(!addedTodo);
+        setTodoData((prev) => ({
+          ...prev,
+          title: "",
+        }));
         // alert("Todo list is created successfully");
         navigate(`/app/workspace/open/${workspace.id}/todo-lists`, {
-          state: { addedTodo: true },
+          state: { addedTodo: addedTodo },
         });
         // window.location.href = `/app/workspace/open/${workspace.id}/todo-lists`;
       }
