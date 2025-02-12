@@ -9,6 +9,7 @@ const caCertPath = path.join(__dirname, '../certificates/ca.pem');
 const caCert = fs.readFileSync(caCertPath);
 
 require("dotenv").config();
+require('pg');
 
 const DB_DIALECT = 'postgres';
 
