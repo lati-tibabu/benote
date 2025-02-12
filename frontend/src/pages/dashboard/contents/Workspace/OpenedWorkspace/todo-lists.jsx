@@ -250,7 +250,7 @@ const TodoLists = () => {
         </div>
       </div>
       {/* bottom-section where viewing and real businesses takes place*/}
-      <div className="flex p-1 gap-3 w-full overflow-x-scroll">
+      <div className="flex p-1 gap-3 w-full overflow-x-scroll scrollbar-hide">
         {/* viewing area */}
         <div className="flex-1">
           {/* todo progress */}

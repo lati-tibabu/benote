@@ -118,23 +118,29 @@ function Dashboard() {
         {/* Body */}
         <div className="w-full flex flex-col">
           {/* Top Bar */}
-          <div className="bg-gray-800 w-full p-4 flex items-center justify-between">
+          {/* <div className="bg-gray-800 w-full p-4 flex items-center justify-between"> */}
+          <div className="w-full p-4 flex items-center justify-between bg-white">
+            <div>
+              <div className="font-bold text-2xl">
+                {loc[0].slice(0, 1).toUpperCase() + loc[0].slice(1)}
+              </div>
+            </div>
             {/* Universal Search Bar */}
-            <div className="flex items-center bg-white p-2 rounded-lg w-1/2 shadow-sm">
+            {/* <div className="flex items-center bg-white p-2 rounded-lg w-1/2 shadow-sm">
               <FaSearch size={20} className="text-gray-500" />
               <input
                 type="text"
                 placeholder="Search..."
                 className="outline-none ml-2 w-full bg-transparent text-gray-600"
               />
-            </div>
+            </div> */}
             {/* Profile & Logout */}
             <div className="flex dropdown dropdown-end items-center gap-2">
-              <strong className="text-white font-bold">
+              <strong className="text-black font-bold">
                 {userData.email.split("@")[0]}
               </strong>
               <label tabIndex={0} className="cursor-pointer">
-                <FaUserCircle size={30} className="text-white" />
+                <FaUserCircle size={30} className="text-black" />
               </label>
               <ul
                 tabIndex={0}
@@ -157,7 +163,7 @@ function Dashboard() {
           <div className="flex-1 p-6 bg-white h-2">
             {/* breadcrumb */}
             <div className="h-full">
-              <div className="breadcrumbs text-sm">
+              {/* <div className="breadcrumbs text-sm">
                 <ul>
                   {loc.map((l) => (
                     // <Link to={l}>
@@ -170,7 +176,10 @@ function Dashboard() {
                     // </Link>
                   ))}
                 </ul>
-              </div>
+              </div> */}
+              {/* <div className="font-bold text-2xl">
+                {loc[0].slice(0, 1).toUpperCase() + loc[0].slice(1)}
+              </div> */}
               <div className="h-full">
                 <Outlet />
               </div>

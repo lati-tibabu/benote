@@ -137,12 +137,12 @@ const WorkspaceOpened = () => {
 
       <div className="grow flex flex-col">
         {/* sub navigation */}
-        <div>
-          <div className="flex items-center gap-4 px-2 pt-2 overflow-scroll">
+        <div className="bg-gray-100 rounded-md shadow-sm p-2">
+          <div className="flex items-center gap-4 px-2 pt-2 overflow-scroll scrollbar-hide">
             {menuItems.map((items, index) => (
               <div
                 key={index}
-                className={`flex items-center py-1 px-3 gap-1 border-b-2 border-transparent hover:border-blue-500 cursor-pointer ${
+                className={`flex items-center py-1 px-3 gap-1 border-b-2 hover:border-blue-500 cursor-pointer ${
                   onPage(items.link)
                     ? "border-blue-500 text-black font-bold"
                     : "text-gray-500 "
@@ -157,7 +157,7 @@ const WorkspaceOpened = () => {
           </div>
         </div>
         {/* actions for sub navigated page like sorting, sharing... */}
-        <div className="flex items-center gap-2 p-2 border-y-1 border-gray-300"></div>
+        {/* <div className="flex items-center gap-2 p-2 border-y-1 border-gray-300"></div> */}
         {/* contents */}
         <div className="grow w-full">
           <Outlet />

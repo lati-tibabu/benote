@@ -161,7 +161,7 @@ const Tasks = () => {
       <div>
         <h1 className="text-lg font-bold">Tasks</h1>
       </div>
-      <div className="flex gap-2 justify-between overflow-x-scroll">
+      <div className="flex gap-2 justify-between overflow-x-scroll scrollbar-hide">
         {/* to do */}
         <div className="flex-1 flex flex-col gap-2 p-4 border-2 rounded-md grow">
           {/* title */}
