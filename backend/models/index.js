@@ -8,6 +8,7 @@ const caCertPath = path.join(__dirname, '../certificates/ca.pem');
 
 // Load environment variables from .env file
 dotenv.config();
+require('pg');
 
 // Constants
 const DB_DIALECT = 'postgres';
