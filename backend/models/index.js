@@ -3,75 +3,86 @@
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
-const basename = path.basename(__filename);
-
+const dotenv = require('dotenv');
 const caCertPath = path.join(__dirname, '../certificates/ca.pem');
-const caCert = fs.readFileSync(caCertPath);
 
-require("dotenv").config();
-require('pg');
+// Load environment variables from .env file
+dotenv.config();
 
+// Constants
 const DB_DIALECT = 'postgres';
+const caCert = fs.readFileSync(caCertPath); // Read CA certificate
 
-const db = {};
+// Determine the current environment
+const environment = process.env.NODE_ENV || 'dev';
 
-// if remote database is used comment this one, cofigure information in your .env with correct credentials to use it
-
-// const sequelize = new Sequelize(
-//   process.env.DB_DATABASE,
-//   process.env.DB_USER,
-//   process.env.DB_PASSWORD,
-//   {
-//    host: process.env.DB_HOST,
-//    dialect: DB_DIALECT,
-//    port: process.env.DB_PORT, 
-//    logging: false
-//   }
-// );
-
-// if remote database is used uncomment this one else comment this part, do not cofigure information in your .env
-
-const sequelize = new Sequelize(
-  process.env.REMOTE_DATABASE,
-  process.env.REMOTE_USER,
-  process.env.REMOTE_PASSWORD,
-  {
-   host: process.env.REMOTE_HOST,
-   dialect: DB_DIALECT,
-   port: process.env.REMOTE_PORT,
-   dialectOptions: {
-    ssl: {
-      require: true,
-      // rejectUnauthorized: false, // Allow self-signed certificates
-      // ca: fs.readFileSync('certificates/ca.pem')
-      ca: caCert
+// Helper function to create Sequelize instance
+function createSequelizeInstance(config) {
+  return new Sequelize(
+    config.database,
+    config.username,
+    config.password,
+    {
+      host: config.host,
+      dialect: DB_DIALECT,
+      port: config.port,
+      logging: false,
+      dialectOptions: config.ssl ? {
+        ssl: {
+          rejectUnauthorized: false, // Allow self-signed certificates
+          ca: caCert, // Use the CA certificate
+        },
+      } : {},
     }
-   }
-  }
-);
+  );
+}
 
+// Database configuration based on environment
+let sequelize;
+if (environment === 'dev') {
+  sequelize = createSequelizeInstance({
+    database: process.env.DB_DATABASE,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    ssl: false, // No SSL for local development
+  });
+} else {
+  sequelize = createSequelizeInstance({
+    database: process.env.REMOTE_DATABASE,
+    username: process.env.REMOTE_USER,
+    password: process.env.REMOTE_PASSWORD,
+    host: process.env.REMOTE_HOST,
+    port: process.env.REMOTE_PORT,
+    ssl: true, // Enable SSL for remote connections
+  });
+}
 
-fs
-  .readdirSync(__dirname)
-  .filter(file => {
+// Initialize models
+const db = {};
+fs.readdirSync(__dirname)
+  .filter((file) => {
     return (
-      file.indexOf('.') !== 0 &&
-      file !== basename &&
-      file.slice(-3) === '.js' &&
-      file.indexOf('.test.js') === -1
+      file.indexOf('.') !== 0 && // Ignore hidden files
+      file !== path.basename(__filename) && // Ignore this file
+      file.slice(-3) === '.js' && // Only include JavaScript files
+      file.indexOf('.test.js') === -1 // Exclude test files
     );
   })
-  .forEach(file => {
+  .forEach((file) => {
     const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
     db[model.name] = model;
   });
 
-Object.keys(db).forEach(modelName => {
+// Associate models
+Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
 });
 
+// Export Sequelize instance and models
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
