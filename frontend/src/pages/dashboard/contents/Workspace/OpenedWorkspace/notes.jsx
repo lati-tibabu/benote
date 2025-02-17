@@ -2,7 +2,13 @@ import React, { useEffect, useState } from "react";
 import MarkDown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import CodeHighlighter from "../../../../../components/_notes/code-highlighter";
-import { FaArchive, FaBookOpen, FaPencilAlt, FaTrash } from "react-icons/fa";
+import {
+  FaArchive,
+  FaBars,
+  FaBookOpen,
+  FaPencilAlt,
+  FaTrash,
+} from "react-icons/fa";
 import { AiOutlineMore, AiOutlinePlus } from "react-icons/ai";
 import { useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
@@ -28,19 +34,26 @@ const Notes = () => {
   const [notes, setNotes] = useState([]);
 
   // for holding the currently loggedin user data
-  const [userData, setUserData] = useState();
+  const [userData, setUserData] = useState(null);
 
   // for holding the selected note data
-  const [selectedNote, setSelectedNote] = useState();
-  const [selectedNoteId, setSelectedNoteId] = useState();
+  const [selectedNoteId, setSelectedNoteId] = useState(null);
 
-  // for holding the note inputdata for editing and previewing
+  // Use a single `noteData` state for title, content, and other note information
+  const [noteData, setNoteData] = useState({
+    title: "",
+    content: "",
+    workspace_id: workspace.id, // Initialize from workspace
+    owned_by: userData?.id, // Initialize from user data
+  });
+
+  // Use separate `noteInput` state to store only the editor content
   const [noteInput, setNoteInput] = useState("");
 
-  // for holding the note data for creating a new note
-  const [noteData, setNoteData] = useState({});
-
   const [noteCreated, setNoteCreated] = useState(false);
+
+  // for holding a switch for drawing notes from side
+  const [noteDrawerOpened, setNoteDrawerOpened] = useState(false);
 
   // storing the logged in user data in the userData
   useEffect(() => {
@@ -50,7 +63,7 @@ const Notes = () => {
     } catch (error) {
       console.error(error);
     }
-  }, []);
+  }, [token]);
 
   //managing the edit mode and preview mode
   const handleChangeMode = () => {
@@ -59,22 +72,16 @@ const Notes = () => {
 
   // adding new note
   const handleAddNewNote = async () => {
-    // toast.error("Creating new note...");
+    const newTitle = "Untitled note " + new Date().getTime();
     const workspaceId = workspace.id;
     const userId = userData.id;
-    const title = "Untitle note" + new Date().getTime().toString();
 
     const newNoteData = {
       workspace_id: workspaceId,
       owned_by: userId,
-      title: title,
+      title: newTitle,
+      content: "", //Start with empty content
     };
-
-    setNoteData({
-      workspace_id: workspaceId,
-      owned_by: userId,
-      title: title,
-    });
 
     try {
       const response = await fetch(`${apiURL}/api/notes`, {
@@ -82,11 +89,13 @@ const Notes = () => {
         headers: header,
         body: JSON.stringify(newNoteData),
       });
+
       if (response.ok) {
         const data = await response.json();
         setNoteCreated((prev) => !prev);
-        setSelectedNote(data.id);
-        setNoteInput(selectedNote?.content || "");
+        setSelectedNoteId(data.id);
+        setNoteData(data);
+        setNoteInput(data.content || "");
       } else {
         alert("Error creating the note");
         console.log(await response.text());
@@ -94,7 +103,6 @@ const Notes = () => {
     } catch (error) {
       console.error(error);
     }
-    console.table(noteData);
   };
 
   const handleChangePreview = () => {
@@ -109,11 +117,6 @@ const Notes = () => {
       });
       const data = await response.json();
       setNotes(data);
-      // if (data.length > 0) {
-      // setSelectedNoteId(data[0].id);
-      // setNoteInput(data[0].content);
-      // }
-      // console.log(data);
     } catch (error) {
       console.error(error);
     }
@@ -128,12 +131,11 @@ const Notes = () => {
           headers: header,
         }
       );
+
       if (response.ok) {
         const data = await response.json();
-        setSelectedNote(data);
-        setNoteInput(data.content);
-        // console.log(data);
         setNoteData(data);
+        setNoteInput(data.content || "");
       } else {
         alert("Error fetching the note");
         console.log(await response.text());
@@ -151,43 +153,94 @@ const Notes = () => {
   //fetching a selected note in detail
   useEffect(() => {
     if (selectedNoteId) {
-      setNoteInput("");
       fetchSelectedNote();
     }
   }, [selectedNoteId, noteCreated]);
 
+  //deleting note
+
+  const handleDeleteNote = async (id) => {
+    try {
+      if (window.confirm("Are  you sure you want to delete this note?")) {
+        const response = await fetch(`${apiURL}/api/notes/${id}`, {
+          method: "DELETE",
+          headers: header,
+        });
+        if (response.ok) {
+          toast.success("Note deleted successfully!");
+          fetchNotes();
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const selectNote = (id) => {
     setSelectedNoteId(id);
-    // toast.promise(fetchSelectedNote(), {
-    //   pending: "Loading...",
-    //   success: "Opened",
-    //   error: "Error opening",
-    // });
+    //cosing back the drawer
+    setNoteDrawerOpened(false);
   };
 
   const handleSaveChanges = async () => {
-    setNoteData({
+    const dataToSave = {
       ...noteData,
-      content: noteInput,
-    });
+      content: noteInput, // Content from the editor state
+    };
 
-    console.log(noteData);
+    try {
+      let response;
+      if (selectedNoteId) {
+        // Update existing note (PUT)
+        response = await fetch(`${apiURL}/api/notes/${selectedNoteId}`, {
+          method: "PUT",
+          headers: header,
+          body: JSON.stringify(dataToSave),
+        });
+      } else {
+        // Create a new note (POST)
+        response = await fetch(`${apiURL}/api/notes`, {
+          //Create a new note
+          method: "POST",
+          headers: header,
+          body: JSON.stringify(dataToSave),
+        });
+      }
+
+      if (response.ok) {
+        const responseData = await response.json();
+        toast.success("Note saved successfully!");
+        fetchNotes(); // Refresh notes list
+        setSelectedNoteId(responseData.id); // set the new note to selected note.
+      } else {
+        toast.error("Failed to save the note.");
+        console.log(await response.text());
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  // console.log("selected notes", selectedNote);
+  const handleNoteDrawerOpen = async () => {
+    setNoteDrawerOpened(true);
+  };
+
+  const handleTitleChange = (e) => {
+    setNoteData({ ...noteData, title: e.target.value });
+  };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-white">
       <ToastContainer />
-      <div className="flex justify-between border-b-1">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col md:flex-row lg:flex-row justify-between border-b-1">
+        <div className="flex items-center gap-2 justify-between">
           <h1 className="font-bold text-2xl">Notes</h1>
           <div className="flex items-center gap-2">
             <span className="border-2 pr-2 flex items-center gap-2 p-2 rounded w-fit">
               <input
                 type="text"
-                value={selectedNote?.title}
-                // onChange={(e) => setNoteInput(e.target.value)}
+                value={noteData?.title || ""}
+                onChange={handleTitleChange}
                 className="outline-none w-fit bg-transparent"
               />
             </span>
@@ -196,14 +249,15 @@ const Notes = () => {
             </button>
           </div>
         </div>
-
         {/* viewport manage */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-end gap-2 p-2">
           <div className="border-r-2 pr-2 flex items-center gap-2">
             <input
               type="checkbox"
-              className={`toggle ${previewMode && "bg-blue-500 text-white"}`}
-              defaultChecked
+              className={`toggle ${
+                previewMode ? "bg-blue-500 text-white" : ""
+              }`}
+              checked={previewMode}
               onChange={handleChangePreview}
             />
             <p>Preview</p>
@@ -219,7 +273,7 @@ const Notes = () => {
               <FaPencilAlt
                 size={24}
                 className="cursor-pointer"
-                title="View Mode "
+                title="Edit Mode"
               />
             )}
           </span>
@@ -229,14 +283,31 @@ const Notes = () => {
 
       <div className="flex h-full">
         {/* sidebar */}
-        <div className="p-4">
+        <div
+          className="absolute p-4 block md:hidden bg-gray-200 left-0 rounded-r-full z-10"
+          onClick={handleNoteDrawerOpen}
+        >
+          <FaBars />
+        </div>
+
+        <div
+          className={`p-4 ${
+            noteDrawerOpened ? "block" : "hidden"
+          } lg:block md:block bg-white shadow-xl ${
+            noteDrawerOpened
+              ? "absolute left-0 md:relative lg:relative w-full md:w-fit lg:w-fit z-20 md:z-auto lg:z-auto"
+              : ""
+          }`}
+        >
           <div className="flex items-center gap-2 mb-2">
-            <p className="font-bold">Notes</p>
-            <div
-              className="p-2 cursor-pointer hover:bg-gray-100 rounded"
-              onClick={handleAddNewNote}
-            >
-              <AiOutlinePlus />
+            <div className="flex items-center justify-between w-full">
+              <p className="font-bold">Notes</p>
+              <div
+                className="p-2 cursor-pointer hover:bg-gray-100 rounded"
+                onClick={handleAddNewNote}
+              >
+                <AiOutlinePlus />
+              </div>
             </div>
           </div>
           <hr />
@@ -245,9 +316,8 @@ const Notes = () => {
             {notes.map((note) => (
               <li
                 className={`mb-2 p-2 bg-gray-100 rounded flex justify-between cursor-pointer ${
-                  selectedNoteId === note.id && "outline outline-blue-500"
-                } group
-                `}
+                  selectedNoteId === note.id ? "outline outline-blue-500" : ""
+                } group`}
                 key={note.id}
                 onClick={() => selectNote(note.id)}
               >
@@ -281,14 +351,17 @@ const Notes = () => {
                     tabIndex={0}
                     className="dropdown-content menu bg-gray-50 rounded z-[1] w-fit p-2 shadow flex flex-col gap-2"
                   >
-                    <div className="flex flex-row gap-2 items-center px-3 py-2 hover:bg-gray-100">
+                    {/* <div className="flex flex-row gap-2 items-center px-3 py-2 hover:bg-gray-100">
                       <div>
                         <FaArchive />
                       </div>
                       <span>Archive</span>
-                    </div>
+                    </div> */}
 
-                    <div className="flex flex-row gap-2 items-center px-3 py-2 hover:bg-gray-100">
+                    <div
+                      className="flex flex-row gap-2 items-center px-3 py-2 hover:bg-gray-100"
+                      onClick={() => handleDeleteNote(note.id)}
+                    >
                       <div>
                         <FaTrash />
                       </div>
@@ -300,8 +373,9 @@ const Notes = () => {
             ))}
           </ul>
         </div>
+
         {/* body section */}
-        <div className="flex p-2 gap-3 min-h-full grow w-full">
+        <div className="flex flex-col md:flex-row p-2 gap-3 min-h-full grow w-full">
           {/* editing area */}
           {editMode && (
             <div className="flex-1 shadow-md p-2 text-wrap">
@@ -337,8 +411,9 @@ const Notes = () => {
                       return (
                         <p
                           className={`text-sm ${
-                            firstChar === "#" &&
-                            "font-bold bg-blue-200 w-fit p-1 rounded-full text-blue-700"
+                            firstChar === "#"
+                              ? "font-bold bg-blue-200 w-fit p-1 rounded-full text-blue-700"
+                              : ""
                           }`}
                           {...props}
                         />
@@ -403,7 +478,6 @@ const Notes = () => {
                   }}
                 >
                   {noteInput}
-                  {/* <CodeHighlighter /> */}
                 </MarkDown>
               </div>
             </div>
