@@ -313,64 +313,68 @@ const Notes = () => {
           <hr />
           {/* list of notes */}
           <ul className="list-none flex flex-col gap-2 mt-2">
-            {notes.map((note) => (
-              <li
-                className={`mb-2 p-2 bg-gray-100 rounded flex justify-between cursor-pointer ${
-                  selectedNoteId === note.id ? "outline outline-blue-500" : ""
-                } group`}
-                key={note.id}
-                onClick={() => selectNote(note.id)}
-              >
-                <span
-                  className="whitespace-nowrap w-32 text-ellipsis relative"
-                  style={{
-                    maskImage:
-                      "linear-gradient(to right, black 80%, transparent)",
-                    WebkitMaskImage:
-                      "linear-gradient(to right, black 80%, transparent)", // For Safari support
-                  }}
+            {notes.length === 0 ? (
+              <p>No notes found.</p>
+            ) : (
+              notes.map((note) => (
+                <li
+                  className={`mb-2 p-2 bg-gray-100 rounded flex justify-between cursor-pointer ${
+                    selectedNoteId === note.id ? "outline outline-blue-500" : ""
+                  } group`}
+                  key={note.id}
+                  onClick={() => selectNote(note.id)}
                 >
-                  {note.title}
-                </span>
-                <div className="dropdown flex justify-end cursor-pointer">
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    className="hidden group-hover:flex"
+                  <span
+                    className="whitespace-nowrap w-32 text-ellipsis relative"
+                    style={{
+                      maskImage:
+                        "linear-gradient(to right, black 80%, transparent)",
+                      WebkitMaskImage:
+                        "linear-gradient(to right, black 80%, transparent)", // For Safari support
+                    }}
                   >
-                    <AiOutlineMore size={24} />
-                  </div>
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    className="flex group-hover:hidden"
-                  >
-                    <AiOutlineMore size={24} className="text-transparent" />
-                  </div>
-                  <ul
-                    tabIndex={0}
-                    className="dropdown-content menu bg-gray-50 rounded z-[1] w-fit p-2 shadow flex flex-col gap-2"
-                  >
-                    {/* <div className="flex flex-row gap-2 items-center px-3 py-2 hover:bg-gray-100">
+                    {note.title}
+                  </span>
+                  <div className="dropdown flex justify-end cursor-pointer">
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      className="hidden group-hover:flex"
+                    >
+                      <AiOutlineMore size={24} />
+                    </div>
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      className="flex group-hover:hidden"
+                    >
+                      <AiOutlineMore size={24} className="text-transparent" />
+                    </div>
+                    <ul
+                      tabIndex={0}
+                      className="dropdown-content menu bg-gray-50 rounded z-[1] w-fit p-2 shadow flex flex-col gap-2"
+                    >
+                      {/* <div className="flex flex-row gap-2 items-center px-3 py-2 hover:bg-gray-100">
                       <div>
                         <FaArchive />
                       </div>
                       <span>Archive</span>
                     </div> */}
 
-                    <div
-                      className="flex flex-row gap-2 items-center px-3 py-2 hover:bg-gray-100"
-                      onClick={() => handleDeleteNote(note.id)}
-                    >
-                      <div>
-                        <FaTrash />
+                      <div
+                        className="flex flex-row gap-2 items-center px-3 py-2 hover:bg-gray-100"
+                        onClick={() => handleDeleteNote(note.id)}
+                      >
+                        <div>
+                          <FaTrash />
+                        </div>
+                        <span>Delete</span>
                       </div>
-                      <span>Delete</span>
-                    </div>
-                  </ul>
-                </div>
-              </li>
-            ))}
+                    </ul>
+                  </div>
+                </li>
+              ))
+            )}
           </ul>
         </div>
 
