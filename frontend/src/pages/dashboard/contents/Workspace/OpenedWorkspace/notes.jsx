@@ -115,6 +115,10 @@ const Notes = () => {
         method: "GET",
         headers: header,
       });
+
+      if (!response.ok) {
+        setNotes([]);
+      }
       const data = await response.json();
       setNotes(data);
     } catch (error) {
