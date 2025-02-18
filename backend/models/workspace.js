@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.team, { foreignKey: 'belongs_to_team', as: 'team' });
       this.hasMany(models.task, { foreignKey: 'workspace_id', as: 'tasks' });
       this.hasMany(models.workspace_membership, { foreignKey: 'workspace_id', as: 'memberships' });
+      this.hasMany(models.note, {foreignKey: 'workspace_id', as: 'notes'})
     }
   }
   workspace.init({
