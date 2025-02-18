@@ -122,7 +122,7 @@ const Notes = () => {
       const data = await response.json();
       setNotes(data);
     } catch (error) {
-      console.error(error);
+      console.error("error happening", error);
     }
   };
 
