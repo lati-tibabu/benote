@@ -57,10 +57,11 @@ const WorkspaceOpened = () => {
       try {
         const response = await fetch(`${apiURL}/api/workspaces/${id}`, {
           method: "DELETE",
-          headers: {
-            ...header,
-            "Content-Type": "application/json",
-          },
+          // headers: {
+          //   ...header,
+          //   "Content-Type": "application/json",
+          // },
+          headers: header,
         });
         // console.log(response);
         if (response.ok) {
