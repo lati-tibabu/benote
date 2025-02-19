@@ -35,26 +35,40 @@ import TeamTodoLists from "../pages/dashboard/contents/Team/OpenedTeam/todo-list
 const dashboardRoutes = {
   path: "/app",
   errorElement: <Unexpected />,
-  // element: <Dashboard />,
   element: <ProtectedRoute component={Dashboard} />,
   children: [
-    { path: "home", element: <Home /> },
+    { path: "home", element: <ProtectedRoute component={Home} /> },
     {
       path: "workspace",
-      element: <Workspace />,
+      element: <ProtectedRoute component={Workspace} />,
       children: [
         {
           path: "open/:workspaceId",
-          element: <WorkspaceOpened />,
+          element: <ProtectedRoute component={WorkspaceOpened} />,
           children: [
-            { path: "overview", element: <Overview /> },
-            { path: "projects", element: <Projects /> },
-            { path: "study-plans", element: <StudyPlans /> },
-            { path: "tasks", element: <Tasks /> },
-            { path: "todo-lists", element: <TodoLists /> },
-            { path: "teams", element: <Teams /> },
-            { path: "notes", element: <Notes /> },
-            { path: "settings", element: <Settings /> },
+            {
+              path: "overview",
+              element: <ProtectedRoute component={Overview} />,
+            },
+            {
+              path: "projects",
+              element: <ProtectedRoute component={Projects} />,
+            },
+            {
+              path: "study-plans",
+              element: <ProtectedRoute component={StudyPlans} />,
+            },
+            { path: "tasks", element: <ProtectedRoute component={Tasks} /> },
+            {
+              path: "todo-lists",
+              element: <ProtectedRoute component={TodoLists} />,
+            },
+            { path: "teams", element: <ProtectedRoute component={Teams} /> },
+            { path: "notes", element: <ProtectedRoute component={Notes} /> },
+            {
+              path: "settings",
+              element: <ProtectedRoute component={Settings} />,
+            },
             { path: "*", element: <WorkspaceNotFound /> },
           ],
         },
@@ -62,43 +76,46 @@ const dashboardRoutes = {
     },
     {
       path: "team",
-      element: <Team />,
+      element: <ProtectedRoute component={Team} />,
       children: [
         {
           path: "open/:teamId",
-          element: <TeamOpened />,
+          element: <ProtectedRoute component={TeamOpened} />,
           children: [
             {
               path: "overview",
-              element: <TeamOverview />,
+              element: <ProtectedRoute component={TeamOverview} />,
             },
             {
               path: "workspaces",
-              element: <TeamWorkspaces />,
+              element: <ProtectedRoute component={TeamWorkspaces} />,
             },
             {
               path: "discussions",
-              element: <Discussions />,
+              element: <ProtectedRoute component={Discussions} />,
             },
             {
               path: "settings",
-              element: <TeamSettings />,
+              element: <ProtectedRoute component={TeamSettings} />,
             },
             {
               path: "resources",
-              element: <Resources />,
+              element: <ProtectedRoute component={Resources} />,
             },
             {
               path: "todo-lists",
-              element: <TeamTodoLists />,
+              element: <ProtectedRoute component={TeamTodoLists} />,
             },
           ],
         },
       ],
     },
-    { path: "profile", element: <Profile /> },
-    { path: "notification", element: <Notification /> },
-    { path: "setting", element: <Setting /> },
+    { path: "profile", element: <ProtectedRoute component={Profile} /> },
+    {
+      path: "notification",
+      element: <ProtectedRoute component={Notification} />,
+    },
+    { path: "setting", element: <ProtectedRoute component={Setting} /> },
   ],
 };
 
