@@ -31,7 +31,6 @@ const AddNew = () => {
 
   const [teams, setTeams] = useState();
   const [workspaceData, setWorkspaceData] = useState({
-    emoji: "",
     owned_by: userData.id,
     name: "",
     description: "",
@@ -63,10 +62,7 @@ const AddNew = () => {
       const response = await fetch(`${apiURL}/api/workspaces`, {
         method: "POST",
         body: JSON.stringify(workspaceData),
-        headers: {
-          ...header,
-          "Content-Type": "application/json",
-        },
+        headers: header,
       });
       const data = await response.json();
       console.log(response);
@@ -200,8 +196,8 @@ const AddNew = () => {
               </option>
               {teams &&
                 teams.map((team) => (
-                  <option key={team.id} value={team.id}>
-                    {team.name}
+                  <option key={team.team.id} value={team.team.id}>
+                    {team.team.name}
                   </option>
                 ))}
             </select>
