@@ -1,8 +1,61 @@
-import React, { useState } from "react";
-import { FaAngleRight, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
 const Home = () => {
-  const [checked, setChecked] = useState(true);
+  const apiURL = import.meta.env.VITE_API_URL;
+  const token = localStorage.getItem("jwt");
+  const header = {
+    authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+
+  const [userData, setUserData] = useState(null);
+  const [userId, setUserId] = useState(null);
+
+  //fetching currently logged in user id from the jwt token
+  useEffect(() => {
+    try {
+      if (token) {
+        const data = jwtDecode(token);
+        setUserId(data.id);
+      } else {
+        console.log("token not found");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }, [token]);
+
+  // loading the user data from database
+
+  const loadUserData = async () => {
+    if (!userId) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${apiURL}/api/users/${userId}`, {
+        method: "GET",
+        headers: header,
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      setUserData(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    if (userId) {
+      loadUserData();
+    }
+  }, [userId]);
+
+  // console.log(userData);
 
   const [todo, setTodo] = useState([
     { id: "123", title: "Buy Groceries", status: "done" },
@@ -22,130 +75,6 @@ const Home = () => {
     );
   };
 
-  const workspaces = [
-    {
-      emoji: "🧑‍🎓",
-      name: "Academic Tasks",
-      creationDate: "December 31, 2024",
-      type: "Private",
-      description:
-        "A personal workspace for organizing homework, project deadlines, and study schedules.",
-    },
-    {
-      emoji: "💻",
-      name: "Code Studio",
-      creationDate: "December 15, 2024",
-      type: "Team - DevSquad",
-      description:
-        "Collaborative workspace for tracking coding projects, version control, and debugging tasks within the team.",
-    },
-    {
-      emoji: "📝",
-      name: "Research Notes",
-      creationDate: "December 10, 2024",
-      type: "Private",
-      description:
-        "Dedicated to managing and organizing notes, references, and drafts for ongoing research papers.",
-    },
-    {
-      emoji: "🎮",
-      name: "Game Night Plan",
-      creationDate: "December 20, 2024",
-      type: "Team - Weekend Warriors",
-      description:
-        "A shared workspace for planning team gaming events, including schedules, challenges, and score tracking.",
-    },
-    {
-      emoji: "🌍",
-      name: "Community Outreach",
-      creationDate: "December 5, 2024",
-      type: "Team - Helping Hands",
-      description:
-        "Used for managing volunteer schedules, tasks, and events for community service initiatives.",
-    },
-  ];
-
-  const tasks = [
-    {
-      emoji: "🛒",
-      title: "Buy Groceries",
-      dueDate: "December 31, 2024",
-      status: "done",
-      description:
-        "Purchase vegetables, fruits, and other essential groceries.",
-    },
-    {
-      emoji: "📚",
-      title: "Do Homework",
-      dueDate: "January 1, 2025",
-      status: "not_done",
-      description: "Complete assignments for Compiler Design and NLP.",
-    },
-    {
-      emoji: "🧹",
-      title: "Clean the Room",
-      dueDate: "January 2, 2025",
-      status: "not_done",
-      description: "Organize books, dust shelves, and vacuum the floor.",
-    },
-    {
-      emoji: "📅",
-      title: "Prepare for the Meeting",
-      dueDate: "January 3, 2025",
-      status: "done",
-      description: "Finalize the presentation slides and review key points.",
-    },
-    {
-      emoji: "🚶",
-      title: "Go for a Walk",
-      dueDate: "January 4, 2025",
-      status: "not_done",
-      description: "Enjoy a 30-minute evening walk in the park.",
-    },
-  ];
-  const teams = [
-    {
-      emoji: "👨‍💻",
-      name: "DevSquad",
-      creationDate: "December 15, 2024",
-      members: 8,
-      description:
-        "A development team working on building innovative web and mobile applications.",
-    },
-    {
-      emoji: "📖",
-      name: "Study Circle",
-      creationDate: "December 20, 2024",
-      members: 5,
-      description:
-        "Group of students collaborating on exam preparation and sharing resources.",
-    },
-    {
-      emoji: "🤝",
-      name: "Helping Hands",
-      creationDate: "December 10, 2024",
-      members: 12,
-      description:
-        "Community volunteers focused on organizing outreach programs and charity events.",
-    },
-    {
-      emoji: "🎮",
-      name: "Weekend Warriors",
-      creationDate: "December 5, 2024",
-      members: 6,
-      description:
-        "Gaming team participating in weekend tournaments and events.",
-    },
-    {
-      emoji: "🎨",
-      name: "Creative Minds",
-      creationDate: "December 18, 2024",
-      members: 4,
-      description:
-        "A team of artists and designers collaborating on creative projects.",
-    },
-  ];
-
   return (
     <div>
       {/* top */}
@@ -153,7 +82,9 @@ const Home = () => {
         {/* greeting message */}
         {/* <div className="p-5 border-l-1 border-t-1 border-b-5 border-r-5 border-black rounded-box w-fit mx-auto"> */}
         <div className="p-5 w-fit mx-auto mb-5">
-          <span className="text-3xl">Hello, Lati good afternoon!</span>
+          <span className="text-3xl">
+            Hello, <strong>{userData && userData.name}</strong> good afternoon!
+          </span>
         </div>
       </div>
       {/* main */}
@@ -393,3 +324,125 @@ const Home = () => {
 };
 
 export default Home;
+
+const workspaces = [
+  {
+    emoji: "🧑‍🎓",
+    name: "Academic Tasks",
+    creationDate: "December 31, 2024",
+    type: "Private",
+    description:
+      "A personal workspace for organizing homework, project deadlines, and study schedules.",
+  },
+  {
+    emoji: "💻",
+    name: "Code Studio",
+    creationDate: "December 15, 2024",
+    type: "Team - DevSquad",
+    description:
+      "Collaborative workspace for tracking coding projects, version control, and debugging tasks within the team.",
+  },
+  {
+    emoji: "📝",
+    name: "Research Notes",
+    creationDate: "December 10, 2024",
+    type: "Private",
+    description:
+      "Dedicated to managing and organizing notes, references, and drafts for ongoing research papers.",
+  },
+  {
+    emoji: "🎮",
+    name: "Game Night Plan",
+    creationDate: "December 20, 2024",
+    type: "Team - Weekend Warriors",
+    description:
+      "A shared workspace for planning team gaming events, including schedules, challenges, and score tracking.",
+  },
+  {
+    emoji: "🌍",
+    name: "Community Outreach",
+    creationDate: "December 5, 2024",
+    type: "Team - Helping Hands",
+    description:
+      "Used for managing volunteer schedules, tasks, and events for community service initiatives.",
+  },
+];
+
+const tasks = [
+  {
+    emoji: "🛒",
+    title: "Buy Groceries",
+    dueDate: "December 31, 2024",
+    status: "done",
+    description: "Purchase vegetables, fruits, and other essential groceries.",
+  },
+  {
+    emoji: "📚",
+    title: "Do Homework",
+    dueDate: "January 1, 2025",
+    status: "not_done",
+    description: "Complete assignments for Compiler Design and NLP.",
+  },
+  {
+    emoji: "🧹",
+    title: "Clean the Room",
+    dueDate: "January 2, 2025",
+    status: "not_done",
+    description: "Organize books, dust shelves, and vacuum the floor.",
+  },
+  {
+    emoji: "📅",
+    title: "Prepare for the Meeting",
+    dueDate: "January 3, 2025",
+    status: "done",
+    description: "Finalize the presentation slides and review key points.",
+  },
+  {
+    emoji: "🚶",
+    title: "Go for a Walk",
+    dueDate: "January 4, 2025",
+    status: "not_done",
+    description: "Enjoy a 30-minute evening walk in the park.",
+  },
+];
+const teams = [
+  {
+    emoji: "👨‍💻",
+    name: "DevSquad",
+    creationDate: "December 15, 2024",
+    members: 8,
+    description:
+      "A development team working on building innovative web and mobile applications.",
+  },
+  {
+    emoji: "📖",
+    name: "Study Circle",
+    creationDate: "December 20, 2024",
+    members: 5,
+    description:
+      "Group of students collaborating on exam preparation and sharing resources.",
+  },
+  {
+    emoji: "🤝",
+    name: "Helping Hands",
+    creationDate: "December 10, 2024",
+    members: 12,
+    description:
+      "Community volunteers focused on organizing outreach programs and charity events.",
+  },
+  {
+    emoji: "🎮",
+    name: "Weekend Warriors",
+    creationDate: "December 5, 2024",
+    members: 6,
+    description: "Gaming team participating in weekend tournaments and events.",
+  },
+  {
+    emoji: "🎨",
+    name: "Creative Minds",
+    creationDate: "December 18, 2024",
+    members: 4,
+    description:
+      "A team of artists and designers collaborating on creative projects.",
+  },
+];
