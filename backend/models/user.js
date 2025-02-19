@@ -18,7 +18,15 @@ module.exports = (sequelize, DataTypes) => {
         otherKey: 'workspace_id', 
         as: 'workspaces'
       });
-      this.hasMany(models.team, { foreignKey: 'created_by', as: 'teams' });
+
+      this.belongsToMany(models.team, {
+        through: 'team_membership',
+        foreignKey: 'user_id',
+        otherKey: 'team_id',
+        as: 'teams'
+      });
+
+      this.hasMany(models.team, { foreignKey: 'created_by', as: 'team' });
       this.hasMany(models.roadmap, { foreignKey: 'created_by', as: 'roadmaps' });
       this.hasMany(models.mindmap, { foreignKey: 'created_by', as: 'mindmaps' });
       this.hasMany(models.classroom, { foreignKey: 'teacher_id', as: 'classrooms' });
@@ -30,12 +38,12 @@ module.exports = (sequelize, DataTypes) => {
         as: 'enrolledClassrooms',
       });
 
-      this.belongsToMany(models.team, {
-        through: 'userTeams',
-        foreignKey: 'user_id',
-        otherKey: 'team_id',
-        as: 'inTeams'
-      });
+      // this.belongsToMany(models.team, {
+      //   through: 'userTeams',
+      //   foreignKey: 'user_id',
+      //   otherKey: 'team_id',
+      //   as: 'inTeams'
+      // });
 
       this.belongsToMany(models.badge, {
         through: 'userBadges',

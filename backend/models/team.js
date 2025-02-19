@@ -11,15 +11,16 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsTo(models.user, { foreignKey: 'created_by', as: 'user'});
+      this.belongsTo(models.user, { foreignKey: 'created_by', as: 'creator'});
       
       this.belongsToMany(models.user, {
-        through: 'userTeams',
+        through: 'team_membership',
         foreignKey: 'team_id',
         otherKey: 'user_id',
         as: 'members'
       });
 
+      this.hasMany(models.team_membership, { foreignKey: 'team_id', as: 'memberships' });
       this.hasMany(models.discussion, { foreignKey: 'team_id', as: 'discussions' });
       this.hasMany(models.workspace, { foreignKey: 'belongs_to_team', as: 'workspaces' });
     }
@@ -33,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     created_by: {
       type:DataTypes.UUID,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'users',
         key: 'id'
