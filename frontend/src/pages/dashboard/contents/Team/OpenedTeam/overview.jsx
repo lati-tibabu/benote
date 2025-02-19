@@ -7,7 +7,13 @@ const TeamOverview = () => {
   // console.log(team);
 
   // console.log(location2.pathname.split);
-  return (
+  return Object.keys(team).length === 0 ? (
+    <div className="flex flex-col gap-4 p-6 min-h-full">
+      <div className="h-6 w-3/4 bg-gray-300 rounded animate-pulse"></div>
+      <div className="h-6 w-1/2 bg-gray-300 rounded animate-pulse"></div>
+      <div className="h-6 w-3/4 bg-gray-300 rounded animate-pulse"></div>
+    </div>
+  ) : (
     <div className="sm:flex gap-2">
       {/* right side */}
       <div className="flex-1 p-3 flex flex-col gap-5">

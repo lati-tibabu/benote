@@ -53,12 +53,12 @@ function Team() {
             {teams.length > 0 ? (
               teams.map((team) => (
                 <li
-                  key={team.id}
-                  onClick={handleTeamOpen(team.id)}
+                  key={team.team.id}
+                  onClick={handleTeamOpen(team.team.id)}
                   className="cursor-pointer"
                 >
                   <div
-                    title={team.description}
+                    title={team.team.name}
                     className="bg-gray-200 flex flex-row gap-2 items-center hover:bg-slate-300 w-fit rounded-box p-10"
                     style={{
                       transition: "all 0.09s",
@@ -71,10 +71,26 @@ function Team() {
                     {/* Main Content */}
                     <div className="border-black pl-3">
                       {/* Name */}
-                      <div>{team.name}</div>
+                      <div>{team.team.name}</div>
                       {/* Creation Date */}
                       <div className="font-bold text-sm">
-                        {new Date(team.createdAt).toUTCString().slice(0, 16)}
+                        {new Date(team.team.createdAt)
+                          .toUTCString()
+                          .slice(0, 16)}
+                      </div>
+                      {/* Role */}
+                      <div>
+                        {team.role == "admin" ? (
+                          <span className="text-green-500">Admin</span>
+                        ) : (
+                          <span className="text-blue-500">Member</span>
+                        )}
+                      </div>
+                      {/* Members */}
+                      <div>
+                        <span className="text-gray-500">
+                          {team.team.members.length} Member/s
+                        </span>
                       </div>
                     </div>
                     {/* </div> */}

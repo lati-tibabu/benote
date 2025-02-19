@@ -24,19 +24,6 @@ const TeamOpened = () => {
   const { teamId } = useParams();
   const [team, setTeam] = useState({});
 
-  const menuItems = [
-    { icon: <AiOutlineBlock />, label: "Overview", link: "overview" },
-    { icon: <AiOutlineCheckCircle />, label: "Workspaces", link: "workspaces" },
-    { icon: <AiOutlineFileText />, label: "Discussions", link: "discussions" },
-    { icon: <AiOutlineTeam />, label: "Resource", link: "resources" },
-    {
-      icon: <AiOutlineOrderedList />,
-      label: "TO-DO Lists",
-      link: "todo-lists",
-    },
-    { icon: <AiOutlineSetting />, label: "Settings", link: "settings" },
-  ];
-
   useEffect(() => {
     if (teamId) {
       getTeamDetails(teamId);
@@ -61,6 +48,8 @@ const TeamOpened = () => {
       console.error("Error fetching the team data", error);
     }
   };
+
+  console.log("This is amazing:", team);
 
   const handleTeamDelete = (id) => async () => {
     if (window.confirm("Are you sure you want to delete this team?")) {
@@ -180,3 +169,16 @@ const TeamOpened = () => {
 };
 
 export default TeamOpened;
+
+const menuItems = [
+  { icon: <AiOutlineBlock />, label: "Overview", link: "overview" },
+  { icon: <AiOutlineCheckCircle />, label: "Workspaces", link: "workspaces" },
+  { icon: <AiOutlineFileText />, label: "Discussions", link: "discussions" },
+  { icon: <AiOutlineTeam />, label: "Resource", link: "resources" },
+  {
+    icon: <AiOutlineOrderedList />,
+    label: "TO-DO Lists",
+    link: "todo-lists",
+  },
+  { icon: <AiOutlineSetting />, label: "Settings", link: "settings" },
+];
