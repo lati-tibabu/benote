@@ -76,8 +76,8 @@ function Dashboard() {
     <div className="bg-white text-black min-h-screen flex flex-col">
       {/* Top */}
       <div className="bg-gray-200 w-full min-h-screen flex-1 flex flex-col sm:flex-row overflow-x-scroll">
-        {/* Sidebar */}
-        <div className="bg-white w-full sm:w-64 p-6 shadow-md border-r-2 border-black">
+        {/* Sidebar or navigtion bar or column*/}
+        <div className="w-full sm:w-64 p-6 shadow bg-white border-black sm:relative z-10 backdrop-blur-2xl transition-all duration-300">
           {/* Logo */}
           <div className="flex items-center justify-between sm:justify-start mb-6">
             <div className="flex gap-2 text-xs font-bold items-center">
@@ -142,7 +142,7 @@ function Dashboard() {
                         className={`flex items-center py-1 px-3 gap-1  hover:border-blue-500 cursor-pointer ${
                           onPage(items.link)
                             ? "border-b-2 border-blue-500 text-black font-bold"
-                            : "text-gray-500 "
+                            : "text-gray-900 "
                         }`}
                         onClick={handleNavigation(items.link, loc[2])}
                       >
@@ -208,11 +208,32 @@ function Dashboard() {
                 <span>Setting</span>
               </Link>
             </div>
+
+            <div className="flex lg:hidden md:hidden dropdown dropdown-end items-center gap-2 p-1 rounded shadow-md">
+              <div className="flex flex-row-reverse items-center  gap-2">
+                <strong className="text-black font-bold" tabIndex={0}>
+                  {userData?.email.split("@")[0]}
+                </strong>
+                <label className="cursor-pointer">
+                  <AiOutlineUser size={30} className="text-black" />
+                </label>
+              </div>
+              <ul className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 text-white">
+                <li>
+                  <button
+                    className="flex items-center gap-2"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="w-full flex flex-col">
+        <div className="w-full flex flex-col overflow-x-hidden">
           <div className="w-full p-4 flex items-center justify-between bg-white">
             <div className="flex items-center gap-2">
               <div className="font-bold text-2xl">
@@ -226,7 +247,7 @@ function Dashboard() {
                 workspaceEmoji && (
                   <>
                     <div className="text-gray-500">|</div>
-                    <div className="text-lg lg:text-2xl md:text-xl text-black flex items-center gap-2">
+                    <div className="text-lg lg:text-2xl md:text-xl text-black flex items-center gap-2 text-nowrap overflow-hidden">
                       {workspaceEmoji}
                       {workspaceTitle}
                     </div>
@@ -235,7 +256,7 @@ function Dashboard() {
             </div>
 
             {/* Profile & Logout */}
-            <div className="flex dropdown dropdown-end items-center gap-2">
+            <div className="hidden lg:flex md:flex dropdown dropdown-end items-center gap-2">
               <strong className="text-black font-bold">
                 {userData?.email.split("@")[0]}
               </strong>
