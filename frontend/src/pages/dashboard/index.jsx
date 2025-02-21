@@ -1,35 +1,66 @@
 import React, { useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
-  FaHome,
-  FaTasks,
-  FaUsers,
-  FaCog,
-  FaSearch,
-  FaUserCircle,
-  FaBell,
-  FaPowerOff,
-} from "react-icons/fa";
-import { AiOutlineClose, AiOutlineFolder } from "react-icons/ai";
+  AiOutlineHome,
+  AiOutlineUnorderedList,
+  AiOutlineTeam,
+  AiOutlineUser,
+  AiOutlineNotification,
+  AiOutlineSetting,
+  AiOutlineDown,
+  AiOutlineRight,
+  AiOutlineBlock,
+  AiOutlineCheckCircle,
+  AiOutlineOrderedList,
+  AiOutlineFileText,
+  AiOutlineCalendar,
+} from "react-icons/ai";
 import { HiMenu, HiX } from "react-icons/hi";
 import Footer1 from "../../components/_footers/footer1";
 import { jwtDecode } from "jwt-decode";
+import { useSelector } from "react-redux";
 
 function Dashboard() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const [openSubmenu, setOpenSubmenu] = useState(null); // Track open submenu
   const location = useLocation();
   const navigate = useNavigate();
 
+  const workspaceTitle =
+    useSelector((state) => state.workspace.workspace.name) || "Workspace";
+
+  const workspaceEmoji =
+    useSelector((state) => state.workspace.workspace.emoji) || "";
+
   const token = localStorage.getItem("jwt");
-  // const [userData, setUserData] = useState({});
-  var userData;
-  try {
-    userData = jwtDecode(token);
-  } catch (error) {
-    console.error(error);
+  let userData = null;
+  if (token) {
+    try {
+      userData = jwtDecode(token);
+    } catch (error) {
+      console.error("Invalid token:", error);
+    }
   }
-  // console.log("hey", userData);
+
   const loc = location.pathname.split("/").slice(2);
+  console.log("location", loc[0]);
+
+  // const navigationLoc = location.pathname.split("/").slice(2);
+
+  // console.log("location", loc);
+
+  const handleNavigation = (link, workspaceId) => () => {
+    navigate(`/app/workspace/open/${workspaceId}/${link}`);
+  };
+
+  // const onPage = (link) => {
+  //   return location.pathname.endsWith(link);
+  // };
+  const onPage = (link) => location.pathname.includes(link);
+
+  // checking location for whether to open submenu or not depending on which page we are or user is currently at
+
+  // const location
 
   const toggleMobileNav = () => {
     setIsMobileNavOpen(!isMobileNavOpen);
@@ -42,117 +73,182 @@ function Dashboard() {
   };
 
   return (
-    <div className="bg-white text-black min-h-screen flex flex-col items-stretch">
+    <div className="bg-white text-black min-h-screen flex flex-col">
       {/* Top */}
       <div className="bg-gray-200 w-full min-h-screen flex-1 flex flex-col sm:flex-row overflow-x-scroll">
         {/* Sidebar */}
         <div className="bg-white w-full sm:w-64 p-6 shadow-md border-r-2 border-black">
           {/* Logo */}
           <div className="flex items-center justify-between sm:justify-start mb-6">
-            <div
-              className="flex gap-2 text-xs font-bold items-center text-center"
-              title="The app name"
-            >
+            <div className="flex gap-2 text-xs font-bold items-center">
               <img src="/rect19.png" alt="Logo" className="h-12 w-auto" />
               <span>Student Productivity Hub</span>
             </div>
             <button
               onClick={toggleMobileNav}
               className="sm:hidden focus:outline-none text-gray-600"
-              aria-label="Toggle Navigation"
             >
               {isMobileNavOpen ? <HiX size={28} /> : <HiMenu size={28} />}
             </button>
           </div>
           <hr className="hidden md:block h-1/2 rounded-md bg-gray-800" />
+
           {/* Navigation */}
-          <div
-            className={`${
-              isMobileNavOpen ? "block" : "hidden"
-            } sm:block flex flex-col sm:flex-1`}
-          >
-            <div className="flex flex-col space-y-4 my-5">
-              <Link to={"home"}>
-                <div className="flex items-center space-x-2 hover:text-blue-500 cursor-pointer">
-                  <FaHome size={20} />
-                  <span>Home</span>
-                </div>
+          <div className={`${isMobileNavOpen ? "block" : "hidden"} sm:block`}>
+            <div className="flex flex-col space-y-2 my-2">
+              <Link
+                to="home"
+                className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
+                  loc[0] === "home"
+                    ? "font-bold bg-blue-100 text-blue-800 rounded"
+                    : "text-gray-800"
+                }`}
+                onClick={() => setIsMobileNavOpen(false)}
+              >
+                <AiOutlineHome size={20} />
+                <span>Home</span>
               </Link>
-              <Link to={"workspace"}>
-                <div className="flex items-center space-x-2 hover:text-blue-500 cursor-pointer">
-                  <FaTasks size={20} />
-                  <span>Workspace</span>
-                </div>
-              </Link>
-              <Link to={"team"}>
-                <div className="flex items-center space-x-2 hover:text-blue-500 cursor-pointer">
-                  <FaUsers size={20} />
-                  <span>Teams</span>
-                </div>
+
+              {/* Workspace with Submenu */}
+              <div className="flex flex-col space-y-2">
+                <button
+                  className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
+                    loc[0] === "workspace"
+                      ? "font-bold bg-blue-100 text-blue-800 rounded"
+                      : "text-gray-800"
+                  }`}
+                  onClick={() => setIsMobileNavOpen(false)}
+                  // onClick={() => toggleSubmenu("workspace")}
+                >
+                  <Link to="workspace">
+                    <div className="flex items-center space-x-2">
+                      <AiOutlineUnorderedList size={20} />
+                      <span>Workspace</span>
+                    </div>
+                  </Link>
+
+                  {/* {loc[1] === "open" &&
+                    (openSubmenu === "workspace" ? (
+                      <AiOutlineDown />
+                    ) : (
+                      <AiOutlineRight />
+                    ))} */}
+                </button>
+                {loc[1] === "open" && (
+                  <div className="pl-6 mt-2 space-y-2">
+                    {workspaceSubMenus.map((items, index) => (
+                      <div
+                        key={index}
+                        className={`flex items-center py-1 px-3 gap-1  hover:border-blue-500 cursor-pointer ${
+                          onPage(items.link)
+                            ? "border-b-2 border-blue-500 text-black font-bold"
+                            : "text-gray-500 "
+                        }`}
+                        onClick={handleNavigation(items.link, loc[2])}
+                      >
+                        <span className="text-xl">{items.icon}</span>
+                        <p className="text-sm text-nowrap">{items.label}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <Link
+                to="team"
+                className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
+                  loc[0] === "team"
+                    ? "font-bold bg-blue-100 text-blue-800 rounded"
+                    : "text-gray-800"
+                }`}
+                onClick={() => setIsMobileNavOpen(false)}
+              >
+                <AiOutlineTeam size={20} />
+                <span>Teams</span>
               </Link>
             </div>
             <hr />
-            <div className="flex flex-col space-y-4 my-5 text-black">
-              <Link to={"profile"}>
-                <div className="flex items-center space-x-2 hover:text-blue-500 cursor-pointer">
-                  <FaUserCircle size={20} />
-                  <span>Profile</span>
-                </div>
+
+            {/* Profile and Settings */}
+            <div className="flex flex-col space-y-2 my-5">
+              <Link
+                to="profile"
+                className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
+                  loc[0] === "profile"
+                    ? "font-bold bg-blue-100 text-blue-800 rounded"
+                    : "text-gray-800"
+                }`}
+                onClick={() => setIsMobileNavOpen(false)}
+              >
+                <AiOutlineUser size={20} />
+                <span>Profile</span>
               </Link>
-              <Link to={"notification"}>
-                <div className="flex items-center space-x-2 hover:text-blue-500 cursor-pointer">
-                  <FaBell size={20} />
-                  <span>Notification</span>
-                </div>
+              <Link
+                to="notification"
+                className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
+                  loc[0] === "notification"
+                    ? "font-bold bg-blue-100 text-blue-800 rounded"
+                    : "text-gray-800"
+                }`}
+                onClick={() => setIsMobileNavOpen(false)}
+              >
+                <AiOutlineNotification size={20} />
+                <span>Notification</span>
               </Link>
-              <Link to={"setting"}>
-                <div className="flex items-center space-x-2 hover:text-blue-500 cursor-pointer">
-                  <FaCog size={20} />
-                  <span>Setting</span>
-                </div>
+              <Link
+                to="setting"
+                className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
+                  loc[0] === "setting"
+                    ? "font-bold bg-blue-100 text-blue-800 rounded"
+                    : "text-gray-800"
+                }`}
+                onClick={() => setIsMobileNavOpen(false)}
+              >
+                <AiOutlineSetting size={20} />
+                <span>Setting</span>
               </Link>
             </div>
           </div>
         </div>
 
-        {/* Body */}
+        {/* Main Content */}
         <div className="w-full flex flex-col">
-          {/* Top Bar */}
-          {/* <div className="bg-gray-800 w-full p-4 flex items-center justify-between"> */}
           <div className="w-full p-4 flex items-center justify-between bg-white">
-            <div>
+            <div className="flex items-center gap-2">
               <div className="font-bold text-2xl">
-                {loc[0].slice(0, 1).toUpperCase() + loc[0].slice(1)}
+                {loc[0]
+                  ? loc[0].charAt(0).toUpperCase() + loc[0].slice(1)
+                  : "Dashboard"}
               </div>
+              {loc[1] === "open" &&
+                loc[0] === "workspace" &&
+                workspaceTitle &&
+                workspaceEmoji && (
+                  <>
+                    <div className="text-gray-500">|</div>
+                    <div className="text-lg lg:text-2xl md:text-xl text-black flex items-center gap-2">
+                      {workspaceEmoji}
+                      {workspaceTitle}
+                    </div>
+                  </>
+                )}
             </div>
-            {/* Universal Search Bar */}
-            {/* <div className="flex items-center bg-white p-2 rounded-lg w-1/2 shadow-sm">
-              <FaSearch size={20} className="text-gray-500" />
-              <input
-                type="text"
-                placeholder="Search..."
-                className="outline-none ml-2 w-full bg-transparent text-gray-600"
-              />
-            </div> */}
+
             {/* Profile & Logout */}
             <div className="flex dropdown dropdown-end items-center gap-2">
               <strong className="text-black font-bold">
-                {userData.email.split("@")[0]}
+                {userData?.email.split("@")[0]}
               </strong>
               <label tabIndex={0} className="cursor-pointer">
-                <FaUserCircle size={30} className="text-black" />
+                <AiOutlineUser size={30} className="text-black" />
               </label>
-              <ul
-                tabIndex={0}
-                className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 text-white"
-              >
+              <ul className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 text-white">
                 <li>
                   <button
                     className="flex items-center gap-2"
                     onClick={handleLogout}
                   >
-                    {/* <FaBell size={20} /> */}
-                    <FaPowerOff /> Logout
+                    Logout
                   </button>
                 </li>
               </ul>
@@ -160,29 +256,9 @@ function Dashboard() {
           </div>
 
           {/* Main Content */}
-          <div className="flex-1 p-6 bg-white h-2">
-            {/* breadcrumb */}
+          <div className="flex-1 p-6 bg-white">
             <div className="h-full">
-              {/* <div className="breadcrumbs text-sm">
-                <ul>
-                  {loc.map((l) => (
-                    // <Link to={l}>
-                    <li className="flex items-center gap-1 justify-center">
-                      <AiOutlineFolder size={20} />
-                      <a className="font-bold text-xs">
-                        {l.toLocaleUpperCase()}
-                      </a>
-                    </li>
-                    // </Link>
-                  ))}
-                </ul>
-              </div> */}
-              {/* <div className="font-bold text-2xl">
-                {loc[0].slice(0, 1).toUpperCase() + loc[0].slice(1)}
-              </div> */}
-              <div className="h-full">
-                <Outlet />
-              </div>
+              <Outlet />
             </div>
           </div>
         </div>
@@ -197,3 +273,18 @@ function Dashboard() {
 }
 
 export default Dashboard;
+
+const workspaceSubMenus = [
+  { icon: <AiOutlineBlock />, label: "Overview", link: "overview" },
+  // { icon: <AiOutlineBook />, label: "Projects", link: "projects" },
+  { icon: <AiOutlineCheckCircle />, label: "Tasks", link: "tasks" },
+  {
+    icon: <AiOutlineOrderedList />,
+    label: "TO-DO Lists",
+    link: "todo-lists",
+  },
+  { icon: <AiOutlineFileText />, label: "Notes", link: "notes" },
+  { icon: <AiOutlineTeam />, label: "Teams", link: "teams" },
+  { icon: <AiOutlineCalendar />, label: "Study Plan", link: "study-plans" },
+  { icon: <AiOutlineSetting />, label: "Settings", link: "settings" },
+];

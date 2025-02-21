@@ -1,9 +1,12 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const Overview = () => {
   const location2 = useLocation();
-  const workspace = location2.state?.workspace || {};
+  // const workspace = location2.state?.workspace || {};
+  const workspace = useSelector((state) => state.workspace.workspace);
+
   const navigate = useNavigate();
   // const addTask = true;
   const handleCreateNewTask = (id) => {

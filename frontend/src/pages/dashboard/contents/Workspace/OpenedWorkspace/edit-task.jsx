@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useLocation, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const EditTask = (props) => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -14,7 +15,8 @@ const EditTask = (props) => {
   // const taskId = props.taskId;
 
   const location2 = useLocation();
-  const workspace = location2.state?.workspace || {};
+  // const workspace = location2.state?.workspace || {};
+  const workspace = useSelector((state) => state.workspace.workspace);
 
   var userData;
   try {
@@ -36,7 +38,7 @@ const EditTask = (props) => {
 
   const fetchTask = async () => {
     try {
-      console.log("from editing: ", props.taskId);
+      // console.log("from editing: ", props.taskId);
 
       if (props.taskId) {
         const response = await fetch(`${apiURL}/api/tasks/${props.taskId}`, {

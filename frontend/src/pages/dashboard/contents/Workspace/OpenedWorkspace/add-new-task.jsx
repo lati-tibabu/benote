@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { toast, ToastContainer } from "react-toastify";
 
 const AddNewTask = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -11,7 +13,8 @@ const AddNewTask = () => {
   };
 
   const location2 = useLocation();
-  const workspace = location2.state?.workspace || {};
+  // const workspace = location2.state?.workspace || {};
+  const workspace = useSelector((state) => state.workspace.workspace);
 
   var userData;
   try {
@@ -43,6 +46,8 @@ const AddNewTask = () => {
     fetchUsers();
   }, []);
 
+  const navigate = useNavigate();
+
   const createTask = async (e) => {
     e.preventDefault();
     try {
@@ -56,8 +61,21 @@ const AddNewTask = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        alert("Task is created succesfully");
-        window.location.href = `/app/workspace/open/${workspace.id}/tasks`;
+        // alert("Task is created succesfully");
+        toast.success("Task is created successfully");
+        // window.location.href = `/app/workspace/open/${workspace.id}/tasks`;
+        // navigate(`/app/workspace/open/${workspace.id}/tasks`, {
+        //   state: { addedTask: true },
+        // });
+        setTaskData({
+          created_by: userData.id,
+          title: "",
+          description: "",
+          status: "todo",
+          due_date: "",
+          assigned_to: userData.id,
+          workspace_id: workspace.id,
+        });
       }
     } catch (err) {
       console.error("Error creating task: ", err);
@@ -66,7 +84,8 @@ const AddNewTask = () => {
 
   return (
     <div className="w-full flex">
-      <div className="bg-transparent p-4 rounded-md shadow-md lg:w-1/2 w-full mt-10 grow">
+      <ToastContainer />
+      <div className="bg-transparent p-4 rounded-md shadow-md lg:w-1/2 w-full mt-10 grow scrollbar-hide">
         <div className="flex items-center gap-2 font-bold text-lg">
           <p className="text-2xl">📝</p>
           <h1>Add New Task</h1>

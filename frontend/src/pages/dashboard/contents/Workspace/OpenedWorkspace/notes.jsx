@@ -13,6 +13,7 @@ import { AiOutlineMore, AiOutlinePlus } from "react-icons/ai";
 import { useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { toast, ToastContainer } from "react-toastify";
+import { useSelector } from "react-redux";
 
 const Notes = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -24,7 +25,10 @@ const Notes = () => {
 
   // for holding the workspace data that was passed from the previous page
   const location2 = useLocation();
-  const workspace = location2.state?.workspace || {};
+  // const workspace = location2.state?.workspace || {};
+  const workspace = useSelector((state) => state.workspace.workspace);
+
+  // console.log("workspace", workspace);
 
   // for handling the edit mode and preview mode for note editing and viewing
   const [editMode, setEditMode] = useState(true);

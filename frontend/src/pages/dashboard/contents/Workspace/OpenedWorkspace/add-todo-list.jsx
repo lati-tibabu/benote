@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const AddNewTodoList = (props) => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -11,7 +12,8 @@ const AddNewTodoList = (props) => {
   };
 
   const location2 = useLocation();
-  const [workspace, setWorkspace] = useState(location2.state?.workspace || {});
+  // const [workspace, setWorkspace] = useState(location2.state?.workspace || {});
+  const workspace = useSelector((state) => state.workspace.workspace);
   const [addedTodo, setAddedTodo] = useState(false);
 
   var userData;

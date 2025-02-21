@@ -5,6 +5,7 @@ import TodoMinimizedCard from "../../../../../components/_workspaces/todo_minimi
 import AddNewTodoList from "./add-todo-list";
 import { useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { useSelector } from "react-redux";
 // import React from "react";
 
 const TodoLists = () => {
@@ -32,9 +33,10 @@ const TodoLists = () => {
 
   const location2 = useLocation();
   // const workspace = location2.state?.workspace || {};
-  const [workspace, setWorkspace] = useState(location2.state?.workspace || {});
+  // const [workspace, setWorkspace] = useState(location2.state?.workspace || {});
+  const workspace = useSelector((state) => state.workspace.workspace);
 
-  console.table(workspace);
+  // console.log("from redux", workspace);
 
   const [todoList, setTodoList] = useState([]);
   const [todoListDeleted, setTodoListDeleted] = useState(false);

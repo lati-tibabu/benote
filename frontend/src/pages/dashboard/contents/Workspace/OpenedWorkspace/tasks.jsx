@@ -5,6 +5,7 @@ import AddNewTask from "./add-new-task";
 import EditTask from "./edit-task";
 import { useLocation } from "react-router-dom";
 import { Fa500Px, FaWindowMaximize, FaWindowMinimize } from "react-icons/fa";
+import { useSelector } from "react-redux";
 // /import { useReactToPdf } from "react-to-pdf";
 // import { usePDF } from "react-to-pdf";
 
@@ -17,7 +18,10 @@ const Tasks = () => {
   };
 
   const location2 = useLocation();
-  const workspace = location2.state?.workspace || {};
+  // const workspace = location2.state?.workspace || {};
+  const workspace = useSelector((state) => state.workspace.workspace);
+  // console.log("workspace from redux: ", workspace);
+
   const addTask = location2.state?.addTask || false;
 
   const [statusUpdate, setStatusUpdate] = useState(false);
@@ -369,7 +373,13 @@ const Tasks = () => {
         <div className="modal-box bg-white p-4 rounded-md shadow-md w-fit lg:w-1/2 mx-auto mt-10">
           <form method="dialog">
             {/* if there is a button in form, it will close the modal */}
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+            <button
+              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+              onClick={() => {
+                // alert("editin");
+                setStatusUpdate((prev) => !prev);
+              }}
+            >
               ✕
             </button>
           </form>
