@@ -8,6 +8,7 @@ router.use(authMiddleWare.authMiddleware);
 
 router.post('/',  workspaceController.createWorkspace);
 router.get('/', workspaceController.readWorkspaces);
+router.get('/:team_id/team', workspaceController.readWorkspaceOfTeam);
 // assign membership
 router.post('/:id/members', workspaceController.giveUserMembership);
 router.get('/:id', workspaceController.readWorkspace);

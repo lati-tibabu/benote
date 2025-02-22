@@ -92,6 +92,30 @@ const readWorkspaces = async (req, res) => {
     }
 }
 
+const readWorkspaceOfTeam = async (req, res) => {
+    try {
+        const _workspaces = await workspace_membership.findAll({
+            attributes: ['role', 'workspace_id'],
+            where: {
+                user_id: req.user.id,
+            }, 
+            include: [
+                {
+                    model: workspace,
+                    attributes: ['name', 'description', 'emoji', 'owned_by', 'createdAt'],
+                    as: 'workspace',
+                    required: true,
+                    where: {
+                        belongs_to_team: req.params.team_id
+                    }
+                }
+            ]
+        })
+        res.json(_workspaces);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
 
 const readWorkspace = async (req, res) => {
     try {
@@ -142,6 +166,7 @@ const deleteWorkspace = async (req, res) => {
 module.exports = {
     createWorkspace,
     readWorkspaces,
+    readWorkspaceOfTeam,
     readWorkspace,
     giveUserMembership,
     updateWorkspace,
