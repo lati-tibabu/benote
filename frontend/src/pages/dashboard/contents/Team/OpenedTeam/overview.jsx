@@ -1,9 +1,11 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 
 const TeamOverview = () => {
   const location2 = useLocation();
-  const team = location2.state?.team || {};
+  // const team = location2.state?.team || {};
+  const team = useSelector((state) => state.team.team);
   // console.log(team);
 
   // console.log(location2.pathname.split);

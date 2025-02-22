@@ -14,12 +14,16 @@ function Team() {
   const [teams, setTeams] = useState([]);
 
   const getTeams = async () => {
-    const response = await fetch(`${apiURL}/api/teams`, {
-      method: "GET",
-      headers: header,
-    });
-    const data = await response.json();
-    setTeams(data);
+    try {
+      const response = await fetch(`${apiURL}/api/teams`, {
+        method: "GET",
+        headers: header,
+      });
+      const data = await response.json();
+      setTeams(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {

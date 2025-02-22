@@ -9,7 +9,9 @@ import {
   AiOutlineOrderedList,
 } from "react-icons/ai";
 import { FaChevronLeft } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
+import { clearTeam, setTeam } from "../../../../redux/slices/teamReducer";
 
 const TeamOpened = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -19,10 +21,12 @@ const TeamOpened = () => {
     "Content-Type": "application/json",
   };
 
-  const location2 = useLocation();
+  // const location2 = useLocation();
+  const dispatch = useDispatch();
+  const team = useSelector((state) => state.team.team);
 
   const { teamId } = useParams();
-  const [team, setTeam] = useState({});
+  // const [team, setTeam] = useState({});
 
   useEffect(() => {
     if (teamId) {
@@ -42,14 +46,17 @@ const TeamOpened = () => {
         method: "GET",
         headers: header,
       });
+      if (!response.ok) throw new Error("Failed to fetch team");
+
       const data = await response.json();
-      setTeam(data);
+      // setTeam(data);
+      dispatch(setTeam(data));
     } catch (error) {
       console.error("Error fetching the team data", error);
     }
   };
 
-  console.log("This is amazing:", team);
+  // console.log("This is amazing:", team);
 
   const handleTeamDelete = (id) => async () => {
     if (window.confirm("Are you sure you want to delete this team?")) {
@@ -64,6 +71,7 @@ const TeamOpened = () => {
         if (response.ok) {
           alert("Deleted");
           window.location.href = "/app/team";
+          dispatch(clearTeam());
         } else {
           alert("Failed to delete");
         }
