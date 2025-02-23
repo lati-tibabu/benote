@@ -66,7 +66,7 @@ const WorkspaceOpened = () => {
       if (!response.ok) throw new Error("Failed to delete");
 
       alert("Workspace deleted");
-      navigate("/app/workspace");
+      navigate("/app/workspace", { state: { workspaceUpdate: true } });
     } catch (error) {
       console.error("Error deleting workspace:", error);
       alert("Failed to delete workspace");

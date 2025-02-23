@@ -5,13 +5,15 @@ import Picker from "@emoji-mart/react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useLocation, useNavigate } from "react-router-dom";
 
-const AddNew = () => {
+const AddNew = (props) => {
   const apiURL = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("jwt");
   const header = {
     authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
+
+  const teamId = props.teamId;
 
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [emojiText, setEmojiText] = useState("");
@@ -29,12 +31,14 @@ const AddNew = () => {
   //   console.log("This is user id: ", userData.id);
   // }
 
+  console.log("from adding workspace:", teamId);
+
   const [teams, setTeams] = useState();
   const [workspaceData, setWorkspaceData] = useState({
     owned_by: userData.id,
     name: "",
     description: "",
-    belongs_to_team: null,
+    belongs_to_team: teamId ? teamId : null,
   });
 
   const navigate = useNavigate();
@@ -65,7 +69,8 @@ const AddNew = () => {
         headers: header,
       });
       const data = await response.json();
-      console.log(response);
+      console.log(data);
+
       if (response.ok) {
         setWorkspaceLoading(false);
         // console.log(response.body);
@@ -180,29 +185,31 @@ const AddNew = () => {
             )}
           </fieldset>
 
-          <fieldset className="fieldset flex flex-col gap-1">
-            <legend className="fieldset-legend">Teams</legend>
-            <select
-              className="select bg-white dark:bg-black dark:text-white"
-              onChange={(e) =>
-                setWorkspaceData({
-                  ...workspaceData,
-                  belongs_to_team: e.target.value,
-                })
-              }
-            >
-              <option disabled selected>
-                Pick a team
-              </option>
-              {teams &&
-                teams.map((team) => (
-                  <option key={team.team.id} value={team.team.id}>
-                    {team.team.name}
-                  </option>
-                ))}
-            </select>
-            <span className="fieldset-label">Optional</span>
-          </fieldset>
+          {!teamId && (
+            <fieldset className="fieldset flex flex-col gap-1">
+              <legend className="fieldset-legend">Teams</legend>
+              <select
+                className="select bg-white dark:bg-black dark:text-white"
+                onChange={(e) =>
+                  setWorkspaceData({
+                    ...workspaceData,
+                    belongs_to_team: e.target.value,
+                  })
+                }
+              >
+                <option disabled selected>
+                  Pick a team
+                </option>
+                {teams &&
+                  teams.map((team) => (
+                    <option key={team.team.id} value={team.team.id}>
+                      {team.team.name}
+                    </option>
+                  ))}
+              </select>
+              <span className="fieldset-label">Optional</span>
+            </fieldset>
+          )}
 
           {worskapceLoading ? (
             <div>

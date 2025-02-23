@@ -28,12 +28,16 @@ function Workspace() {
       setLoading(false); // Handle loading state even in error
     }
   };
+  const location = useLocation();
+
+  const updateWorkspace = location?.state?.workspaceUpdate || false;
+
+  // console.log(updateWorkspace);
 
   useEffect(() => {
     getWorkspace();
-  }, []);
+  }, [updateWorkspace]);
 
-  const location = useLocation();
   const navigate = useNavigate();
 
   const handleWorkspaceOpen = (workspaceId) => () => {
