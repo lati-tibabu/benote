@@ -103,7 +103,7 @@ const TeamOpened = () => {
 
   return (
     <div className="h-full flex flex-col justify-between rounded-md shadow-sm">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 justify-between">
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -114,10 +114,10 @@ const TeamOpened = () => {
           >
             <FaChevronLeft />
           </button>
-          <span className="flex items-center gap-2">
+          {/* <span className="flex items-center gap-2">
             <h1 className="text-2xl">{team.emoji}</h1>
             <h1 className="text-2xl font-bold">{team.name}</h1>
-          </span>
+          </span> */}
         </div>
         <button>
           <div className="dropdown">
@@ -146,13 +146,13 @@ const TeamOpened = () => {
       <div className="grow flex flex-col">
         {/* sub navigation */}
         <div>
-          <div className="flex items-center gap-4 px-2 pt-2 overflow-scroll">
+          <div className="flex items-center gap-4 px-2 pt-2 overflow-scroll scrollbar-hide">
             {menuItems.map((items, index) => (
               <div
                 key={index}
-                className={`flex items-center py-1 px-3 gap-1 border-b-2 border-transparent hover:border-blue-500 cursor-pointer ${
+                className={`flex items-center py-1 px-3 gap-1  hover:border-blue-500 cursor-pointer ${
                   onPage(items.link)
-                    ? "border-blue-500 text-black font-bold"
+                    ? "border-b-2 border-blue-500 text-black font-bold"
                     : "text-gray-500 "
                 }`}
                 onClick={handleNavigation(items.link)}
@@ -165,7 +165,7 @@ const TeamOpened = () => {
           </div>
         </div>
         {/* actions for sub navigated page like sorting, sharing... */}
-        <div className="flex items-center gap-2 p-2 border-y-1 border-gray-300"></div>
+        {/* <div className="flex items-center gap-2 p-2 border-y-1 border-gray-300"></div> */}
         {/* contents */}
         <div className="grow w-full">
           <Outlet />
