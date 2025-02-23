@@ -29,6 +29,8 @@ function Dashboard() {
   const workspaceTitle =
     useSelector((state) => state.workspace.workspace.name) || "Workspace";
 
+  const teamTitle = useSelector((state) => state.team.team.name) || "Team";
+
   const workspaceEmoji =
     useSelector((state) => state.workspace.workspace.emoji) || "";
 
@@ -43,7 +45,7 @@ function Dashboard() {
   }
 
   const loc = location.pathname.split("/").slice(2);
-  console.log("location", loc[0]);
+  // console.log("location", loc[0]);
 
   // const navigationLoc = location.pathname.split("/").slice(2);
 
@@ -77,7 +79,7 @@ function Dashboard() {
       {/* Top */}
       <div className="bg-gray-200 w-full min-h-screen flex-1 flex flex-col sm:flex-row overflow-x-scroll">
         {/* Sidebar or navigtion bar or column*/}
-        <div className="w-full sm:w-64 p-6 shadow bg-white border-black sm:relative z-10 backdrop-blur-2xl transition-all duration-300">
+        <div className="w-full sm:w-64 p-6 shadow bg-white border-black sm:relative z-10 backdrop-blur-2xl transition-all duration-300 overflow-x-hidden">
           {/* Logo */}
           <div className="flex items-center justify-between sm:justify-start mb-6">
             <div className="flex gap-2 text-xs font-bold items-center">
@@ -134,7 +136,7 @@ function Dashboard() {
                       <AiOutlineRight />
                     ))} */}
                 </button>
-                {loc[1] === "open" && (
+                {loc[1] === "open" && loc[0] === "workspace" && (
                   <div className="pl-6 mt-2 space-y-2">
                     {workspaceSubMenus.map((items, index) => (
                       <div
@@ -234,25 +236,32 @@ function Dashboard() {
 
         {/* Main Content */}
         <div className="w-full flex flex-col overflow-x-hidden">
-          <div className="w-full p-4 flex items-center justify-between bg-white">
+          <div className="w-full p-2 flex items-center justify-between bg-white border-b-1">
             <div className="flex items-center gap-2">
               <div className="font-bold text-2xl">
                 {loc[0]
                   ? loc[0].charAt(0).toUpperCase() + loc[0].slice(1)
                   : "Dashboard"}
               </div>
-              {loc[1] === "open" &&
-                loc[0] === "workspace" &&
-                workspaceTitle &&
-                workspaceEmoji && (
-                  <>
-                    <div className="text-gray-500">|</div>
-                    <div className="text-lg lg:text-2xl md:text-xl text-black flex items-center gap-2 text-nowrap overflow-hidden">
-                      {workspaceEmoji}
-                      {workspaceTitle}
-                    </div>
-                  </>
-                )}
+              {loc[0] === "workspace" &&
+              loc[1] === "open" &&
+              workspaceTitle &&
+              workspaceEmoji ? (
+                <>
+                  <div className="text-gray-500">|</div>
+                  <div className="text-lg lg:text-2xl md:text-xl text-black flex items-center gap-2 text-nowrap overflow-hidden">
+                    {workspaceEmoji}
+                    {workspaceTitle}
+                  </div>
+                </>
+              ) : loc[0] === "team" && loc[1] === "open" && teamTitle ? (
+                <>
+                  <div className="text-gray-500">|</div>
+                  <div className="text-lg lg:text-2xl md:text-xl text-black flex items-center gap-2 text-nowrap overflow-hidden">
+                    {teamTitle}
+                  </div>
+                </>
+              ) : null}
             </div>
 
             {/* Profile & Logout */}
@@ -275,9 +284,8 @@ function Dashboard() {
               </ul>
             </div>
           </div>
-
           {/* Main Content */}
-          <div className="flex-1 p-6 bg-white">
+          <div className="flex-1 p-6 pt-1 bg-white">
             <div className="h-full">
               <Outlet />
             </div>
