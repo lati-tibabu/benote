@@ -1,4 +1,4 @@
-const { note, workspace_membership } = require("../models");
+const { note, workspace_membership, team_membership } = require("../models");
 
 // Create
 const createNote = async (req, res) => {
@@ -12,16 +12,34 @@ const createNote = async (req, res) => {
 
 // Read all
 const readNotes = async (req, res) => {
+
     const userId = req.user.id;
     const workspaceId = req.params.workspace_id;
 
     try {
-        const is_member = await workspace_membership.findOne({
+        const directMembership = await workspace_membership.findOne({
             where: {
                 user_id: userId,
                 workspace_id: workspaceId
             }});
-        if (!is_member) {
+
+        const userTeams = await team_membership.findAll({
+            where: {
+                user_id: userId
+            }, 
+            attributes: ['team_id']
+        })
+
+        const team_membership_array = userTeams.map(team => team.team_id);
+
+        const teamMembership = await workspace_membership.findOne({
+            where: {
+                workspace_id: workspaceId,
+                team_id: team_membership_array.length > 0 && team_membership_array
+            }
+        });
+
+        if (!directMembership && !teamMembership) {
             res.status(403).json('You are not a member of this workspace')
         } else{
             const _notes = await note.findAll(
@@ -60,14 +78,29 @@ const readNote = async (req, res) => {
     const workspaceId = req.params.workspace_id;
 
     try {
-        const is_member = await workspace_membership.findOne({
+        const directMembership = await workspace_membership.findOne({
             where: {
                 user_id: userId,
                 workspace_id: workspaceId
+            }});
+
+        const userTeams = await team_membership.findAll({
+            where: {
+                user_id: userId
+            }, 
+            attributes: ['team_id']
+        })
+
+        const team_membership_array = userTeams.map(team => team.team_id);
+
+        const teamMembership = await workspace_membership.findOne({
+            where: {
+                workspace_id: workspaceId,
+                team_id: team_membership_array.length > 0 && team_membership_array
             }
         });
-        
-        if(!is_member){
+
+        if (!directMembership && !teamMembership) {
             res.status(403).json('You are not a member of this workspace');
         } else{
             const _note = await note.findByPk(req.params.id);
