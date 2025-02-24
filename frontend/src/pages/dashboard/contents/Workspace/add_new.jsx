@@ -4,6 +4,8 @@ import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useLocation, useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify"; // Import toast library
+import "react-toastify/dist/ReactToastify.css"; // Import toast styles
 
 const AddNew = (props) => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -18,72 +20,146 @@ const AddNew = (props) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [emojiText, setEmojiText] = useState("");
   const [worskapceLoading, setWorkspaceLoading] = useState(false);
-
-  var userData;
-  try {
-    userData = jwtDecode(token);
-  } catch (error) {
-    console.error(error);
-  }
-
-  // testing whether user data is loaded
-  // if (userData) {
-  //   console.log("This is user id: ", userData.id);
-  // }
-
-  console.log("from adding workspace:", teamId);
-
-  const [teams, setTeams] = useState();
-  const [workspaceData, setWorkspaceData] = useState({
-    owned_by: userData.id,
-    name: "",
-    description: "",
-    belongs_to_team: teamId ? teamId : null,
-  });
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  // const [teams, setTeams] = useState([]);
 
   const navigate = useNavigate();
 
-  const fetchTeams = async () => {
-    const response = await fetch(`${apiURL}/api/teams`, {
-      headers: header,
-    });
-    const data = await response.json();
-    setTeams(data);
-  };
+  useEffect(() => {
+    const decodeToken = () => {
+      if (token) {
+        try {
+          const decoded = jwtDecode(token);
+          setUserData(decoded);
+        } catch (error) {
+          console.error("Error decoding JWT:", error);
+          toast.error("Invalid token. Please log in again."); // Display error to user
+          // Consider clearing the invalid token from localStorage:
+          localStorage.removeItem("jwt");
+          // Redirect to login page if necessary
+          navigate("/login");
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setLoading(false);
+      }
+    };
+
+    decodeToken();
+  }, [token, navigate]);
+
+  const [workspaceData, setWorkspaceData] = useState({
+    owned_by: null, // Initialize to null
+    name: "",
+    description: "",
+    belongs_to_team: teamId ?? null,
+  });
 
   useEffect(() => {
-    fetchTeams();
-  }, []);
+    // Update owned_by when userData changes (after decoding)
+    setWorkspaceData((prev) => ({
+      ...prev,
+      owned_by: userData?.id ?? null,
+    }));
+  }, [userData]);
+
+  // const fetchTeams = async () => {
+  //   try {
+  //     const response = await fetch(`${apiURL}/api/teams`, {
+  //       headers: header,
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error(`Failed to fetch teams: ${response.status}`);
+  //     }
+
+  //     const data = await response.json();
+  //     setTeams(data);
+  //   } catch (error) {
+  //     console.error("Error fetching teams:", error);
+  //     toast.error("Failed to load teams."); // Display error to user
+  //   }
+  // };
 
   // useEffect(() => {
-  //   console.log(workspaceData);
-  // }, [workspaceData]);
+  //   fetchTeams();
+  // }, []);
 
   const createWorkspace = async (e) => {
     e.preventDefault();
     setWorkspaceLoading(true);
+
+    if (!userData || !userData.id) {
+      toast.error("User data is not available. Please log in again.");
+      setWorkspaceLoading(false);
+      return;
+    }
+
     try {
-      const response = await fetch(`${apiURL}/api/workspaces`, {
+      const workspaceResponse = await fetch(`${apiURL}/api/workspaces`, {
         method: "POST",
         body: JSON.stringify(workspaceData),
         headers: header,
       });
-      const data = await response.json();
-      console.log(data);
 
-      if (response.ok) {
-        setWorkspaceLoading(false);
-        // console.log(response.body);
-        // want to load the response body
+      const workspaceResult = await workspaceResponse.json();
 
-        navigate(`/app/workspace/open/${data.id}`);
-        // window.location.href = "/app/workspace";
-      } else {
-        alert("Error creating workspace");
+      if (!workspaceResponse.ok || !workspaceResult.id) {
+        console.error("Workspace creation failed:", workspaceResult);
+        toast.error(
+          `Workspace creation failed: ${
+            workspaceResult.message || "Unknown error"
+          }`
+        );
         setWorkspaceLoading(false);
+        return;
       }
+
+      const workspaceId = workspaceResult.id;
+
+      if (teamId) {
+        let membershipData = {
+          team_id: teamId || workspaceData.belongs_to_team || null,
+        };
+
+        console.log("Membership data being sent:", membershipData); // Log the data being sent
+
+        const membershipResponse = await fetch(
+          `${apiURL}/api/workspaces/${workspaceId}/members`,
+          {
+            method: "POST",
+            body: JSON.stringify(membershipData),
+            headers: header,
+          }
+        );
+
+        const membershipResult = await membershipResponse.json();
+
+        if (!membershipResponse.ok) {
+          console.error("Membership creation failed:", membershipResult);
+          toast.error(
+            `Failed to create workspace membership: ${
+              membershipResult.message || "Unknown error"
+            }`
+          );
+          throw new Error(
+            `Failed to create workspace membership: ${JSON.stringify(
+              membershipResult
+            )}`
+          );
+        }
+
+        toast.success("Workspace created successfully!");
+      }
+      setWorkspaceLoading(false);
+      navigate(`/app/workspace/open/${workspaceId}`);
     } catch (err) {
-      console.error("Error creating workspace: ", err);
+      console.error("Error creating workspace:", err);
+      toast.error(
+        "An error occurred while creating the workspace.  See console for details."
+      );
       setWorkspaceLoading(false);
     }
   };
@@ -97,11 +173,13 @@ const AddNew = (props) => {
     setShowEmojiPicker(false);
   };
 
-  // useEffect(() => {
-  //   console.log(workspaceData);
-  // });
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="w-full flex">
+      <ToastContainer />
       <div className="bg-transparent p-4 rounded-md shadow-md lg:w-1/2 w-full mt-10 grow">
         <div className="flex items-center gap-2 font-bold text-lg">
           <p className="text-2xl">🗂️</p>
@@ -185,7 +263,8 @@ const AddNew = (props) => {
             )}
           </fieldset>
 
-          {!teamId && (
+          {/* commenting out part that was allowing a user to create a workspace for a team implicitly */}
+          {/* {!teamId && (
             <fieldset className="fieldset flex flex-col gap-1">
               <legend className="fieldset-legend">Teams</legend>
               <select
@@ -193,23 +272,23 @@ const AddNew = (props) => {
                 onChange={(e) =>
                   setWorkspaceData({
                     ...workspaceData,
-                    belongs_to_team: e.target.value,
+                    belongs_to_team:
+                      e.target.value === "" ? null : e.target.value,
                   })
                 }
               >
-                <option disabled selected>
+                <option value="" disabled selected>
                   Pick a team
                 </option>
-                {teams &&
-                  teams.map((team) => (
-                    <option key={team.team.id} value={team.team.id}>
-                      {team.team.name}
-                    </option>
-                  ))}
+                {teams.map((team) => (
+                  <option key={team.team.id} value={team.team.id}>
+                    {team.team.name}
+                  </option>
+                ))}
               </select>
               <span className="fieldset-label">Optional</span>
             </fieldset>
-          )}
+          )} */}
 
           {worskapceLoading ? (
             <div>
@@ -231,7 +310,3 @@ const AddNew = (props) => {
 };
 
 export default AddNew;
-
-// I was trying to create a worskapace with this details, and eventually failed, I wrote the details or the description of the workspace in detail and the length of the description that was to be stored on the database was not that much so I keep the workspace detail here in the folloewing commented lines so when youre testing it try it out, theres my name in the name of the workspace you can change to whatever you want.
-// name: "Lati's Engineering Workspace"
-// description: "I mean Engineering when I say it is all related to software.   This workspace contains tasks, to-dos, notes and other stuffs related to my Engineering journeys. I will use this one to plan projects, to take notes on different topics related to engineering. It will stay private till I decide to publish it public or certain team. So if you are seeing and accessing this workshop it means that at least I have some proved work which can be accessed through this workspace, happy discovering. ✌️"

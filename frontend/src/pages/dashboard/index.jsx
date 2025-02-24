@@ -19,6 +19,8 @@ import { HiMenu, HiX } from "react-icons/hi";
 import Footer1 from "../../components/_footers/footer1";
 import { jwtDecode } from "jwt-decode";
 import { useSelector } from "react-redux";
+// const crypto = require("crypto");
+import { SHA256 } from "crypto-js";
 
 function Dashboard() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -73,6 +75,13 @@ function Dashboard() {
     localStorage.removeItem("jwt_expiration");
     navigate("/auth/login");
   };
+  const email = userData?.email;
+
+  const getGravatarHash = (email) => {
+    return SHA256(email.trim().toLowerCase()).toString();
+  };
+
+  console.log(getGravatarHash(email));
 
   return (
     <div className="bg-white text-black min-h-screen flex flex-col">
@@ -185,6 +194,27 @@ function Dashboard() {
                 <AiOutlineUser size={20} />
                 <span>Profile</span>
               </Link>
+              {/* <div
+                className={`indicator w-full ${
+                  loc[0] === "notification"
+                    ? "font-bold bg-blue-100 text-blue-800 rounded"
+                    : "text-gray-800"
+                }`}
+              >
+                <span className="indicator-item badge badge-primary w-2 h-2"></span>
+                <Link
+                  to="notification"
+                  className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
+                    loc[0] === "notification"
+                      ? "font-bold bg-blue-100 text-blue-800 rounded"
+                      : "text-gray-800"
+                  }`}
+                  onClick={() => setIsMobileNavOpen(false)}
+                >
+                  <AiOutlineNotification size={20} />
+                  <span>Notification</span>
+                </Link>
+              </div> */}
               <Link
                 to="notification"
                 className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
@@ -217,7 +247,13 @@ function Dashboard() {
                   {userData?.email.split("@")[0]}
                 </strong>
                 <label className="cursor-pointer">
+                  //
                   <AiOutlineUser size={30} className="text-black" />
+                  <img
+                    src={`https://gravatar.com/avatar/${getGravatarHash(
+                      email
+                    )}`}
+                  />
                 </label>
               </div>
               <ul className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 text-white">
@@ -268,9 +304,16 @@ function Dashboard() {
             <div className="hidden lg:flex md:flex dropdown dropdown-end items-center gap-2">
               <strong className="text-black font-bold">
                 {userData?.email.split("@")[0]}
+                {/* {userData?.email} */}
               </strong>
               <label tabIndex={0} className="cursor-pointer">
-                <AiOutlineUser size={30} className="text-black" />
+                {/* <AiOutlineUser size={30} className="text-black" /> */}
+                <img
+                  src={`https://gravatar.com/avatar/${getGravatarHash(
+                    email
+                  )}?s=30`}
+                  className="w-30 rounded-full"
+                />
               </label>
               <ul className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 text-white">
                 <li>

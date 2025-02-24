@@ -112,6 +112,7 @@ const Notes = () => {
   const handleChangePreview = () => {
     setPreviewMode((prev) => !prev);
   };
+  console.log("workspace", workspace);
 
   const fetchNotes = async () => {
     try {
@@ -324,6 +325,7 @@ const Notes = () => {
             {notes.length === 0 ? (
               <p>No notes found.</p>
             ) : (
+              notes.length > 0 &&
               notes.map((note) => (
                 <li
                   className={`mb-2 p-2 bg-gray-100 rounded flex justify-between cursor-pointer ${

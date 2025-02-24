@@ -2,6 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import AddNew from "../../Workspace/add_new";
+import SendInvitation from "../invite_user";
 
 const TeamOverview = () => {
   const location2 = useLocation();
@@ -52,7 +53,12 @@ const TeamOverview = () => {
             >
               Create New Workspace
             </button>
-            <button className="p-2 rounded-md btn-secondary bg-gray-200 text-gray-800 outline-none border-none hover:bg-gray-300">
+            <button
+              className="p-2 rounded-md btn-secondary bg-gray-200 text-gray-800 outline-none border-none hover:bg-gray-300"
+              onClick={() =>
+                document.getElementById("invitation_modal").showModal()
+              }
+            >
               Invite User
             </button>
           </div>
@@ -111,6 +117,16 @@ const TeamOverview = () => {
             </button>
           </form>
           <AddNew teamId={team.id} />
+        </div>
+      </dialog>
+      <dialog id="invitation_modal" className="modal overflow-x-scroll">
+        <div className="modal-box bg-white p-4 rounded-md shadow-md sm:w-fit lg:w-1/2 mx-auto mt-10 scrollbar-hide">
+          <form method="dialog">
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+              ✕
+            </button>
+          </form>
+          <SendInvitation teamName={team?.name} teamId={team?.id} />
         </div>
       </dialog>
     </div>
