@@ -6,6 +6,7 @@ const { authMiddleware } = require("../middlewares/authMiddleware");
 
 router.post('/', userControllers.createUser);
 router.get('/', /*authMiddleware,*/ userControllers.readUsers);
+router.post('/email', userControllers.readUserByEmail);
 router.get('/:id', userControllers.readUser);
 router.put('/:id', userControllers.updateUser);
 router.delete('/:id', userControllers.deleteUser);

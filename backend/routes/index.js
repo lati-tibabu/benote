@@ -20,6 +20,7 @@ const noteRoutes = require('./noteRoutes');
 const todoItemRoutes = require('./todoItemRoutes');
 const courseRoutes = require('./courseRoutes');
 const userTeamRoutes = require('./userTeamRoutes');
+const notificationRoutes = require('./notificationRoutes');
 
 const authRoutes = require('./authRoutes');
 const { logoutController } = require("../middlewares/authMiddleware");
@@ -46,6 +47,7 @@ router.use('/notes', noteRoutes);
 router.use('/todoItems', todoItemRoutes);
 router.use('/courses', courseRoutes);
 router.use('/user-team', userTeamRoutes);
+router.use('/notifications', notificationRoutes);
 
 
 router.use('/auth', authRoutes);
