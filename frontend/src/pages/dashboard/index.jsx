@@ -246,13 +246,13 @@ function Dashboard() {
                 <strong className="text-black font-bold" tabIndex={0}>
                   {userData?.email.split("@")[0]}
                 </strong>
-                <label className="cursor-pointer">
-                  //
-                  <AiOutlineUser size={30} className="text-black" />
+                <label tabIndex={0} className="cursor-pointer">
+                  {/* <AiOutlineUser size={30} className="text-black" /> */}
                   <img
                     src={`https://gravatar.com/avatar/${getGravatarHash(
                       email
-                    )}`}
+                    )}?s=30`}
+                    className="w-30 rounded-full"
                   />
                 </label>
               </div>
