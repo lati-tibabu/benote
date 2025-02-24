@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.team_membership, { foreignKey: 'team_id', as: 'memberships' });
       this.hasMany(models.discussion, { foreignKey: 'team_id', as: 'discussions' });
       this.hasMany(models.workspace, { foreignKey: 'belongs_to_team', as: 'workspaces' });
+      this.hasMany(models.workspace_membership, { foreignKey: 'team_id', as: 'workspace_memberships' }); 
     }
   }
   team.init({

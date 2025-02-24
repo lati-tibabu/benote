@@ -27,6 +27,10 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       this.hasMany(models.team, { foreignKey: 'created_by', as: 'team' });
+
+      this.hasMany(models.notification, { foreignKey: 'receiver_id', as: 'receivedNotifications' });
+      this.hasMany(models.notification, { foreignKey: 'sender_id', as: 'sentNotifications' });
+      
       this.hasMany(models.roadmap, { foreignKey: 'created_by', as: 'roadmaps' });
       this.hasMany(models.mindmap, { foreignKey: 'created_by', as: 'mindmaps' });
       this.hasMany(models.classroom, { foreignKey: 'teacher_id', as: 'classrooms' });

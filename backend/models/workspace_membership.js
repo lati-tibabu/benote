@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.belongsTo(models.workspace, { foreignKey: 'workspace_id', as: 'workspace' });
       this.belongsTo(models.user, { foreignKey: 'user_id', as: 'user' });
+      this.belongsTo(models.team, { foreignKey: 'team_id', as: 'team' });
     }
   }
 
@@ -23,14 +24,20 @@ module.exports = (sequelize, DataTypes) => {
     },
     user_id: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
       references: { model: 'users', key: 'id' },
       onDelete: 'CASCADE'
     },
     role: {
       type: DataTypes.ENUM('admin', 'member'),
       defaultValue: 'member'
-    }
+    },
+    team_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: { model: 'teams', key: 'id' },
+      onDelete: 'CASCADE',
+    },
   }, {
     sequelize,
     modelName: 'workspace_membership',

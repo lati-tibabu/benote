@@ -44,7 +44,11 @@ module.exports = (sequelize, DataTypes) => {
     role: {
       type: DataTypes.ENUM('admin', 'member'),
       // defaultValue: 'admin'
-    }
+    },
+    workspaceAccess: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+    }    
   }, {
     sequelize,
     modelName: 'team_membership',
