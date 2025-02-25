@@ -5,6 +5,7 @@ import appRoutes from "./app-routes";
 import infoRoutes from "./info-routes";
 import dashboardRoutes from "./dashboard-routes";
 import adminRoutes from "./admin-routes";
+import publicRoutes from "./public-routes";
 
 const router = createBrowserRouter([
   authRoutes,
@@ -12,6 +13,7 @@ const router = createBrowserRouter([
   infoRoutes,
   dashboardRoutes,
   adminRoutes,
+  publicRoutes,
   {
     path: "*",
     element: <NotFound />,

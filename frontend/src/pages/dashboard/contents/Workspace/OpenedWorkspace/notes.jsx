@@ -238,6 +238,36 @@ const Notes = () => {
     setNoteData({ ...noteData, title: e.target.value });
   };
 
+  const handlePublishNote = async (noteId) => {
+    if (!noteId || !workspace.id) {
+      alert("Invalid note or workspace ID");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${apiURL}/api/notes/${workspace.id}/${noteId}/publish`,
+        {
+          method: "PATCH",
+          headers: header,
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to publish the note");
+      }
+
+      const publicUrl = `${window.location.origin}/public/notes/${noteId}`;
+      alert(`Note published successfully! Access it here: ${publicUrl}`);
+      // open the public note in a new tab
+      window.open(publicUrl, "_blank");
+    } catch (error) {
+      alert(`Error: ${error.message}`);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-white">
       <ToastContainer />
@@ -253,8 +283,14 @@ const Notes = () => {
                 className="outline-none w-fit bg-transparent"
               />
             </span>
-            <button className="btn" onClick={handleSaveChanges}>
+            <button className="btn btn-sm" onClick={handleSaveChanges}>
               Save
+            </button>
+            <button
+              className="btn btn-sm"
+              onClick={() => handlePublishNote(noteData?.id)}
+            >
+              Publish
             </button>
           </div>
         </div>
