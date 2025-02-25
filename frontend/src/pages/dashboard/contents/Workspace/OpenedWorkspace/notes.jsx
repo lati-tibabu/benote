@@ -163,6 +163,7 @@ const Notes = () => {
   useEffect(() => {
     if (selectedNoteId) {
       fetchSelectedNote();
+      console.log(noteData);
     }
   }, [selectedNoteId, noteCreated]);
 
@@ -286,12 +287,16 @@ const Notes = () => {
             <button className="btn btn-sm" onClick={handleSaveChanges}>
               Save
             </button>
-            <button
-              className="btn btn-sm"
-              onClick={() => handlePublishNote(noteData?.id)}
-            >
-              Publish
-            </button>
+            {noteData?.public ? (
+              <p>Published</p>
+            ) : (
+              <button
+                className="btn btn-sm"
+                onClick={() => handlePublishNote(noteData?.id)}
+              >
+                Publish
+              </button>
+            )}
           </div>
         </div>
         {/* viewport manage */}
