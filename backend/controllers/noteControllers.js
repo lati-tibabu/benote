@@ -12,7 +12,6 @@ const createNote = async (req, res) => {
 
 // Read all
 const readNotes = async (req, res) => {
-
     const userId = req.user.id;
     const workspaceId = req.params.workspace_id;
 
@@ -21,41 +20,43 @@ const readNotes = async (req, res) => {
             where: {
                 user_id: userId,
                 workspace_id: workspaceId
-            }});
+            }
+        });
 
         const userTeams = await team_membership.findAll({
             where: {
                 user_id: userId
             }, 
             attributes: ['team_id']
-        })
+        });
 
         const team_membership_array = userTeams.map(team => team.team_id);
 
-        const teamMembership = await workspace_membership.findOne({
-            where: {
-                workspace_id: workspaceId,
-                team_id: team_membership_array.length > 0 && team_membership_array
-            }
-        });
+        const teamMembership = team_membership_array.length > 0
+            ? await workspace_membership.findOne({
+                where: {
+                    workspace_id: workspaceId,
+                    team_id: team_membership_array
+                }
+            })
+            : null; // No team membership if the array is empty
 
         if (!directMembership && !teamMembership) {
-            res.status(403).json('You are not a member of this workspace')
-        } else{
-            const _notes = await note.findAll(
-                {
-                    where: {
-                        workspace_id: workspaceId
-                    },
-                    attributes:['id', 'title']
-                }
-            );
+            res.status(403).json('You are not a member of this workspace');
+        } else {
+            const _notes = await note.findAll({
+                where: {
+                    workspace_id: workspaceId
+                },
+                attributes: ['id', 'title']
+            });
             res.json(_notes);
         }
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
+
 
 // Read one
 const readNote = async (req, res) => {
