@@ -3,7 +3,9 @@ const app = express();
 const sequelize = require('./models').sequelize;
 const routes = require('./routes');
 const cors = require('cors');
+const passport = require('./middlewares/passport');
 
+app.use(passport.initialize());
 app.use(express.json());
 app.use(cors());
 

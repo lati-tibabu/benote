@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 
 function Login() {
   const apiURL = import.meta.env.VITE_API_URL;
-
   const navigate = useNavigate();
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState(false);
   const [loginErrorMessage, setLoginErrorMessage] = useState("");
-
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -38,8 +37,6 @@ function Login() {
         const token = result.token;
         localStorage.setItem("jwt", token);
         localStorage.setItem("jwt_expiration", Date.now() + 60 * 60 * 1000);
-        // console.log(`Login Succesful, ${result.token}`);
-        // console.log("Token is ", localStorage.getItem("jwt"));
         navigate("/app/home");
         setLoginLoading(false);
       } else {
@@ -47,7 +44,6 @@ function Login() {
         setLoginLoading(false);
         setLoginError(true);
         setLoginErrorMessage(result.message);
-        console.log(`Login Unsuccesful, ${result.message}`);
       }
     } catch (error) {
       setLoginLoading(false);
@@ -57,6 +53,39 @@ function Login() {
     }
   };
 
+  // const handleGoogleLoginSuccess = async (response) => { // Remove the async
+  //     try {
+  //         const googleToken = response.credential;
+
+  //         const googleLoginResponse = await fetch(`${apiURL}/api/auth/google`, {
+  //             method: "POST",
+  //             headers: {
+  //                 "Content-Type": "application/json",
+  //             },
+  //             body: JSON.stringify({ token: googleToken }),
+  //         });
+
+  //         if (googleLoginResponse.ok) {
+  //             const result = await googleLoginResponse.json();
+  //             const token = result.token;
+  //             localStorage.setItem("jwt", token);
+  //             localStorage.setItem("jwt_expiration", Date.now() + 60 * 60 * 1000);
+  //             navigate("/app/home");
+  //         } else {
+  //             const result = await googleLoginResponse.json();
+  //             setLoginError(true);
+  //             setLoginErrorMessage(result.message);
+  //         }
+  //     } catch (error) {
+  //         setLoginError(true);
+  //         setLoginErrorMessage("Google login failed");
+  //     }
+  // };
+
+  const redirectToGoogle = () => {
+    window.location.href = `${apiURL}/api/auth/google`; // Redirect the user to the Google OAuth endpoint
+  };
+
   return (
     <div className="m-5 min-w-80">
       <div>
@@ -64,7 +93,7 @@ function Login() {
           <h1 className="text-2xl font-bold">Welcome back!</h1>
           <p className="text-xs">Enter to login to your account</p>
         </div>
-        {/* form */}
+
         <div className="mt-10">
           <form onSubmit={handleLogin} className="flex flex-col gap-2">
             <div className="flex flex-col">
@@ -97,10 +126,6 @@ function Login() {
               />
             </div>
             <div className="flex flex-row gap-10">
-              {/* <div className="flex flex-row gap-1 items-center">
-                <input type="checkbox" id="remember-me" className="bg-white" />
-                <label htmlFor="remember-me">Remember me</label>
-              </div> */}
               <div className="text-sm text-blue-700 cursor-pointer hover:underline">
                 Forgot your password?
               </div>
@@ -120,14 +145,13 @@ function Login() {
               )}
               <hr />
               <p className="text-sm">or login with</p>
-              <div className="flex flex-row justify-center items-center gap-5 border-black border-1 p-2 bg-white cursor-pointer rounded-md shadow-md">
-                <img
-                  src="/google-color-icon.svg"
-                  alt="google-icon"
-                  className="w-6 h-6"
-                />
-                <p>Continue with Google</p>
-              </div>
+
+              <button
+                onClick={redirectToGoogle}
+                className="google-login-button"
+              >
+                Continue with Google
+              </button>
             </div>
           </form>
         </div>
