@@ -81,8 +81,6 @@ function Dashboard() {
     return SHA256(email.trim().toLowerCase()).toString();
   };
 
-  console.log(getGravatarHash(email));
-
   return (
     <div className="bg-white text-black min-h-screen flex flex-col">
       {/* Top */}
