@@ -31,6 +31,7 @@ import Discussions from "../pages/dashboard/contents/Team/OpenedTeam/discussions
 import TeamSettings from "../pages/dashboard/contents/Team/OpenedTeam/settings";
 import Resources from "../pages/dashboard/contents/Team/OpenedTeam/resources";
 import TeamTodoLists from "../pages/dashboard/contents/Team/OpenedTeam/todo-lists";
+import StudyPlanOpened from "../pages/dashboard/contents/Workspace/OpenedWorkspace/study-plan-open";
 
 const dashboardRoutes = {
   path: "/app",
@@ -57,6 +58,10 @@ const dashboardRoutes = {
             {
               path: "study-plans",
               element: <ProtectedRoute component={StudyPlans} />,
+            },
+            {
+              path: "study-plans/plan/:plan_id",
+              element: <ProtectedRoute component={StudyPlanOpened} />,
             },
             { path: "tasks", element: <ProtectedRoute component={Tasks} /> },
             {

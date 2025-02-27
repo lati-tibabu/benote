@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const studyPlanController = require('../controllers/studyPlanControllers');
+const authMiddleware = require('../middlewares/authMiddleware');
+
+router.use(authMiddleware.authMiddleware);
 
 router.post('/', studyPlanController.createStudyPlan);
 router.get('/', studyPlanController.readStudyPlans);

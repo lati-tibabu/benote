@@ -1,4 +1,4 @@
-const { study_plan } = require("../models");
+const { study_plan, user } = require("../models");
 
 // Create
 const createStudyPlan = async (req, res) => {
@@ -13,7 +13,19 @@ const createStudyPlan = async (req, res) => {
 // Read all
 const readStudyPlans = async (req, res) => {
     try {
-        const _studyPlans = await study_plan.findAll();
+        const userId = req.user.id;
+        const _studyPlans = await study_plan.findAll(
+            {
+                where: { user_id: userId },
+                include: [
+                    {
+                        model: user, 
+                        as: 'user',
+                        attributes: ['id', 'name', 'email']
+                    }
+                ]
+            }
+        );
         res.json(_studyPlans);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -53,7 +65,11 @@ const updateStudyPlan = async (req, res) => {
 // Delete
 const deleteStudyPlan = async (req, res) => {
     try {
-        const _studyPlan = await study_plan.findByPk(req.params.id);
+        const userId = req.user.id;
+        const _studyPlan = await study_plan.findOne({
+            where: { id: req.params.id, user_id: userId },
+        });
+        // const _studyPlan = await study_plan.findByPk(req.params.id);
         if (_studyPlan) {
             await _studyPlan.destroy();
             res.json({ message: "Study plan successfully deleted!" });
