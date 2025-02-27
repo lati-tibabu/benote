@@ -4,7 +4,7 @@ const passport = require('passport'); // Ensure passport is required
 const authController = require('../controllers/authController');
 const authRateLimiter = require('../middlewares/authRateLimiter');
 
-router.use(authRateLimiter.authRateLimiter);
+// router.use(authRateLimiter.authRateLimiter);
 router.post('/', authController.loginUser);
 
 // Google OAuth login
