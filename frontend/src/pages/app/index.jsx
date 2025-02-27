@@ -16,7 +16,7 @@ function Home() {
       {/* logo section */}
       <div className="p-4 shadow-sm w-full flex flex-row justify-between items-center">
         <img src="rect19.png" alt="" className="w-14" />
-        <Link to="/auth/login">
+        <Link to="/app/home">
           <button className="btn btn-outline btn-black text-white bg-black hover:bg-gray-700 hover:text-gray-50">
             Get Started
           </button>
@@ -26,7 +26,7 @@ function Home() {
       <div className="h-screen/2 xl:h-fit text-center m-3 flex flex-row">
         <div className="flex-1 flex flex-col justify-center items-center bg-transparent">
           <h1 className="text-4xl font-bold mb-6">Student Productivity Hub</h1>
-          <Link to="/auth/login">
+          <Link to="/app/home">
             <button
               className="btn btn-outline btn-black text-black"
               onMouseEnter={() => setButtonHovered(true)}
