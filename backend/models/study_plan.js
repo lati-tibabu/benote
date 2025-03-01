@@ -11,6 +11,7 @@
       static associate(models) {
         // define association here
         this.hasMany(models.course, { foreignKey: 'study_plan_id', as: 'courses' });
+        this.hasMany(models.time_block, { foreignKey: 'study_plan_id', as: 'timeBlocks' })
         this.belongsTo(models.user, { foreignKey: 'user_id', as: 'user' });
       }
     }

@@ -4,14 +4,13 @@ import { FaTrash } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 
-const apiURL = import.meta.env.VITE_API_URL;
-const token = localStorage.getItem("jwt");
-const header = {
-  authorization: `Bearer ${token}`,
-  "Content-Type": "application/json",
-};
-
 const StudyPlans = () => {
+  const apiURL = import.meta.env.VITE_API_URL;
+  const token = localStorage.getItem("jwt");
+  const header = {
+    authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
   const [studyPlans, setStudyPlans] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({

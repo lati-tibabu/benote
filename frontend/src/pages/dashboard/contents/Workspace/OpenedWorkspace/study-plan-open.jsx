@@ -1,13 +1,321 @@
-import React from "react";
+import { jwtDecode } from "jwt-decode";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 const StudyPlanOpened = () => {
+  const apiURL = import.meta.env.VITE_API_URL;
+  const token = localStorage.getItem("jwt");
+  const header = {
+    authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+
+  const workspace = useSelector((state) => state.workspace.workspace);
+
   const { plan_id } = useParams();
+  const [plan, setPlan] = useState();
+  const [cellSelected, setCellSelected] = useState(false);
+  const [targetCell, setTargetCell] = useState(null);
+  const [userData, setUserData] = useState({});
+  const [timeBlocks, setTimeBlocks] = useState([]);
+  const [timeBlockData, setTimeBlockData] = useState({
+    start_time: "",
+    end_time: "",
+    user_id: "",
+    workspace_id: workspace.id,
+    job: "",
+    description: "This is study plan",
+    study_plan_id: plan_id,
+  });
+  const [openPlanDetails, setOpenPlanDetails] = useState(false);
+  const [selectedPlanId, setSelectedPlanId] = useState(null);
+
+  useEffect(() => {
+    try {
+      const data = jwtDecode(token);
+      setUserData(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [token]);
+
+  const fetchStudyPlan = async (id) => {
+    try {
+      const response = await fetch(`${apiURL}/api/studyPlans/${id}`, {
+        headers: header,
+      });
+      if (!response.ok) {
+        console.log("Error fetching the plans");
+        return;
+      }
+      const data = await response.json();
+      setPlan(data);
+      setTimeBlocks(data.timeBlocks);
+      // console.log(data.timeBlocks);
+    } catch (error) {
+      console.error("Error: ", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchStudyPlan(plan_id);
+  }, [plan_id]);
+
+  const start = new Date(plan?.start_date).getTime();
+  const end = new Date(plan?.end_date).getTime();
+
+  const duration = end - start;
+  const days = duration / 86400000;
+
+  const handlePlanAdd = async (e) => {
+    e.preventDefault();
+    setTimeBlockData({
+      ...timeBlockData,
+      start_time: new Date(targetCell).toISOString(),
+      end_time: new Date(targetCell).toISOString(),
+      user_id: userData.id,
+    });
+
+    try {
+      const response = await fetch(`${apiURL}/api/timeBlocks`, {
+        method: "POST",
+        headers: header,
+        body: JSON.stringify(timeBlockData),
+      });
+      if (!response.ok) {
+        console.log("Error fetching the plans", await response.json());
+        return;
+      }
+      fetchStudyPlan(plan_id);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const [jobEdit, setJobEdit] = useState("");
+
+  const handleOpenPlanDetail = (id, job) => {
+    setSelectedPlanId(id);
+    setOpenPlanDetails(true);
+    setJobEdit(job);
+  };
+
+  const handlePlanEdit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(
+        `${apiURL}/api/timeBlocks/${selectedPlanId}`,
+        {
+          method: "PATCH",
+          headers: header,
+          body: JSON.stringify({ job: jobEdit }),
+        }
+      );
+
+      if (!response.ok) {
+        return alert("error patching the plan");
+      }
+      fetchStudyPlan(plan_id);
+      setOpenPlanDetails(false);
+      alert("Plan updated successfully");
+    } catch (error) {
+      console.error("error patching the plan", error);
+    }
+  };
+
   return (
-    <div>
-      StudyPlanOpened
-      {plan_id}
-    </div>
+    plan && (
+      <div>
+        <div>
+          <button
+            className="text-purple-700 hover:text-purple-900 font-medium mb-2"
+            onClick={() => window.history.back()}
+          >
+            ← Back
+          </button>
+          <h1 className="font-bold text-lg">Study Plan</h1>
+          <div className="flex items-center gap-4 bg-purple-100 p-4 rounded-lg shadow-md">
+            <h1 className="text-lg font-semibold text-purple-700">
+              {plan?.title}
+            </h1>
+            <p className="text-sm text-purple-600">
+              Start:{" "}
+              {new Date(plan?.start_date).toLocaleString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </p>
+            <p className="text-sm text-purple-600">
+              End:{" "}
+              {new Date(plan?.end_date).toLocaleString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </p>
+            <div>{}</div>
+          </div>
+        </div>
+
+        <div>
+          <div className="overflow-x-auto max-h-96 scrollbar-hide">
+            <table className="table border-0 ">
+              {/* calendar table head */}
+              <thead className="sticky top-0 z-10 bg-purple-50">
+                <tr className="text-black">
+                  <th></th>
+                  {[...Array(days)].map((_, index) => (
+                    <th className="sticky left-0 z-10 bg-purple-50">
+                      <div className="flex flex-col">
+                        <span className="font-bold text-lg ">
+                          {new Date(
+                            start + index * 86400000
+                          ).toLocaleDateString("en-US", {
+                            weekday: "long",
+                          })}
+                        </span>
+
+                        <span className="font-light text-sm">
+                          {new Date(
+                            start + index * 86400000
+                          ).toLocaleDateString("en-US", {
+                            day: "2-digit",
+                            month: "long",
+                            year: "numeric",
+                          })}
+                        </span>
+                      </div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              {/* calendar table body */}
+              <tbody className="">
+                {[...Array(24)].map((_, i) => (
+                  <tr key={i} className="border-0">
+                    <td className="p-2 text-center font-medium bg-gray-100 sticky left-0 z-5">
+                      {i}:00
+                    </td>
+
+                    {[...Array(days)].map((_, index) => {
+                      const targetTimestamp = new Date(
+                        start + index * 86400000 + i * 3600000
+                      ).getTime();
+
+                      const timeBlockTimestamps = timeBlocks.map((timeBlock) =>
+                        new Date(timeBlock.start_time).getTime()
+                      );
+
+                      const foundIndex =
+                        timeBlockTimestamps.indexOf(targetTimestamp);
+
+                      const job =
+                        foundIndex !== -1 ? timeBlocks[foundIndex].job : null;
+
+                      const description =
+                        foundIndex !== -1
+                          ? timeBlocks[foundIndex].description
+                          : null;
+
+                      const id =
+                        foundIndex !== -1 ? timeBlocks[foundIndex].id : null;
+
+                      return (
+                        <td
+                          key={index}
+                          className="border-1"
+                          title={targetTimestamp}
+                          onClick={() => {
+                            setCellSelected(true);
+                            setTargetCell(targetTimestamp);
+                          }}
+                        >
+                          {job ? (
+                            openPlanDetails && selectedPlanId === id ? (
+                              <div className="relative w-full">
+                                <form
+                                  onSubmit={handlePlanEdit}
+                                  className="flex items-center gap-2"
+                                >
+                                  <input
+                                    type="text"
+                                    name="job"
+                                    value={jobEdit}
+                                    onChange={(e) => setJobEdit(e.target.value)}
+                                    className="input bg-gray-50 outline-1 ring-1 ring-purple-500 px-2 py-1 rounded-sm text-sm"
+                                  />
+                                  <button
+                                    type="submit"
+                                    className="bg-purple-500 text-white px-3 py-1 rounded-sm text-sm"
+                                  >
+                                    Save
+                                  </button>
+                                </form>
+                                <div className="mt-2 flex justify-between">
+                                  <button
+                                    className="bg-red-500 text-white px-2 py-1 rounded-sm text-sm hover:bg-red-600"
+                                    onClick={() => onDelete(id)}
+                                  >
+                                    Delete
+                                  </button>
+                                  <button
+                                    className="text-gray-500 hover:text-gray-700"
+                                    onClick={() => setOpenPlanDetails(false)}
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div
+                                className="bg-purple-500 text-white px-3 py-1 rounded-sm  text-sm cursor-pointer h-full"
+                                title={description}
+                                onClick={() => handleOpenPlanDetail(id, job)}
+                              >
+                                {job}
+                              </div>
+                            )
+                          ) : (
+                            <div
+                              className="flex items-center justify-center"
+                              // onClick={() => setCellSelected(true)}
+                            >
+                              {cellSelected &&
+                                targetCell === targetTimestamp && (
+                                  <form onSubmit={handlePlanAdd}>
+                                    <input
+                                      type="text"
+                                      name="job"
+                                      onChange={(e) =>
+                                        setTimeBlockData({
+                                          ...timeBlockData,
+                                          job: e.target.value,
+                                        })
+                                      }
+                                      className="input bg-gray-50 outline-1 ring-1 ring-purple-500"
+                                    />
+                                  </form>
+                                )}
+                            </div>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    )
   );
 };
 

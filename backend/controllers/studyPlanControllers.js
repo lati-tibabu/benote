@@ -1,4 +1,4 @@
-const { study_plan, user } = require("../models");
+const { study_plan, user, time_block } = require("../models");
 
 // Create
 const createStudyPlan = async (req, res) => {
@@ -35,7 +35,17 @@ const readStudyPlans = async (req, res) => {
 // Read one
 const readStudyPlan = async (req, res) => {
     try {
-        const _studyPlan = await study_plan.findByPk(req.params.id);
+        const _studyPlan = await study_plan.findOne({
+            where: {
+                id: req.params.id
+            },
+            include: [
+                {
+                    model: time_block,
+                    as: 'timeBlocks'
+                }
+            ]
+        });
         if (_studyPlan) {
             res.json(_studyPlan);
         } else {
