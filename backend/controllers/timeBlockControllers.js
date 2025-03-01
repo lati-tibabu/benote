@@ -1,3 +1,4 @@
+const { where } = require("sequelize");
 const { time_block } = require("../models");
 
 // Create
@@ -32,6 +33,8 @@ const readTimeBlocks = async (req, res) => {
     }
 };
 
+
+
 // Read one
 const readTimeBlock = async (req, res) => {
     try {
@@ -62,6 +65,32 @@ const updateTimeBlock = async (req, res) => {
     }
 };
 
+// patch
+
+const patchTimeBlock = async (req, res) => {
+    try {
+        const _timeBlock = await time_block.findOne({
+            where: {
+                id: req.params.id,
+                user_id: req.user.id
+            }});
+
+        if (_timeBlock) {
+            await _timeBlock.update({
+                job: req.body.job,
+            });
+            const updatedTimeBlock = { ..._timeBlock.get() };
+            res.json(updatedTimeBlock);
+        } else {
+            res.status(404).json({ message: "Time block not found!" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+
 // Delete
 const deleteTimeBlock = async (req, res) => {
     try {
@@ -82,5 +111,6 @@ module.exports = {
     readTimeBlocks,
     readTimeBlock,
     updateTimeBlock,
+    patchTimeBlock,
     deleteTimeBlock,
 };

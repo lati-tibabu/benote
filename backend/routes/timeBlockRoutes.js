@@ -10,6 +10,7 @@ router.post('/', timeBlockController.createTimeBlock);
 router.get('/', timeBlockController.readTimeBlocks);
 router.get('/:id', timeBlockController.readTimeBlock);
 router.put('/:id', timeBlockController.updateTimeBlock);
+router.patch('/:id', timeBlockController.patchTimeBlock);
 router.delete('/:id', timeBlockController.deleteTimeBlock);
 
 module.exports = router;
