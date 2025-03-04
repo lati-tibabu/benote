@@ -354,7 +354,7 @@ const workspaceSubMenus = [
     link: "todo-lists",
   },
   { icon: <AiOutlineFileText />, label: "Notes", link: "notes" },
-  { icon: <AiOutlineTeam />, label: "Teams", link: "teams" },
+  // { icon: <AiOutlineTeam />, label: "Teams", link: "teams" },
   { icon: <AiOutlineCalendar />, label: "Study Plan", link: "study-plans" },
   { icon: <AiOutlineSetting />, label: "Settings", link: "settings" },
 ];

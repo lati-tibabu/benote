@@ -36,7 +36,10 @@ function Login() {
         const result = await response.json();
         const token = result.token;
         localStorage.setItem("jwt", token);
-        localStorage.setItem("jwt_expiration", Date.now() + 60 * 60 * 1000);
+        localStorage.setItem(
+          "jwt_expiration",
+          Date.now() + 30 * 24 * 60 * 60 * 1000
+        );
         navigate("/app/home");
         setLoginLoading(false);
       } else {
@@ -145,13 +148,23 @@ function Login() {
               )}
               <hr />
               <p className="text-sm">or login with</p>
-
-              <button
+              <div
+                className="google-login-button flex flex-row justify-center items-center gap-5 border-black border-1 p-2 bg-white cursor-pointer rounded-md shadow-md"
+                onClick={redirectToGoogle}
+              >
+                <img
+                  src="/google-color-icon.svg"
+                  alt="google-icon"
+                  className="w-6 h-6"
+                />
+                <p>Continue with Google</p>
+              </div>
+              {/* <button
                 onClick={redirectToGoogle}
                 className="google-login-button"
               >
                 Continue with Google
-              </button>
+              </button> */}
             </div>
           </form>
         </div>
