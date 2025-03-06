@@ -326,7 +326,7 @@ function Dashboard() {
             </div>
           </div>
           {/* Main Content */}
-          <div className="flex-1 p-6 pt-1 bg-white">
+          <div className="flex-1 p-1 bg-white">
             <div className="h-full">
               <Outlet />
             </div>
