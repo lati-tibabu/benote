@@ -1,4 +1,4 @@
-const { workspace, workspace_membership, user} = require("../models");
+const { workspace, workspace_membership, team_membership, user} = require("../models");
 const { team } = require("../models");
 
 // Create
@@ -84,9 +84,6 @@ const giveUserMembership = async (req, res) => {
     }
 };
 
-
-
-
 // Read
 const readWorkspaces = async (req, res) => {
     try {
@@ -108,8 +105,8 @@ const readWorkspaces = async (req, res) => {
                 include: [
                     {
                         model: team, 
-                        as: 'team', // This should be aligned with the association name
-                        required: false, // Use `required: true` to ensure workspaces with a team are returned
+                        as: 'team', 
+                        required: false, 
                     },
                     {
                         model: workspace_membership,
@@ -124,14 +121,6 @@ const readWorkspaces = async (req, res) => {
                             }
                         ]
                     }
-                    // {
-                    //     model: user, // Assuming you also want to include the user who created the workspace
-                    //     as: 'user', // This should be aligned with the association name in `workspace`
-                    // },
-                    // {
-                    //     model: task, // If you want to include tasks
-                    //     as: 'tasks', // This should match the `hasMany` association name
-                    // },
                 ],
                 }
             ]
@@ -168,12 +157,45 @@ const readWorkspaceOfTeam = async (req, res) => {
 }
 
 const readWorkspace = async (req, res) => {
+    const userId = req.user.id;
+    const workspaceId = req.params.id;
+
     try {
-        const _workspace = await workspace.findByPk(req.params.id);
-        if (_workspace){
-            res.json(_workspace);
-        } else{
-        res.status(404).json({message: 'Workspace not found!'});
+        // check membership of the user
+        const directMembership = await workspace_membership.findOne({
+            where: {
+                user_id: userId,
+                workspace_id: workspaceId
+            }
+        });
+
+        const userTeams = await team_membership.findAll({
+            where: {
+                user_id: userId
+            },
+            attributes: ['team_id']
+        });
+
+        const team_membership_array = userTeams.map(team => team.team_id);
+
+        const teamMembership = team_membership_array.length > 0
+        ? await workspace_membership.findOne({
+            where: {
+                workspace_id: workspaceId,
+                team_id: team_membership_array
+            }
+        })
+        : null; // No team membership if the array is empty
+
+        if (!directMembership && !teamMembership) {
+            res.status(403).json('You are not a member of this workspace');
+        } else {
+            const _workspace = await workspace.findByPk(workspaceId);
+            if (_workspace){
+                res.json(_workspace);
+            } else{
+            res.status(404).json({message: 'Workspace not found!'});
+            }
         }
     } catch (error) {
         res.status(500).json({message: error.message}); 
@@ -186,6 +208,16 @@ const updateWorkspace = async (req, res) => {
     try {
         const _workspace = await workspace.findByPk(req.params.id);
         if (_workspace){
+            const is_member_and_admin = await workspace_membership.findOne({
+                where: {
+                    workspace_id: req.params.id,
+                    user_id: req.user.id,
+                    role: 'admin'
+                }
+            });
+            if (!is_member_and_admin){
+                return res.status(401).json({message: 'You are not authorized to edit the workspace'});
+            }
             await _workspace.update(req.body)
             const updatedWorkspace = {..._workspace.get()}
             res.json(updatedWorkspace)

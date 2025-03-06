@@ -78,7 +78,7 @@ const WorkspaceOpened = () => {
 
   return (
     <div className="h-full flex flex-col justify-between rounded-md shadow-sm">
-      <div className="flex items-center gap-2 justify-between">
+      {/* <div className="flex items-center gap-2 justify-between">
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -87,12 +87,7 @@ const WorkspaceOpened = () => {
           >
             <FaChevronLeft />
           </button>
-          {/* <span className="flex items-center gap-2">
-            <h1 className="text-2xl">{workspace?.emoji}</h1>
-            <h1 className="text-2xl font-bold">{workspace?.name}</h1>
-          </span> */}
         </div>
-        {/* <button> */}
         <div className="dropdown dropdown-end">
           <div tabIndex={0} role="button" className="m-1">
             <AiOutlineMore size={30} />
@@ -109,9 +104,7 @@ const WorkspaceOpened = () => {
             </li>
           </ul>
         </div>
-
-        {/* </button> */}
-      </div>
+      </div> */}
 
       <div className="grow flex flex-col">
         {/* <div className="bg-gray-100 rounded-md shadow-sm p-2">

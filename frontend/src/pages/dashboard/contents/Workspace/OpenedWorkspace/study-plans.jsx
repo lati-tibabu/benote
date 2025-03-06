@@ -135,7 +135,10 @@ const StudyPlans = () => {
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">Study Plans</h2>
-      <button className="btn btn-primary mb-4" onClick={() => setIsOpen(true)}>
+      <button
+        className="btn btn-soft rounded-full mb-4"
+        onClick={() => setIsOpen(true)}
+      >
         + New Study Plan
       </button>
       <div className="overflow-x-auto">

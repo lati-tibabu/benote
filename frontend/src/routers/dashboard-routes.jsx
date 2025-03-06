@@ -32,6 +32,7 @@ import TeamSettings from "../pages/dashboard/contents/Team/OpenedTeam/settings";
 import Resources from "../pages/dashboard/contents/Team/OpenedTeam/resources";
 import TeamTodoLists from "../pages/dashboard/contents/Team/OpenedTeam/todo-lists";
 import StudyPlanOpened from "../pages/dashboard/contents/Workspace/OpenedWorkspace/study-plan-open";
+import OpenedNote from "../pages/dashboard/contents/Workspace/OpenedWorkspace/Notes/opened-note";
 
 const dashboardRoutes = {
   path: "/app",
@@ -70,6 +71,10 @@ const dashboardRoutes = {
             },
             { path: "teams", element: <ProtectedRoute component={Teams} /> },
             { path: "notes", element: <ProtectedRoute component={Notes} /> },
+            {
+              path: "notes/:note_id",
+              element: <ProtectedRoute component={OpenedNote} />,
+            },
             {
               path: "settings",
               element: <ProtectedRoute component={Settings} />,

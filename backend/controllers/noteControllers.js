@@ -48,7 +48,12 @@ const readNotes = async (req, res) => {
                 where: {
                     workspace_id: workspaceId
                 },
-                attributes: ['id', 'title']
+                attributes: ['id', 'title', 'createdAt', 'updatedAt'],
+                include: [{
+                    model: user,
+                    attributes: ['name'],
+                    as: "user",
+                }]
             });
             res.json(_notes);
         }
