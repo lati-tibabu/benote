@@ -3,12 +3,20 @@ import MarkDown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import CodeHighlighter from "../../../../../../components/_notes/code-highlighter";
 import {
+  FaBook,
   FaBookOpen,
+  FaBookReader,
   FaListUl,
   FaPencilAlt,
   FaRegCopy,
   FaSave,
 } from "react-icons/fa";
+
+import {
+  AiOutlineBook,
+  AiOutlineEdit,
+  AiOutlineFolderView,
+} from "react-icons/ai";
 import { useNavigate, useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { toast, ToastContainer } from "react-toastify";
@@ -160,20 +168,17 @@ const OpenedNote = () => {
     }
   };
 
-  const navigate = useNavigate();
-
   return (
     <div className="flex flex-col h-full bg-white">
       <ToastContainer />
       <div className="flex flex-col md:flex-row lg:flex-row justify-between border-b-1">
         <div className="flex items-center gap-2 justify-between overflow-auto">
           {/* <h1 className="font-bold text-2xl">Notes</h1> */}
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center mb-1 gap-3">
+            {/* <div> */}
             <FaListUl
               className="cursor-pointer"
               onClick={() => {
-                // navigate("notes");
-                // alert("go back");
                 window.history.back();
               }}
             />
@@ -185,31 +190,33 @@ const OpenedNote = () => {
                 className="outline-none w-fit bg-transparent"
               />
             </span>
-            <button className="btn btn-sm" onClick={handleSaveChanges}>
-              <FaSave />
-              Save
-            </button>
-            {noteData?.public ? (
-              <div className="flex items-center p-1 gap-2 border-1 border-gray-400 rounded-full">
-                <p className="text-sm">Published</p>
-                <FaRegCopy
-                  className="cursor-pointer"
-                  title="Copy public URL"
-                  onClick={handleCopy}
-                />
-                <p ref={textRef} className="hidden ">
-                  {/* {publicUrl} */}
-                  {`${window.location.origin}/public/notes/${noteData.id}`}
-                </p>
-              </div>
-            ) : (
-              <button
-                className="btn btn-sm"
-                onClick={() => handlePublishNote(noteData?.id)}
-              >
-                Publish
+            <div className="flex items-center gap-2">
+              <button className="btn btn-sm" onClick={handleSaveChanges}>
+                <FaSave />
+                Save
               </button>
-            )}
+              {noteData?.public ? (
+                <div className="flex items-center p-1 gap-2 border-1 border-gray-400 rounded-full">
+                  <p className="text-sm">Published</p>
+                  <FaRegCopy
+                    className="cursor-pointer"
+                    title="Copy public URL"
+                    onClick={handleCopy}
+                  />
+                  <p ref={textRef} className="hidden ">
+                    {/* {publicUrl} */}
+                    {`${window.location.origin}/public/notes/${noteData.id}`}
+                  </p>
+                </div>
+              ) : (
+                <button
+                  className="btn btn-sm"
+                  onClick={() => handlePublishNote(noteData?.id)}
+                >
+                  Publish
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -221,13 +228,13 @@ const OpenedNote = () => {
               onClick={handleChangeMode}
             >
               {editMode ? (
-                <FaBookOpen
+                <FaBookReader
                   size={24}
                   className="cursor-pointer"
                   title="View Mode "
                 />
               ) : (
-                <FaPencilAlt
+                <AiOutlineEdit
                   size={24}
                   className="cursor-pointer"
                   title="Edit Mode"
@@ -244,8 +251,8 @@ const OpenedNote = () => {
         <div className="flex-1 flex flex-col md:flex-row p-2 gap-3 min-h-full grow w-full">
           {/* editing area */}
           {editMode && (
-            <div className="flex-1 shadow-md p-2 text-wrap">
-              <p className="font-bold bg-black text-white px-2 rounded-t-md">
+            <div className="flex-1 shadow-md p-2 text-wrap border-1 rounded overflow-hidden">
+              <p className="font-bold text-gray-400 px-2 rounded-t-md border-b-2">
                 Editing Area
               </p>
               <textarea
@@ -258,8 +265,8 @@ const OpenedNote = () => {
           )}
           {/* viewing area */}
           {previewMode && (
-            <div className="flex-1 shadow-md p-2 text-wrap overflow-auto">
-              <p className="font-bold bg-black text-white px-2 rounded-t-md">
+            <div className="flex-1 shadow-md p-2 text-wrap overflow-auto border-1 rounded">
+              <p className="font-bold text-gray-400 px-2 rounded-t-md border-b-2">
                 Viewing Area
               </p>
               <div className="flex flex-col gap-4 hover:[&>*]:bg-gray-100 hover:[&>*]:cursor-pointer">

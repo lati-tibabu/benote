@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaFile, FaFileCsv, FaNotesMedical, FaTrash } from "react-icons/fa";
-import { AiOutlineMore, AiOutlinePlus } from "react-icons/ai";
+import { AiOutlineFile, AiOutlineMore, AiOutlinePlus } from "react-icons/ai";
 import { useLocation, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { toast, ToastContainer } from "react-toastify";
@@ -169,7 +169,7 @@ const Notes = () => {
   return (
     <div className="flex flex-col h-full bg-white">
       <ToastContainer />
-      <div className="flex flex-col md:flex-row lg:flex-row justify-between border-b-1 pb-2">
+      <div className="flex flex-row items-center justify-between border-b-1 pb-2">
         <h1 className="font-bold text-2xl">Notes</h1>
         <div className="flex items-center justify-between">
           <button
@@ -207,8 +207,9 @@ const Notes = () => {
                         className="flex items-center gap-1 hover:underline cursor-pointer"
                         onClick={() => selectNote(note.id)}
                       >
-                        <FaFile />
-                        {note.title}
+                        {/* <FaFile  /> */}
+                        <AiOutlineFile size={20} />
+                        <p className="text-nowrap">{note.title}</p>
                       </td>
                       <td>{new Date(note.createdAt).toDateString()}</td>
                       <td>{new Date(note.updatedAt).toDateString()}</td>
