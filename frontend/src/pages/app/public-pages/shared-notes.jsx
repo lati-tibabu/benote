@@ -3,8 +3,9 @@ import { useParams } from "react-router-dom";
 import MarkDown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { FiFileText, FiAlertTriangle } from "react-icons/fi";
-import { FaRegStickyNote } from "react-icons/fa";
+import { FaRegStickyNote, FaUser, FaUserAlt } from "react-icons/fa";
 import CodeHighlighter from "../../../components/_notes/code-highlighter";
+import { AiOutlineUser } from "react-icons/ai";
 
 const SharedNotes = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -34,10 +35,10 @@ const SharedNotes = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 text-gray-800">
       {/* Header */}
-      <header className="flex items-center p-4 bg-white shadow-md fixed w-full top-0 z-10 border-b">
+      <header className="flex items-center p-4 bg-white fixed w-full top-0 z-10 border-b">
         <img src="/rect19.png" alt="Logo" className="w-10 mr-3" />
         <h1 className="text-xl font-semibold flex items-center gap-2">
-          <FiFileText /> Student Productivity Hub
+          <FiFileText /> Notes
         </h1>
       </header>
 
@@ -51,14 +52,20 @@ const SharedNotes = () => {
             </div>
           ) : note ? (
             <div className="flex flex-col gap-4">
-              <h2 className="text-lg font-bold flex items-center gap-2 border-b pb-2">
-                <FaRegStickyNote className="text-blue-500" /> {note.title}
-              </h2>
-              <div className="flex flex-col gap-1">
-                <p className="font-bold text-gray-500">By: {note.user.name}</p>
-                <p className="text-sm text-gray-500">
-                  {new Date(note.createdAt).toDateString()}
-                </p>
+              <div className="border-b-2 p-2">
+                <h2 className="text-lg font-bold flex items-center gap-2 pb-2">
+                  {/* <FaRegStickyNote className="text-gray-500" /> */}
+                  {note.title}
+                </h2>
+                <div className="flex flex-row gap-1 items-center justify-between">
+                  <p className="font-bold text-gray-500 flex items-center gap-2">
+                    <AiOutlineUser />
+                    {note.user.name}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {new Date(note.createdAt).toDateString()}
+                  </p>
+                </div>
               </div>
               <MarkDown
                 remarkPlugins={[remarkGfm]}
