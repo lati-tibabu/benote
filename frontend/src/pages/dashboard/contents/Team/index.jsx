@@ -46,7 +46,8 @@ function Team() {
           {teams.length > 0 && (
             /* Add New team Button */
             <button
-              className="p-1 font-bold hover:underline hover:text-blue-700 flex items-center gap-1"
+              // className="p-1 font-bold hover:underline hover:text-blue-700 flex items-center gap-1"
+              className="btn btn-soft rounded-full mb-2"
               onClick={() => document.getElementById("my_modal_3").showModal()}
             >
               <AiOutlineFolderAdd className="inline-block" />

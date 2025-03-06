@@ -243,7 +243,7 @@ const TodoLists = () => {
       <div className="flex gap-4 justify-between  items-center p-2 border-b-2">
         <h1 className="font-bold text-lg">TO-DO List</h1>
         <div
-          className="flex items-center btn"
+          className="btn btn-soft rounded-full"
           // onClick={() => alert("hey developer, you wanna add a todo list")}
           onClick={() => document.getElementById("my_modal_3").showModal()}
         >
