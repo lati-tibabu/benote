@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
-import { FaFile, FaFileCsv, FaNotesMedical, FaTrash } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import { FaTrash } from "react-icons/fa";
 import { AiOutlineFile, AiOutlineMore, AiOutlinePlus } from "react-icons/ai";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { toast, ToastContainer } from "react-toastify";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setNotes } from "../../../../../redux/slices/notesSlice";
 
 const Notes = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -15,30 +16,17 @@ const Notes = () => {
   };
 
   // const workspace = location2.state?.workspace || {};
-  const workspace = useSelector((state) => state.workspace.workspace);
+  const workspace = useSelector((state) => state.workspace.workspace) || [];
 
-  // console.log("workspace", workspace);
-
-  // for holding the notes data
-  const [notes, setNotes] = useState([]);
+  // const [notes, setNotes] = useState([]);
+  const notes = useSelector((state) => state.notes.notes) || [];
 
   // for holding the currently loggedin user data
   const [userData, setUserData] = useState(null);
 
-  // for holding the selected note data
-
-  // Use a single `noteData` state for title, content, and other note information
-  const [noteData, setNoteData] = useState({
-    title: "",
-    content: "",
-    workspace_id: workspace.id, // Initialize from workspace
-    owned_by: userData?.id, // Initialize from user data
-  });
-
-  // Use separate `noteInput` state to store only the editor content
-  const [noteInput, setNoteInput] = useState("");
-
   const [noteCreated, setNoteCreated] = useState(false);
+
+  const [loading, setLoading] = useState(false);
 
   // storing the logged in user data in the userData
   useEffect(() => {
@@ -52,7 +40,7 @@ const Notes = () => {
 
   // adding new note
   const handleAddNewNote = async () => {
-    const newTitle = "Untitled note " + new Date().getTime();
+    const newTitle = "Untitled note " + new Date().toTimeString();
     const workspaceId = workspace.id;
     const userId = userData.id;
 
@@ -75,6 +63,7 @@ const Notes = () => {
         setNoteCreated((prev) => !prev);
         setNoteData(data);
         setNoteInput(data.content || "");
+        toast.success("Note created succesfully");
       } else {
         // alert("Error creating the note");
         toast.error("Error creating the note");
@@ -85,7 +74,10 @@ const Notes = () => {
     }
   };
 
+  const dispatch = useDispatch();
+  //fetching all notes for the given workspace
   const fetchNotes = async () => {
+    setLoading(true);
     try {
       const response = await fetch(`${apiURL}/api/notes/${workspace.id}`, {
         method: "GET",
@@ -93,50 +85,23 @@ const Notes = () => {
       });
 
       if (!response.ok) {
-        setNotes([]);
+        // setNotes([]);
+        dispatch(setNotes([]));
       }
       const data = await response.json();
-      setNotes(data);
+      dispatch(setNotes(data));
+      // setNotes(data);
     } catch (error) {
       console.error("error happening", error);
+    } finally {
+      setLoading(false);
     }
   };
-
-  // const fetchSelectedNote = async () => {
-  //   try {
-  //     const response = await fetch(
-  //       `${apiURL}/api/notes/${workspace.id}/${selectedNoteId}`,
-  //       {
-  //         method: "GET",
-  //         headers: header,
-  //       }
-  //     );
-
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       setNoteData(data);
-  //       setNoteInput(data.content || "");
-  //     } else {
-  //       alert("Error fetching the note");
-  //       console.log(await response.text());
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
 
   //fetching all notes for the given workspace
   useEffect(() => {
     fetchNotes();
   }, [workspace, noteCreated]);
-
-  //fetching a selected note in detail
-  // useEffect(() => {
-  //   if (selectedNoteId) {
-  //     fetchSelectedNote();
-  //     // console.log(noteData);
-  //   }
-  // }, [selectedNoteId, noteCreated]);
 
   //deleting note
   const handleDeleteNote = async (id) => {
@@ -152,6 +117,7 @@ const Notes = () => {
         }
       }
     } catch (error) {
+      toast.error("Error deleting the note!");
       console.error(error);
     }
   };
@@ -159,18 +125,16 @@ const Notes = () => {
   const navigate = useNavigate();
 
   const selectNote = (id) => {
-    // toast.success(`opening ${id}`);
     navigate(id);
-    // setSelectedNoteId(id);
   };
-
-  console.log(notes);
 
   return (
     <div className="flex flex-col h-full bg-white">
       <ToastContainer />
+
       <div className="flex flex-row items-center justify-between border-b-1 pb-2">
         <h1 className="font-bold text-2xl">Notes</h1>
+
         <div className="flex items-center justify-between">
           <button
             className="btn btn-soft rounded-full"
@@ -183,14 +147,28 @@ const Notes = () => {
 
       <div className="flex flex-col p-2 gap-2">
         {/* list of notes */}
-        <div className="list-none flex flex-col overflow-auto scrollbar-hide">
-          {
-            notes.length === 0 ? (
+        {loading ? (
+          <div className="space-y-4">
+            {[...Array(5)].map((_, index) => (
+              <div
+                key={index}
+                className="animate-pulse flex items-center space-x-4"
+              >
+                <div className="h-6 w-6 bg-gray-300 rounded"></div>
+                <div className="h-6 w-1/3 bg-gray-300 rounded"></div>
+                <div className="h-6 w-1/4 bg-gray-300 rounded"></div>
+                <div className="h-6 w-1/5 bg-gray-300 rounded"></div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="list-none flex flex-col overflow-auto scrollbar-hide">
+            {notes.length === 0 ? (
               <p>No notes found.</p>
             ) : (
               <table className="table">
                 <thead>
-                  <tr>
+                  <tr className="text-black">
                     <th></th>
                     <th>Title</th>
                     <th>Created At</th>
@@ -249,55 +227,9 @@ const Notes = () => {
                   ))}
                 </tbody>
               </table>
-            )
-            // (
-            //   notes.map((note) => (
-            //     <li
-            //       className={`mb-2 p-2 bg-gray-100 rounded flex justify-between cursor-pointer w-fit${
-            //         selectedNoteId === note.id ? "outline outline-blue-500" : ""
-            //       } group`}
-            //       key={note.id}
-            //       onClick={() => selectNote(note.id)}
-            //     >
-            //       <span className="flex items-center gap-2 relative">
-            //         <FaFile />
-            //         {note.title}
-            //       </span>
-            //       <div className="dropdown flex justify-end cursor-pointer">
-            //         <div
-            //           role="button"
-            //           tabIndex={0}
-            //           className="hidden group-hover:flex"
-            //         >
-            //           <AiOutlineMore size={24} />
-            //         </div>
-            //         <div
-            //           role="button"
-            //           tabIndex={0}
-            //           className="flex group-hover:hidden"
-            //         >
-            //           <AiOutlineMore size={24} className="text-transparent" />
-            //         </div>
-            //         <ul
-            //           tabIndex={0}
-            //           className="dropdown-content menu bg-gray-50 rounded z-[1] w-fit p-2 shadow flex flex-col gap-2"
-            //         >
-            //           <div
-            //             className="flex flex-row gap-2 items-center px-3 py-2 hover:bg-gray-100"
-            //             onClick={() => handleDeleteNote(note.id)}
-            //           >
-            //             <div>
-            //               <FaTrash />
-            //             </div>
-            //             <span>Delete</span>
-            //           </div>
-            //         </ul>
-            //       </div>
-            //     </li>
-            //   ))
-            // )
-          }
-        </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
