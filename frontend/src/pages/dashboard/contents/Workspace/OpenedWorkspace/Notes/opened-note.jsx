@@ -304,7 +304,7 @@ const OpenedNote = () => {
                             .charAt(0);
                           return (
                             <p
-                              className={`text-sm ${
+                              className={`${
                                 firstChar === "#"
                                   ? "font-bold bg-blue-200 w-fit p-1 rounded-full text-blue-700"
                                   : ""
