@@ -14,6 +14,7 @@ import {
   AiOutlineOrderedList,
   AiOutlineFileText,
   AiOutlineCalendar,
+  AiFillInfoCircle,
 } from "react-icons/ai";
 import { HiMenu, HiX } from "react-icons/hi";
 import Footer1 from "../../components/_footers/footer1";
@@ -21,6 +22,7 @@ import { jwtDecode } from "jwt-decode";
 import { useSelector } from "react-redux";
 // const crypto = require("crypto");
 import { SHA256 } from "crypto-js";
+import { FaChevronLeft } from "react-icons/fa";
 
 function Dashboard() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -81,17 +83,21 @@ function Dashboard() {
     return SHA256(email.trim().toLowerCase()).toString();
   };
 
+  const handleCollapseBar = () => {
+    alert("Collapsed");
+  };
+
   return (
     <div className="bg-white text-black min-h-screen flex flex-col">
       {/* Top */}
-      <div className="bg-gray-200 w-full min-h-screen flex-1 flex flex-col sm:flex-row overflow-x-scroll">
+      <div className="bg-gray-200 w-full min-h-screen flex-1 flex flex-col sm:flex-row overflow-x-scroll scrollbar-hide">
         {/* Sidebar or navigtion bar or column*/}
-        <div className="w-full sm:w-64 p-6 shadow bg-white border-black sm:relative z-10 backdrop-blur-2xl transition-all duration-300 overflow-x-hidden">
+        <div className="w-full sm:w-64 p-6 shadow bg-white border-black sm:relative z-10 backdrop-blur-2xl transition-all duration-300 overflow-x-hidden scrollbar-hide">
           {/* Logo */}
-          <div className="flex items-center justify-between sm:justify-start mb-6">
+          <div className="flex items-center justify-between mb-3">
             <div className="flex gap-2 text-xs font-bold items-center">
               <img src="/rect19.png" alt="Logo" className="h-12 w-auto" />
-              <span>Student Productivity Hub</span>
+              {/* <span>Student Productivity Hub</span> */}
             </div>
             <button
               onClick={toggleMobileNav}
@@ -99,8 +105,15 @@ function Dashboard() {
             >
               {isMobileNavOpen ? <HiX size={28} /> : <HiMenu size={28} />}
             </button>
+            <div
+              className="p-3 hover:bg-gray-200 rounded-full cursor-pointer"
+              onClick={handleCollapseBar}
+            >
+              <FaChevronLeft />
+            </div>
           </div>
-          <hr className="hidden md:block h-1/2 rounded-md bg-gray-800" />
+
+          {/* <hr className="hidden md:block h-1/2 rounded-md bg-gray-300" /> */}
 
           {/* Navigation */}
           <div className={`${isMobileNavOpen ? "block" : "hidden"} sm:block`}>
@@ -135,13 +148,6 @@ function Dashboard() {
                       <span>Workspace</span>
                     </div>
                   </Link>
-
-                  {/* {loc[1] === "open" &&
-                    (openSubmenu === "workspace" ? (
-                      <AiOutlineDown />
-                    ) : (
-                      <AiOutlineRight />
-                    ))} */}
                 </button>
                 {loc[1] === "open" && loc[0] === "workspace" && (
                   <div className="pl-6 mt-2 space-y-2">
@@ -176,6 +182,7 @@ function Dashboard() {
                 <span>Teams</span>
               </Link>
             </div>
+
             <hr />
 
             {/* Profile and Settings */}
@@ -192,27 +199,6 @@ function Dashboard() {
                 <AiOutlineUser size={20} />
                 <span>Profile</span>
               </Link>
-              {/* <div
-                className={`indicator w-full ${
-                  loc[0] === "notification"
-                    ? "font-bold bg-blue-100 text-blue-800 rounded"
-                    : "text-gray-800"
-                }`}
-              >
-                <span className="indicator-item badge badge-primary w-2 h-2"></span>
-                <Link
-                  to="notification"
-                  className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
-                    loc[0] === "notification"
-                      ? "font-bold bg-blue-100 text-blue-800 rounded"
-                      : "text-gray-800"
-                  }`}
-                  onClick={() => setIsMobileNavOpen(false)}
-                >
-                  <AiOutlineNotification size={20} />
-                  <span>Notification</span>
-                </Link>
-              </div> */}
               <Link
                 to="notification"
                 className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
@@ -239,25 +225,30 @@ function Dashboard() {
               </Link>
             </div>
 
-            <div className="flex lg:hidden md:hidden dropdown dropdown-end items-center gap-2 p-1 rounded shadow-md">
-              <div className="flex flex-row-reverse items-center  gap-2">
-                <strong className="text-black font-bold" tabIndex={0}>
-                  {userData?.email.split("@")[0]}
+            <div className="dropdown dropdown-start w-full hover:bg-gray-200 rounded-md">
+              <div
+                tabIndex={0}
+                role="button"
+                className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-200 shadow-sm cursor-pointer"
+              >
+                <img
+                  src={`https://gravatar.com/avatar/${getGravatarHash(
+                    email
+                  )}?s=40`}
+                  className="w-8 h-8 rounded-full border border-gray-300"
+                  alt="User Avatar"
+                />
+                <strong className="text-black font-semibold text-sm">
+                  {email.split("@")[0]}
                 </strong>
-                <label tabIndex={0} className="cursor-pointer">
-                  {/* <AiOutlineUser size={30} className="text-black" /> */}
-                  <img
-                    src={`https://gravatar.com/avatar/${getGravatarHash(
-                      email
-                    )}?s=30`}
-                    className="w-30 rounded-full"
-                  />
-                </label>
               </div>
-              <ul className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 text-white">
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu bg-base-100 rounded-box shadow-md w-40 p-2"
+              >
                 <li>
                   <button
-                    className="flex items-center gap-2"
+                    className="text-red-500 hover:bg-red-100 p-2 rounded-md"
                     onClick={handleLogout}
                   >
                     Logout
@@ -299,17 +290,15 @@ function Dashboard() {
             </div>
 
             {/* Profile & Logout */}
-            <div className="hidden lg:flex md:flex dropdown dropdown-end items-center gap-2">
+            {/* <div className="hidden lg:flex md:flex dropdown dropdown-end items-center gap-2">
               <strong className="text-black font-bold">
                 {userData?.email.split("@")[0]}
-                {/* {userData?.email} */}
               </strong>
               <label tabIndex={0} className="cursor-pointer">
-                {/* <AiOutlineUser size={30} className="text-black" /> */}
                 <img
                   src={`https://gravatar.com/avatar/${getGravatarHash(
                     email
-                  )}?s=30`}
+                  )}?s=40`}
                   className="w-30 rounded-full"
                 />
               </label>
@@ -323,10 +312,12 @@ function Dashboard() {
                   </button>
                 </li>
               </ul>
-            </div>
+            </div> */}
+            <AiFillInfoCircle size={30} className="cursor-pointer" />
           </div>
+
           {/* Main Content */}
-          <div className="flex-1 p-1 bg-white">
+          <div className="flex-1 p-3 bg-white">
             <div className="h-full">
               <Outlet />
             </div>
@@ -335,8 +326,11 @@ function Dashboard() {
       </div>
 
       {/* Footer */}
-      <div className="bg-white text-white mt-auto border-t-2 border-black">
+      {/* <div className="bg-white text-white mt-auto border-t-2 border-black">
         <Footer1 />
+      </div> */}
+      <div className="w-full text-center mt-5 border-t-1">
+        &copy; 2025 Student Productivity Hub
       </div>
     </div>
   );

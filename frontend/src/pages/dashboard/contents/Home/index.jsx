@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
+import { FaCentercode } from "react-icons/fa6";
 
 const Home = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -11,6 +12,8 @@ const Home = () => {
 
   const [userData, setUserData] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [selectedTimer, setSelectedTimer] = useState();
+  const [countingTimer, setCountingTimer] = useState(selectedTimer);
 
   //fetching currently logged in user id from the jwt token
   useEffect(() => {
@@ -75,60 +78,148 @@ const Home = () => {
     );
   };
 
+  const [time, setTime] = useState(new Date().toLocaleTimeString());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(new Date().toLocaleTimeString());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleTimerSelect = (i) => {
+    setSelectedTimer(i);
+    setCountingTimer(i * 60);
+  };
+
+  // useEffect(() => {
+  //   setCountingTimer(selectedTimer) || setCountingTimer(0);
+  // }, [selectedTimer]);
+
+  useEffect(() => {
+    if (countingTimer <= 0) return;
+
+    const interval = setInterval(() => {
+      setCountingTimer((prevTimer) => prevTimer - 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [countingTimer]);
+
   return (
     <div>
       {/* top */}
-      <div>
-        {/* greeting message */}
-        {/* <div className="p-5 border-l-1 border-t-1 border-b-5 border-r-5 border-black rounded-box w-fit mx-auto"> */}
-        <div className="p-5 w-fit mx-auto mb-5">
-          <span className="text-3xl">
-            Hello, <strong>{userData && userData.name}</strong> good afternoon!
-          </span>
+      <div className="p-6 mx-auto mb-5 h-[50vh] flex flex-col justify-center items-center text-center bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl shadow-lg text-white animate-fadeIn">
+        <span className="text-2xl sm:text-4xl font-semibold">
+          Hello, <strong>{userData && userData.name}</strong> 👋 How are you
+          doing!
+        </span>
+        <span>{time}</span>
+        <div className="mt-4">
+          <p className="font-bold text-3xl uppercase flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M8 7v4l4 2 4-2V7m4 5a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            {new Date().toLocaleDateString("en-US", { weekday: "long" })}
+          </p>
+          <p className="text-lg tracking-wide opacity-90">
+            {new Date().toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </p>
         </div>
       </div>
+
       {/* main */}
       <div className="flex gap-3 justify-between flex-col md:flex-row">
-        {/* Workspaces */}
-
-        <div>
-          <div className="font-bold">Workspaces</div>
+        <div className="h-fit grow flex-1 flex gap-3">
+          {/* Workspaces */}
           <div>
-            <ul className="flex flex-col gap-2 justify-stretch">
-              {workspaces.map((workspace) => (
-                <li>
-                  <div
-                    title={workspace.description}
-                    className="flex gap-2 items-center cursor-default border-1 border-black p-3 rounded-box hover:bg-gray-50 hover:border-r-4 hover:border-b-4 hover:cursor-pointer"
-                  >
-                    {/* icon */}
-                    <div className="text-3xl">{workspace.emoji}</div>
-                    {/* main */}
-                    <div className="border-l-1 pl-3">
-                      {/* name */}
-                      <div>{workspace.name}</div>
-                      {/* creation date */}
-                      <div className="font-bold text-sm">
-                        {workspace.creationDate}
-                      </div>
-                      {/* private or team */}
-                      <div>
-                        {workspace.type.split("-")[0].toLowerCase().trim() ===
-                        "team" ? (
-                          <div className="flex items-center gap-1">
-                            <div className="bg-blue-600 text-white px-1 w-fit text-xs">
-                              {workspace.type.split("-")[0]}
+            <div className="font-bold">Workspaces</div>
+            <div>
+              <ul className="flex flex-col gap-2 justify-stretch">
+                {workspaces.map((workspace) => (
+                  <li key={workspace.id}>
+                    <div
+                      title={workspace.description}
+                      className="flex gap-2 items-center cursor-default border-1 border-black p-3 rounded-box hover:bg-gray-50 hover:border-r-4 hover:border-b-4 hover:cursor-pointer"
+                    >
+                      {/* icon */}
+                      <div className="text-3xl">{workspace.emoji}</div>
+                      {/* main */}
+                      <div className="border-l-1 pl-3">
+                        {/* name */}
+                        <div>{workspace.name}</div>
+                        {/* creation date */}
+                        <div className="font-bold text-sm">
+                          {workspace.creationDate}
+                        </div>
+                        {/* private or team */}
+                        <div>
+                          {workspace.type.split("-")[0].toLowerCase().trim() ===
+                          "team" ? (
+                            <div className="flex items-center gap-1">
+                              <div className="bg-blue-600 text-white px-1 w-fit text-xs">
+                                {workspace.type.split("-")[0]}
+                              </div>
+                              <div className="text-xs hover:underline hover:text-blue-700">
+                                {workspace.type.split("-")[1]}
+                              </div>
                             </div>
-                            <div className="text-xs hover:underline hover:text-blue-700">
-                              {workspace.type.split("-")[1]}
+                          ) : (
+                            <div className="bg-green-600 text-white px-1 w-fit text-xs">
+                              {workspace.type}
                             </div>
-                          </div>
-                        ) : (
-                          <div className="bg-green-600 text-white px-1 w-fit text-xs">
-                            {workspace.type}
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          {/* Today Tasks */}
+          <div>
+            <div className="font-bold">Tasks</div>
+            <ul className="flex flex-col gap-2">
+              {tasks.map((task) => (
+                <li
+                  key={task.id}
+                  title={task.description}
+                  className="flex gap-2 items-center border-1 border-black p-3 rounded-box hover:bg-gray-50 hover:border-r-4 hover:border-b-4 hover:cursor-pointer"
+                >
+                  {/* Emoji */}
+                  <div className="text-3xl">{task.emoji}</div>
+                  {/* Main Content */}
+                  <div className="border-l-1 pl-3">
+                    {/* Task Title */}
+                    <div>{task.title}</div>
+                    {/* Due Date */}
+                    <div className="font-bold text-sm">{task.dueDate}</div>
+                    {/* Status */}
+                    <div
+                      className={`text-xs px-1 w-fit ${
+                        task.status === "done"
+                          ? "bg-green-600 text-white"
+                          : "bg-red-600 text-white"
+                      }`}
+                    >
+                      {task.status === "done" ? "Completed" : "Pending"}
                     </div>
                   </div>
                 </li>
@@ -136,42 +227,9 @@ const Home = () => {
             </ul>
           </div>
         </div>
-        {/* Today Tasks */}
-        <div>
-          <div className="font-bold">Tasks</div>
-          <ul className="flex flex-col gap-2">
-            {tasks.map((task) => (
-              <li
-                key={task.title}
-                title={task.description}
-                className="flex gap-2 items-center border-1 border-black p-3 rounded-box hover:bg-gray-50 hover:border-r-4 hover:border-b-4 hover:cursor-pointer"
-              >
-                {/* Emoji */}
-                <div className="text-3xl">{task.emoji}</div>
-                {/* Main Content */}
-                <div className="border-l-1 pl-3">
-                  {/* Task Title */}
-                  <div>{task.title}</div>
-                  {/* Due Date */}
-                  <div className="font-bold text-sm">{task.dueDate}</div>
-                  {/* Status */}
-                  <div
-                    className={`text-xs px-1 w-fit ${
-                      task.status === "done"
-                        ? "bg-green-600 text-white"
-                        : "bg-red-600 text-white"
-                    }`}
-                  >
-                    {task.status === "done" ? "Completed" : "Pending"}
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
 
         {/* Daily to do */}
-        <div className="h-fit ">
+        {/* <div className="h-fit ">
           <div className="font-bold">Daily To Do</div>
           <div className="cursor-default border-1 border-black p-3 rounded-box hover:bg-gray-50 hover:border-r-4 hover:border-b-4 hover:cursor-pointer">
             <div className="text-3xl relative bottom-8 text-center">📌</div>
@@ -196,103 +254,11 @@ const Home = () => {
                 </li>
               ))}
             </ul>
-
-            {/* <ul>
-              <li className="flex items-center gap-2">
-                <div className="w-5 h-5 border-2 border-black rounded-full flex items-center justify-center peer">
-                  <input
-                    type="checkbox"
-                    className="h-5 w-5 rounded-3xl checkbox border-black border-2 "
-                    size={10}
-                    name=""
-                    id=""
-                    onChange={() => {
-                      setChecked(!checked);
-                    }}
-                  />
-                </div>
-                <span className={`${checked ? "line-through" : ""}`}>
-                  Buy Groceries
-                </span>
-              </li>
-
-              <li className="flex items-center gap-2">
-                <div className="w-5 h-5 border-2 border-black rounded-full flex items-center justify-center peer">
-                  <input
-                    type="checkbox"
-                    className="h-5 w-5 rounded-3xl checkbox border-black border-2 "
-                    size={10}
-                    name=""
-                    id=""
-                    onChange={() => {
-                      setChecked(!checked);
-                    }}
-                  />
-                </div>
-                <span className={`${checked ? "line-through" : ""}`}>
-                  Finish Homework
-                </span>
-              </li>
-
-              <li className="flex items-center gap-2">
-                <div className="w-5 h-5 border-2 border-black rounded-full flex items-center justify-center peer">
-                  <input
-                    type="checkbox"
-                    className="h-5 w-5 rounded-3xl checkbox border-black border-2 "
-                    size={10}
-                    name=""
-                    id=""
-                    onChange={() => {
-                      setChecked(!checked);
-                    }}
-                  />
-                </div>
-                <span className={`${checked ? "line-through" : ""}`}>
-                  Clean the Room
-                </span>
-              </li>
-
-              <li className="flex items-center gap-2">
-                <div className="w-5 h-5 border-2 border-black rounded-full flex items-center justify-center peer">
-                  <input
-                    type="checkbox"
-                    className="h-5 w-5 rounded-3xl checkbox border-black border-2 "
-                    size={10}
-                    name=""
-                    id=""
-                    onChange={() => {
-                      setChecked(!checked);
-                    }}
-                  />
-                </div>
-                <span className={`${checked ? "line-through" : ""}`}>
-                  Prepare for Meeting
-                </span>
-              </li>
-
-              <li className="flex items-center gap-2">
-                <div className="w-5 h-5 border-2 border-black rounded-full flex items-center justify-center peer">
-                  <input
-                    type="checkbox"
-                    className="h-5 w-5 rounded-3xl checkbox border-black border-2 "
-                    size={10}
-                    name=""
-                    id=""
-                    onChange={() => {
-                      setChecked(!checked);
-                    }}
-                  />
-                </div>
-                <span className={`${checked ? "line-through" : ""}`}>
-                  Go for a Walk
-                </span>
-              </li>
-            </ul> */}
           </div>
-        </div>
+        </div> */}
 
         {/* Teams */}
-        <div>
+        {/* <div>
           <div className="font-bold">Teams</div>
           <ul className="flex flex-col gap-2">
             {teams.map((team) => (
@@ -301,15 +267,13 @@ const Home = () => {
                 title={team.description}
                 className="flex gap-2 items-center border-1 border-black p-3 rounded-box hover:bg-gray-50 hover:border-r-4 hover:border-b-4 hover:cursor-pointer"
               >
-                {/* Emoji */}
                 <div className="text-3xl">{team.emoji}</div>
-                {/* Main Content */}
+
                 <div className="border-l-1 pl-3">
-                  {/* Team Name */}
                   <div>{team.name}</div>
-                  {/* Creation Date */}
+
                   <div className="font-bold text-sm">{team.creationDate}</div>
-                  {/* Members */}
+
                   <div className="text-xs bg-blue-600 text-white px-1 w-fit">
                     {team.members} Members
                   </div>
@@ -317,6 +281,45 @@ const Home = () => {
               </li>
             ))}
           </ul>
+        </div> */}
+        <div className="grow flex-1 p-4 flex flex-col items-center">
+          <div className="mb-4 flex items-center gap-3">
+            <FaCentercode size={30} className="text-blue-500" />
+            <span className="font-bold text-lg">Focus</span>
+          </div>
+
+          <div className="border p-4 rounded-lg bg-white shadow-md w-full max-w-md flex flex-col items-stretch">
+            {/* Time Preset Buttons */}
+            <div className="p-2 flex mb-4 items-center justify-between shadow bg-gray-100 rounded-lg">
+              <div className="flex gap-2">
+                {timerArray.map((item, index) => (
+                  <div
+                    className={`border-2 p-1 text-sm rounded-md font-bold cursor-pointer transition-all duration-100 ${
+                      selectedTimer === item
+                        ? "border-blue-600 bg-blue-100"
+                        : "border-gray-300 "
+                    }`}
+                    key={index}
+                    onClick={() => handleTimerSelect(item)}
+                  >
+                    {item >= 60 ? `${item / 60} hr` : `${item} Min`}
+                  </div>
+                ))}
+              </div>
+              <div className="border-1 border-black p-1 text-sm rounded-md font-bold cursor-pointer">
+                Set Custom
+              </div>
+            </div>
+
+            {/* Timer Circle Placeholder */}
+            <div className="flex items-center justify-center text-5xl font-black">
+              00:00:00
+              {selectedTimer * 60}
+            </div>
+
+            {/* Play/Pause Button */}
+            {/* <button className="btn btn-primary mt-4"></button> */}
+          </div>
         </div>
       </div>
     </div>
@@ -367,7 +370,6 @@ const workspaces = [
       "Used for managing volunteer schedules, tasks, and events for community service initiatives.",
   },
 ];
-
 const tasks = [
   {
     emoji: "🛒",
@@ -446,3 +448,5 @@ const teams = [
       "A team of artists and designers collaborating on creative projects.",
   },
 ];
+
+const timerArray = [5, 10, 15, 30, 60];
