@@ -6,6 +6,8 @@ import {
   FaBook,
   FaBookOpen,
   FaBookReader,
+  FaCheck,
+  FaCloud,
   FaListUl,
   FaPencilAlt,
   FaRegCopy,
@@ -14,6 +16,7 @@ import {
 
 import {
   AiOutlineBook,
+  AiOutlineCloud,
   AiOutlineEdit,
   AiOutlineFolderView,
 } from "react-icons/ai";
@@ -21,6 +24,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { toast, ToastContainer } from "react-toastify";
 import { useSelector } from "react-redux";
+import { debounce } from "lodash";
 
 const OpenedNote = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -55,6 +59,7 @@ const OpenedNote = () => {
   const [noteInput, setNoteInput] = useState("");
 
   const [loading, setLoading] = useState(false);
+  const [autoSaving, setAutoSaving] = useState(false);
 
   // storing the logged in user data in the userData
   useEffect(() => {
@@ -107,6 +112,8 @@ const OpenedNote = () => {
   }, [note_id]);
 
   const handleSaveChanges = async () => {
+    setAutoSaving(true);
+
     const dataToSave = {
       ...noteData,
       content: noteInput,
@@ -127,8 +134,20 @@ const OpenedNote = () => {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setAutoSaving(false);
     }
   };
+
+  //// Debounce function with 3-second delay
+  // const debouncedNoteSave = debounce(handleSaveChanges, 3000);
+
+  // // Effect to trigger save when the note changes
+  // useEffect(() => {
+  //   if (noteInput) {
+  //     debouncedNoteSave();
+  //   }
+  // }, [noteInput]);
 
   const handleTitleChange = (e) => {
     setNoteData({ ...noteData, title: e.target.value });
@@ -210,6 +229,18 @@ const OpenedNote = () => {
                   />
                 </span>
                 <div className="flex items-center gap-2">
+                  <div className="relative p-1 flex items-center justify-center">
+                    <div>
+                      <FaCloud size={30} />
+                    </div>
+                    {autoSaving ? (
+                      <span className="absolute z-10 loading spinner text-gray-200 text-xs"></span>
+                    ) : (
+                      <span className="absolute z-10 text-gray-200 text-md">
+                        <FaCheck />
+                      </span>
+                    )}
+                  </div>
                   <button className="btn btn-sm" onClick={handleSaveChanges}>
                     <FaSave />
                     Save

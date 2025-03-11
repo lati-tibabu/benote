@@ -15,6 +15,7 @@ import {
   AiOutlineFileText,
   AiOutlineCalendar,
   AiFillInfoCircle,
+  AiOutlinePoweroff,
 } from "react-icons/ai";
 import { HiMenu, HiX } from "react-icons/hi";
 import Footer1 from "../../components/_footers/footer1";
@@ -22,7 +23,7 @@ import { jwtDecode } from "jwt-decode";
 import { useSelector } from "react-redux";
 // const crypto = require("crypto");
 import { SHA256 } from "crypto-js";
-import { FaChevronLeft } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 function Dashboard() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -49,6 +50,9 @@ function Dashboard() {
   }
 
   const loc = location.pathname.split("/").slice(2);
+
+  const [collapsedNav, setCollapsedBar] = useState(false);
+
   // console.log("location", loc[0]);
 
   // const navigationLoc = location.pathname.split("/").slice(2);
@@ -84,7 +88,8 @@ function Dashboard() {
   };
 
   const handleCollapseBar = () => {
-    alert("Collapsed");
+    // alert("Collapsed");
+    setCollapsedBar((prev) => !prev);
   };
 
   return (
@@ -92,7 +97,11 @@ function Dashboard() {
       {/* Top */}
       <div className="bg-gray-200 w-full min-h-screen flex-1 flex flex-col sm:flex-row overflow-x-scroll scrollbar-hide">
         {/* Sidebar or navigtion bar or column*/}
-        <div className="w-full sm:w-64 p-6 shadow bg-white border-black sm:relative z-10 backdrop-blur-2xl transition-all duration-300 overflow-x-hidden scrollbar-hide">
+        <div
+          className={`w-full ${
+            collapsedNav ? "sm:w-20" : "sm:w-64"
+          } p-6 shadow bg-white border-black sm:relative z-10 backdrop-blur-2xl transition-all duration-300 overflow-x-hidden scrollbar-hide`}
+        >
           {/* Logo */}
           <div className="flex items-center justify-between mb-3">
             <div className="flex gap-2 text-xs font-bold items-center">
@@ -106,10 +115,10 @@ function Dashboard() {
               {isMobileNavOpen ? <HiX size={28} /> : <HiMenu size={28} />}
             </button>
             <div
-              className="p-3 hover:bg-gray-200 rounded-full cursor-pointer"
+              className="hidden sm:block p-3 hover:bg-gray-200 rounded-full cursor-pointer"
               onClick={handleCollapseBar}
             >
-              <FaChevronLeft />
+              {collapsedNav ? <FaChevronRight /> : <FaChevronLeft />}
             </div>
           </div>
 
@@ -126,9 +135,10 @@ function Dashboard() {
                     : "text-gray-800"
                 }`}
                 onClick={() => setIsMobileNavOpen(false)}
+                title="Home"
               >
                 <AiOutlineHome size={20} />
-                <span>Home</span>
+                {!collapsedNav && <span>Home</span>}
               </Link>
 
               {/* Workspace with Submenu */}
@@ -142,27 +152,38 @@ function Dashboard() {
                   onClick={() => setIsMobileNavOpen(false)}
                   // onClick={() => toggleSubmenu("workspace")}
                 >
-                  <Link to="workspace">
+                  <Link to="workspace" title="Workspace">
                     <div className="flex items-center space-x-2">
                       <AiOutlineUnorderedList size={20} />
-                      <span>Workspace</span>
+                      {!collapsedNav && <span>Workspace</span>}
                     </div>
                   </Link>
                 </button>
+
                 {loc[1] === "open" && loc[0] === "workspace" && (
-                  <div className="pl-6 mt-2 space-y-2">
+                  <div
+                    className={`${
+                      collapsedNav ? "p-1 border-1 rounded bg-gray-100" : "pl-6"
+                    } mt-2 space-y-2`}
+                    onClick={() => setIsMobileNavOpen(false)}
+                  >
                     {workspaceSubMenus.map((items, index) => (
                       <div
                         key={index}
-                        className={`flex items-center py-1 px-3 gap-1  hover:border-blue-500 cursor-pointer ${
+                        className={`flex items-center py-1 ${
+                          !collapsedNav && "px-3"
+                        } gap-1  hover:border-blue-500 cursor-pointer ${
                           onPage(items.link)
                             ? "border-b-2 border-blue-500 text-black font-bold"
                             : "text-gray-900 "
                         }`}
                         onClick={handleNavigation(items.link, loc[2])}
+                        title={items.label}
                       >
                         <span className="text-xl">{items.icon}</span>
-                        <p className="text-sm text-nowrap">{items.label}</p>
+                        {!collapsedNav && (
+                          <p className="text-sm text-nowrap">{items.label}</p>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -177,9 +198,10 @@ function Dashboard() {
                     : "text-gray-800"
                 }`}
                 onClick={() => setIsMobileNavOpen(false)}
+                title="Teams"
               >
                 <AiOutlineTeam size={20} />
-                <span>Teams</span>
+                {!collapsedNav && <span>Teams</span>}
               </Link>
             </div>
 
@@ -195,9 +217,10 @@ function Dashboard() {
                     : "text-gray-800"
                 }`}
                 onClick={() => setIsMobileNavOpen(false)}
+                title="Profile"
               >
                 <AiOutlineUser size={20} />
-                <span>Profile</span>
+                {!collapsedNav && <span>Profile</span>}
               </Link>
               <Link
                 to="notification"
@@ -207,9 +230,10 @@ function Dashboard() {
                     : "text-gray-800"
                 }`}
                 onClick={() => setIsMobileNavOpen(false)}
+                title="Notification"
               >
                 <AiOutlineNotification size={20} />
-                <span>Notification</span>
+                {!collapsedNav && <span>Notification</span>}
               </Link>
               <Link
                 to="setting"
@@ -219,13 +243,14 @@ function Dashboard() {
                     : "text-gray-800"
                 }`}
                 onClick={() => setIsMobileNavOpen(false)}
+                title="Setting"
               >
                 <AiOutlineSetting size={20} />
-                <span>Setting</span>
+                {!collapsedNav && <span>Setting</span>}
               </Link>
             </div>
 
-            <div className="dropdown dropdown-start w-full hover:bg-gray-200 rounded-md">
+            <div className="dropdown dropdown-start min-w-max hover:bg-gray-200 rounded-md">
               <div
                 tabIndex={0}
                 role="button"
@@ -238,20 +263,23 @@ function Dashboard() {
                   className="w-8 h-8 rounded-full border border-gray-300"
                   alt="User Avatar"
                 />
-                <strong className="text-black font-semibold text-sm">
-                  {email.split("@")[0]}
-                </strong>
+                {!collapsedNav && (
+                  <strong className="text-black font-semibold text-sm">
+                    {email.split("@")[0]}
+                  </strong>
+                )}
               </div>
               <ul
                 tabIndex={0}
-                className="dropdown-content menu bg-base-100 rounded-box shadow-md w-40 p-2"
+                className="z-10 dropdown-content menu border rounded-box shadow-md w-fit p-2"
               >
                 <li>
                   <button
-                    className="text-red-500 hover:bg-red-100 p-2 rounded-md"
+                    className="text-red-500 hover:bg-red-100 p-2 rounded-md text-sm"
                     onClick={handleLogout}
+                    title="Logout"
                   >
-                    Logout
+                    <AiOutlinePoweroff />
                   </button>
                 </li>
               </ul>
@@ -288,31 +316,6 @@ function Dashboard() {
                 </>
               ) : null}
             </div>
-
-            {/* Profile & Logout */}
-            {/* <div className="hidden lg:flex md:flex dropdown dropdown-end items-center gap-2">
-              <strong className="text-black font-bold">
-                {userData?.email.split("@")[0]}
-              </strong>
-              <label tabIndex={0} className="cursor-pointer">
-                <img
-                  src={`https://gravatar.com/avatar/${getGravatarHash(
-                    email
-                  )}?s=40`}
-                  className="w-30 rounded-full"
-                />
-              </label>
-              <ul className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 text-white">
-                <li>
-                  <button
-                    className="flex items-center gap-2"
-                    onClick={handleLogout}
-                  >
-                    Logout
-                  </button>
-                </li>
-              </ul>
-            </div> */}
             <AiFillInfoCircle size={30} className="cursor-pointer" />
           </div>
 
