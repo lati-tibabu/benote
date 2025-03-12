@@ -149,7 +149,7 @@ function Login() {
               <hr />
               <p className="text-sm">or login with</p>
               <div
-                className="google-login-button flex flex-row justify-center items-center gap-5 border-black border-1 p-2 bg-white cursor-pointer rounded-md shadow-md"
+                className="google-login-button flex flex-row justify-center items-center gap-5 border-black p-2 bg-white cursor-pointer rounded-md shadow-lg select-none"
                 onClick={redirectToGoogle}
               >
                 <img
