@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import { FaCentercode } from "react-icons/fa6";
+
+import PomodoroFocus from "./contents/pomodoro-focus";
+import { AiOutlineClockCircle } from "react-icons/ai";
 
 const Home = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -12,8 +14,8 @@ const Home = () => {
 
   const [userData, setUserData] = useState(null);
   const [userId, setUserId] = useState(null);
-  const [selectedTimer, setSelectedTimer] = useState();
-  const [countingTimer, setCountingTimer] = useState(selectedTimer);
+  // const [selectedTimer, setSelectedTimer] = useState();
+  // const [countingTimer, setCountingTimer] = useState(selectedTimer);
 
   //fetching currently logged in user id from the jwt token
   useEffect(() => {
@@ -87,26 +89,6 @@ const Home = () => {
 
     return () => clearInterval(interval);
   }, []);
-
-  const handleTimerSelect = (i) => {
-    setSelectedTimer(i);
-    setCountingTimer(i * 60);
-  };
-
-  // useEffect(() => {
-  //   setCountingTimer(selectedTimer) || setCountingTimer(0);
-  // }, [selectedTimer]);
-
-  useEffect(() => {
-    if (countingTimer <= 0) return;
-
-    const interval = setInterval(() => {
-      setCountingTimer((prevTimer) => prevTimer - 1);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [countingTimer]);
-
   return (
     <div>
       {/* top */}
@@ -145,11 +127,14 @@ const Home = () => {
       </div>
 
       {/* main */}
-      <div className="flex gap-3 justify-between flex-col md:flex-row">
-        <div className="h-fit grow flex-1 flex gap-3">
+      <div className="flex gap-3 justify-between flex-col md:flex-row p-2">
+        <div className="h-fit grow flex-1 flex gap-3 overflow-x-auto border-x-1">
           {/* Workspaces */}
           <div>
-            <div className="font-bold">Workspaces</div>
+            <div className="flex items-center text-sm gap-2">
+              <AiOutlineClockCircle />
+              Recent Workspaces
+            </div>
             <div>
               <ul className="flex flex-col gap-2 justify-stretch">
                 {workspaces.map((workspace) => (
@@ -228,99 +213,7 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Daily to do */}
-        {/* <div className="h-fit ">
-          <div className="font-bold">Daily To Do</div>
-          <div className="cursor-default border-1 border-black p-3 rounded-box hover:bg-gray-50 hover:border-r-4 hover:border-b-4 hover:cursor-pointer">
-            <div className="text-3xl relative bottom-8 text-center">📌</div>
-            <ul>
-              {todo.map((item) => (
-                <li key={item.id} className="flex items-center gap-2">
-                  <div className="w-5 h-5 border-2 border-black rounded-full flex items-center justify-center">
-                    <input
-                      type="checkbox"
-                      className="h-5 w-5 rounded-3xl checkbox border-black border-2"
-                      checked={item.status === "done"}
-                      onChange={() => toggleStatus(item.id)}
-                    />
-                  </div>
-                  <span
-                    className={`${
-                      item.status === "done" ? "line-through" : ""
-                    }`}
-                  >
-                    {item.title}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div> */}
-
-        {/* Teams */}
-        {/* <div>
-          <div className="font-bold">Teams</div>
-          <ul className="flex flex-col gap-2">
-            {teams.map((team) => (
-              <li
-                key={team.name}
-                title={team.description}
-                className="flex gap-2 items-center border-1 border-black p-3 rounded-box hover:bg-gray-50 hover:border-r-4 hover:border-b-4 hover:cursor-pointer"
-              >
-                <div className="text-3xl">{team.emoji}</div>
-
-                <div className="border-l-1 pl-3">
-                  <div>{team.name}</div>
-
-                  <div className="font-bold text-sm">{team.creationDate}</div>
-
-                  <div className="text-xs bg-blue-600 text-white px-1 w-fit">
-                    {team.members} Members
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div> */}
-        <div className="grow flex-1 p-4 flex flex-col items-center">
-          <div className="mb-4 flex items-center gap-3">
-            <FaCentercode size={30} className="text-blue-500" />
-            <span className="font-bold text-lg">Focus</span>
-          </div>
-
-          <div className="border p-4 rounded-lg bg-white shadow-md w-full max-w-md flex flex-col items-stretch">
-            {/* Time Preset Buttons */}
-            <div className="p-2 flex mb-4 items-center justify-between shadow bg-gray-100 rounded-lg">
-              <div className="flex gap-2">
-                {timerArray.map((item, index) => (
-                  <div
-                    className={`border-2 p-1 text-sm rounded-md font-bold cursor-pointer transition-all duration-100 ${
-                      selectedTimer === item
-                        ? "border-blue-600 bg-blue-100"
-                        : "border-gray-300 "
-                    }`}
-                    key={index}
-                    onClick={() => handleTimerSelect(item)}
-                  >
-                    {item >= 60 ? `${item / 60} hr` : `${item} Min`}
-                  </div>
-                ))}
-              </div>
-              <div className="border-1 border-black p-1 text-sm rounded-md font-bold cursor-pointer">
-                Set Custom
-              </div>
-            </div>
-
-            {/* Timer Circle Placeholder */}
-            <div className="flex items-center justify-center text-5xl font-black">
-              00:00:00
-              {selectedTimer * 60}
-            </div>
-
-            {/* Play/Pause Button */}
-            {/* <button className="btn btn-primary mt-4"></button> */}
-          </div>
-        </div>
+        <PomodoroFocus />
       </div>
     </div>
   );
@@ -448,5 +341,3 @@ const teams = [
       "A team of artists and designers collaborating on creative projects.",
   },
 ];
-
-const timerArray = [5, 10, 15, 30, 60];

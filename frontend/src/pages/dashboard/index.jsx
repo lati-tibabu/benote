@@ -20,14 +20,15 @@ import {
 import { HiMenu, HiX } from "react-icons/hi";
 import Footer1 from "../../components/_footers/footer1";
 import { jwtDecode } from "jwt-decode";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 // const crypto = require("crypto");
 import { SHA256 } from "crypto-js";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaStop } from "react-icons/fa6";
+import { stopAlarm } from "../../redux/slices/pomodoroSlice";
 
 function Dashboard() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
-  const [openSubmenu, setOpenSubmenu] = useState(null); // Track open submenu
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -91,6 +92,9 @@ function Dashboard() {
     // alert("Collapsed");
     setCollapsedBar((prev) => !prev);
   };
+
+  const dispatch = useDispatch();
+  const { alarmPlaying } = useSelector((state) => state.pomodoro);
 
   return (
     <div className="bg-white text-black min-h-screen flex flex-col">
@@ -315,6 +319,21 @@ function Dashboard() {
                   </div>
                 </>
               ) : null}
+            </div>
+            <div>
+              {alarmPlaying && (
+                <div className="fixed bottom-5 right-5 bg-orange-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-bounce transition-all">
+                  <span className="font-bold text-lg">
+                    🔔 Focus Time is Up!
+                  </span>
+                  <button
+                    className="bg-white text-orange-600 px-3 py-1 rounded-lg font-bold shadow-md hover:shadow-xl transition-all hover:scale-105"
+                    onClick={() => dispatch(stopAlarm())}
+                  >
+                    ✋ Stop Music
+                  </button>
+                </div>
+              )}
             </div>
             <AiFillInfoCircle size={30} className="cursor-pointer" />
           </div>
