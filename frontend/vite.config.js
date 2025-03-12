@@ -30,6 +30,7 @@ export default defineConfig({
         ],
       },
       workbox: { //for caching
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 5 MB
         runtimeCaching: [
           {
             urlPattern: /\.(?:js|css|html|json)$/,
