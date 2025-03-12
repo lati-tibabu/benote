@@ -62,7 +62,7 @@ const PomodoroFocus = () => {
 
 export default PomodoroFocus;
 
-const timerArray = [0.2, 5, 10, 15, 30, 60, 120];
+const timerArray = [10, 15, 25, 30, 60, 120];
 
 const timerFormatter = (t) => {
   const h = String(Math.floor(t / 3600)).padStart(2, "0");

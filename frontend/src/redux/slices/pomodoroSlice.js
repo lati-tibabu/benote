@@ -2,8 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     counting: false,
-    countingTimer: 0,
-    selectedTimer: 0,
+    countingTimer: 25 * 60,
+    selectedTimer: 25,
     alarmPlaying: false    
 }
 
