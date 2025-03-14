@@ -38,7 +38,7 @@ const TeamOpened = () => {
     if (team) {
       navigate("overview", { state: { team } });
     }
-  }, [team]);
+  }, []);
 
   const getTeamDetails = async (id) => {
     try {
@@ -100,6 +100,8 @@ const TeamOpened = () => {
   //     state: { team: team },
   //   });
   // }, []);
+
+  // console.log(team);
 
   return (
     <div className="h-full flex flex-col justify-between rounded-md shadow-sm">
@@ -183,10 +185,10 @@ const menuItems = [
   { icon: <AiOutlineCheckCircle />, label: "Workspaces", link: "workspaces" },
   { icon: <AiOutlineFileText />, label: "Discussions", link: "discussions" },
   { icon: <AiOutlineTeam />, label: "Resource", link: "resources" },
-  {
-    icon: <AiOutlineOrderedList />,
-    label: "TO-DO Lists",
-    link: "todo-lists",
-  },
+  // {
+  //   icon: <AiOutlineOrderedList />,
+  //   label: "TO-DO Lists",
+  //   link: "todo-lists",
+  // },
   { icon: <AiOutlineSetting />, label: "Settings", link: "settings" },
 ];

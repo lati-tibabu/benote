@@ -3,6 +3,7 @@ import { AiOutlineFolderAdd } from "react-icons/ai";
 import AddNew from "./add_new";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { FaPlus, FaUserFriends } from "react-icons/fa";
+import { jwtDecode } from "jwt-decode";
 
 function Team() {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -12,6 +13,7 @@ function Team() {
   };
 
   const [teams, setTeams] = useState([]);
+  const [userId, setUserId] = useState(null);
 
   const getTeams = async () => {
     try {
@@ -29,6 +31,20 @@ function Team() {
   useEffect(() => {
     getTeams();
   }, []);
+
+  //fetching currently logged in user id from the jwt token
+  useEffect(() => {
+    try {
+      if (token) {
+        const data = jwtDecode(token);
+        setUserId(data.id);
+      } else {
+        console.log("token not found");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }, [token]);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -84,11 +100,15 @@ function Team() {
                           .slice(0, 16)}
                       </div>
                       {/* Role */}
-                      <div>
+                      <div className="font-bold text-sm flex justify-between w-full ">
                         {team.role == "admin" ? (
                           <span className="text-green-500">Admin</span>
                         ) : (
                           <span className="text-blue-500">Member</span>
+                        )}
+
+                        {team.team.created_by == userId && (
+                          <span className="text-gray-600">Owner</span>
                         )}
                       </div>
                       {/* Members */}
