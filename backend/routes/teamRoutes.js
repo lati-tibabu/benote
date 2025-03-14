@@ -8,8 +8,18 @@ router.use(authMiddleware.authMiddleware);
 
 router.post('/', teamController.createTeam);
 router.get('/', teamController.readTeams);
+
 // assign membership
-router.post('/:id/members', teamController.giveUserMembership);
+router.post('/:team_id/members', teamController.giveUserMembership);
+
+//promote admin
+router.put('/:team_id/promote', teamController.promoteTeamAdmin);
+
+//demote admin
+router.put('/:team_id/demote', teamController.demoteTeamAdmin);
+
+//remove member 
+router.delete('/:team_id/members/:user_id', teamController.removeUserMember);
 
 router.get('/:id', teamController.readTeam);
 router.put('/:id', teamController.updateTeam);

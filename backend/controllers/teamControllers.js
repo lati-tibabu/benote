@@ -1,6 +1,6 @@
 const { team, team_membership, user } = require('../models');
 // const { team, team_membership } = require('../models');
-const { Sequelize } = require('sequelize');
+const { Sequelize, where } = require('sequelize');
 
 const createTeam = async (req, res) => {
     const { name } = req.body;
@@ -36,10 +36,6 @@ const createTeam = async (req, res) => {
     }
 };
 
-// module.exports = {
-//     createTeam
-// };
-
 // const createTeam = async (req, res) => {
 //     // const user_id = req.user.id;
 //     // const { name } = req.body;
@@ -61,7 +57,7 @@ const createTeam = async (req, res) => {
 
 const giveUserMembership = async (req, res) => {
     try {
-        const _team = await team.findByPk(req.params.id);
+        const _team = await team.findByPk(req.params.team_id);
 
         if(!_team){
             return res.status(404).json({message: 'team not found'});
@@ -69,7 +65,7 @@ const giveUserMembership = async (req, res) => {
 
         const is_member_and_admin = await team_membership.findOne({
             where: {
-                team_id: req.params.id,
+                team_id: req.params.team_id,
                 user_id: req.user.id,
                 role: 'admin'
             }
@@ -79,17 +75,181 @@ const giveUserMembership = async (req, res) => {
             return res.status(401).json({message: 'Unauthorized: You are not an admin of this team'});
         }
 
-
         const _membership = await team_membership.create({
-            team_id: req.params.id,
+            team_id: req.params.team_id,
             user_id: req.body.user_id,
             role: 'member'
         });
+
         res.status(201).json(_membership);
     } catch (error) {
         res.status(500).json({message: error.message});
     }
 };
+
+const promoteTeamAdmin = async (req, res) => {
+    try {
+        const teamId = req.params.team_id;
+        const userId = req.user.id;
+
+        
+        const _team = await team.findByPk(teamId);
+
+        if(!_team){
+            return res.json(404).json({message: 'team not found'});
+        }
+        const isTeamCreatedByUser = await team.findOne({
+            where: {
+                id: teamId,
+                created_by: userId
+            }
+        });
+
+        const is_member_and_admin = await team_membership.findOne({
+            where: {
+                team_id: teamId,
+                user_id: userId,
+                role: 'admin'
+            }
+        });
+
+        if(!is_member_and_admin || !isTeamCreatedByUser){
+            return res.status(401).json({message: 'Unauthorized: You are not an admin of this team'});
+        }
+
+        const checkMembership = await team_membership.findOne({
+            where: {
+                team_id: teamId,
+                user_id: req.body.user_id
+            }
+        });
+
+        if(!checkMembership){
+            const _membership = await team_membership.create({
+                team_id: teamId,
+                user_id: req.body.user_id,
+                role: 'admin'
+            });
+            res.status(201).json(_membership);
+        } else {
+            const _membership = await team_membership.update({
+                role: 'admin'
+            }, {
+                where: {
+                    team_id: teamId,
+                    user_id: req.body.user_id
+                }
+            });
+            res.status(200).json(_membership)
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error", error: error.message })
+    }
+}
+
+const demoteTeamAdmin = async (req, res) => {
+    try {
+        const teamId = req.params.team_id;
+        const userId = req.user.id;
+
+        const _team = await team.findByPk(teamId);
+
+        if(!_team){
+            return res.json(404).json({message: 'team not found'});
+        }
+
+        const isTeamCreatedByUser = await team.findOne({
+            where: {
+                id: teamId,
+                created_by: userId
+            }
+        });
+        
+        const is_member_and_admin = await team_membership.findOne({
+            where: {
+                team_id: teamId,
+                user_id: userId,
+                role: 'admin'
+            }
+        });
+
+        if(!is_member_and_admin || !isTeamCreatedByUser){
+            return res.status(401).json({message: 'Unauthorized: You are not an admin of this team'});
+        }
+
+        const checkMembership = await team_membership.findOne({
+            where: {
+                team_id: teamId,
+                user_id: req.body.user_id,
+                role: 'admin'
+            }
+        });
+
+        if(checkMembership && userId != req.body.user_id){
+            const _membership = await team_membership.update({
+                role: 'member'
+            }, {
+                where: {
+                    team_id: req.params.team_id,
+                    user_id: req.body.user_id
+                }
+            });
+            res.status(200).json(_membership)
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error", error: error.message })
+    }
+}
+
+
+const removeUserMember = async (req, res) => {
+    try {
+        const teamId = req.params.team_id;
+        const userId = req.user.id;
+        const targetUser = req.params.user_id;
+
+        
+        const _team = await team.findByPk(teamId);
+
+        if(!_team){
+            return res.json(404).json({message: 'team not found'});
+        }
+        // const isTeamCreatedByUser = await team.findOne({
+        //     where: {
+        //         id: teamId,
+        //         created_by: userId
+        //     }
+        // });
+
+        const is_member_and_admin = await team_membership.findOne({
+            where: {
+                team_id: teamId,
+                user_id: userId,
+                role: 'admin'
+            }
+        });
+
+        if(!is_member_and_admin){
+            return res.status(401).json({message: 'Unauthorized: You are not an admin of this team'});
+        }
+
+        const checkMembership = await team_membership.findOne({
+            where: {
+                team_id: teamId,
+                user_id: targetUser,
+                role: "member"
+            }
+        });
+
+        if(!checkMembership) return res.status(400).json({message: "admin can only be removed by the owner"});
+
+        await checkMembership.destroy();
+        res.status(200).json({message: "membership removed"})
+       
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error", error: error.message })
+    }
+}
 
 const readTeam = async (req, res) => {
     try {
@@ -99,6 +259,15 @@ const readTeam = async (req, res) => {
         if (!req.user || !req.user.id) {
             return res.status(401).json({ message: "Unauthorized: User ID missing" });
         }
+
+        const isMember  = await team_membership.findOne({
+            where: {
+                team_id: team_id,
+                user_id: req.user.id
+            }
+        })
+
+        if(!isMember) return res.status(401).json({message: "Unauthorized: You are not a member of this team"})
 
         const teamData = await team.findOne({
             where: { id: team_id },
@@ -113,6 +282,7 @@ const readTeam = async (req, res) => {
                             model: user,
                             as: 'user',
                             attributes: ['id', 'name', 'email'],
+                            order: [['name', 'ASC']]
                         }
                     ]
                 }
@@ -200,8 +370,29 @@ const readTeams = async (req, res) => {
 
 const updateTeam = async (req, res) => {
     try {
-        const _team = await team.findByPk(req.params.id);
+        const teamId = req.params.id;
+        const userId = req.user.id;
+
+        const _team = await team.findByPk(teamId);
         if (_team){
+            // const isTeamCreatedByUser = await team.findOne({
+            //     where: {
+            //         id: teamId,
+            //         created_by: userId
+            //     }
+            // });
+            const is_member_and_admin = await team_membership.findOne({
+                where: {
+                    team_id: teamId,
+                    user_id: userId,
+                    role: 'admin'
+                }
+            });
+
+            if(!is_member_and_admin){
+                return res.status(401).json({message: 'Unauthorized: You are not an admin of this team'});
+            }
+            
             await _team.update(req.body);
             const updatedTeam = {..._team.get()};
             res.json(updatedTeam);
@@ -215,10 +406,32 @@ const updateTeam = async (req, res) => {
 
 const deleteTeam = async (req, res) => {
     try {
-        const _team = await team.findByPk(req.params.id);
+        const teamId = req.params.id;
+        const userId = req.user.id;
+
+        const _team = await team.findByPk(teamId);
+
         if (!_team){
             res.status(404).json({message: "Team not found!"});
-        } else {
+        } else {    
+            const isTeamCreatedByUser = await team.findOne({
+                where: {
+                    id: teamId,
+                    created_by: userId
+                }
+            });
+            const is_member_and_admin = await team_membership.findOne({
+                where: {
+                    team_id: teamId,
+                    user_id: userId,
+                    role: 'admin'
+                }
+            });
+
+            if(!is_member_and_admin || !isTeamCreatedByUser){
+                return res.status(401).json({message: 'Unauthorized: You are not an admin of this team'});
+            }
+            
             await _team.destroy();
             res.json({message: 'Team deleted'})
         }
@@ -233,5 +446,8 @@ module.exports = {
     readTeam,
     updateTeam,
     deleteTeam,
-    giveUserMembership
+    giveUserMembership,
+    promoteTeamAdmin,
+    demoteTeamAdmin,
+    removeUserMember
 }
