@@ -105,7 +105,7 @@ const TeamOpened = () => {
 
   return (
     <div className="h-full flex flex-col justify-between rounded-md shadow-sm">
-      <div className="flex items-center gap-2 justify-between">
+      {/* <div className="flex items-center gap-2 justify-between">
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -116,10 +116,7 @@ const TeamOpened = () => {
           >
             <FaChevronLeft />
           </button>
-          {/* <span className="flex items-center gap-2">
-            <h1 className="text-2xl">{team.emoji}</h1>
-            <h1 className="text-2xl font-bold">{team.name}</h1>
-          </span> */}
+      
         </div>
         <button>
           <div className="dropdown">
@@ -143,7 +140,7 @@ const TeamOpened = () => {
             </ul>
           </div>
         </button>
-      </div>
+      </div> */}
 
       <div className="grow flex flex-col">
         {/* sub navigation */}

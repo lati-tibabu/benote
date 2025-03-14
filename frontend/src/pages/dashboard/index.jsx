@@ -16,6 +16,9 @@ import {
   AiOutlineCalendar,
   AiFillInfoCircle,
   AiOutlinePoweroff,
+  AiOutlineLeft,
+  AiOutlineArrowLeft,
+  AiOutlineArrowRight,
 } from "react-icons/ai";
 import { HiMenu, HiX } from "react-icons/hi";
 import Footer1 from "../../components/_footers/footer1";
@@ -295,6 +298,21 @@ function Dashboard() {
         <div className="w-full flex flex-col overflow-x-hidden">
           <div className="w-full p-2 flex items-center justify-between bg-white border-b-1">
             <div className="flex items-center gap-2">
+              <div className="flex space-x-2">
+                <div
+                  className="p-2 hover:bg-gray-200 rounded-full cursor-pointer"
+                  onClick={() => history.back()}
+                >
+                  <AiOutlineArrowLeft />
+                </div>
+                {/* <div
+                  className="p-2 hover:bg-gray-200 rounded-full cursor-pointer"
+                  onClick={() => history.go(1)}
+                >
+                  <AiOutlineArrowRight />
+                </div> */}
+              </div>
+
               <div className="font-bold text-2xl">
                 {loc[0]
                   ? loc[0].charAt(0).toUpperCase() + loc[0].slice(1)

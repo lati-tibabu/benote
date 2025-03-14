@@ -80,7 +80,7 @@ const TeamWorkspaces = () => {
                     <div>{workspace.workspace.name}</div>
                     {/* creation date */}
                     <div className="font-bold text-sm">
-                      {workspace.workspace.createdAt}
+                      {new Date(workspace.workspace.createdAt).toDateString()}
                     </div>
                     {/* private or team */}
                     {/* <div>
