@@ -137,7 +137,8 @@ const readWorkspaceOfTeam = async (req, res) => {
             where: {
                 role: "member"
             },
-            attributes: ['role', 'workspace_id'],
+            // attributes: ['role', 'workspace_id'],
+            attributes:[],
             include: [
                 {
                     model: workspace,
@@ -146,10 +147,20 @@ const readWorkspaceOfTeam = async (req, res) => {
                     required: true,
                     where: {
                         belongs_to_team: req.params.team_id
-                    }
+                    },
+                    include: [
+                        {
+                            model: user,
+                            as: 'creator',
+                            required: false,
+                            attributes: ['name', 'email']
+                        },
+                    ]
                 }
             ]
         })
+        if(!_workspaces) return res.status(404).json({message: 'No workspaces found'});
+        
         res.json(_workspaces);
     } catch (error) {
         res.status(500).json({ message: error.message });

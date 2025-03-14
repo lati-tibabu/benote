@@ -36,24 +36,6 @@ const createTeam = async (req, res) => {
     }
 };
 
-// const createTeam = async (req, res) => {
-//     // const user_id = req.user.id;
-//     // const { name } = req.body;
-//     try {
-//         const _team = await team.create({ ...req.body, created_by: req.user.id });
-//         if(_team){
-//             await team_membership.create({
-//                 team_id: _team.id,
-//                 // user_id: req.user.id,
-//                 user_id: _team.created_by,
-//                 role: 'admin'
-//             });
-//         }
-//         res.status(201).json(_team);
-//     } catch (error) {
-//         res.status(500).json({message: error.message});        
-//     }
-// };
 
 const giveUserMembership = async (req, res) => {
     try {
