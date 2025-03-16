@@ -17,6 +17,7 @@ import Settings from "../pages/dashboard/contents/Workspace/OpenedWorkspace/sett
 
 import Team from "../pages/dashboard/contents/Team";
 import Profile from "../pages/dashboard/contents/Profile";
+import LLMSetting from "../pages/dashboard/contents/LlmSetting";
 import Setting from "../pages/dashboard/contents/Setting";
 
 import ProtectedRoute from "./protected-routes";
@@ -121,6 +122,10 @@ const dashboardRoutes = {
       ],
     },
     { path: "profile", element: <ProtectedRoute component={Profile} /> },
+    {
+      path: "llm-setting",
+      element: <ProtectedRoute component={LLMSetting} />,
+    },
     {
       path: "notification",
       element: <ProtectedRoute component={Notification} />,

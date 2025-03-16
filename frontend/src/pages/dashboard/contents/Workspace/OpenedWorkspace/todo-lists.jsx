@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { FaPlus } from "react-icons/fa";
+import { FaBolt, FaPlus } from "react-icons/fa";
 import ToDoCard from "../../../../../components/_workspaces/todo_card";
 import TodoMinimizedCard from "../../../../../components/_workspaces/todo_minimized_card";
 import AddNewTodoList from "./add-todo-list";
 import { useLocation, useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useSelector } from "react-redux";
+import AiGeneratedTodo from "./Todo/ai-generated-todo";
 // import React from "react";
 
 const TodoLists = () => {
@@ -243,13 +244,23 @@ const TodoLists = () => {
       {/* top-section : for quick managements like adding to do list*/}
       <div className="flex gap-4 justify-between  items-center p-2 border-b-2">
         <h1 className="font-bold text-lg">TO-DO List</h1>
-        <div
-          className="btn btn-soft rounded-full"
-          // onClick={() => alert("hey developer, you wanna add a todo list")}
-          onClick={() => document.getElementById("my_modal_3").showModal()}
-        >
-          <FaPlus />
-          <span>Add New To Do</span>
+        <div className="flex items-center gap-3">
+          <div
+            className="btn bg-gradient-to-tr from-pink-500 transition-all duration-300 to-blue-600 text-white border-white hover:border-pink-500 btn-soft rounded-full"
+            // onClick={() => alert("hey developer, you wanna add a todo list")}
+            onClick={() => document.getElementById("ai_gen_todo").showModal()}
+          >
+            <FaBolt />
+            Prompt Todo
+          </div>
+          <div
+            className="btn btn-soft rounded-full"
+            // onClick={() => alert("hey developer, you wanna add a todo list")}
+            onClick={() => document.getElementById("my_modal_3").showModal()}
+          >
+            <FaPlus />
+            <span>Add New To Do</span>
+          </div>
         </div>
       </div>
 
@@ -326,6 +337,18 @@ const TodoLists = () => {
             </button>
           </form>
           <AddNewTodoList />
+        </div>
+      </dialog>
+      {/* modal for prompting to create new todo list using LLM */}
+      <dialog id="ai_gen_todo" className="modal overflow-x-scroll">
+        <div className="modal-box bg-white p-4 rounded-md shadow-md sm:w-fit lg:w-1/2 mx-auto mt-10">
+          <form method="dialog">
+            {/* if there is a button in form, it will close the modal */}
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+              ✕
+            </button>
+          </form>
+          <AiGeneratedTodo />
         </div>
       </dialog>
     </div>

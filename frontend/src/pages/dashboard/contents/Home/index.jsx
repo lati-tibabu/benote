@@ -3,6 +3,7 @@ import { jwtDecode } from "jwt-decode";
 
 import PomodoroFocus from "./contents/pomodoro-focus";
 import { AiOutlineClockCircle } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -14,8 +15,7 @@ const Home = () => {
 
   const [userData, setUserData] = useState(null);
   const [userId, setUserId] = useState(null);
-  // const [selectedTimer, setSelectedTimer] = useState();
-  // const [countingTimer, setCountingTimer] = useState(selectedTimer);
+  const [workspaces, setWorkspaces] = useState([]);
 
   //fetching currently logged in user id from the jwt token
   useEffect(() => {
@@ -37,7 +37,6 @@ const Home = () => {
     if (!userId) {
       return;
     }
-
     try {
       const response = await fetch(`${apiURL}/api/users/${userId}`, {
         method: "GET",
@@ -62,24 +61,25 @@ const Home = () => {
 
   // console.log(userData);
 
-  const [todo, setTodo] = useState([
-    { id: "123", title: "Buy Groceries", status: "done" },
-    { id: "124", title: "Do Homework", status: "not_done" },
-    { id: "125", title: "Clean the room", status: "not_done" },
-    { id: "126", title: "Prepare for the meeting", status: "done" },
-    { id: "127", title: "Go for a walk", status: "not_done" },
-  ]);
+  const fetchWorkspaces = async () => {
+    try {
+      const response = await fetch(`${apiURL}/api/workspaces/?home=true`, {
+        method: "GET",
+        headers: header,
+      });
+      if (!response.ok) throw new Error("Network response was not ok");
 
-  const toggleStatus = (id) => {
-    setTodo((prevTodo) =>
-      prevTodo.map((item) =>
-        item.id === id
-          ? { ...item, status: item.status === "done" ? "not_done" : "done" }
-          : item
-      )
-    );
+      const data = await response.json();
+      setWorkspaces(data);
+    } catch (error) {
+      alert("Error fetching recent workspaces");
+      console.log(error);
+    }
   };
 
+  useEffect(() => {
+    fetchWorkspaces();
+  }, []);
   const [time, setTime] = useState(new Date().toLocaleTimeString());
 
   useEffect(() => {
@@ -89,6 +89,12 @@ const Home = () => {
 
     return () => clearInterval(interval);
   }, []);
+
+  const navigate = useNavigate();
+
+  const handleWorkspaceOpen = (workspaceId) => () => {
+    navigate(`/app/workspace/open/${workspaceId}`);
+  };
   return (
     <div>
       {/* top */}
@@ -138,39 +144,94 @@ const Home = () => {
             <div>
               <ul className="flex flex-col gap-2 justify-stretch">
                 {workspaces.map((workspace) => (
-                  <li key={workspace.id}>
+                  <li key={workspace.workspace.id}>
                     <div
-                      title={workspace.description}
-                      className="flex gap-2 items-center cursor-default border-1 border-black p-3 rounded-box hover:bg-gray-50 hover:border-r-4 hover:border-b-4 hover:cursor-pointer"
+                      title={
+                        workspace.workspace.description ||
+                        workspace.workspace.name
+                      }
+                      className="flex gap-2 items-start cursor-default border-2 border-gray-200 p-3 rounded-box hover:bg-blue-50 hover:border-blue-500 hover:cursor-pointer"
+                      onClick={handleWorkspaceOpen(workspace.workspace.id)}
                     >
                       {/* icon */}
-                      <div className="text-3xl">{workspace.emoji}</div>
+                      <div className="text-3xl">
+                        {workspace.workspace.emoji}
+                      </div>
                       {/* main */}
                       <div className="border-l-1 pl-3">
                         {/* name */}
-                        <div>{workspace.name}</div>
+                        <div>{workspace.workspace.name}</div>
                         {/* creation date */}
-                        <div className="font-bold text-sm">
-                          {workspace.creationDate}
+                        <div className="text-sm text-gray-600">
+                          Accessed on{" "}
+                          {(() => {
+                            const accessedAt = new Date(
+                              workspace.workspace.last_accessed_at
+                            );
+                            const now = new Date();
+                            const options = {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                              hour: "numeric",
+                              minute: "numeric",
+                              hour12: true,
+                            };
+
+                            // Same day → Show only time (e.g., 3:45 PM)
+                            if (
+                              accessedAt.getDate() === now.getDate() &&
+                              accessedAt.getMonth() === now.getMonth() &&
+                              accessedAt.getFullYear() === now.getFullYear()
+                            ) {
+                              return accessedAt.toLocaleTimeString("en-US", {
+                                hour: "numeric",
+                                minute: "numeric",
+                                hour12: true,
+                              });
+                            }
+
+                            // Same week → Show "Weekday, time" (e.g., Tue, 3:45 PM)
+                            const oneWeekAgo = new Date();
+                            oneWeekAgo.setDate(now.getDate() - 7);
+
+                            if (accessedAt > oneWeekAgo) {
+                              return accessedAt.toLocaleDateString("en-US", {
+                                weekday: "short",
+                                hour: "numeric",
+                                minute: "numeric",
+                                hour12: true,
+                              });
+                            }
+
+                            // Older than a week → Full date (e.g., Mar 10, 2024, 3:45 PM)
+                            return accessedAt.toLocaleDateString(
+                              "en-US",
+                              options
+                            );
+                          })()}
                         </div>
+
                         {/* private or team */}
-                        <div>
-                          {workspace.type.split("-")[0].toLowerCase().trim() ===
-                          "team" ? (
+                        {/* <div>
+                          {workspace.workspace.type
+                            .split("-")[0]
+                            .toLowerCase()
+                            .trim() === "team" ? (
                             <div className="flex items-center gap-1">
                               <div className="bg-blue-600 text-white px-1 w-fit text-xs">
-                                {workspace.type.split("-")[0]}
+                                {workspace.workspace.type.split("-")[0]}
                               </div>
                               <div className="text-xs hover:underline hover:text-blue-700">
-                                {workspace.type.split("-")[1]}
+                                {workspace.workspace.type.split("-")[1]}
                               </div>
                             </div>
                           ) : (
                             <div className="bg-green-600 text-white px-1 w-fit text-xs">
-                              {workspace.type}
+                              {workspace.workspace.type}
                             </div>
                           )}
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </li>
@@ -221,48 +282,48 @@ const Home = () => {
 
 export default Home;
 
-const workspaces = [
-  {
-    emoji: "🧑‍🎓",
-    name: "Academic Tasks",
-    creationDate: "December 31, 2024",
-    type: "Private",
-    description:
-      "A personal workspace for organizing homework, project deadlines, and study schedules.",
-  },
-  {
-    emoji: "💻",
-    name: "Code Studio",
-    creationDate: "December 15, 2024",
-    type: "Team - DevSquad",
-    description:
-      "Collaborative workspace for tracking coding projects, version control, and debugging tasks within the team.",
-  },
-  {
-    emoji: "📝",
-    name: "Research Notes",
-    creationDate: "December 10, 2024",
-    type: "Private",
-    description:
-      "Dedicated to managing and organizing notes, references, and drafts for ongoing research papers.",
-  },
-  {
-    emoji: "🎮",
-    name: "Game Night Plan",
-    creationDate: "December 20, 2024",
-    type: "Team - Weekend Warriors",
-    description:
-      "A shared workspace for planning team gaming events, including schedules, challenges, and score tracking.",
-  },
-  {
-    emoji: "🌍",
-    name: "Community Outreach",
-    creationDate: "December 5, 2024",
-    type: "Team - Helping Hands",
-    description:
-      "Used for managing volunteer schedules, tasks, and events for community service initiatives.",
-  },
-];
+// const workspaces = [
+//   {
+//     emoji: "🧑‍🎓",
+//     name: "Academic Tasks",
+//     creationDate: "December 31, 2024",
+//     type: "Private",
+//     description:
+//       "A personal workspace for organizing homework, project deadlines, and study schedules.",
+//   },
+//   {
+//     emoji: "💻",
+//     name: "Code Studio",
+//     creationDate: "December 15, 2024",
+//     type: "Team - DevSquad",
+//     description:
+//       "Collaborative workspace for tracking coding projects, version control, and debugging tasks within the team.",
+//   },
+//   {
+//     emoji: "📝",
+//     name: "Research Notes",
+//     creationDate: "December 10, 2024",
+//     type: "Private",
+//     description:
+//       "Dedicated to managing and organizing notes, references, and drafts for ongoing research papers.",
+//   },
+//   {
+//     emoji: "🎮",
+//     name: "Game Night Plan",
+//     creationDate: "December 20, 2024",
+//     type: "Team - Weekend Warriors",
+//     description:
+//       "A shared workspace for planning team gaming events, including schedules, challenges, and score tracking.",
+//   },
+//   {
+//     emoji: "🌍",
+//     name: "Community Outreach",
+//     creationDate: "December 5, 2024",
+//     type: "Team - Helping Hands",
+//     description:
+//       "Used for managing volunteer schedules, tasks, and events for community service initiatives.",
+//   },
+// ];
 const tasks = [
   {
     emoji: "🛒",

@@ -38,6 +38,8 @@ function Workspace() {
     getWorkspace();
   }, [updateWorkspace]);
 
+  console.log("Workspaces here", workspaces);
+
   const navigate = useNavigate();
 
   const handleWorkspaceOpen = (workspaceId) => () => {
@@ -60,7 +62,7 @@ function Workspace() {
             </button>
           )}
 
-          <ul className="flex flex-row flex-wrap gap-4">
+          <ul className="flex flex-row flex-wrap gap-4 items-stretch">
             {loading ? (
               Array.from({ length: 3 }).map((_, index) => (
                 <li key={index} className="w-60">
@@ -75,12 +77,13 @@ function Workspace() {
               workspaces.map((workspace) => (
                 <li
                   key={workspace.workspace.id}
-                  className="grow"
+                  className="grow max-w-80 h-full"
                   onClick={handleWorkspaceOpen(workspace.workspace.id)}
                 >
                   <div
                     title={workspace.workspace.description}
-                    className="relative flex flex-col gap-2 items-center cursor-pointer border-1 border-black p-3 rounded-box hover:bg-gray-50 hover:border-r-4 hover:border-b-4 overflow-hidden transition-all duration-200"
+                    // className="relative flex flex-col gap-2 items-center cursor-pointer border-1 border-black p-3 rounded-box hover:bg-gray-50 hover:border-r-4 hover:border-b-4 overflow-hidden transition-all duration-200"
+                    className="relative flex gap-2 items-start cursor-default border-2 border-gray-200 p-3 rounded-box hover:bg-blue-50 hover:border-blue-500 hover:cursor-pointer overflow-hidden shadow h-full"
                   >
                     {/* Blurred Emoji Background */}
                     <div
