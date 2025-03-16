@@ -13,6 +13,7 @@ const TeamWorkspaces = () => {
 
   const [workspaces, setWorkspaces] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const team = useSelector((state) => state.team.team);
 
   const loadWorkspaces = async () => {
