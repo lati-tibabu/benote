@@ -1,52 +1,58 @@
 import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AddNewTask = () => {
   const apiURL = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("jwt");
+
+  const workspace = useSelector((state) => state.workspace.workspace);
+  const belongsToTeam = workspace?.belongs_to_team;
+
+  let userData = null;
+  try {
+    userData = token ? jwtDecode(token) : null;
+  } catch (error) {
+    console.error("Invalid token:", error);
+  }
+
   const header = {
     authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
 
-  const location2 = useLocation();
-  // const workspace = location2.state?.workspace || {};
-  const workspace = useSelector((state) => state.workspace.workspace);
-
-  var userData;
-  try {
-    userData = jwtDecode(token);
-  } catch (error) {
-    console.error(error);
-  }
-
   const [users, setUsers] = useState([]);
   const [taskData, setTaskData] = useState({
-    created_by: userData.id,
+    created_by: userData?.id || "",
     title: "",
     description: "",
     status: "todo",
     due_date: "",
-    assigned_to: userData.id,
-    workspace_id: workspace.id,
+    assigned_to: userData?.id || "",
+    workspace_id: workspace?.id || "",
   });
 
-  const fetchUsers = async () => {
-    const response = await fetch(`${apiURL}/api/users`, {
-      headers: header,
-    });
-    const data = await response.json();
-    setUsers(data);
-  };
-
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    if (belongsToTeam) {
+      const fetchUsers = async () => {
+        try {
+          const response = await fetch(`${apiURL}/api/teams/${belongsToTeam}`, {
+            method: "GET",
+            headers: header,
+          });
+          if (!response.ok) throw new Error("Failed to fetch team");
+          const data = await response.json();
+          setUsers(data.members);
+        } catch (error) {
+          console.error("Error fetching the team data", error);
+        }
+      };
 
-  const navigate = useNavigate();
+      fetchUsers();
+    }
+  }, [belongsToTeam, apiURL, token]);
 
   const createTask = async (e) => {
     e.preventDefault();
@@ -54,160 +60,116 @@ const AddNewTask = () => {
       const response = await fetch(`${apiURL}/api/tasks`, {
         method: "POST",
         body: JSON.stringify(taskData),
-        headers: {
-          ...header,
-          "Content-Type": "application/json",
-        },
+        headers: header,
       });
-      const data = await response.json();
+
       if (response.ok) {
-        // alert("Task is created succesfully");
-        toast.success("Task is created successfully");
-        // window.location.href = `/app/workspace/open/${workspace.id}/tasks`;
-        // navigate(`/app/workspace/open/${workspace.id}/tasks`, {
-        //   state: { addedTask: true },
-        // });
-        setTaskData({
-          created_by: userData.id,
+        toast.success("Task created successfully");
+        setTaskData((prev) => ({
+          ...prev,
           title: "",
           description: "",
-          status: "todo",
           due_date: "",
-          assigned_to: userData.id,
-          workspace_id: workspace.id,
-        });
+        }));
+      } else {
+        toast.error("Failed to create task");
       }
     } catch (err) {
       console.error("Error creating task: ", err);
+      toast.error("Failed to create task");
     }
   };
 
   return (
-    <div className="w-full flex">
+    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg">
       <ToastContainer />
-      <div className="bg-transparent p-4 rounded-md shadow-md lg:w-1/2 w-full mt-10 grow scrollbar-hide">
-        <div className="flex items-center gap-2 font-bold text-lg">
-          <p className="text-2xl">📝</p>
-          <h1>Add New Task</h1>
+      <h1 className="text-2xl font-bold mb-4 flex items-center gap-2">
+        📝 Add New Task
+      </h1>
+      <p className="text-gray-600 mb-4">
+        Fill in the form below to create a new task.
+      </p>
+      <form className="space-y-4" onSubmit={createTask}>
+        <div>
+          <label className="block text-gray-700">
+            Task Title <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            value={taskData.title}
+            onChange={(e) =>
+              setTaskData({ ...taskData, title: e.target.value })
+            }
+            placeholder="e.g. Complete the report"
+            className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 text-gray-800 bg-white"
+            required
+          />
         </div>
-        <hr className="h-1/2 bg-gray-500" />
-        <p>Fill in the form below to create a new task</p>
-        <form className="flex flex-col gap-2 mt-3" onSubmit={createTask}>
-          <fieldset className="fieldset flex flex-col gap-1">
-            <label htmlFor="taskTitle">Task Title</label>
-            <input
-              type="text"
-              id="taskTitle"
-              name="taskTitle"
-              value={taskData.title}
-              onChange={(e) => {
-                setTaskData({ ...taskData, title: e.target.value });
-              }}
-              placeholder="e.g. Complete the report"
-              className="p-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-950"
-              required
-            />
-          </fieldset>
-
-          <fieldset className="fieldset flex flex-col gap-1">
-            <label htmlFor="description">Description</label>
-            <textarea
-              //   maxLength={255}
-              id="description"
-              name="description"
-              value={taskData.description}
-              onChange={(e) => {
-                setTaskData({
-                  ...taskData,
-                  description: e.target.value,
-                });
-              }}
-              className="p-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-950"
-              placeholder="e.g. Complete the task by the due date"
-            ></textarea>
-            <span className="text-right text-sm w-full">
-              <span
-                className={`${
-                  taskData.description.length > 255 && "text-red-500"
-                }`}
-              >
-                {taskData.description.length}
-              </span>
-              /255
-            </span>
-          </fieldset>
-
-          <fieldset className="fieldset flex flex-col gap-1">
-            <label htmlFor="status">Status</label>
+        <div>
+          <label className="block text-gray-700">Description</label>
+          <textarea
+            value={taskData.description}
+            onChange={(e) =>
+              setTaskData({ ...taskData, description: e.target.value })
+            }
+            placeholder="e.g. Complete the task by the due date"
+            className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 text-gray-800 bg-white"
+          ></textarea>
+        </div>
+        <div>
+          <label className="block text-gray-700">Status</label>
+          <select
+            value={taskData.status}
+            onChange={(e) =>
+              setTaskData({ ...taskData, status: e.target.value })
+            }
+            className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 text-gray-800 bg-white"
+          >
+            <option value="todo">To Do</option>
+            <option value="doing">In Progress</option>
+            <option value="done">Completed</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-gray-700">Due Date</label>
+          <input
+            type="datetime-local"
+            // value={taskData.due_date || new Date().toISOString().slice(0, 16)}
+            value={taskData.due_date}
+            onChange={(e) =>
+              setTaskData({ ...taskData, due_date: e.target.value })
+            }
+            className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 text-white bg-gray-600"
+          />
+        </div>
+        {belongsToTeam && (
+          <div>
+            <label className="block text-gray-700">Assigned To</label>
             <select
-              id="status"
-              name="status"
-              value={taskData.status}
-              onChange={(e) => {
-                setTaskData({ ...taskData, status: e.target.value });
-              }}
-              className="select bg-white dark:bg-black dark:text-white"
-            >
-              <option value="todo">To Do</option>
-              <option value="doing">In Progress</option>
-              <option value="done">Completed</option>
-            </select>
-          </fieldset>
-
-          <fieldset className="fieldset flex flex-col gap-1">
-            <label htmlFor="dueDate">Due Date</label>
-            <input
-              type="datetime-local"
-              id="dueDate"
-              name="dueDate"
-              value={taskData.due_date}
-              onChange={(e) => {
-                setTaskData({
-                  ...taskData,
-                  due_date: e.target.value,
-                });
-              }}
-              className="p-2 border text-white border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </fieldset>
-
-          <fieldset className="fieldset flex flex-col gap-1">
-            <label htmlFor="assignedTo">Assigned To</label>
-            <select
-              id="assignedTo"
-              name="assignedTo"
               value={taskData.assigned_to}
-              onChange={(e) => {
-                setTaskData({
-                  ...taskData,
-                  assigned_to: e.target.value,
-                });
-              }}
-              className="select bg-white dark:bg-black dark:text-white"
+              onChange={(e) =>
+                setTaskData({ ...taskData, assigned_to: e.target.value })
+              }
+              className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 text-gray-800 bg-white"
             >
               <option disabled selected>
                 Pick a user
               </option>
-              {users &&
-                users.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.name}
-                    <span className="font-bold">
-                      {user.id === userData.id && " (Me)"}
-                    </span>
-                  </option>
-                ))}
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name} {user.id === userData?.id && "(Me)"}
+                </option>
+              ))}
             </select>
-          </fieldset>
-
-          <button
-            type="submit"
-            className="btn btn-primary bg-black hover:bg-gray-800 text-white border-none"
-          >
-            Create Task
-          </button>
-        </form>
-      </div>
+          </div>
+        )}
+        <button
+          type="submit"
+          className="btn btn-md border-none w-full text-white py-2 rounded-lg"
+        >
+          + Create Task
+        </button>
+      </form>
     </div>
   );
 };

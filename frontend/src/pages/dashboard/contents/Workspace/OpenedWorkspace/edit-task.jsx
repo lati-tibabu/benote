@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const EditTask = (props) => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -11,14 +13,10 @@ const EditTask = (props) => {
     "Content-Type": "application/json",
   };
 
-  // const { taskId } = useParams();
-  // const taskId = props.taskId;
-
-  const location2 = useLocation();
-  // const workspace = location2.state?.workspace || {};
   const workspace = useSelector((state) => state.workspace.workspace);
+  const { workspaceId } = useParams();
 
-  var userData;
+  let userData;
   try {
     userData = jwtDecode(token);
   } catch (error) {
@@ -30,16 +28,35 @@ const EditTask = (props) => {
     created_by: "",
     title: "",
     description: "",
-    status: "",
+    status: "todo",
     due_date: "",
     assigned_to: "",
-    workspace_id: "",
+    workspace_id: workspaceId,
   });
+
+  useEffect(() => {
+    if (workspace?.belongs_to_team) {
+      const fetchUsers = async (id) => {
+        try {
+          const response = await fetch(`${apiURL}/api/teams/${id}`, {
+            method: "GET",
+            headers: header,
+          });
+          if (!response.ok) throw new Error("Failed to fetch team");
+
+          const data = await response.json();
+          setUsers(data.members);
+        } catch (error) {
+          console.error("Error fetching the team data", error);
+        }
+      };
+
+      fetchUsers(workspace.belongs_to_team);
+    }
+  }, [workspace?.belongs_to_team]);
 
   const fetchTask = async () => {
     try {
-      // console.log("from editing: ", props.taskId);
-
       if (props.taskId) {
         const response = await fetch(`${apiURL}/api/tasks/${props.taskId}`, {
           method: "GET",
@@ -47,181 +64,142 @@ const EditTask = (props) => {
         });
         if (response.ok) {
           const data = await response.json();
+
           setTaskData((prev) => ({
             ...prev,
             ...data,
+            due_date: data.due_date
+              ? new Date(data.due_date).toISOString().slice(0, 16)
+              : "",
           }));
-          console.log("Tasks", data);
-        } else alert("Error fetching the task detail response is not ok");
+        } else {
+          alert("Error fetching the task details.");
+        }
       }
     } catch (error) {
-      alert("Error occured check console log");
-      console.log("Catched error", error);
+      console.error("Error fetching task:", error);
+      alert("An error occurred while fetching task details.");
     }
-  };
-
-  // console.log(taskData);
-
-  const fetchUsers = async () => {
-    const response = await fetch(`${apiURL}/api/users`, {
-      headers: header,
-    });
-    const data = await response.json();
-    setUsers(data);
   };
 
   useEffect(() => {
     fetchTask();
-    fetchUsers();
   }, [props.taskId]);
 
   const updateTask = async (e) => {
     e.preventDefault();
     try {
+      const updatedTask = {
+        ...taskData,
+        due_date: taskData.due_date
+          ? new Date(taskData.due_date).toISOString()
+          : null,
+      };
+
       const response = await fetch(`${apiURL}/api/tasks/${props.taskId}`, {
         method: "PUT",
-        body: JSON.stringify(taskData),
-        headers: {
-          ...header,
-          "Content-Type": "application/json",
-        },
+        body: JSON.stringify(updatedTask),
+        headers: header,
       });
-      const data = await response.json();
-      if (response.ok) {
-        alert("Task is updated succesfully");
 
-        // window.location.href = `/app/workspace/open/${workspace.id}/tasks`;
+      if (response.ok) {
+        toast.success("Task updated successfully");
+      } else {
+        toast.error("Failed to update task");
       }
     } catch (err) {
-      console.error("Error creating task: ", err);
+      console.error("Error updating task:", err);
+      toast.error("An error occurred while updating the task.");
     }
   };
 
   return (
-    <div className="w-full flex">
-      <div className="bg-transparent p-4 rounded-md shadow-md lg:w-1/2 w-full mt-10 grow">
-        <div className="flex items-center gap-2 font-bold text-lg">
-          <p className="text-2xl">📝</p>
-          <h1>Edit Task</h1>
+    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg">
+      <ToastContainer />
+      <h1 className="text-2xl font-bold mb-4 flex items-center gap-2">
+        📝 Edit Task
+      </h1>
+      <p className="text-gray-600 mb-4">Update the task details below.</p>
+      <form className="space-y-4" onSubmit={updateTask}>
+        <div>
+          <label className="block text-gray-700">
+            Task Title <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            value={taskData.title}
+            onChange={(e) =>
+              setTaskData({ ...taskData, title: e.target.value })
+            }
+            placeholder="e.g. Complete the report"
+            className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 text-gray-800 bg-white"
+            required
+          />
         </div>
-        <hr className="h-1/2 bg-gray-500" />
-        {/* <p>Fill in the form below to create a new task</p> */}
-        <form className="flex flex-col gap-2 mt-3" onSubmit={updateTask}>
-          <fieldset className="fieldset flex flex-col gap-1">
-            <label htmlFor="taskTitle">Task Title</label>
-            <input
-              type="text"
-              id="taskTitle"
-              name="taskTitle"
-              value={taskData.title}
-              onChange={(e) => {
-                setTaskData({ ...taskData, title: e.target.value });
-              }}
-              placeholder="e.g. Complete the report"
-              className="p-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-950"
-              required
-            />
-          </fieldset>
-
-          <fieldset className="fieldset flex flex-col gap-1">
-            <label htmlFor="description">Description</label>
-            <textarea
-              //   maxLength={255}
-              id="description"
-              name="description"
-              value={taskData.description}
-              onChange={(e) => {
-                setTaskData({
-                  ...taskData,
-                  description: e.target.value,
-                });
-              }}
-              className="p-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-950"
-              placeholder="e.g. Complete the task by the due date"
-            ></textarea>
-            <span className="text-right text-sm w-full">
-              <span
-                className={`${
-                  taskData?.description?.length > 255 && "text-red-500"
-                }`}
-              >
-                {taskData?.description?.length}
-              </span>
-              /255
-            </span>
-          </fieldset>
-
-          <fieldset className="fieldset flex flex-col gap-1">
-            <label htmlFor="status">Status</label>
+        <div>
+          <label className="block text-gray-700">Description</label>
+          <textarea
+            value={taskData.description}
+            onChange={(e) =>
+              setTaskData({ ...taskData, description: e.target.value })
+            }
+            placeholder="e.g. Complete the task by the due date"
+            className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 text-gray-800 bg-white"
+          ></textarea>
+        </div>
+        <div>
+          <label className="block text-gray-700">Status</label>
+          <select
+            value={taskData.status}
+            onChange={(e) =>
+              setTaskData({ ...taskData, status: e.target.value })
+            }
+            className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 text-gray-800 bg-white"
+          >
+            <option value="todo">To Do</option>
+            <option value="doing">In Progress</option>
+            <option value="done">Completed</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-gray-700">Due Date</label>
+          <input
+            type="datetime-local"
+            value={taskData.due_date}
+            onChange={(e) =>
+              setTaskData({ ...taskData, due_date: e.target.value })
+            }
+            className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 text-gray-800 bg-white"
+          />
+        </div>
+        {workspace?.belongs_to_team && (
+          <div>
+            <label className="block text-gray-700">Assigned To</label>
             <select
-              id="status"
-              name="status"
-              value={taskData.status}
-              onChange={(e) => {
-                setTaskData({ ...taskData, status: e.target.value });
-              }}
-              className="select bg-white dark:bg-black dark:text-white"
-            >
-              <option value="todo">To Do</option>
-              <option value="doing">In Progress</option>
-              <option value="done">Completed</option>
-            </select>
-          </fieldset>
-
-          <fieldset className="fieldset flex flex-col gap-1">
-            <label htmlFor="dueDate">Due Date</label>
-            <input
-              type="datetime-local"
-              id="dueDate"
-              name="dueDate"
-              value={taskData.due_date}
-              onChange={(e) => {
-                setTaskData({
-                  ...taskData,
-                  due_date: e.target.value,
-                });
-              }}
-              className="p-2 border text-white border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </fieldset>
-
-          <fieldset className="fieldset flex flex-col gap-1">
-            <label htmlFor="assignedTo">Assigned To</label>
-            <select
-              id="assignedTo"
-              name="assignedTo"
               value={taskData.assigned_to}
-              onChange={(e) => {
-                setTaskData({
-                  ...taskData,
-                  assigned_to: e.target.value,
-                });
-              }}
-              className="select bg-white dark:bg-black dark:text-white"
+              onChange={(e) =>
+                setTaskData({ ...taskData, assigned_to: e.target.value })
+              }
+              className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 text-gray-800 bg-white"
             >
-              <option disabled selected>
+              <option disabled value="">
                 Pick a user
               </option>
-              {users &&
-                users.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.name}
-                    <span className="font-bold">
-                      {user.id === userData.id && " (Me)"}
-                    </span>
-                  </option>
-                ))}
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name} {user.id === userData?.id && "(Me)"}
+                </option>
+              ))}
             </select>
-          </fieldset>
-
-          <button
-            type="submit"
-            className="btn btn-primary bg-black hover:bg-gray-800 text-white border-none"
-          >
-            Update Task
-          </button>
-        </form>
-      </div>
+          </div>
+        )}
+        <button
+          type="submit"
+          className="btn btn-md border-none w-full text-white py-2 rounded-lg bg-gray-600 hover:bg-gray-700"
+        >
+          Update Task
+        </button>
+      </form>
     </div>
   );
 };

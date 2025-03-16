@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { AiOutlineMore, AiOutlinePlus } from "react-icons/ai";
+import { AiOutlineMore } from "react-icons/ai";
 import TaskCard from "../../../../../components/_tasks/task-card";
 import AddNewTask from "./add-new-task";
 import EditTask from "./edit-task";
-import { useLocation } from "react-router-dom";
-import { Fa500Px, FaWindowMaximize, FaWindowMinimize } from "react-icons/fa";
+import { useLocation, useParams } from "react-router-dom";
+import { FaWindowMaximize, FaWindowMinimize } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { toast, ToastContainer } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
 // /import { useReactToPdf } from "react-to-pdf";
 // import { usePDF } from "react-to-pdf";
 
@@ -18,9 +20,10 @@ const Tasks = () => {
   };
 
   const location2 = useLocation();
-  // const workspace = location2.state?.workspace || {};
+
   const workspace = useSelector((state) => state.workspace.workspace);
-  // console.log("workspace from redux: ", workspace);
+
+  const { workspaceId } = useParams();
 
   const addTask = location2.state?.addTask || false;
 
@@ -29,59 +32,76 @@ const Tasks = () => {
   const [archivedTasks, setArchivedTasks] = useState([]);
   const [editingTask, setEditingTask] = useState("");
   const [archivedWindow, setArchivedWindow] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [allMemberTasks, setAllMemberTasks] = useState(true);
+
+  let userData = null;
+  try {
+    userData = token ? jwtDecode(token) : null;
+  } catch (error) {
+    console.error("Invalid token:", error);
+  }
 
   const fetchTasks = async () => {
     try {
+      setLoading(true);
       const response = await fetch(
-        `${apiURL}/api/tasks/workspace/${workspace.id}`,
+        `${apiURL}/api/tasks/workspace/${workspaceId}`,
         {
           method: "GET",
           headers: header,
         }
       );
-      if (response.ok) {
-        const data = await response.json();
-        setTasks(data);
-      } else {
-        alert("error fetching tasks");
+
+      if (!response.ok) {
+        // alert("error fetching tasks");
+        toast.error("Error fetching tasks");
         console.log("Error while fetching the tasks");
+        return;
       }
+
+      // toast.success("Task succesfully loaded");
+
+      setTasks(await response.json());
     } catch (error) {
       alert(
         "Error fetching tasks from database, check console error message for details"
       );
       console.error("Error fetching tasks from database :", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchArchivedTasks = async () => {
     try {
       const response = await fetch(
-        `${apiURL}/api/tasks/workspace/${workspace.id}/archived`,
+        `${apiURL}/api/tasks/workspace/${workspaceId}/archived`,
         {
           method: "GET",
           headers: header,
         }
       );
-      if (response.ok) {
-        const data = await response.json();
-        setArchivedTasks(data);
-      } else {
-        alert("error fetching tasks");
-        console.log("Error while fetching the tasks");
+      if (!response.ok) {
+        // alert("error fetching tasks");
+        toast.error("Error fetching archived tasks");
+        console.log("Error while fetching archived tasks");
+        return;
       }
+
+      setArchivedTasks(await response.json());
     } catch (error) {
       alert(
-        "Error fetching tasks from database, check console error message for details"
+        "Error fetching archived tasks from database, check console error message for details"
       );
-      console.error("Error fetching tasks from database :", error);
+      console.error("Error fetching archived tasks from database :", error);
     }
   };
 
   useEffect(() => {
     fetchTasks();
     fetchArchivedTasks();
-  }, [statusUpdate, addTask]);
+  }, [workspaceId, statusUpdate, addTask]);
 
   // export the current tasks as pdf
   // const ref = useRef();
@@ -100,9 +120,12 @@ const Tasks = () => {
           status: newStatus,
         }),
       });
-      if (response.ok) {
-        setStatusUpdate((prev) => !prev);
+      if (!response.ok) {
+        toast.error("Error changing the status of the task");
+        return;
       }
+
+      setStatusUpdate((prev) => !prev);
     } catch (error) {
       console.error(error);
     }
@@ -124,12 +147,15 @@ const Tasks = () => {
           is_archived: true,
         }),
       });
-      if (response.ok) {
-        alert("Archived");
-        setStatusUpdate((prev) => !prev);
+      if (!response.ok) {
+        toast.error("Error archiving the task");
+        return;
       }
+
+      toast.success("Task archived");
+      setStatusUpdate((prev) => !prev);
     } catch (error) {
-      alert("Error occured check the console log");
+      alert("Error occured while archiving check the console log");
       console.error("error archiving the task: ", error);
     }
   };
@@ -143,240 +169,364 @@ const Tasks = () => {
           is_archived: false,
         }),
       });
-      if (response.ok) {
-        alert("Archived");
-        setStatusUpdate((prev) => !prev);
+      if (!response.ok) {
+        toast.error("Error unarchive the task");
+        return;
       }
+
+      toast.success("Task unarchived");
+      setStatusUpdate((prev) => !prev);
     } catch (error) {
       alert("Error occured check the console log");
       console.error("error archiving the task: ", error);
     }
   };
 
-  const handleTaskDelete = (taskId) => {
-    alert("Deleting task");
+  const handleTaskDelete = async (taskId) => {
+    alert(`Deleting task ${taskId}`);
+    if (window.confirm("Are you sure you want to delete this task?")) {
+      try {
+        const response = await fetch(`${apiURL}/api/tasks/${taskId}`, {
+          headers: header,
+          method: "DELETE",
+        });
+        if (!response.ok) return toast.error("Error deleting task");
+
+        toast.success("Task deleted successfully");
+        setStatusUpdate((prev) => !prev);
+      } catch (error) {
+        toast.error("An unexpected error occurred while deleting"); // add this
+        console.error(error); // log the actual error
+      }
+    }
   };
   useEffect(() => {
-    addTask && document.getElementById("my_modal_3").showModal();
+    addTask && document.getElementById("add_task").showModal();
   }, [addTask]);
+
+  // console.log("Tasks", tasks);
+
+  useEffect(() => {
+    allMemberTasks
+      ? fetchTasks()
+      : setTasks(tasks.filter((task) => task.assigned_to === userData.id));
+  }, [allMemberTasks]);
 
   return (
     <div>
-      <div>
-        <h1 className="text-lg font-bold">Tasks</h1>
-      </div>
-      <div className="flex gap-2 justify-between overflow-x-scroll scrollbar-hide">
-        {/* to do */}
-        <div className="flex-1 flex flex-col gap-2 p-4 border-2 rounded-md grow">
-          {/* title */}
-          <div className="flex justify-between border-b-1 pb-2">
-            <div className="flex gap-1 items-center">
-              <h1 className="font-bold">To-do</h1>
-              <span className="p-2 bg-blue-200 text-blue-700 w-4 h-4 text-sm rounded-full flex justify-center items-center">
-                {tasks.filter((task) => task.status === "todo").length}
-              </span>
-            </div>
-            <div className="flex gap-2 items-center">
-              <button
-                onClick={() =>
-                  document.getElementById("my_modal_3").showModal()
+      <ToastContainer />
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
+        <div className="flex gap-5">
+          <h1 className="text-xl font-bold">Tasks</h1>
+          {/* Check if the workspace is team based or private and show option to show all tasks or current user assigned tasks */}
+          {workspace?.belongs_to_team && (
+            <label className="fieldset-label text-sm flex items-center gap-1">
+              <input
+                type="checkbox"
+                // {allMemberTasks && checked}
+                checked={allMemberTasks ? true : false}
+                className="checkbox"
+                onChange={(e) =>
+                  setAllMemberTasks(e.target.checked ? true : false)
                 }
-              >
-                <AiOutlinePlus className="text-lg" />
-              </button>
-              <button>
-                <AiOutlineMore />
-              </button>
-            </div>
-          </div>
-          {/* tasks list */}
-          {tasks.map(
-            (task) =>
-              task.status == "todo" && (
-                <TaskCard
-                  onStatusChange={handleStatusChange}
-                  onTaskEdit={handleTaskEdit}
-                  onTaskArchive={handleTaskArchive}
-                  onTaskDelete={handleTaskDelete}
-                  taskId={task.id}
-                  status={task.status}
-                  taskName={task.title}
-                  taskDescription={task.description}
-                  taskAssignedTo={task.user.name}
-                  dueDate={new Date(task.due_date).toUTCString().slice(0, 16)}
-                  daysElapsed={
-                    // task.daysElapsed
-                    Math.floor(
-                      (Date.now() - new Date(task.createdAt).getTime()) /
-                        (60 * 60 * 24 * 1000)
-                    ) == 0
-                      ? "<1"
-                      : Math.floor(
-                          (Date.now() - new Date(task.createdAt).getTime()) /
-                            (60 * 60 * 24 * 1000)
-                        )
-                  }
-                />
-              )
-          )}
-          {/* single task card */}
-        </div>
-        {/* doing */}
-        <div className="flex-1 flex flex-col gap-2 p-4 border-2 rounded-md grow">
-          {/* title */}
-          <div className="flex justify-between border-b-1 pb-2">
-            <div className="flex gap-1 items-center">
-              <h1 className="font-bold">In progress</h1>
-              <span className="p-2 bg-blue-200 text-blue-700 w-4 h-4 text-sm rounded-full flex justify-center items-center">
-                {tasks.filter((task) => task.status === "doing").length}
-              </span>
-            </div>
-            <AiOutlineMore />
-          </div>
-          {/* task list */}
-          {tasks.map(
-            (task) =>
-              task.status == "doing" && (
-                <TaskCard
-                  onStatusChange={handleStatusChange}
-                  onTaskEdit={handleTaskEdit}
-                  onTaskArchive={handleTaskArchive}
-                  onTaskDelete={handleTaskDelete}
-                  taskId={task.id}
-                  status={task.status}
-                  taskName={task.title}
-                  taskDescription={task.description}
-                  taskAssignedTo={task.user.name}
-                  dueDate={new Date(task.due_date).toUTCString().slice(0, 16)}
-                  daysElapsed={
-                    // task.daysElapsed
-                    Math.floor(
-                      (Date.now() - new Date(task.createdAt).getTime()) /
-                        (60 * 60 * 24 * 1000)
-                    ) == 0
-                      ? "<1"
-                      : Math.floor(
-                          (Date.now() - new Date(task.createdAt).getTime()) /
-                            (60 * 60 * 24 * 1000)
-                        )
-                  }
-                />
-              )
+              />
+              <div>Show tasks assigned to all member</div>
+              {/* {allMemberTasks ? "All Member" : "Only You"} */}
+            </label>
           )}
         </div>
-        {/* done */}
-        <div className="flex-1 flex flex-col gap-2 p-4 border-2 rounded-md grow">
-          {/* title */}
-          <div className="flex justify-between border-b-1 pb-2">
-            <div className="flex gap-1 items-center">
-              <h1 className="font-bold">Done</h1>
-              <span className="p-2 bg-blue-200 text-blue-700 w-4 h-4 text-sm rounded-full flex justify-center items-center">
-                {tasks.filter((task) => task.status === "done").length}
-              </span>
-            </div>
-            <AiOutlineMore />
-          </div>
-          {/* task list */}
-          {tasks.map(
-            (task) =>
-              task.status == "done" && (
-                <TaskCard
-                  onStatusChange={handleStatusChange}
-                  onTaskEdit={handleTaskEdit}
-                  onTaskArchive={handleTaskArchive}
-                  onTaskDelete={handleTaskDelete}
-                  taskId={task.id}
-                  status={task.status}
-                  taskName={task.title}
-                  taskDescription={task.description}
-                  taskAssignedTo={task.user.name}
-                  dueDate={new Date(task.due_date).toUTCString().slice(0, 16)}
-                  daysElapsed={
-                    // task.daysElapsed
-                    Math.floor(
-                      (Date.now() - new Date(task.createdAt).getTime()) /
-                        (60 * 60 * 24 * 1000)
-                    ) == 0
-                      ? "<1"
-                      : Math.floor(
-                          (Date.now() - new Date(task.createdAt).getTime()) /
-                            (60 * 60 * 24 * 1000)
-                        )
-                  }
-                />
-              )
-          )}
+
+        <button
+          className="btn btn-sm"
+          onClick={() => document.getElementById("add_task").showModal()}
+        >
+          + Add new task
+        </button>
+      </div>
+      {loading ? (
+        <div className="p-3 h-screen/2 w-full flex gap-3 items-stretch">
+          <div className="rounded h-full p-3 flex-1 grow bg-gray-200 animate-pulse duration-200"></div>
+          <div className="rounded h-full p-3 flex-1 grow bg-gray-200 animate-pulse duration-200"></div>
+          <div className="rounded h-full p-3 flex-1 grow bg-gray-200 animate-pulse duration-200"></div>
+          <div className="rounded h-full p-3 flex-1 grow bg-gray-200 animate-pulse duration-200"></div>
         </div>
-        {/* archived */}
-        <div>
+      ) : (
+        <div className="flex gap-2 justify-between overflow-x-scroll scrollbar-hide">
+          {/* to do */}
           <div className="flex-1 flex flex-col gap-2 p-4 border-2 rounded-md grow">
             {/* title */}
-            <div className="flex justify-between items-center border-b-1 pb-2 gap-4">
+            <div className="flex justify-between border-b-1 pb-2">
               <div className="flex gap-1 items-center">
-                <h1 className="font-bold">Archived</h1>
+                <h1 className="font-bold">To-do</h1>
                 <span className="p-2 bg-blue-200 text-blue-700 w-4 h-4 text-sm rounded-full flex justify-center items-center">
-                  {archivedTasks.length}
+                  {tasks.filter((task) => task.status === "todo").length}
                 </span>
               </div>
-              {/* <AiOutlineMore /> */}
-              <div>
-                {!archivedWindow ? (
-                  <FaWindowMaximize
-                    // className="cursor-pointer p-5"
-                    onClick={() => {
-                      setArchivedWindow(true);
-                    }}
-                  />
-                ) : (
-                  <FaWindowMinimize
-                    onClick={() => {
-                      setArchivedWindow(false);
-                    }}
-                  />
-                )}
+              <div className="flex gap-2 items-center">
+                <button>
+                  <AiOutlineMore />
+                </button>
               </div>
             </div>
+            {/* tasks list */}
+            {tasks?.map(
+              (task) =>
+                task?.status == "todo" && (
+                  <TaskCard
+                    onStatusChange={handleStatusChange}
+                    onTaskEdit={handleTaskEdit}
+                    onTaskArchive={handleTaskArchive}
+                    onTaskDelete={handleTaskDelete}
+                    taskId={task.id}
+                    status={task.status}
+                    taskName={task.title}
+                    taskDescription={task.description}
+                    taskAssignedTo={task.user.name}
+                    dueDate={new Date(task.due_date).toLocaleString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour: "numeric",
+                      minute: "numeric",
+                      hour12: true,
+                    })}
+                    createdAt={new Date(task.createdAt)
+                      .toUTCString()
+                      .slice(0, 16)}
+                    daysLeft={() => {
+                      const timeDiff =
+                        new Date(task.due_date).getTime() - Date.now();
+                      const daysLeft = Math.floor(
+                        timeDiff / (60 * 60 * 24 * 1000)
+                      );
+                      const hoursLeft = Math.floor(
+                        (timeDiff % (60 * 60 * 24 * 1000)) / (60 * 60 * 1000)
+                      );
 
+                      if (timeDiff < 0) {
+                        return "Overdue"; // If overdue
+                      } else if (daysLeft > 0) {
+                        return `${daysLeft} day(s) ${hoursLeft} hour(s) left`;
+                      } else if (hoursLeft > 0) {
+                        return `${hoursLeft} hour(s) left`;
+                      } else {
+                        return "Less than an hour left";
+                      }
+                    }}
+                  />
+                )
+            )}
+            {/* single task card */}
+          </div>
+          {/* doing */}
+          <div className="flex-1 flex flex-col gap-2 p-4 border-2 rounded-md grow">
+            {/* title */}
+            <div className="flex justify-between border-b-1 pb-2">
+              <div className="flex gap-1 items-center">
+                <h1 className="font-bold">In progress</h1>
+                <span className="p-2 bg-blue-200 text-blue-700 w-4 h-4 text-sm rounded-full flex justify-center items-center">
+                  {tasks.filter((task) => task.status === "doing").length}
+                </span>
+              </div>
+              <AiOutlineMore />
+            </div>
             {/* task list */}
-            {archivedWindow &&
-              archivedTasks.map((task) => (
-                <TaskCard
-                  isArchived={true}
-                  onStatusChange={handleStatusChange}
-                  onTaskEdit={handleTaskEdit}
-                  onTaskUnarchive={handleTaskUnarchive}
-                  onTaskDelete={handleTaskDelete}
-                  taskId={task.id}
-                  status={task.status}
-                  taskName={task.title}
-                  taskDescription={task.description}
-                  taskAssignedTo={task.user.name}
-                  dueDate={new Date(task.due_date).toUTCString().slice(0, 16)}
-                  daysElapsed={
-                    // task.daysElapsed
-                    Math.floor(
-                      (Date.now() - new Date(task.createdAt).getTime()) /
-                        (60 * 60 * 24 * 1000)
-                    ) == 0
-                      ? "<1"
-                      : Math.floor(
-                          (Date.now() - new Date(task.createdAt).getTime()) /
-                            (60 * 60 * 24 * 1000)
-                        )
-                  }
-                />
-              ))}
+            {tasks.map(
+              (task) =>
+                task.status == "doing" && (
+                  <TaskCard
+                    onStatusChange={handleStatusChange}
+                    onTaskEdit={handleTaskEdit}
+                    onTaskArchive={handleTaskArchive}
+                    onTaskDelete={handleTaskDelete}
+                    taskId={task.id}
+                    status={task.status}
+                    taskName={task.title}
+                    taskDescription={task.description}
+                    taskAssignedTo={task.user.name}
+                    dueDate={new Date(task.due_date).toLocaleString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour: "numeric",
+                      minute: "numeric",
+                      hour12: true,
+                    })}
+                    createdAt={new Date(task.createdAt)
+                      .toUTCString()
+                      .slice(0, 16)}
+                    daysLeft={(() => {
+                      const timeDiff =
+                        new Date(task.due_date).getTime() - Date.now();
+                      const daysLeft = Math.floor(
+                        timeDiff / (60 * 60 * 24 * 1000)
+                      );
+                      const hoursLeft = Math.floor(
+                        (timeDiff % (60 * 60 * 24 * 1000)) / (60 * 60 * 1000)
+                      );
+
+                      if (timeDiff < 0) {
+                        return "Overdue"; // If overdue
+                      } else if (daysLeft > 0) {
+                        return `${daysLeft} day(s) ${hoursLeft} hour(s) left`;
+                      } else if (hoursLeft > 0) {
+                        return `${hoursLeft} hour(s) left`;
+                      } else {
+                        return "Less than an hour left";
+                      }
+                    })()}
+                  />
+                )
+            )}
+          </div>
+          {/* done */}
+          <div className="flex-1 flex flex-col gap-2 p-4 border-2 rounded-md grow">
+            {/* title */}
+            <div className="flex justify-between border-b-1 pb-2">
+              <div className="flex gap-1 items-center">
+                <h1 className="font-bold">Done</h1>
+                <span className="p-2 bg-blue-200 text-blue-700 w-4 h-4 text-sm rounded-full flex justify-center items-center">
+                  {tasks.filter((task) => task.status === "done").length}
+                </span>
+              </div>
+              <AiOutlineMore />
+            </div>
+            {/* task list */}
+            {tasks.map(
+              (task) =>
+                task.status == "done" && (
+                  <TaskCard
+                    onStatusChange={handleStatusChange}
+                    onTaskEdit={handleTaskEdit}
+                    onTaskArchive={handleTaskArchive}
+                    onTaskDelete={handleTaskDelete}
+                    taskId={task.id}
+                    status={task.status}
+                    taskName={task.title}
+                    taskDescription={task.description}
+                    taskAssignedTo={task.user.name}
+                    dueDate={new Date(task.due_date).toLocaleString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour: "numeric",
+                      minute: "numeric",
+                      hour12: true,
+                    })}
+                    createdAt={new Date(task.createdAt)
+                      .toUTCString()
+                      .slice(0, 16)}
+                    daysLeft={(() => {
+                      const timeDiff =
+                        new Date(task.due_date).getTime() - Date.now();
+                      const daysLeft = Math.floor(
+                        timeDiff / (60 * 60 * 24 * 1000)
+                      );
+                      const hoursLeft = Math.floor(
+                        (timeDiff % (60 * 60 * 24 * 1000)) / (60 * 60 * 1000)
+                      );
+
+                      if (timeDiff < 0) {
+                        return "Overdue"; // If overdue
+                      } else if (daysLeft > 0) {
+                        return `${daysLeft} day(s) ${hoursLeft} hour(s) left`;
+                      } else if (hoursLeft > 0) {
+                        return `${hoursLeft} hour(s) left`;
+                      } else {
+                        return "Less than an hour left";
+                      }
+                    })()}
+                  />
+                )
+            )}
+          </div>
+          {/* archived */}
+          <div>
+            <div className="flex-1 flex flex-col gap-2 p-4 border-2 rounded-md grow">
+              {/* title */}
+              <div className="flex justify-between items-center border-b-1 pb-2 gap-4">
+                <div className="flex gap-1 items-center">
+                  <h1 className="font-bold">Archived</h1>
+                  <span className="p-2 bg-blue-200 text-blue-700 w-4 h-4 text-sm rounded-full flex justify-center items-center">
+                    {archivedTasks.length}
+                  </span>
+                </div>
+                {/* <AiOutlineMore /> */}
+                <div>
+                  {!archivedWindow ? (
+                    <FaWindowMaximize
+                      // className="cursor-pointer p-5"
+                      onClick={() => {
+                        setArchivedWindow(true);
+                      }}
+                    />
+                  ) : (
+                    <FaWindowMinimize
+                      onClick={() => {
+                        setArchivedWindow(false);
+                      }}
+                    />
+                  )}
+                </div>
+              </div>
+
+              {/* task list */}
+              {archivedWindow &&
+                archivedTasks.map((task) => (
+                  <TaskCard
+                    isArchived={true}
+                    onStatusChange={handleStatusChange}
+                    onTaskEdit={handleTaskEdit}
+                    onTaskUnarchive={handleTaskUnarchive}
+                    onTaskDelete={handleTaskDelete}
+                    taskId={task.id}
+                    status={task.status}
+                    taskName={task.title}
+                    taskDescription={task.description}
+                    taskAssignedTo={task.user.name}
+                    dueDate={new Date(task.due_date).toLocaleString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour: "numeric",
+                      minute: "numeric",
+                      hour12: true,
+                    })}
+                    createdAt={new Date(task.createdAt)
+                      .toUTCString()
+                      .slice(0, 16)}
+                    daysLeft={(() => {
+                      const timeDiff =
+                        new Date(task.due_date).getTime() - Date.now();
+                      const daysLeft = Math.floor(
+                        timeDiff / (60 * 60 * 24 * 1000)
+                      );
+                      const hoursLeft = Math.floor(
+                        (timeDiff % (60 * 60 * 24 * 1000)) / (60 * 60 * 1000)
+                      );
+
+                      if (timeDiff < 0) {
+                        return "Overdue"; // If overdue
+                      } else if (daysLeft > 0) {
+                        return `${daysLeft} day(s) ${hoursLeft} hour(s) left`;
+                      } else if (hoursLeft > 0) {
+                        return `${hoursLeft} hour(s) left`;
+                      } else {
+                        return "Less than an hour left";
+                      }
+                    })()}
+                  />
+                ))}
+            </div>
           </div>
         </div>
-      </div>
-      <dialog id="my_modal_3" className="modal">
-        <div className="modal-box bg-white p-4 rounded-md shadow-md w-fit lg:w-1/2 mx-auto mt-10">
+      )}
+      <dialog id="add_task" className="modal">
+        <div className="modal-box bg-white p-4 rounded-md shadow-md w-fit lg:w-1/2 mx-auto mt-10 overflow-auto scrollbar-hide">
           <form method="dialog">
-            {/* if there is a button in form, it will close the modal */}
             <button
-              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+              className="absolute btn btn-sm btn-circle btn-ghost right-2 top-2"
               onClick={() => {
-                // alert("editin");
                 setStatusUpdate((prev) => !prev);
               }}
             >
@@ -389,7 +539,8 @@ const Tasks = () => {
 
       {/* edit task */}
       <dialog id="my_modal_4" className="modal">
-        <div className="modal-box bg-white p-4 rounded-md shadow-md w-fit lg:w-1/2 mx-auto mt-10">
+        {/* <div className="modal-box bg-white p-4 rounded-md shadow-md w-fit lg:w-1/2 mx-auto mt-10"> */}
+        <div className="modal-box bg-white p-4 rounded-md shadow-md w-fit lg:w-1/2 mx-auto mt-10 overflow-auto scrollbar-hide">
           <form method="dialog">
             {/* if there is a button in form, it will close the modal */}
             <button
