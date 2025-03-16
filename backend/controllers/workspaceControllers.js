@@ -137,8 +137,8 @@ const readWorkspaceOfTeam = async (req, res) => {
             where: {
                 role: "member"
             },
-            // attributes: ['role', 'workspace_id'],
-            attributes:[],
+            attributes: ['workspace_id'],
+            // attributes:[],
             include: [
                 {
                     model: workspace,
