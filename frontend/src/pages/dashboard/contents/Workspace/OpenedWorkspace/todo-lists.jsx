@@ -3,7 +3,7 @@ import { FaPlus } from "react-icons/fa";
 import ToDoCard from "../../../../../components/_workspaces/todo_card";
 import TodoMinimizedCard from "../../../../../components/_workspaces/todo_minimized_card";
 import AddNewTodoList from "./add-todo-list";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useSelector } from "react-redux";
 // import React from "react";
@@ -35,6 +35,7 @@ const TodoLists = () => {
   // const workspace = location2.state?.workspace || {};
   // const [workspace, setWorkspace] = useState(location2.state?.workspace || {});
   const workspace = useSelector((state) => state.workspace.workspace);
+  const { workspaceId } = useParams();
 
   // console.log("from redux", workspace);
 
@@ -67,7 +68,7 @@ const TodoLists = () => {
       if (response.ok) {
         const data = await response.json();
         setTodo(data);
-        console.table(data);
+        // console.table(data);
       } else {
         throw new Error("Failed to fetch todo items");
       }
@@ -87,7 +88,7 @@ const TodoLists = () => {
 
   const fetchTodoList = async () => {
     try {
-      const response = await fetch(`${apiURL}/api/todos/${workspace.id}`, {
+      const response = await fetch(`${apiURL}/api/todos/${workspaceId}`, {
         headers: header,
       });
       if (response.ok) {
@@ -238,7 +239,7 @@ const TodoLists = () => {
     totalTodos > 0 ? Math.ceil((completedTodos / totalTodos) * 100) : 0;
 
   return (
-    <div>
+    <div className="">
       {/* top-section : for quick managements like adding to do list*/}
       <div className="flex gap-4 justify-between  items-center p-2 border-b-2">
         <h1 className="font-bold text-lg">TO-DO List</h1>
@@ -251,55 +252,67 @@ const TodoLists = () => {
           <span>Add New To Do</span>
         </div>
       </div>
-      {/* bottom-section where viewing and real businesses takes place*/}
-      <div className="flex p-1 gap-3 w-full overflow-x-scroll scrollbar-hide">
-        {/* viewing area */}
-        <div className="flex-1">
-          {/* todo progress */}
 
-          {Object.keys(openedTodoList).length > 0 && (
-            <div className="flex items-center gap-3">
-              <progress
-                className="progress progress-success transition"
-                value={progress}
-                max="100"
-              ></progress>
-              <div className="flex items-center w-fit font-bold">
-                <span className="flex">
-                  <p>{progress}</p> %
-                </span>
-                <p className="ml-1">completed</p>
-              </div>
-            </div>
-          )}
-          <ToDoCard
-            todo_title={openedTodoList.title}
-            createdAt={openedTodoList.createdAt}
-            todo={todo}
-            onChange={(id) => toggleStatus(id)} // lati check this shit out I mean there is a trick in way it works
-            addNewTodo={handleAddTodoItem}
-            onHandleContentChange={onHandleContentChange}
-            todoContent={todoContent}
-          />
-        </div>
-        {/* selecting area */}
-        <div className="flex-1 flex flex-wrap w-96 h-fit">
-          {todoList.length > 0 ? (
-            todoList.map((item, index) => (
-              <TodoMinimizedCard
-                className="grow m-1 hover:bg-gray-200 hover:cursor-pointer w-fit"
-                // onClick={() => alert(`card number ${index} clicked`)}
-                title={item.title}
-                createdAt={item.createdAt}
-                deleteTodoList={() => handleTodoListDelete(item.id)}
-                onOpenTodoList={() =>
-                  handleOpenTodoList(item.id, item.title, item.createdAt)
-                }
+      {/* <div>Opened todo list {openedTodoList.id}</div> */}
+      {/* bottom-section where viewing and real businesses takes place*/}
+      <div className="overflow-scroll scrollbar-hide">
+        <div className="flex p-1 gap-3 w-fit sm:w-full ">
+          {/* selecting area */}
+          {/* <div className="flex flex-col max-h-screen w-80 overflow-y-scroll border rounded-md scrollbar-hide gap-1 p-3"> */}
+          <div className="flex flex-col gap-2 p-1 border-2 border-gray-100 rounded-2xl">
+            {/* <div className="border-2">
+              <input
+                type="text"
+                className="bg-transparent border-none outline-none ring-0 "
               />
-            ))
-          ) : (
-            <span>No todo list</span>
-          )}
+            </div> */}
+            {todoList.length > 0 ? (
+              todoList.map((item, index) => (
+                <TodoMinimizedCard
+                  className={`hover:bg-gray-200 hover:cursor-pointer w-72 ${
+                    openedTodoList.id === item.id && "border-blue-500"
+                  }`}
+                  // onClick={() => alert(`card number ${index} clicked`)}
+                  title={item.title}
+                  createdAt={item.createdAt}
+                  deleteTodoList={() => handleTodoListDelete(item.id)}
+                  onOpenTodoList={() =>
+                    handleOpenTodoList(item.id, item.title, item.createdAt)
+                  }
+                />
+              ))
+            ) : (
+              <span>No todo list</span>
+            )}
+          </div>
+          {/* viewing area */}
+          <div className="w-80 sm:w-full">
+            {/* todo progress */}
+            {Object.keys(openedTodoList).length > 0 && (
+              <div className="flex items-center gap-3">
+                <progress
+                  className="progress progress-success transition"
+                  value={progress}
+                  max="100"
+                ></progress>
+                <div className="flex items-center w-fit font-bold">
+                  <span className="flex">
+                    <p>{progress}</p> %
+                  </span>
+                  <p className="ml-1">completed</p>
+                </div>
+              </div>
+            )}
+            <ToDoCard
+              todo_title={openedTodoList.title}
+              createdAt={openedTodoList.createdAt}
+              todo={todo}
+              onChange={(id) => toggleStatus(id)} // lati check this shit out I mean there is a trick in way it works
+              addNewTodo={handleAddTodoItem}
+              onHandleContentChange={onHandleContentChange}
+              todoContent={todoContent}
+            />
+          </div>
         </div>
       </div>
 
