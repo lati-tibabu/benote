@@ -178,7 +178,7 @@ const Notes = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {notes.map((note, index) => (
+                  {notes?.map((note, index) => (
                     <tr key={note.id}>
                       <td>{index + 1}</td>
                       <td
