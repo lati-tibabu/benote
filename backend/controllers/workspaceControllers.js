@@ -1,3 +1,4 @@
+const { where } = require("sequelize");
 const { workspace, workspace_membership, team_membership, user} = require("../models");
 const { team } = require("../models");
 
@@ -87,44 +88,63 @@ const giveUserMembership = async (req, res) => {
 // Read
 const readWorkspaces = async (req, res) => {
     try {
-        // const userId = req.user.id;
+        const home = req.query.home;
+        const userId = req.user.id;
+        let _workspaces = null;
 
-        const _workspaces = await workspace_membership.findAll({
-            attributes: ['role','workspace_id'],
-            where: {
-                // created_by: req.user.id
-                user_id: req.user.id,
-                // user_id: req.body.user_id
-            },
-            include: [
-                {
-                model: workspace,
-                as: 'workspace',
-                required: true,
-
+        if(!home){
+            _workspaces = await workspace_membership.findAll({
+                attributes: ['role','workspace_id'],
+                where: {
+                    user_id: userId,
+                },
                 include: [
                     {
-                        model: team, 
-                        as: 'team', 
-                        required: false, 
-                    },
-                    {
-                        model: workspace_membership,
-                        as: 'memberships',
-                        required: false,
-                        attributes: ['role'],
-                        include: [
-                            {
-                                model: user,
-                                as: 'user',
-                                attributes: ['name', 'email']
-                            }
-                        ]
+                    model: workspace,
+                    as: 'workspace',
+                    required: true,
+                    include: [
+                        {
+                            model: team, 
+                            as: 'team', 
+                            required: false, 
+                        },
+                        {
+                            model: workspace_membership,
+                            as: 'memberships',
+                            required: false,
+                            attributes: ['role'],
+                            include: [
+                                {
+                                    model: user,
+                                    as: 'user',
+                                    attributes: ['name', 'email']
+                                }
+                            ]
+                        }
+                    ],
                     }
+                ]
+            });
+        }
+        else{
+            _workspaces = await workspace_membership.findAll({
+                attributes: ['role', 'workspace_id'],
+                where: { user_id: userId },
+                include: [
+                    {
+                        model: workspace,
+                        as: 'workspace',
+                        required: true,
+                    },
                 ],
-                }
-            ]
-        });
+                order: [[{ model: workspace, as: 'workspace' }, 'last_accessed_at', 'DESC']],
+                limit: 5
+            });            
+        }
+
+        if(!_workspaces) return res.status(404).json('Workspace not found');
+
         res.json(_workspaces);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -177,7 +197,7 @@ const readWorkspace = async (req, res) => {
             where: {
                 user_id: userId,
                 workspace_id: workspaceId
-            }
+            },
         });
 
         const userTeams = await team_membership.findAll({
@@ -199,14 +219,29 @@ const readWorkspace = async (req, res) => {
         : null; // No team membership if the array is empty
 
         if (!directMembership && !teamMembership) {
-            res.status(403).json('You are not a member of this workspace');
+            res.status(403).json('Unauthorized, You are not a member of this workspace');
         } else {
-            const _workspace = await workspace.findByPk(workspaceId);
-            if (_workspace){
-                res.json(_workspace);
-            } else{
-            res.status(404).json({message: 'Workspace not found!'});
-            }
+            const _workspace = await workspace.findOne(
+                {
+                    where: {
+                        id: workspaceId
+                    },
+                    include: [
+                        {
+                            model: user,
+                            as: 'creator',
+                            attributes: ['name']
+                        }
+                    ]
+                }
+            );
+
+            if(!_workspace) return res.status(404).json({message: 'Workspace not found'});
+            await _workspace.update({
+                last_accessed_at: new Date()
+            });
+            
+            res.json(_workspace);   
         }
     } catch (error) {
         res.status(500).json({message: error.message}); 
