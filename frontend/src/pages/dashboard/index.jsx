@@ -19,6 +19,7 @@ import {
   AiOutlineLeft,
   AiOutlineArrowLeft,
   AiOutlineArrowRight,
+  AiOutlineStar,
 } from "react-icons/ai";
 import { HiMenu, HiX } from "react-icons/hi";
 import Footer1 from "../../components/_footers/footer1";
@@ -27,7 +28,12 @@ import { useDispatch, useSelector } from "react-redux";
 // const crypto = require("crypto");
 import { SHA256 } from "crypto-js";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { FaStop } from "react-icons/fa6";
+import { FaBolt, FaStop } from "react-icons/fa6";
+import {
+  GiArtificialIntelligence,
+  GiSparkles,
+  GiStarStruck,
+} from "react-icons/gi";
 import { stopAlarm } from "../../redux/slices/pomodoroSlice";
 
 function Dashboard() {
@@ -230,6 +236,19 @@ function Dashboard() {
                 {!collapsedNav && <span>Profile</span>}
               </Link>
               <Link
+                to="llm-setting"
+                className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
+                  loc[0] === "llm-setting"
+                    ? "font-bold bg-blue-100 text-blue-800 rounded"
+                    : "text-gray-800"
+                }`}
+                onClick={() => setIsMobileNavOpen(false)}
+                title="LLM Setting"
+              >
+                <FaBolt size={20} />
+                {!collapsedNav && <span>LLM Setting</span>}
+              </Link>
+              <Link
                 to="notification"
                 className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
                   loc[0] === "notification"
@@ -305,12 +324,6 @@ function Dashboard() {
                 >
                   <AiOutlineArrowLeft />
                 </div>
-                {/* <div
-                  className="p-2 hover:bg-gray-200 rounded-full cursor-pointer"
-                  onClick={() => history.go(1)}
-                >
-                  <AiOutlineArrowRight />
-                </div> */}
               </div>
 
               <div className="font-bold text-2xl">
@@ -322,37 +335,34 @@ function Dashboard() {
               loc[1] === "open" &&
               workspaceTitle &&
               workspaceEmoji ? (
-                <>
-                  <div className="text-gray-500">|</div>
-                  <div className="text-lg lg:text-2xl md:text-xl text-black flex items-center gap-2 text-nowrap overflow-hidden">
+                <div className="flex border-l-2 border-gray-500 pl-2 w-48 sm:w-80 overflow-x-scroll scrollbar-hide">
+                  <div className="text-lg lg:text-2xl md:text-xl text-black flex items-center text-nowrap text-clip gap-2">
                     {workspaceEmoji}
                     {workspaceTitle}
                   </div>
-                </>
+                </div>
               ) : loc[0] === "team" && loc[1] === "open" && teamTitle ? (
-                <>
-                  <div className="text-gray-500">|</div>
+                <div className="flex border-l-2 border-gray-500 pl-2 w-80 overflow-x-scroll scrollbar-hide">
                   <div className="text-lg lg:text-2xl md:text-xl text-black flex items-center gap-2 text-nowrap overflow-hidden">
                     {teamTitle}
                   </div>
-                </>
+                </div>
               ) : null}
             </div>
-            <div>
-              {alarmPlaying && (
-                <div className="fixed bottom-5 right-5 bg-orange-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-bounce transition-all">
-                  <span className="font-bold text-lg">
-                    🔔 Focus Time is Up!
-                  </span>
-                  <button
-                    className="bg-white text-orange-600 px-3 py-1 rounded-lg font-bold shadow-md hover:shadow-xl transition-all hover:scale-105"
-                    onClick={() => dispatch(stopAlarm())}
-                  >
-                    ✋ Stop Music
-                  </button>
-                </div>
-              )}
-            </div>
+
+            {/* <div> */}
+            {alarmPlaying && (
+              <div className="fixed bottom-5 right-5 bg-orange-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-bounce transition-all">
+                <span className="font-bold text-lg">🔔 Focus Time is Up!</span>
+                <button
+                  className="bg-white text-orange-600 px-3 py-1 rounded-lg font-bold shadow-md hover:shadow-xl transition-all hover:scale-105"
+                  onClick={() => dispatch(stopAlarm())}
+                >
+                  ✋ Stop Music
+                </button>
+              </div>
+            )}
+            {/* </div> */}
             <AiFillInfoCircle size={30} className="cursor-pointer" />
           </div>
 
