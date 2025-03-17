@@ -7,6 +7,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useSelector } from "react-redux";
 import AiGeneratedTodo from "./Todo/ai-generated-todo";
+import { ToastContainer } from "react-toastify";
 // import React from "react";
 
 const TodoLists = () => {
@@ -32,11 +33,11 @@ const TodoLists = () => {
   const location = useLocation();
   const addedNewTodo = location.state?.addedTodo;
 
-  const location2 = useLocation();
   // const workspace = location2.state?.workspace || {};
   // const [workspace, setWorkspace] = useState(location2.state?.workspace || {});
   const workspace = useSelector((state) => state.workspace.workspace);
   const { workspaceId } = useParams();
+  const useGemini = localStorage.getItem("useGemini") === "true" ? true : false;
 
   // console.log("from redux", workspace);
 
@@ -216,7 +217,7 @@ const TodoLists = () => {
         },
         body: JSON.stringify({
           title: todoContent,
-          todo_id: todoList.id, // Use the updated todoList.id
+          todo_id: todoList.id,
           status: "not_done",
         }),
       });
@@ -241,18 +242,21 @@ const TodoLists = () => {
 
   return (
     <div className="">
+      <ToastContainer />
       {/* top-section : for quick managements like adding to do list*/}
       <div className="flex gap-4 justify-between  items-center p-2 border-b-2">
         <h1 className="font-bold text-lg">TO-DO List</h1>
         <div className="flex items-center gap-3">
-          <div
-            className="btn bg-gradient-to-tr from-pink-500 transition-all duration-300 to-blue-600 text-white border-white hover:border-pink-500 btn-soft rounded-full"
-            // onClick={() => alert("hey developer, you wanna add a todo list")}
-            onClick={() => document.getElementById("ai_gen_todo").showModal()}
-          >
-            <FaBolt />
-            Prompt Todo
-          </div>
+          {useGemini && (
+            <div
+              className="btn bg-gradient-to-tr from-pink-500 transition-all duration-300 to-blue-600 text-white border-white hover:border-pink-500 btn-soft rounded-full"
+              // onClick={() => alert("hey developer, you wanna add a todo list")}
+              onClick={() => document.getElementById("ai_gen_todo").showModal()}
+            >
+              <FaBolt />
+              Generate todo
+            </div>
+          )}
           <div
             className="btn btn-soft rounded-full"
             // onClick={() => alert("hey developer, you wanna add a todo list")}
