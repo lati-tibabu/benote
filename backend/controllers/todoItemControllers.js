@@ -3,6 +3,24 @@ const { todo_item } = require("../models");
 // Create
 const createTodoItem = async (req, res) => {
     try {
+        const todo = req.body;
+        
+        if(Array.isArray(todo?.tasks)){
+            // const todoItemsToCreate = todo?.tasks.map(task => ({
+            //         status: task.status,
+            //         title: task.title,
+            //         todo_id: task.todo_id
+            // }))
+
+            const _todoItems = await todo_item.bulkCreate(todo?.tasks);
+
+            if (_todoItems.length) {
+                return res.status(201).json(_todoItems);
+            } else {
+                return res.status(400).json({ message: "Failed to create tasks." });
+            }
+        }
+      
         const _todoItem = await todo_item.create(req.body);
         res.status(201).json(_todoItem);
     } catch (error) {
@@ -18,7 +36,10 @@ const readTodoItems = async (req, res) => {
             {
                 where: {
                     todo_id: todoListId
-                }
+                },
+                order: [
+                    ['createdAt', 'ASC']
+                ]
             }
         );
         res.json(_todoItems);

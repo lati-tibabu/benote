@@ -17,7 +17,10 @@ const readTodos = async (req, res) => {
             {
                 where: {
                     workspace_id: req.params.workspace_id
-                }
+                },
+                order: [
+                    ['createdAt', 'DESC']
+                ]
             }
         );
         res.json(_todos);
