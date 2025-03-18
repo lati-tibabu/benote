@@ -1,171 +1,250 @@
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { AiOutlineDelete } from "react-icons/ai";
+import { FaRegSmile } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import {
+  clearWorkspace,
+  setWorkspace,
+} from "../../../../../redux/slices/workspaceSlice";
 
 const Settings = () => {
-  const workspace = useSelector((state) => state.workspace.workspace);
-
-  // Initialize state from the workspace model
-  const [name, setName] = useState(workspace.name);
-  const [description, setDescription] = useState(workspace.description);
-  const [emoji, setEmoji] = useState(workspace.emoji);
-  const [privacy, setPrivacy] = useState(
-    workspace.belongs_to_team ? "Team-based" : "Private"
-  );
-  const [ownedBy, setOwnedBy] = useState(workspace.creator.name);
-  const [team, setTeam] = useState(workspace.belongs_to_team);
-
-  useEffect(() => {
-    setName(workspace.name);
-    setDescription(workspace.description);
-    setEmoji(workspace.emoji);
-    setPrivacy(workspace.belongs_to_team ? "Team-based" : "Private");
-    setOwnedBy(workspace.creator.name);
-    setTeam(workspace.belongs_to_team);
-  }, [workspace]);
-
-  const handleNameChange = (e) => setName(e.target.value);
-  const handleDescriptionChange = (e) => setDescription(e.target.value);
-  const handleEmojiChange = (e) => setEmoji(e.target.value);
-  const handlePrivacyChange = (e) => setPrivacy(e.target.value);
-
-  const handleSave = () => {
-    // Handle saving the settings (UI part only for now)
-    alert("Settings saved!");
+  const apiURL = import.meta.env.VITE_API_URL;
+  const token = localStorage.getItem("jwt");
+  const header = {
+    authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
   };
 
-  const handleDelete = () => {
-    // Handle delete confirmation and deletion
-    if (
-      window.confirm(
-        "Are you sure you want to delete this workspace? This action is irreversible."
-      )
-    ) {
-      alert("Workspace deleted.");
+  const workspace = useSelector((state) => state.workspace?.workspace);
+  const { workspaceId } = useParams();
+
+  const [updatedWorkspace, setUpdatedWorkspace] = useState({
+    name: workspace?.name,
+    description: workspace?.description,
+    emoji: workspace?.emoji,
+    privacy: workspace?.belongs_to_team ? "Team-based" : "Private",
+    ownedBy: workspace?.creator?.name,
+    team: workspace?.belongs_to_team,
+  });
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    setUpdatedWorkspace({
+      name: workspace?.name,
+      description: workspace?.description,
+      emoji: workspace?.emoji,
+      privacy: workspace?.belongs_to_team ? "Team-based" : "Private",
+      ownedBy: workspace?.creator?.name,
+      team: workspace?.belongs_to_team,
+    });
+  }, [workspace]);
+
+  const handleSave = async () => {
+    try {
+      const requestOptions = {
+        method: "PUT",
+        headers: header,
+        body: JSON.stringify({
+          name: updatedWorkspace.name,
+          description: updatedWorkspace.description,
+          emoji: updatedWorkspace.emoji,
+        }),
+      };
+      const response = await fetch(
+        `${apiURL}/api/workspaces/${workspaceId}`,
+        requestOptions
+      );
+      if (!response.ok)
+        return toast.error("Error updating workspace with new information");
+
+      getWorkspaceDetails(workspaceId);
+      toast.success("Workspace updated successfully");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this workspace?"))
+      return;
+
+    try {
+      const response = await fetch(`${apiURL}/api/workspaces/${workspaceId}`, {
+        method: "DELETE",
+        headers: header,
+      });
+      if (!response.ok) {
+        console.log(await response.json());
+        throw new Error("Failed to delete");
+      }
+
+      toast.success("Workspace deleted");
+      dispatch(clearWorkspace());
+      navigate("/app/workspace", { state: { workspaceUpdate: true } });
+    } catch (error) {
+      console.error("Error deleting workspace:", error);
+      toast.error("Failed to delete workspace");
     }
   };
 
   const handleMigrate = (newPrivacy) => {
-    // Handle workspace migration between private and team-based
     const migrationConfirmed = window.confirm(
       `Are you sure you want to migrate the workspace to ${newPrivacy} settings?`
     );
     if (migrationConfirmed) {
-      setPrivacy(newPrivacy);
+      setUpdatedWorkspace({ ...updatedWorkspace, privacy: newPrivacy });
       alert(`Workspace migrated to ${newPrivacy}`);
+    }
+  };
+
+  const handleEmojiSelect = (emoji) => {
+    setUpdatedWorkspace({
+      ...updatedWorkspace,
+      emoji: emoji.native,
+    });
+    setShowEmojiPicker(false);
+  };
+
+  const getWorkspaceDetails = async (id) => {
+    try {
+      const response = await fetch(`${apiURL}/api/workspaces/${id}`, {
+        method: "GET",
+        headers: header,
+      });
+      if (!response.ok) throw new Error("Failed to fetch workspace");
+
+      const data = await response.json();
+      dispatch(setWorkspace(data));
+    } catch (error) {
+      console.error("Error fetching workspace:", error);
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+      <ToastContainer />
       <h2 className="text-3xl font-semibold text-gray-700 mb-6">
         Workspace Settings
       </h2>
       <form className="space-y-6">
-        <div className="flex flex-col">
-          <label
-            htmlFor="workspace-name"
-            className="text-lg font-medium text-gray-600 mb-2"
-          >
+        <fieldset className="flex flex-col relative border-2 p-4 rounded-lg">
+          <legend className="text-lg font-medium text-gray-600 mb-2">
             Workspace Name
-          </label>
+          </legend>
           <input
             type="text"
-            id="workspace-name"
-            value={name}
-            onChange={handleNameChange}
+            value={updatedWorkspace?.name || ""}
+            onChange={(e) =>
+              setUpdatedWorkspace({ ...updatedWorkspace, name: e.target.value })
+            }
             className="p-3 border rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 bg-transparent"
             placeholder="Enter workspace name"
             required
           />
-        </div>
+        </fieldset>
 
-        <div className="flex flex-col">
-          <label
-            htmlFor="workspace-description"
-            className="text-lg font-medium text-gray-600 mb-2"
-          >
+        <fieldset className="flex flex-col relative border-2 p-4 rounded-lg">
+          <legend className="text-lg font-medium text-gray-600 mb-2">
             Description
-          </label>
+          </legend>
           <textarea
-            id="workspace-description"
-            value={description}
-            onChange={handleDescriptionChange}
+            value={updatedWorkspace?.description || ""}
+            onChange={(e) =>
+              setUpdatedWorkspace({
+                ...updatedWorkspace,
+                description: e.target.value,
+              })
+            }
             className="p-3 border rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 bg-transparent"
             placeholder="Enter workspace description"
             required
           />
-        </div>
+        </fieldset>
 
-        <div className="flex flex-col">
-          <label
-            htmlFor="workspace-emoji"
-            className="text-lg font-medium text-gray-600 mb-2"
-          >
-            Workspace Emoji
-          </label>
-          <input
-            type="text"
-            id="workspace-emoji"
-            value={emoji}
-            onChange={handleEmojiChange}
-            className="p-3 border rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 bg-transparent"
-            placeholder="Choose workspace emoji"
-          />
-        </div>
+        <fieldset className="flex flex-col relative border-2 p-4 rounded-lg">
+          <legend className="text-lg font-medium text-gray-600 mb-2">
+            Emoji
+          </legend>
+          <div className="flex items-center justify-between gap-3">
+            <input
+              type="text"
+              disabled
+              className="p-2 text-4xl rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-950 w-16 text-center"
+              value={updatedWorkspace.emoji}
+            />
+            <button
+              type="button"
+              className="flex items-center gap-2 px-3 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
+              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+            >
+              <FaRegSmile className="text-xl" />
+              {showEmojiPicker ? "Hide" : "Select Emoji"}
+            </button>
+            <AiOutlineDelete
+              className="hover:text-red-600 cursor-pointer text-2xl"
+              onClick={() => {
+                setUpdatedWorkspace({ ...updatedWorkspace, emoji: "" });
+              }}
+            />
+          </div>
+          {showEmojiPicker && (
+            <div className="absolute top-14 left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded-md z-50 p-2">
+              <h3 className="text-center text-lg font-semibold mb-2">
+                Select an Emoji
+              </h3>
+              <Picker data={data} onEmojiSelect={handleEmojiSelect} />
+            </div>
+          )}
+        </fieldset>
 
-        <div className="flex flex-col">
-          <label
-            htmlFor="workspace-privacy"
-            className="text-lg font-medium text-gray-600 mb-2"
-          >
+        <fieldset className="flex flex-col relative border-2 p-4 rounded-lg">
+          <legend className="text-lg font-medium text-gray-600 mb-2">
             Privacy Settings
-          </label>
+          </legend>
           <select
-            id="workspace-privacy"
-            value={privacy}
-            onChange={handlePrivacyChange}
+            value={updatedWorkspace?.privacy || ""}
+            onChange={(e) =>
+              setUpdatedWorkspace({
+                ...updatedWorkspace,
+                privacy: e.target.value,
+              })
+            }
             className="p-3 border rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 bg-transparent"
           >
             <option value="Private">Private</option>
             <option value="Team-based">Team-based</option>
           </select>
-        </div>
+        </fieldset>
 
-        <div className="flex flex-col">
-          <label className="text-lg font-medium text-gray-600 mb-2">
-            Owned By
-          </label>
-          <p className="text-gray-500">{ownedBy}</p>{" "}
-          {/* Assuming you display the owner ID or name here */}
-        </div>
-
-        <div className="flex flex-col">
-          <label className="text-lg font-medium text-gray-600 mb-2">Team</label>
-          <p className="text-gray-500">
-            {team ? `Assigned to Team: ${team}` : "No team assigned"}
-          </p>
-        </div>
-
-        <div className="flex flex-col sm:flex-row mt-6 gap-1">
+        <div className="flex flex-col sm:flex-row mt-6 gap-2">
           <button
             type="button"
             onClick={handleSave}
-            className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700"
+            className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
           >
             Save Settings
           </button>
           <button
             type="button"
             onClick={() =>
-              handleMigrate(privacy === "Private" ? "Team-based" : "Private")
+              handleMigrate(
+                workspace?.privacy === "Private" ? "Team-based" : "Private"
+              )
             }
-            className="px-6 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700"
+            className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
           >
-            Migrate to {privacy === "Private" ? "Team-based" : "Private"}
+            Migrate to{" "}
+            {workspace?.privacy === "Private" ? "Team-based" : "Private"}
           </button>
           <button
             type="button"
-            className="px-6 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700"
+            className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
             onClick={handleDelete}
           >
             Delete Workspace
