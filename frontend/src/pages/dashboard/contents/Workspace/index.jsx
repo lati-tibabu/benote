@@ -38,8 +38,6 @@ function Workspace() {
     getWorkspace();
   }, [updateWorkspace]);
 
-  console.log("Workspaces here", workspaces);
-
   const navigate = useNavigate();
 
   const handleWorkspaceOpen = (workspaceId) => () => {
