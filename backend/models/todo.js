@@ -23,7 +23,16 @@ module.exports = (sequelize, DataTypes) => {
     },
     title: DataTypes.STRING,
     user_id: DataTypes.UUID,
-    workspace_id: DataTypes.UUID
+    workspace_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: 'workspaces',
+        key: 'id'
+      }, 
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE'
+    }
   }, {
     sequelize,
     modelName: 'todo',
