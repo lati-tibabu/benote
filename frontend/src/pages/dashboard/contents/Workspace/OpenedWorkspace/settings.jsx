@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { FaRegSmile } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import {
   clearWorkspace,
@@ -33,6 +33,7 @@ const Settings = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setUpdatedWorkspace({
