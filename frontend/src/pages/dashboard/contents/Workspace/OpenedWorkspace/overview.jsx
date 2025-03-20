@@ -1,17 +1,46 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import { setWorkspace } from "../../../../../redux/slices/workspaceSlice";
 
 const Overview = () => {
-  const workspace = useSelector((state) => state.workspace.workspace);
+  const apiURL = import.meta.env.VITE_API_URL;
+  const token = localStorage.getItem("jwt");
+  const header = {
+    authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
 
   const navigate = useNavigate();
-  // const addTask = true;
+  const dispatch = useDispatch();
+  const { workspaceId } = useParams();
+
   const handleCreateNewTask = (id) => {
     navigate(`/app/workspace/open/${id}/tasks`, {
       state: { addTask: true, workspace: workspace },
     });
   };
+
+  const workspace = useSelector((state) => state.workspace.workspace);
+
+  const getWorkspaceDetails = async (id) => {
+    try {
+      const response = await fetch(`${apiURL}/api/workspaces/${id}`, {
+        method: "GET",
+        headers: header,
+      });
+      if (!response.ok) throw new Error("Failed to fetch workspace");
+
+      const data = await response.json();
+      dispatch(setWorkspace(data));
+    } catch (error) {
+      console.error("Error fetching workspace:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (workspaceId) getWorkspaceDetails(workspaceId);
+  }, [workspaceId]);
 
   return Object.keys(workspace).length === 0 ? (
     <div className="flex flex-col gap-4 p-6 min-h-full">
@@ -90,26 +119,54 @@ const Overview = () => {
       <div className="flex-2 p-6 bg-white rounded-lg border-2 border-gray-100">
         {/* <div className="p-2 rounded-lg border-2 border-gray-100 bg-gray-600 text-white"> */}
         <div>
-          <strong>Total Tasks </strong>40
+          <strong>Total Tasks </strong>
+          {workspace?.tasks.length}
         </div>
         <div className="flex-2">
           {/* tasks and deadline statuses and informations */}
           <div className="flex flex-wrap gap-2 justify-between p-2">
             <div className="grow flex flex-col items-center justify-between p-5 bg-blue-100 rounded-md shadow-md w-full sm:w-1/4">
-              <h1 className="font-bold text-lg text-blue-600">Active Tasks</h1>
-              <span className="text-3xl font-bold text-blue-800">10</span>
+              <div className="flex flex-col items-center">
+                🚀
+                <h1 className="font-bold text-lg text-blue-600 text-center">
+                  Active Tasks
+                </h1>
+              </div>
+              <span className="text-3xl font-bold text-blue-800">
+                {workspace?.tasks?.filter((task) => task.status === "doing")
+                  ?.length || 0}
+              </span>
             </div>
 
             <div className="grow flex flex-col items-center justify-between p-5 bg-red-100 rounded-md shadow-md w-full sm:w-1/4">
-              <h1 className="font-bold text-lg text-red-600">Overdue Tasks</h1>
-              <span className="text-3xl font-bold text-red-800">5</span>
+              <div className="flex flex-col items-center">
+                ⏳
+                <h1 className="font-bold text-lg text-red-600 text-center">
+                  Overdue Tasks
+                </h1>
+              </div>
+              <span className="text-3xl font-bold text-red-800">
+                {
+                  workspace?.tasks.filter(
+                    (task) =>
+                      task.status != "done" &&
+                      new Date(task.due_date).getTime() - Date.now() < 0
+                  ).length
+                }
+              </span>
             </div>
 
             <div className="grow flex flex-col items-center justify-between p-5 bg-green-100 rounded-md shadow-md w-full sm:w-1/4">
-              <h1 className="font-bold text-lg text-green-600">
-                Completed Tasks
-              </h1>
-              <span className="text-3xl font-bold text-green-800">25</span>
+              <div className="flex flex-col items-center">
+                ✅
+                <h1 className="font-bold text-lg text-green-600 text-center">
+                  Completed Tasks
+                </h1>
+              </div>
+              <span className="text-3xl font-bold text-green-800">
+                {workspace?.tasks?.filter((task) => task.status === "done")
+                  ?.length || 0}
+              </span>
             </div>
           </div>
           {/* Recent Activities */}

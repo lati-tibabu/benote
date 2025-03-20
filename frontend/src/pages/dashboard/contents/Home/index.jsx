@@ -4,6 +4,9 @@ import { jwtDecode } from "jwt-decode";
 import PomodoroFocus from "./contents/pomodoro-focus";
 import { AiOutlineClockCircle } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
+import { FaGem } from "react-icons/fa";
+import { FaBolt, FaDiamond } from "react-icons/fa6";
+import AiSummary from "./contents/ai-summary";
 
 const Home = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -16,6 +19,7 @@ const Home = () => {
   const [userData, setUserData] = useState(null);
   const [userId, setUserId] = useState(null);
   const [workspaces, setWorkspaces] = useState([]);
+  const [showAiSummary, setShowAiSummary] = useState(false);
 
   //fetching currently logged in user id from the jwt token
   useEffect(() => {
@@ -95,8 +99,23 @@ const Home = () => {
   const handleWorkspaceOpen = (workspaceId) => () => {
     navigate(`/app/workspace/open/${workspaceId}`);
   };
+  const useGemini = localStorage.getItem("useGemini") === "true" ? true : false;
   return (
     <div>
+      {useGemini && (
+        <div className="absolute right-0 flex">
+          <div
+            className="flex h-10 items-center gap-2 bg-gradient-to-tr from-pink-500 to-blue-600 transition-all duration-300 text-white cursor-pointer p-2 rounded-l-lg border-white border-l-2 border-y-2 shadow"
+            onClick={() => {
+              setShowAiSummary(!showAiSummary);
+            }}
+          >
+            <FaBolt />
+            Ai Summary
+          </div>
+          {showAiSummary && <AiSummary />}
+        </div>
+      )}
       {/* top */}
       <div className="p-6 mx-auto mb-5 h-[50vh] flex flex-col justify-center items-center text-center bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl shadow-lg text-white animate-fadeIn">
         <span className="text-2xl sm:text-4xl font-semibold">
