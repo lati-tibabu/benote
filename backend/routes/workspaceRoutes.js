@@ -1,18 +1,19 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const workspaceController = require('../controllers/workspaceControllers');
-const authMiddleWare = require('../middlewares/authMiddleware');
+const workspaceController = require("../controllers/workspaceControllers");
+const authMiddleWare = require("../middlewares/authMiddleware");
 
 router.use(authMiddleWare.authMiddleware);
 
-router.post('/',  workspaceController.createWorkspace);
-router.get('/', workspaceController.readWorkspaces);
-router.get('/:team_id/team', workspaceController.readWorkspaceOfTeam);
+router.post("/", workspaceController.createWorkspace);
+router.get("/", workspaceController.readWorkspaces);
+router.get("/data", workspaceController.readWorkspacesData);
+router.get("/:team_id/team", workspaceController.readWorkspaceOfTeam);
 // assign membership
-router.post('/:id/members', workspaceController.giveUserMembership);
-router.get('/:id', workspaceController.readWorkspace);
-router.put('/:id', workspaceController.updateWorkspace);
-router.delete('/:id', workspaceController.deleteWorkspace);
+router.post("/:id/members", workspaceController.giveUserMembership);
+router.get("/:id", workspaceController.readWorkspace);
+router.put("/:id", workspaceController.updateWorkspace);
+router.delete("/:id", workspaceController.deleteWorkspace);
 
 module.exports = router;

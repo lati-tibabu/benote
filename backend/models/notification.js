@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class notification extends Model {
     /**
@@ -11,60 +9,74 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsTo(models.user, { foreignKey: 'receiver_id', as: 'receiver' });
-      this.belongsTo(models.user, { foreignKey: 'sender_id', as: 'sender' });
+      this.belongsTo(models.user, {
+        foreignKey: "receiver_id",
+        as: "receiver",
+      });
+      this.belongsTo(models.user, { foreignKey: "sender_id", as: "sender" });
     }
   }
-  notification.init({
-    id: {
-      type: DataTypes.UUID,
-      primaryKey: true,
-      defaultValue: DataTypes.UUIDV4
-    },
-    message: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true
-      }
-    },
-    type: {
-      type: DataTypes.ENUM('invitation','system','recommendation','info', 'warning', 'error', 'success'),
-      allowNull: false,
-      validate: {
-        notEmpty: true
-      }
-    },
-    action: {
-      type: DataTypes.JSON,
-      allowNull: true
-    },
-    receiver_id: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: 'users',
-        key: 'id'
+  notification.init(
+    {
+      id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+      },
+      message: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
         },
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
-      validate: {
-        notEmpty: true
-      }
-    },
-    sender_id: {
-      type: DataTypes.UUID,
-      allowNull: true,
-      references: {
-        model: 'users',
-        key: 'id'
+      },
+      type: {
+        type: DataTypes.ENUM(
+          "invitation",
+          "system",
+          "recommendation",
+          "info",
+          "warning",
+          "error",
+          "success",
+        ),
+        allowNull: false,
+        validate: {
+          notEmpty: true,
         },
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE'
-    }
-  }, {
-    sequelize,
-    modelName: 'notification',
-  });
+      },
+      action: {
+        type: DataTypes.JSON,
+        allowNull: true,
+      },
+      receiver_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+          model: "users",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+        validate: {
+          notEmpty: true,
+        },
+      },
+      sender_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+          model: "users",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      },
+    },
+    {
+      sequelize,
+      modelName: "notification",
+    },
+  );
   return notification;
 };

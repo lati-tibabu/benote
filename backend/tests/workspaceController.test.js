@@ -1,227 +1,385 @@
-const { workspace } = require("../models");
-const workspaceController = require("../controllers/workspaceControllers");
+const {
+  workspace,
+  workspace_membership,
+  team,
+  user,
+  task,
+  todo,
+  todo_item,
+  team_membership,
+} = require("../models");
+const {
+  createWorkspace,
+  readWorkspaces,
+  readWorkspaceOfTeam,
+  readWorkspace,
+  giveUserMembership,
+  updateWorkspace,
+  deleteWorkspace,
+  readWorkspacesData,
+} = require("../controllers/workspaceController");
+const { Op } = require("sequelize");
 
-// Mock the workspace model
-jest.mock("../models");
+describe("Workspace Controller", () => {
+  let testUser, testWorkspace, testTeam;
 
-describe("Workspace Controllers", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
+  beforeEach(async () => {
+    testUser = await user.create({
+      name: "Test User",
+      email: "test@example.com",
+    });
+    testTeam = await team.create({ name: "Test Team" });
+  });
+
+  afterEach(async () => {
+    await workspace.destroy({ where: {} });
+    await workspace_membership.destroy({ where: {} });
+    await team.destroy({ where: {} });
+    await user.destroy({ where: {} });
+    await task.destroy({ where: {} });
+    await todo.destroy({ where: {} });
+    await todo_item.destroy({ where: {} });
+    await team_membership.destroy({ where: {} });
   });
 
   describe("createWorkspace", () => {
-    it("should create a new workspace", async () => {
-      const req = { body: { name: "Test Workspace" } };
+    it("should create a new workspace and add the user as an admin", async () => {
+      const req = {
+        body: {
+          name: "Test Workspace",
+          owned_by: testUser.id,
+          emoji: ":smile:",
+        },
+        user: testUser,
+      };
       const res = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
       };
-      const createdWorkspace = { id: 1, name: "Test Workspace" };
-      workspace.create.mockResolvedValue(createdWorkspace);
 
-      await workspaceController.createWorkspace(req, res);
+      await createWorkspace(req, res);
 
       expect(res.status).toHaveBeenCalledWith(201);
-      expect(res.json).toHaveBeenCalledWith(createdWorkspace);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: "Test Workspace",
+          owned_by: testUser.id,
+        })
+      );
+
+      const createdWorkspace = await workspace.findOne({
+        where: { name: "Test Workspace" },
+      });
+      expect(createdWorkspace).toBeDefined();
+      const membership = await workspace_membership.findOne({
+        where: {
+          workspace_id: createdWorkspace.id,
+          user_id: testUser.id,
+          role: "admin",
+        },
+      });
+      expect(membership).toBeDefined();
     });
 
-    it("should handle errors during workspace creation", async () => {
-      const req = { body: { name: "Test Workspace" } };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
-      const error = new Error("Database error");
-      workspace.create.mockRejectedValue(error);
-
-      await workspaceController.createWorkspace(req, res);
-
+    it("should handle errors gracefully", async () => {
+      const req = { body: { name: "Test Workspace", owned_by: null } };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      await createWorkspace(req, res);
       expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({ message: error.message });
+    });
+  });
+
+  describe("giveUserMembership", () => {
+    beforeEach(async () => {
+      testWorkspace = await workspace.create({
+        name: "Test Workspace",
+        owned_by: testUser.id,
+      });
+    });
+
+    it("should give a user membership to a workspace", async () => {
+      const req = {
+        body: { user_id: testUser.id, role: "member" },
+        params: { id: testWorkspace.id },
+      };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+
+      await giveUserMembership(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(201);
+      const membership = await workspace_membership.findOne({
+        where: { workspace_id: testWorkspace.id, user_id: testUser.id },
+      });
+      expect(membership).toBeDefined();
+    });
+
+    it("should give a team membership to a workspace", async () => {
+      const req = {
+        body: { team_id: testTeam.id, role: "member" },
+        params: { id: testWorkspace.id },
+      };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+
+      await giveUserMembership(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(201);
+      const membership = await workspace_membership.findOne({
+        where: { workspace_id: testWorkspace.id, team_id: testTeam.id },
+      });
+      expect(membership).toBeDefined();
+    });
+
+    it("should handle errors gracefully", async () => {
+      const req = { body: {}, params: { id: testWorkspace.id } };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      await giveUserMembership(req, res);
+      expect(res.status).toHaveBeenCalledWith(400);
+
+      const req2 = {
+        body: { user_id: 12345 },
+        params: { id: testWorkspace.id },
+      };
+      const res2 = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      await giveUserMembership(req2, res2);
+      expect(res2.status).toHaveBeenCalledWith(404);
     });
   });
 
   describe("readWorkspaces", () => {
-    it("should retrieve all workspaces", async () => {
-      const req = {};
-      const res = { json: jest.fn() };
-      const workspaces = [{ id: 1, name: "Workspace 1" }];
-      workspace.findAll.mockResolvedValue(workspaces);
-
-      await workspaceController.readWorkspaces(req, res);
-
-      expect(res.json).toHaveBeenCalledWith(workspaces);
+    beforeEach(async () => {
+      testWorkspace = await workspace.create({
+        name: "Test Workspace",
+        owned_by: testUser.id,
+      });
+      await workspace_membership.create({
+        workspace_id: testWorkspace.id,
+        user_id: testUser.id,
+        role: "admin",
+      });
     });
 
-    it("should handle errors during workspace retrieval", async () => {
-      const req = {};
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
-      const error = new Error("Database error");
-      workspace.findAll.mockRejectedValue(error);
+    it("should return all workspaces for a user", async () => {
+      const req = { user: testUser, query: {} };
+      const res = { json: jest.fn() };
+      await readWorkspaces(req, res);
+      expect(res.json).toHaveBeenCalled();
+    });
 
-      await workspaceController.readWorkspaces(req, res);
+    it("should return only home workspaces if specified", async () => {
+      const req = { user: testUser, query: { home: true } };
+      const res = { json: jest.fn() };
+      await readWorkspaces(req, res);
+      expect(res.json).toHaveBeenCalled();
+    });
 
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({ message: error.message });
+    it("should handle errors gracefully", async () => {
+      const req = { user: testUser, query: { home: "true" } };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      await readWorkspaces(req, res);
     });
   });
-  
+
+  describe("readWorkspacesData", () => {
+    beforeEach(async () => {
+      testWorkspace = await workspace.create({
+        name: "Test Workspace",
+        owned_by: testUser.id,
+        emoji: ":smile:",
+      });
+      await workspace_membership.create({
+        workspace_id: testWorkspace.id,
+        user_id: testUser.id,
+        role: "admin",
+      });
+    });
+
+    it("should return workspace data with tasks and todos", async () => {
+      const req = { user: testUser };
+      const res = { json: jest.fn() };
+      await readWorkspacesData(req, res);
+      expect(res.json).toHaveBeenCalled();
+    });
+
+    it("should handle cases where no workspaces are found", async () => {
+      await workspace_membership.destroy({ where: { user_id: testUser.id } });
+      const req = { user: testUser };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      await readWorkspacesData(req, res);
+      expect(res.status).toHaveBeenCalledWith(404);
+    });
+  });
+
+  describe("readWorkspaceOfTeam", () => {
+    beforeEach(async () => {
+      testWorkspace = await workspace.create({
+        name: "Test Workspace",
+        owned_by: testUser.id,
+        belongs_to_team: testTeam.id,
+      });
+      await workspace_membership.create({
+        workspace_id: testWorkspace.id,
+        team_id: testTeam.id,
+        role: "member",
+      });
+    });
+
+    it("should return workspaces for a given team", async () => {
+      const req = { params: { team_id: testTeam.id } };
+      const res = { json: jest.fn() };
+      await readWorkspaceOfTeam(req, res);
+      expect(res.json).toHaveBeenCalled();
+    });
+
+    it("should handle cases where no workspaces are found", async () => {
+      const req = { params: { team_id: 9999 } };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      await readWorkspaceOfTeam(req, res);
+      expect(res.status).toHaveBeenCalledWith(404);
+    });
+  });
+
   describe("readWorkspace", () => {
-        it("should retrieve a specific workspace", async () => {
-            const req = { params: { id: 1 } };
-            const res = { json: jest.fn() };
-            const singleWorkspace = { id: 1, name: "Specific Workspace" };
-            workspace.findByPk.mockResolvedValue(singleWorkspace);
+    beforeEach(async () => {
+      testWorkspace = await workspace.create({
+        name: "Test Workspace",
+        owned_by: testUser.id,
+      });
+      await workspace_membership.create({
+        workspace_id: testWorkspace.id,
+        user_id: testUser.id,
+        role: "admin",
+      });
+    });
 
-            await workspaceController.readWorkspace(req, res);
+    it("should return a workspace if the user is a member", async () => {
+      const req = { params: { id: testWorkspace.id }, user: testUser };
+      const res = { json: jest.fn() };
+      await readWorkspace(req, res);
+      expect(res.json).toHaveBeenCalled();
+    });
 
-            expect(workspace.findByPk).toHaveBeenCalledWith(1); // Check if findByPk is called with the right ID.
-            expect(res.json).toHaveBeenCalledWith(singleWorkspace);
-        });
+    it("should return 403 if the user is not a member", async () => {
+      const anotherUser = await user.create({
+        name: "Another User",
+        email: "another@example.com",
+      });
+      const req = { params: { id: testWorkspace.id }, user: anotherUser };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      await readWorkspace(req, res);
+      expect(res.status).toHaveBeenCalledWith(403);
+    });
 
-
-        it("should handle errors during single workspace retrieval", async () => {
-            const req = { params: { id: 1 } };
-            const res = {
-                status: jest.fn().mockReturnThis(),
-                json: jest.fn(),
-            };
-            const error = new Error("Database error");
-            workspace.findByPk.mockRejectedValue(error);
-
-            await workspaceController.readWorkspace(req, res);
-
-            expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.json).toHaveBeenCalledWith({ message: error.message });
-
-        })
+    it("should handle workspace not found", async () => {
+      const req = { params: { id: 9999 }, user: testUser };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      await readWorkspace(req, res);
+      expect(res.status).toHaveBeenCalledWith(404);
+    });
   });
 
   describe("updateWorkspace", () => {
-      it("should update an existing workspace", async () => {
-          const req = {
-              params: { id: 1 },
-              body: { name: "Updated Workspace" },
-          };
-          const res = { json: jest.fn() };
-
-          const mockWorkspace = {
-              id: 1,
-              name: 'Original Name',
-              update: jest.fn().mockResolvedValue({ id: 1, name: 'Updated Workspace' }),
-              // get: jest.fn().mockReturnThis()
-              get: jest.fn(() => ({
-                id: 1,
-                name: 'Updated Workspace',
-              }))
-            };
-
-            workspace.findByPk.mockResolvedValue(mockWorkspace);
-
-          await workspaceController.updateWorkspace(req, res);
-
-          expect(workspace.findByPk).toHaveBeenCalledWith(1);
-          expect(mockWorkspace.update).toHaveBeenCalledWith(req.body); // Ensure update is called with the correct data
-          expect(res.json).toHaveBeenCalledWith({ id: 1, name: "Updated Workspace" });
+    beforeEach(async () => {
+      testWorkspace = await workspace.create({
+        name: "Test Workspace",
+        owned_by: testUser.id,
       });
-
-      it("should handle not found error during update", async () => {
-          const req = {
-              params: { id: 999 }, // ID that doesn't exist
-              body: { name: "Updated Workspace" },
-          };
-          const res = {
-              status: jest.fn().mockReturnThis(),
-              json: jest.fn(),
-          };
-          workspace.findByPk.mockResolvedValue(null);
-
-          await workspaceController.updateWorkspace(req, res);
-          expect(res.status).toHaveBeenCalledWith(404);
-          expect(res.json).toHaveBeenCalledWith({ message: "Workspace not found1" });
+      await workspace_membership.create({
+        workspace_id: testWorkspace.id,
+        user_id: testUser.id,
+        role: "admin",
       });
+    });
 
+    it("should update a workspace if the user is an admin", async () => {
+      const req = {
+        params: { id: testWorkspace.id },
+        body: { name: "Updated Workspace" },
+        user: testUser,
+      };
+      const res = { json: jest.fn() };
+      await updateWorkspace(req, res);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ name: "Updated Workspace" })
+      );
+    });
 
+    it("should return 401 if the user is not an admin", async () => {
+      const anotherUser = await user.create({
+        name: "Another User",
+        email: "another@example.com",
+      });
+      await workspace_membership.create({
+        workspace_id: testWorkspace.id,
+        user_id: anotherUser.id,
+        role: "member",
+      });
+      const req = {
+        params: { id: testWorkspace.id },
+        body: { name: "Updated Workspace" },
+        user: anotherUser,
+      };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      await updateWorkspace(req, res);
+      expect(res.status).toHaveBeenCalledWith(401);
+    });
 
-      it("should handle errors during workspace update", async () => {
-          const req = {
-            params: { id: 1 },
-            body: { name: "Updated Workspace" },
-          };
-          const res = {
-            status: jest.fn().mockReturnThis(),
-            json: jest.fn(),
-          };
-          const error = new Error("Database error");
-          const mockWorkspace = {
-              id: 1,
-              name: "Test Workspace",
-              update: jest.fn().mockRejectedValue(error)
-            };
-            workspace.findByPk.mockResolvedValue(mockWorkspace);
-    
-          await workspaceController.updateWorkspace(req, res);
-    
-          expect(res.status).toHaveBeenCalledWith(500);
-          expect(res.json).toHaveBeenCalledWith({ message: error.message });
-        });
-
-
+    it("should handle workspace not found", async () => {
+      const req = {
+        params: { id: 9999 },
+        body: { name: "Updated Workspace" },
+        user: testUser,
+      };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      await updateWorkspace(req, res);
+      expect(res.status).toHaveBeenCalledWith(404);
+    });
   });
 
   describe("deleteWorkspace", () => {
-      it("should delete an existing workspace", async () => {
-          const req = { params: { id: 1 } };
-          const res = { json: jest.fn(), status: jest.fn().mockReturnThis() };
-
-          const mockWorkspace = { destroy: jest.fn().mockResolvedValue(undefined) };
-          workspace.findByPk.mockResolvedValue(mockWorkspace);
-
-          await workspaceController.deleteWorkspace(req, res);
-
-          expect(workspace.findByPk).toHaveBeenCalledWith(1);
-          expect(mockWorkspace.destroy).toHaveBeenCalled();
-          expect(res.json).toHaveBeenCalledWith({ message: "Workspace succesfully deleted" });
+    beforeEach(async () => {
+      testWorkspace = await workspace.create({
+        name: "Test Workspace",
+        owned_by: testUser.id,
       });
-
-      it("should handle not found error during delete", async () => {
-          const req = { params: { id: 999 } }; // Provide an ID that is not expected to exist
-          const res = {
-            status: jest.fn().mockReturnThis(),
-            json: jest.fn(),
-          };
-
-          workspace.findByPk = jest.fn().mockResolvedValue(null);
-
-
-          await workspaceController.deleteWorkspace(req,res)
-
-          expect(res.status).toHaveBeenCalledWith(404);
-          expect(res.json).toHaveBeenCalledWith({ message: 'Workspace not found' });
-
-        });
-
-
-      it("should handle errors during workspace deletion", async () => {
-          const req = { params: { id: 1 } };
-          const res = {
-              status: jest.fn().mockReturnThis(),
-              json: jest.fn(),
-          };
-          const error = new Error("Database Error");
-
-          const mockWorkspace = { destroy: jest.fn().mockRejectedValue(error) };
-          workspace.findByPk.mockResolvedValue(mockWorkspace);
-
-          await workspaceController.deleteWorkspace(req, res);
-
-          expect(res.status).toHaveBeenCalledWith(500);
-          expect(res.json).toHaveBeenCalledWith({ message: error.message });
+      await workspace_membership.create({
+        workspace_id: testWorkspace.id,
+        user_id: testUser.id,
+        role: "admin",
       });
+    });
+
+    it("should delete a workspace if the user is an admin", async () => {
+      const req = { params: { id: testWorkspace.id }, user: testUser };
+      const res = { json: jest.fn() };
+      await deleteWorkspace(req, res);
+      expect(res.json).toHaveBeenCalledWith({
+        message: "Workspace succesfully deleted",
+      });
+      const deletedWorkspace = await workspace.findByPk(testWorkspace.id);
+      expect(deletedWorkspace).toBeNull();
+    });
+
+    it("should return 401 if the user is not an admin", async () => {
+      const anotherUser = await user.create({
+        name: "Another User",
+        email: "another@example.com",
+      });
+      await workspace_membership.create({
+        workspace_id: testWorkspace.id,
+        user_id: anotherUser.id,
+        role: "member",
+      });
+      const req = { params: { id: testWorkspace.id }, user: anotherUser };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      await deleteWorkspace(req, res);
+      expect(res.status).toHaveBeenCalledWith(401);
+    });
+
+    it("should handle workspace not found", async () => {
+      const req = { params: { id: 9999 }, user: testUser };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      await deleteWorkspace(req, res);
+      expect(res.status).toHaveBeenCalledWith(404);
+    });
   });
-  
 });
-

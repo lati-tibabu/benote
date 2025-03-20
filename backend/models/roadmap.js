@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class roadmap extends Model {
     /**
@@ -11,23 +9,29 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsTo(models.user, { foreignKey: 'created_by', as: 'user' });
-      this.hasMany(models.mindmap_item, { foreignKey: 'mindmap_id', as: 'mindmap_items'});
+      this.belongsTo(models.user, { foreignKey: "created_by", as: "user" });
+      this.hasMany(models.mindmap_item, {
+        foreignKey: "mindmap_id",
+        as: "mindmap_items",
+      });
     }
   }
-  roadmap.init({
-    id: {
-      type: DataTypes.UUID,
-      primaryKey: true,
-      defaultValue: DataTypes.UUIDV4
+  roadmap.init(
+    {
+      id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+      },
+      title: DataTypes.STRING,
+      description: DataTypes.STRING,
+      workpace_id: DataTypes.UUID,
+      created_by: DataTypes.UUID,
     },
-    title: DataTypes.STRING,
-    description: DataTypes.STRING,
-    workpace_id: DataTypes.UUID,
-    created_by: DataTypes.UUID
-  }, {
-    sequelize,
-    modelName: 'roadmap',
-  });
+    {
+      sequelize,
+      modelName: "roadmap",
+    },
+  );
   return roadmap;
 };

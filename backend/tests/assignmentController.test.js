@@ -1,153 +1,169 @@
-const { assignment } = require('../models');
-const assignmentController = require('../controllers/assignmentControllers');
+const { assignment } = require("../models");
+const assignmentController = require("../controllers/assignmentControllers");
 
-jest.mock('../models');
+jest.mock("../models");
 
-describe('Assignment Controller Tests', () => {
-    afterEach(() => {
-        jest.clearAllMocks();
+describe("Assignment Controller Tests", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe("createAssignment", () => {
+    it("should create a new assignment", async () => {
+      const req = { body: { title: "Test Assignment" } };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      const createdAssignment = { id: 1, ...req.body };
+      assignment.create.mockResolvedValue(createdAssignment);
+
+      await assignmentController.createAssignment(req, res);
+
+      expect(assignment.create).toHaveBeenCalledWith(req.body);
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith(createdAssignment);
     });
 
-    describe('createAssignment', () => {
-        it('should create a new assignment', async () => {
-            const req = { body: { title: 'Test Assignment' } };
-            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-            const createdAssignment = { id: 1, ...req.body };
-            assignment.create.mockResolvedValue(createdAssignment);
+    it("should handle errors during assignment creation", async () => {
+      const req = { body: { title: "Error Assignment" } };
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      const error = new Error("Database error");
+      assignment.create.mockRejectedValue(error);
 
-            await assignmentController.createAssignment(req, res);
+      await assignmentController.createAssignment(req, res);
 
-            expect(assignment.create).toHaveBeenCalledWith(req.body);
-            expect(res.status).toHaveBeenCalledWith(201);
-            expect(res.json).toHaveBeenCalledWith(createdAssignment);
-        });
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ message: error.message });
+    });
+  });
 
-        it('should handle errors during assignment creation', async () => {
-            const req = { body: { title: 'Error Assignment' } };
-            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-            const error = new Error('Database error');
-            assignment.create.mockRejectedValue(error);
+  describe("readAssignments", () => {
+    it("should retrieve all assignments", async () => {
+      const req = {};
+      const res = { json: jest.fn() };
+      const assignments = [
+        { id: 1, title: "Assignment A" },
+        { id: 2, title: "Assignment B" },
+      ];
+      assignment.findAll.mockResolvedValue(assignments);
 
-            await assignmentController.createAssignment(req, res);
+      await assignmentController.readAssignments(req, res);
 
-            expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.json).toHaveBeenCalledWith({ message: error.message });
-        });
+      expect(assignment.findAll).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith(assignments);
     });
 
-    describe('readAssignments', () => {
-        it('should retrieve all assignments', async () => {
-            const req = {};
-            const res = { json: jest.fn() };
-            const assignments = [{ id: 1, title: 'Assignment A' }, { id: 2, title: 'Assignment B' }];
-            assignment.findAll.mockResolvedValue(assignments);
+    it("should handle errors during assignments retrieval", async () => {
+      const req = {};
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      const error = new Error("Database error");
+      assignment.findAll.mockRejectedValue(error);
 
-            await assignmentController.readAssignments(req, res);
+      await assignmentController.readAssignments(req, res);
 
-            expect(assignment.findAll).toHaveBeenCalled();
-            expect(res.json).toHaveBeenCalledWith(assignments);
-        });
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ message: error.message });
+    });
+  });
 
-        it('should handle errors during assignments retrieval', async () => {
-            const req = {};
-            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-            const error = new Error('Database error');
-            assignment.findAll.mockRejectedValue(error);
+  describe("readAssignment", () => {
+    it("should retrieve a specific assignment", async () => {
+      const req = { params: { id: 1 } };
+      const res = { json: jest.fn() };
+      const specificAssignment = { id: 1, title: "Specific Assignment" };
+      assignment.findByPk.mockResolvedValue(specificAssignment);
 
-            await assignmentController.readAssignments(req, res);
+      await assignmentController.readAssignment(req, res);
 
-            expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.json).toHaveBeenCalledWith({ message: error.message });
-        });
+      expect(assignment.findByPk).toHaveBeenCalledWith(req.params.id);
+      expect(res.json).toHaveBeenCalledWith(specificAssignment);
     });
 
-    describe('readAssignment', () => {
-        it('should retrieve a specific assignment', async () => {
-            const req = { params: { id: 1 } };
-            const res = { json: jest.fn() };
-            const specificAssignment = { id: 1, title: 'Specific Assignment' };
-            assignment.findByPk.mockResolvedValue(specificAssignment);
+    it("should handle assignment not found", async () => {
+      const req = { params: { id: 99 } }; // Assignment ID that won't be found
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      assignment.findByPk.mockResolvedValue(null);
 
-            await assignmentController.readAssignment(req, res);
+      await assignmentController.readAssignment(req, res);
 
-            expect(assignment.findByPk).toHaveBeenCalledWith(req.params.id);
-            expect(res.json).toHaveBeenCalledWith(specificAssignment);
-        });
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({
+        message: "assignment not found!",
+      });
+    });
+  });
 
-        it('should handle assignment not found', async () => {
-            const req = { params: { id: 99 } }; // Assignment ID that won't be found
-            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-            assignment.findByPk.mockResolvedValue(null);
+  describe("updateAssignment", () => {
+    it("should update an existing assignment", async () => {
+      const req = {
+        params: { id: 1 },
+        body: { title: "Updated Assignment Title" },
+      };
+      const res = { json: jest.fn() };
 
-            await assignmentController.readAssignment(req, res);
+      const mockAssignment = {
+        update: jest
+          .fn()
+          .mockResolvedValue({ id: 1, title: "Updated Assignment Title" }),
+        get: jest.fn(() => ({ id: 1, title: "Updated Assignment Title" })),
+      };
+      assignment.findByPk.mockResolvedValue(mockAssignment);
 
-            expect(res.status).toHaveBeenCalledWith(404);
-            expect(res.json).toHaveBeenCalledWith({ message: 'assignment not found!' });
-        });
+      await assignmentController.updateAssignment(req, res);
+
+      expect(assignment.findByPk).toHaveBeenCalledWith(req.params.id); // '1' because req.params.id is a string
+      expect(mockAssignment.update).toHaveBeenCalledWith(req.body);
+      expect(res.json).toHaveBeenCalledWith({
+        id: 1,
+        title: "Updated Assignment Title",
+      });
     });
 
-    describe('updateAssignment', () => {
-        it('should update an existing assignment', async () => {
-            const req = { params: { id: 1 }, body: { title: 'Updated Assignment Title' } };
-            const res = { json: jest.fn() };
+    it("should handle assignment not found for update", async () => {
+      const req = {
+        params: { id: 99 },
+        body: { title: "Updated Assignment Title" },
+      }; // Non-existent ID
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      assignment.findByPk.mockResolvedValue(null);
 
-             const mockAssignment = {
-                update: jest.fn().mockResolvedValue({ id: 1, title: 'Updated Assignment Title'}),
-                get: jest.fn(() => ({ id: 1, title: 'Updated Assignment Title'})),
-            };
-            assignment.findByPk.mockResolvedValue(mockAssignment);
+      await assignmentController.updateAssignment(req, res);
 
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({
+        message: "assignment not found1",
+      }); // Check the correct message
+    });
+  });
 
+  describe("deleteAssignment", () => {
+    it("should delete an existing assignment", async () => {
+      const req = { params: { id: 1 } };
+      const res = { json: jest.fn(), status: jest.fn().mockReturnThis() };
 
-            await assignmentController.updateAssignment(req, res);
+      const mockAssignmentInstance = {
+        destroy: jest.fn().mockResolvedValue(undefined),
+      };
+      assignment.findByPk.mockResolvedValue(mockAssignmentInstance);
 
-            expect(assignment.findByPk).toHaveBeenCalledWith(req.params.id); // '1' because req.params.id is a string
-            expect(mockAssignment.update).toHaveBeenCalledWith(req.body);
-            expect(res.json).toHaveBeenCalledWith({ id: 1, title: 'Updated Assignment Title' });
+      await assignmentController.deleteAssignment(req, res);
 
-
-        });
-
-        it('should handle assignment not found for update', async () => {
-            const req = { params: { id: 99 }, body: { title: 'Updated Assignment Title' } }; // Non-existent ID
-            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-            assignment.findByPk.mockResolvedValue(null);
-
-            await assignmentController.updateAssignment(req, res);
-
-            expect(res.status).toHaveBeenCalledWith(404);
-            expect(res.json).toHaveBeenCalledWith({ message: 'assignment not found1' }); // Check the correct message
-
-        });
+      expect(assignment.findByPk).toHaveBeenCalledWith(req.params.id);
+      expect(mockAssignmentInstance.destroy).toHaveBeenCalledTimes(1);
+      expect(res.json).toHaveBeenCalledWith({
+        message: "assignment succesfully deleted",
+      });
     });
 
-    describe('deleteAssignment', () => {
-        it('should delete an existing assignment', async () => {
-            const req = { params: { id: 1 } };
-            const res = { json: jest.fn(), status: jest.fn().mockReturnThis() };
-            
-            const mockAssignmentInstance = { destroy: jest.fn().mockResolvedValue(undefined) };
-            assignment.findByPk.mockResolvedValue(mockAssignmentInstance);
+    it("should handle assignment not found for deletion", async () => {
+      const req = { params: { id: 99 } }; // Non-existent ID
+      const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      assignment.findByPk.mockResolvedValue(null);
 
-            await assignmentController.deleteAssignment(req, res);
+      await assignmentController.deleteAssignment(req, res);
 
-            expect(assignment.findByPk).toHaveBeenCalledWith(req.params.id);
-            expect(mockAssignmentInstance.destroy).toHaveBeenCalledTimes(1);
-            expect(res.json).toHaveBeenCalledWith({ message: 'assignment succesfully deleted' });
-        });
-
-        it('should handle assignment not found for deletion', async () => {
-            const req = { params: { id: 99 } }; // Non-existent ID
-            const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
-            assignment.findByPk.mockResolvedValue(null);
-
-            await assignmentController.deleteAssignment(req, res);
-
-            expect(res.status).toHaveBeenCalledWith(404);
-            expect(res.json).toHaveBeenCalledWith({ message: 'assignment not found' });
-
-
-        });
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({
+        message: "assignment not found",
+      });
     });
+  });
 });
-

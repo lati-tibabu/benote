@@ -1,49 +1,49 @@
-'use strict';
+"use strict";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('submissions', {
+    await queryInterface.createTable("submissions", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       id: {
-        type: Sequelize.UUID
+        type: Sequelize.UUID,
       },
       assignment_id: {
-        type: Sequelize.UUID
+        type: Sequelize.UUID,
       },
       submitted_by: {
-        type: Sequelize.UUID
+        type: Sequelize.UUID,
       },
       file_path: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       submitted_at: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       graded_by: {
-        type: Sequelize.UUID
+        type: Sequelize.UUID,
       },
       grade: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       feedback: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('submissions');
-  }
+    await queryInterface.dropTable("submissions");
+  },
 };

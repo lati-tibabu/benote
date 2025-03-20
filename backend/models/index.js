@@ -1,46 +1,43 @@
-'use strict';
+"use strict";
 
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
-const dotenv = require('dotenv');
-const caCertPath = path.join(__dirname, '../certificates/ca.pem');
+const fs = require("fs");
+const path = require("path");
+const Sequelize = require("sequelize");
+const dotenv = require("dotenv");
+const caCertPath = path.join(__dirname, "../certificates/ca.pem");
 
 // Load environment variables from .env file
 dotenv.config();
-require('pg');
+require("pg");
 
 // Constants
-const DB_DIALECT = 'postgres';
+const DB_DIALECT = "postgres";
 const caCert = fs.readFileSync(caCertPath); // Read CA certificate
 
 // Determine the current environment
-const environment = process.env.NODE_ENV || 'dev';
+const environment = process.env.NODE_ENV || "dev";
 
 // Helper function to create Sequelize instance
 function createSequelizeInstance(config) {
-  return new Sequelize(
-    config.database,
-    config.username,
-    config.password,
-    {
-      host: config.host,
-      dialect: DB_DIALECT,
-      port: config.port,
-      logging: false,
-      dialectOptions: config.ssl ? {
-        ssl: {
-          rejectUnauthorized: false, // Allow self-signed certificates
-          ca: caCert, // Use the CA certificate
-        },
-      } : {},
-    }
-  );
+  return new Sequelize(config.database, config.username, config.password, {
+    host: config.host,
+    dialect: DB_DIALECT,
+    port: config.port,
+    logging: false,
+    dialectOptions: config.ssl
+      ? {
+          ssl: {
+            rejectUnauthorized: false, // Allow self-signed certificates
+            ca: caCert, // Use the CA certificate
+          },
+        }
+      : {},
+  });
 }
 
 // Database configuration based on environment
 let sequelize;
-if (environment === 'dev') {
+if (environment === "dev") {
   sequelize = createSequelizeInstance({
     database: process.env.DB_DATABASE,
     username: process.env.DB_USER,
@@ -65,14 +62,17 @@ const db = {};
 fs.readdirSync(__dirname)
   .filter((file) => {
     return (
-      file.indexOf('.') !== 0 && // Ignore hidden files
+      file.indexOf(".") !== 0 && // Ignore hidden files
       file !== path.basename(__filename) && // Ignore this file
-      file.slice(-3) === '.js' && // Only include JavaScript files
-      file.indexOf('.test.js') === -1 // Exclude test files
+      file.slice(-3) === ".js" && // Only include JavaScript files
+      file.indexOf(".test.js") === -1 // Exclude test files
     );
   })
   .forEach((file) => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+    const model = require(path.join(__dirname, file))(
+      sequelize,
+      Sequelize.DataTypes,
+    );
     db[model.name] = model;
   });
 

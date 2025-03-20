@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class badge extends Model {
     /**
@@ -12,24 +10,27 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.belongsToMany(models.user, {
-        through: 'userBadges',
-        foreignKey: 'badge_id',
-        otherKey: 'user_id',
-        as: 'winners'
-      })
+        through: "userBadges",
+        foreignKey: "badge_id",
+        otherKey: "user_id",
+        as: "winners",
+      });
     }
   }
-  badge.init({
-    id: {
-      type: DataTypes.UUID,
-      primaryKey: true,
-      defaultValue: DataTypes.UUIDV4,
+  badge.init(
+    {
+      id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+      },
+      name: DataTypes.STRING,
+      icon: DataTypes.STRING,
     },
-    name: DataTypes.STRING,
-    icon: DataTypes.STRING
-  }, {
-    sequelize,
-    modelName: 'badge',
-  });
+    {
+      sequelize,
+      modelName: "badge",
+    },
+  );
   return badge;
 };

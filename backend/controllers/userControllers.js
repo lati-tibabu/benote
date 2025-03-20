@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 
 // const user = require('../models/user');
 
-const { user,workspace } = require('../models');
+const { user, workspace } = require("../models");
 
 // Basic CRUD operation on models...
 
@@ -15,114 +15,113 @@ const { user,workspace } = require('../models');
 
 // Create
 const createUser = async (req, res) => {
-    try{
-        const salt = await bcrypt.genSalt(10);
-        const userData = {
-            name: req.body.name,
-            email: req.body.email,
-            password_hash: await bcrypt.hash(req.body.password,salt),
-            role: 'user'
-        }
-        // const _user = await user.create(req.body);
-        const _user = await user.create(userData);
-        res.status(201).json(_user);
-    }catch(error){
-        res.status(500).json({ message: error.message });
-    }
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const userData = {
+      name: req.body.name,
+      email: req.body.email,
+      password_hash: await bcrypt.hash(req.body.password, salt),
+      role: "user",
+    };
+    // const _user = await user.create(req.body);
+    const _user = await user.create(userData);
+    res.status(201).json(_user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 // Read
 const readUsers = async (req, res) => {
-    try{
-        const users = await user.findAll();
-        res.json(users);
-    }catch(error){
-        res.status(500).json({ message: error.message });
-    }
+  try {
+    const users = await user.findAll();
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 const readUser = async (req, res) => {
-    try{
-        const _user = await user.findByPk(req.params.id);
-        if (_user){
-            res.json(_user);
-        } else{
-            res.status(404).json({message: 'User not found'});
-        }
-    }catch(error){
-        res.status(500).json({ message: error.message });
+  try {
+    const _user = await user.findByPk(req.params.id);
+    if (_user) {
+      res.json(_user);
+    } else {
+      res.status(404).json({ message: "User not found" });
     }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 //read user by email
 const readUserByEmail = async (req, res) => {
-    try{
-        const _user = await user.findOne({where: {email: req.body.email}, attributes: ['id', 'name', 'email']});
-        if (_user){
-            res.json(_user);
-        } else{
-            res.status(404).json({message: 'User not found'});
-        }
-    }catch(error){
-        res.status(500).json({ message: error.message });
+  try {
+    const _user = await user.findOne({
+      where: { email: req.body.email },
+      attributes: ["id", "name", "email"],
+    });
+    if (_user) {
+      res.json(_user);
+    } else {
+      res.status(404).json({ message: "User not found" });
     }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 // Update
 const updateUser = async (req, res) => {
-    try {
-        const _user = await user.findByPk(req.params.id);
-        if (_user) {
-            await _user.update(req.body);
-            const updatedUser = { ..._user.get() }; // Use `.get()` to get raw data excluding Sequelize methods
-            res.json(updatedUser);
-        } else {
-            res.status(404).json({ message: 'User not found!' });
-        }
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+  try {
+    const _user = await user.findByPk(req.params.id);
+    if (_user) {
+      await _user.update(req.body);
+      const updatedUser = { ..._user.get() }; // Use `.get()` to get raw data excluding Sequelize methods
+      res.json(updatedUser);
+    } else {
+      res.status(404).json({ message: "User not found!" });
     }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
-
-// Delete 
+// Delete
 const deleteUser = async (req, res) => {
-    try{
-        const _user = await user.findByPk(req.params.id);
-        if(!_user){
-            res.status(404).json({ message: 'User not found!' })
-        } else{
-            await _user.destroy();
-            res.json({message: 'User deleted!'})
-        }
-    }catch(error){
-        res.status(500).json({ message: error.message })
+  try {
+    const _user = await user.findByPk(req.params.id);
+    if (!_user) {
+      res.status(404).json({ message: "User not found!" });
+    } else {
+      await _user.destroy();
+      res.json({ message: "User deleted!" });
     }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
-
-// getting other models for the user 
+// getting other models for the user
 const getWorkspaces = async (req, res) => {
-    try {
-        const _workspaces = await findByPk(req.params.id, {
-            include: [
-                {
-                    model: workspace,
-                    as: 'workspace',
-                    attributes: ['name, description']
-                },
-            ],
-        });
-    } catch (error) {
-        
-    }
-}
+  try {
+    const _workspaces = await findByPk(req.params.id, {
+      include: [
+        {
+          model: workspace,
+          as: "workspace",
+          attributes: ["name, description"],
+        },
+      ],
+    });
+  } catch (error) {}
+};
 
 module.exports = {
-    createUser,
-    readUsers,
-    readUserByEmail,
-    readUser,
-    updateUser,
-    deleteUser,
+  createUser,
+  readUsers,
+  readUserByEmail,
+  readUser,
+  updateUser,
+  deleteUser,
 };

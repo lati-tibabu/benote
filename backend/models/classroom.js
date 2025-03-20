@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class classroom extends Model {
     /**
@@ -11,28 +9,34 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.hasMany(models.assignment, { foreignKey: 'classroom_id', as: 'assignments' })
-      this.belongsTo(models.user, { foreignKey: 'teacher_id', as: 'teacher' })
+      this.hasMany(models.assignment, {
+        foreignKey: "classroom_id",
+        as: "assignments",
+      });
+      this.belongsTo(models.user, { foreignKey: "teacher_id", as: "teacher" });
       this.belongsToMany(models.user, {
-        through: 'studentClassrooms',
-        foreignKey: 'classroom_id',
-        otherKey: 'student_id',
-        as: 'students'
-      })
+        through: "studentClassrooms",
+        foreignKey: "classroom_id",
+        otherKey: "student_id",
+        as: "students",
+      });
     }
   }
-  classroom.init({
-    id: {
-      type: DataTypes.UUID,
-      primaryKey: true,
-      defaultValue: DataTypes.UUIDV4
+  classroom.init(
+    {
+      id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+      },
+      name: DataTypes.STRING,
+      description: DataTypes.STRING,
+      teacher_id: DataTypes.UUID,
     },
-    name: DataTypes.STRING,
-    description: DataTypes.STRING,
-    teacher_id: DataTypes.UUID
-  }, {
-    sequelize,
-    modelName: 'classroom',
-  });
+    {
+      sequelize,
+      modelName: "classroom",
+    },
+  );
   return classroom;
 };

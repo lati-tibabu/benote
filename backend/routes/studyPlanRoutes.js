@@ -1,15 +1,15 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const studyPlanController = require('../controllers/studyPlanControllers');
-const authMiddleware = require('../middlewares/authMiddleware');
+const studyPlanController = require("../controllers/studyPlanControllers");
+const authMiddleware = require("../middlewares/authMiddleware");
 
 router.use(authMiddleware.authMiddleware);
 
-router.post('/', studyPlanController.createStudyPlan);
-router.get('/', studyPlanController.readStudyPlans);
-router.get('/:id', studyPlanController.readStudyPlan);
-router.put('/:id', studyPlanController.updateStudyPlan);
-router.delete('/:id', studyPlanController.deleteStudyPlan);
+router.post("/", studyPlanController.createStudyPlan);
+router.get("/", studyPlanController.readStudyPlans);
+router.get("/:id", studyPlanController.readStudyPlan);
+router.put("/:id", studyPlanController.updateStudyPlan);
+router.delete("/:id", studyPlanController.deleteStudyPlan);
 
 module.exports = router;

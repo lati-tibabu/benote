@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class todo extends Model {
     /**
@@ -11,31 +9,40 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsTo(models.workspace, { foreignKey: 'workspace_id', as: 'workspace' });
-      this.hasMany(models.todo_item, { foreignKey: 'todo_id', as: 'todo_items' });
+      this.belongsTo(models.workspace, {
+        foreignKey: "workspace_id",
+        as: "workspace",
+      });
+      this.hasMany(models.todo_item, {
+        foreignKey: "todo_id",
+        as: "todo_items",
+      });
     }
   }
-  todo.init({
-    id: {
-      type: DataTypes.UUID,
-      primaryKey: true,
-      defaultValue: DataTypes.UUIDV4
+  todo.init(
+    {
+      id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+      },
+      title: DataTypes.STRING,
+      user_id: DataTypes.UUID,
+      workspace_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+          model: "workspaces",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      },
     },
-    title: DataTypes.STRING,
-    user_id: DataTypes.UUID,
-    workspace_id: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: 'workspaces',
-        key: 'id'
-      }, 
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE'
-    }
-  }, {
-    sequelize,
-    modelName: 'todo',
-  });
+    {
+      sequelize,
+      modelName: "todo",
+    },
+  );
   return todo;
 };

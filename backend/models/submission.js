@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class submission extends Model {
     /**
@@ -11,27 +9,36 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsTo(models.assignment, { foreignKey: 'assignment_id', as: 'assignment' });
-      this.belongsTo(models.user, { foreignKey: 'submitted_by', as: 'student' });
-      this.belongsTo(models.user, { foreignKey: 'graded_by', as: 'teacher' });
+      this.belongsTo(models.assignment, {
+        foreignKey: "assignment_id",
+        as: "assignment",
+      });
+      this.belongsTo(models.user, {
+        foreignKey: "submitted_by",
+        as: "student",
+      });
+      this.belongsTo(models.user, { foreignKey: "graded_by", as: "teacher" });
     }
   }
-  submission.init({
-    id: {
-      type: DataTypes.UUID,
-      primaryKey: true,
-      defaultValue: DataTypes.UUIDV4
+  submission.init(
+    {
+      id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+      },
+      assignment_id: DataTypes.UUID,
+      submitted_by: DataTypes.UUID,
+      file_path: DataTypes.STRING,
+      submitted_at: DataTypes.DATE,
+      graded_by: DataTypes.UUID,
+      grade: DataTypes.STRING,
+      feedback: DataTypes.STRING,
     },
-    assignment_id: DataTypes.UUID,
-    submitted_by: DataTypes.UUID,
-    file_path: DataTypes.STRING,
-    submitted_at: DataTypes.DATE,
-    graded_by: DataTypes.UUID,
-    grade: DataTypes.STRING,
-    feedback: DataTypes.STRING
-  }, {
-    sequelize,
-    modelName: 'submission',
-  });
+    {
+      sequelize,
+      modelName: "submission",
+    },
+  );
   return submission;
 };
