@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 
 const discussionController = require("../controllers/discussionControllers");
+const authMiddleWare = require("../middlewares/authMiddleware");
+
+router.use(authMiddleWare.authMiddleware);
 
 router.post("/", discussionController.createDiscussion);
 router.get("/", discussionController.readDiscussions);
