@@ -144,7 +144,9 @@ function Login() {
               {loginLoading ? (
                 <span className="loading"></span>
               ) : (
-                <button className="btn">login</button>
+                <button className="btn bg-gray-700 text-white" type="submit">
+                  login
+                </button>
               )}
               <hr />
               <p className="text-sm">or login with</p>

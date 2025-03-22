@@ -210,7 +210,7 @@ function Signup() {
                 ) : (
                   <button
                     type="submit"
-                    className="btn"
+                    className="btn bg-gray-700 text-white"
                     disabled={!isPasswordValid}
                   >
                     Sign Up
