@@ -20,6 +20,8 @@ import {
   AiOutlineArrowLeft,
   AiOutlineArrowRight,
   AiOutlineStar,
+  AiOutlineSun,
+  AiOutlineMoon,
 } from "react-icons/ai";
 import { HiMenu, HiX } from "react-icons/hi";
 import Footer1 from "../../components/_footers/footer1";
@@ -28,13 +30,14 @@ import { useDispatch, useSelector } from "react-redux";
 // const crypto = require("crypto");
 import { SHA256 } from "crypto-js";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { FaBolt, FaStop } from "react-icons/fa6";
+import { FaBolt, FaMoon, FaStop, FaSun } from "react-icons/fa6";
 import {
   GiArtificialIntelligence,
   GiSparkles,
   GiStarStruck,
 } from "react-icons/gi";
 import { stopAlarm } from "../../redux/slices/pomodoroSlice";
+import { setTheme, toggleTheme } from "../../redux/slices/themeSlice";
 
 function Dashboard() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -104,6 +107,8 @@ function Dashboard() {
 
   const dispatch = useDispatch();
   const { alarmPlaying } = useSelector((state) => state.pomodoro);
+
+  const theme = useSelector((state) => state.theme.theme);
 
   return (
     <div className="bg-white text-black min-h-screen flex flex-col">
@@ -363,7 +368,26 @@ function Dashboard() {
               </div>
             )}
             {/* </div> */}
-            <AiFillInfoCircle size={30} className="cursor-pointer" />
+            <div className="flex items-center gap-1">
+              {/* <div className="" onClick={() => dispatch(toggleTheme())}>
+                {theme}
+                <input type="checkbox" className="toggle" />
+              </div> */}
+              <div
+                className={`border-2 border-gray-800 rounded-box w-10 flex ${
+                  theme === "light"
+                    ? "justify-start"
+                    : "justify-end bg-blue-50 bg-opacity-20 text-gray-700"
+                } transition-all duration-500 cursor-pointer`}
+                onClick={() => dispatch(toggleTheme())}
+                title="Theme toggle"
+              >
+                <div className="w-5 h-5 rounded-full bg-black-200 flex items-center justify-center">
+                  {theme === "light" ? <AiOutlineSun /> : <AiOutlineMoon />}
+                </div>
+              </div>
+              <AiFillInfoCircle size={30} className="cursor-pointer" />
+            </div>
           </div>
 
           {/* Main Content */}

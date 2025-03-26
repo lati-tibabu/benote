@@ -3,6 +3,7 @@ import workspaceReducer from "./slices/workspaceSlice";
 import teamReducer from "./slices/teamReducer.js";
 import notesReducer from "./slices/notesSlice.js";
 import pomodoroReducer from "./slices/pomodoroSlice.js";
+import themeReducer from "./slices/themeSlice"; // Import the themeReducer
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     team: teamReducer,
     notes: notesReducer,
     pomodoro: pomodoroReducer,
+    theme: themeReducer, // Add theme reducer here
   },
 });
 

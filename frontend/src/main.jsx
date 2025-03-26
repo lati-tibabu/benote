@@ -8,6 +8,7 @@ import { Provider } from "react-redux";
 import store from "./redux/store.js";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import PomodoroManager from "./utils/pomodoro-manager.jsx";
+import DarkReaderManager from "./utils/darkreader.jsx";
 
 createRoot(document.getElementById("root")).render(
   // <StrictMode>{/* <App /> */}</StrictMode>
@@ -15,6 +16,7 @@ createRoot(document.getElementById("root")).render(
     <Provider store={store}>
       <GoogleOAuthProvider>
         <PomodoroManager />
+        <DarkReaderManager />
         <RouterProvider router={router} />
       </GoogleOAuthProvider>
     </Provider>
