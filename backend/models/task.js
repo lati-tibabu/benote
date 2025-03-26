@@ -24,7 +24,11 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
       },
       title: DataTypes.STRING,
-      description: DataTypes.STRING,
+      description: {
+        type: DataTypes.TEXT,
+        // allowNull: true,
+        defaultValue: "Task has no description",
+      },
       status: DataTypes.STRING,
       due_date: DataTypes.DATE,
       assigned_to: DataTypes.UUID,
@@ -46,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "task",
-    },
+    }
   );
   return task;
 };
