@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineMore } from "react-icons/ai";
 import TaskCard from "../../../../../components/_tasks/task-card";
-import AddNewTask from "./add-new-task";
-import EditTask from "./edit-task";
+import AddNewTask from "./Tasks/add-new-task";
+import EditTask from "./Tasks/edit-task";
 import { useLocation, useParams } from "react-router-dom";
 import { FaWindowMaximize, FaWindowMinimize } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import { setWorkspace } from "../../../../../redux/slices/workspaceSlice";
+import { FaBolt } from "react-icons/fa6";
+import AiGeneratedTask from "./Tasks/ai-generated-task";
 // /import { useReactToPdf } from "react-to-pdf";
 // import { usePDF } from "react-to-pdf";
 
@@ -19,6 +21,10 @@ const Tasks = () => {
     authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
+
+  // check whether ai usage is enabled or not
+
+  const useGemini = localStorage.getItem("useGemini") === "true" ? true : false;
 
   const location2 = useLocation();
 
@@ -190,7 +196,6 @@ const Tasks = () => {
   };
 
   const handleTaskDelete = async (taskId) => {
-    alert(`Deleting task ${taskId}`);
     if (window.confirm("Are you sure you want to delete this task?")) {
       try {
         const response = await fetch(`${apiURL}/api/tasks/${taskId}`, {
@@ -235,6 +240,7 @@ const Tasks = () => {
       console.error("Error fetching workspace:", error);
     }
   };
+
   return (
     <div>
       <ToastContainer />
@@ -259,12 +265,26 @@ const Tasks = () => {
           )}
         </div>
 
-        <button
-          className="btn btn-sm"
-          onClick={() => document.getElementById("add_task").showModal()}
-        >
-          + Add new task
-        </button>
+        <div className="flex items-center gap-3">
+          {useGemini && (
+            <div
+              className="btn btn-sm bg-gradient-to-tr from-pink-500 transition-all duration-300 to-blue-600 text-white border-white hover:border-pink-500 btn-soft rounded-full"
+              // onClick={() =>
+              //   alert("hey developer, you wanna generate task list")
+              // }
+              onClick={() => document.getElementById("ai_gen_task").showModal()}
+            >
+              <FaBolt />
+              Generate Tasks
+            </div>
+          )}
+          <button
+            className="btn btn-sm"
+            onClick={() => document.getElementById("add_task").showModal()}
+          >
+            + Add new task
+          </button>
+        </div>
       </div>
       {loading ? (
         <div className="p-3 h-screen/2 w-full flex gap-3 items-stretch">
@@ -577,6 +597,22 @@ const Tasks = () => {
             </button>
           </form>
           <EditTask taskId={editingTask} />
+        </div>
+      </dialog>
+      <dialog id="ai_gen_task" className="modal overflow-x-scroll">
+        <div className="modal-box bg-white p-4 rounded-md shadow-md sm:w-fit lg:w-1/2 mx-auto mt-10">
+          <form method="dialog">
+            {/* if there is a button in form, it will close the modal */}
+            <button
+              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+              onClick={() => {
+                setStatusUpdate((prev) => !prev);
+              }}
+            >
+              ✕
+            </button>
+          </form>
+          <AiGeneratedTask />
         </div>
       </dialog>
     </div>

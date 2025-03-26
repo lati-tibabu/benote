@@ -13,6 +13,14 @@ const allowedUpdates = [
 const createTask = async (req, res) => {
   try {
     if (req.body) {
+      if (Array.isArray(req.body)) {
+        const _tasks = await task.bulkCreate(req.body);
+
+        if (_tasks.length) {
+          return res.status(201).json(_tasks);
+        }
+        return res.status(400).json({ message: "Invalid task details!" });
+      }
       const _task = await task.create(req.body);
       res.status(201).json(_task);
     } else {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FaBolt, FaPlus } from "react-icons/fa";
 import ToDoCard from "../../../../../components/_workspaces/todo_card";
 import TodoMinimizedCard from "../../../../../components/_workspaces/todo_minimized_card";
-import AddNewTodoList from "./add-todo-list";
+import AddNewTodoList from "./Todo/add-todo-list";
 import { useLocation, useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useSelector } from "react-redux";

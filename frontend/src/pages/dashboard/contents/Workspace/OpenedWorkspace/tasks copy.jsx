@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineMore } from "react-icons/ai";
 import TaskCard from "../../../../../components/_tasks/task-card";
-import AddNewTask from "./add-new-task";
-import EditTask from "./edit-task";
+import AddNewTask from "./Tasks/add-new-task";
+import EditTask from "./Tasks/edit-task";
 import { useLocation, useParams } from "react-router-dom";
 import { FaWindowMaximize, FaWindowMinimize } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
