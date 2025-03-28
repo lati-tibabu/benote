@@ -246,4 +246,6 @@ You are now an intelligent note assistant. Your task is to assist the user by ei
    - search internet if you could 
    - add emojis to make it more fun and if user dont like make it without emojis
    - add emijis to title
+   - today is ${new Date().toLocaleDateString()} and time is ${new Date().toLocaleTimeString()}
+   - generate a very long output possible unless user wants a short one, and dont raise that youve generated longer output.
 `;
