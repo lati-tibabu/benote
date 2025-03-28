@@ -106,12 +106,13 @@ const Discussions = () => {
       alert("Failed to delete discussion");
     }
   };
+
   const DiscussionThread = ({ discussion }) => {
     return (
-      <div className="ml-4 pl-1 mt-2 min-w-80">
+      <div className="ml-4 pl-1 mt-2 min-w-80 bg-white hover:bg-gray-50 p-2 rounded-lg">
         <div className="flex items-center gap-1 px-4 py-1 justify-between">
           <div className="flex items-center gap-1 py-1">
-            <div className="w-5 h-5 bg-blue-600 flex items-center justify-center rounded-full text-white">
+            <div className="p-4 w-5 h-5 bg-orange-600 flex items-center justify-center rounded-full text-white font-bold">
               {discussion["user.name"][0]}
             </div>
             <div className="font-bold text-sm">{discussion["user.name"]}</div>
@@ -123,7 +124,7 @@ const Discussions = () => {
             <AiOutlineDelete />
           </div>
         </div>
-        <div className="shadow p-2">
+        <div className="rounded-lg border-2 border-gray-100 p-2">
           <div className="p-2" title={discussion["user.email"]}>
             {discussion.content}
           </div>
@@ -209,7 +210,7 @@ const Discussions = () => {
       {/* form section */}
       <div>
         {replyData.replying && (
-          <div className="flex flex-col border-t-2 border-blue-400 mt-2 p-2 rounded-t-2xl max-w-xl mx-auto">
+          <div className="flex flex-col border-t-2 border-blue-400 mt-2 p-2 mx-auto max-w-xl">
             <div className="text-sm flex items-center gap-1 text-gray-500">
               <FaReply />
               Replying To
