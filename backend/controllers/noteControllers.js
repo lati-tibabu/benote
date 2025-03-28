@@ -62,6 +62,7 @@ const readNotes = async (req, res) => {
             as: "user",
           },
         ],
+        order: [["updatedAt", "DESC"]],
       });
       res.json(_notes);
     }
