@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { FaTrash } from "react-icons/fa";
+import { FaBolt, FaTrash } from "react-icons/fa";
 import { AiOutlineFile, AiOutlineMore, AiOutlinePlus } from "react-icons/ai";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { toast, ToastContainer } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotes } from "../../../../../redux/slices/notesSlice";
+import AiGeneratedNote from "./Notes/ai-generated-note";
+import { FaPlus } from "react-icons/fa6";
 
 const Notes = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -17,6 +19,8 @@ const Notes = () => {
 
   // const workspace = location2.state?.workspace || {};
   const workspace = useSelector((state) => state.workspace.workspace) || [];
+  const { workspaceId } = useParams();
+  const useGemini = localStorage.getItem("useGemini") === "true" ? true : false;
 
   // const [notes, setNotes] = useState([]);
   const notes = useSelector((state) => state.notes.notes) || [];
@@ -135,7 +139,21 @@ const Notes = () => {
       <div className="flex flex-row items-center justify-between border-b-1 pb-2">
         <h1 className="font-bold text-2xl">Notes</h1>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-3">
+            {useGemini && (
+              <div
+                className="btn bg-gradient-to-tr from-pink-500 transition-all duration-300 to-blue-600 text-white border-white hover:border-pink-500 btn-soft rounded-full"
+                // onClick={() => alert("hey developer, you wanna add a todo list")}
+                onClick={() =>
+                  document.getElementById("ai_gen_note").showModal()
+                }
+              >
+                <FaBolt />
+                Generate Note
+              </div>
+            )}
+          </div>
           <button
             className="btn btn-soft rounded-full"
             onClick={handleAddNewNote}
@@ -231,6 +249,17 @@ const Notes = () => {
           </div>
         )}
       </div>
+      <dialog id="ai_gen_note" className="modal overflow-x-scroll">
+        <div className="modal-box bg-white p-4 rounded-md shadow-md sm:w-fit lg:w-1/2 mx-auto mt-10">
+          <form method="dialog">
+            {/* if there is a button in form, it will close the modal */}
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+              ✕
+            </button>
+          </form>
+          <AiGeneratedNote />
+        </div>
+      </dialog>
     </div>
   );
 };
