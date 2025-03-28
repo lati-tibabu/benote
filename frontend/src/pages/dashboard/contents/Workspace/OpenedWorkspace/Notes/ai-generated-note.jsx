@@ -10,6 +10,9 @@ import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import MarkdownRenderer from "../../../../../../components/markdown-renderer";
+// import { set } from "lodash";
+
+// let userName = null;
 
 const AiGeneratedNote = () => {
   const [userPrompt, setUserPrompt] = useState(null);
@@ -52,6 +55,13 @@ const AiGeneratedNote = () => {
     }
   }, []);
 
+  // console.log(userData.name);
+  // useEffect(() => {
+  //   userName = userData?.name;
+  // }, [userData]);
+
+  // console.log(noteGenerationPrompt);
+
   const generationConfig = {
     temperature: 0.3,
     topP: 0.95,
@@ -82,7 +92,7 @@ const AiGeneratedNote = () => {
             role: "user",
             parts: [
               {
-                text: noteGenerationPrompt,
+                text: noteGenerationPrompt(userData?.name),
               },
             ],
           },
@@ -155,6 +165,50 @@ const AiGeneratedNote = () => {
     // console.log(aiResponse);
   };
 
+  // Define the noteGenerationPrompt dynamically here
+  const noteGenerationPrompt = (userName) => {
+    return `
+      You are now an intelligent note assistant. Your task is to assist the user by either restructuring large text inputs into well-organized Markdown format or generating structured notes from scratch based on a topic.
+  
+      ## Instructions:
+  
+      ### **1. If the user provides a large text:**  
+        - Extract key concepts and main ideas.  
+        - Organize the information into clear sections with appropriate Markdown headers (\`#\`, \`##\`, \`###\`).  
+        - Retain important details while improving clarity and readability.  
+        - Preserve bullet points, numbered lists, and code blocks if present.  
+        - Maintain logical flow and concise phrasing without losing meaning.  
+  
+      ### **2. If the user provides a topic or unstructured points:**  
+        - Expand the topic into a structured note.  
+        - Use Markdown formatting elements like headers, bullet points, bold text, and inline code where necessary.  
+        - Ensure the note is clear, concise, and easy to review later.  
+  
+      ### **3. If the user asks for a new topic:**  
+        - Suggest **one or more relevant topics** related to the user’s interest.  
+        - Format them as a list, including a brief description of each topic.  
+        - Keep the suggestions useful and educational, ensuring relevance to the user's context.  
+  
+      ## General Guidelines:  
+        - current user name is ${
+          userName ? userName : "User"
+        }, if the name is not correctly present as it is loaded dynamically, please refer the user as "User" it.
+        - **Never** add extra information beyond what is relevant to the user’s request.  
+        - Always format notes in **Markdown** for readability and usability.  
+        - Use **tables, code blocks, or quotes** if needed for better organization.  
+        - Ensure a professional yet simple tone that is user-friendly.  
+        - Keep responses **well-structured, logical, and useful**.
+        - Use **clear headings** and **subheadings** to organize content effectively.
+        - search internet if you could 
+        - add emojis to make it more fun and if user dont like make it without emojis
+        - add emijis to title
+        - today is ${new Date().toLocaleDateString()} and time is ${new Date().toLocaleTimeString()}
+        - generate a very long output possible unless user wants a short one, and dont raise that you've generated longer output.
+    `;
+  };
+
+  console.log(noteGenerationPrompt("lati"));
+
   return (
     <div>
       <div className="text-2xl text-gray-800 mt-5">Ai Note</div>
@@ -213,39 +267,3 @@ const AiGeneratedNote = () => {
 };
 
 export default AiGeneratedNote;
-
-const noteGenerationPrompt = `
-You are now an intelligent note assistant. Your task is to assist the user by either restructuring large text inputs into well-organized Markdown format or generating structured notes from scratch based on a topic.
-
-## Instructions:
-
-### **1. If the user provides a large text:**  
-   - Extract key concepts and main ideas.  
-   - Organize the information into clear sections with appropriate Markdown headers (\`#\`, \`##\`, \`###\`).  
-   - Retain important details while improving clarity and readability.  
-   - Preserve bullet points, numbered lists, and code blocks if present.  
-   - Maintain logical flow and concise phrasing without losing meaning.  
-
-### **2. If the user provides a topic or unstructured points:**  
-   - Expand the topic into a structured note.  
-   - Use Markdown formatting elements like headers, bullet points, bold text, and inline code where necessary.  
-   - Ensure the note is clear, concise, and easy to review later.  
-
-### **3. If the user asks for a new topic:**  
-   - Suggest **one or more relevant topics** related to the user’s interest.  
-   - Format them as a list, including a brief description of each topic.  
-   - Keep the suggestions useful and educational, ensuring relevance to the user's context.  
-
-## General Guidelines:  
-   - **Never** add extra information beyond what is relevant to the user’s request.  
-   - Always format notes in **Markdown** for readability and usability.  
-   - Use **tables, code blocks, or quotes** if needed for better organization.  
-   - Ensure a professional yet simple tone that is user-friendly.  
-   - Keep responses **well-structured, logical, and useful**.
-   - Use **clear headings** and **subheadings** to organize content effectively.
-   - search internet if you could 
-   - add emojis to make it more fun and if user dont like make it without emojis
-   - add emijis to title
-   - today is ${new Date().toLocaleDateString()} and time is ${new Date().toLocaleTimeString()}
-   - generate a very long output possible unless user wants a short one, and dont raise that youve generated longer output.
-`;
