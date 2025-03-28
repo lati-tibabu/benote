@@ -3,6 +3,8 @@ import { useSelector } from "react-redux";
 import * as DarkReader from "darkreader";
 
 const DarkReaderManager = () => {
+  DarkReader.setFetchMethod(window.fetch); // Use the same fetch method as the app
+
   const theme = useSelector((state) => state.theme.theme); // Get the current theme from Redux
 
   useEffect(() => {
@@ -16,12 +18,11 @@ const DarkReaderManager = () => {
       DarkReader.disable();
     }
 
-    // Cleanup when the component is unmounted or theme changes
+    //    Cleanup when the component is unmounted or theme changes
     return () => {
       DarkReader.disable();
     };
-  }, [theme]); // Re-run the effect when theme changes
-
+  }, [theme]);
   return null;
 };
 
