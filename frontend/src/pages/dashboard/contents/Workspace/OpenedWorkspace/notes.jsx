@@ -83,7 +83,7 @@ const Notes = () => {
   const fetchNotes = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${apiURL}/api/notes/${workspace.id}`, {
+      const response = await fetch(`${apiURL}/api/notes/${workspaceId}`, {
         method: "GET",
         headers: header,
       });
