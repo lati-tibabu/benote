@@ -3,11 +3,17 @@ const router = express.Router();
 
 const taskController = require("../controllers/taskControllers");
 
+const authMiddleWare = require("../middlewares/authMiddleware");
+
+router.use(authMiddleWare.authMiddleware);
+
 // Create a task
 router.post("/", taskController.createTask);
 
 // Read all tasks in a workspace (not archived)
 router.get("/workspace/:id", taskController.readTasks);
+
+router.get("/", taskController.readTasks);
 
 // Read all tasks assigned to a user
 router.get("/user/:id", taskController.readTasksAssignedToUser);
@@ -18,7 +24,7 @@ router.get("/:id", taskController.readTask);
 // Read archived tasks in a workspace
 router.get(
   "/workspace/:workspace_id/archived",
-  taskController.readArchivedTasks,
+  taskController.readArchivedTasks
 );
 
 // Update a task

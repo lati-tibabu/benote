@@ -33,28 +33,56 @@ const createTask = async (req, res) => {
 
 // Read all
 const readTasks = async (req, res) => {
+  const isOnHome = req.query.home === "true" ? true : false || false;
+  const userId = req.user.id;
   try {
-    const _tasks = await task.findAll({
-      where: {
-        is_archived: false,
-        workspace_id: req.params.id,
-      },
-      include: [
-        {
-          model: workspace,
-          as: "workspace",
-          required: false,
-          attributes: ["id", "name"],
+    let _tasks;
+    if (isOnHome) {
+      _tasks = await task.findAll({
+        where: {
+          is_archived: false,
+          assigned_to: userId,
         },
-        {
-          model: user,
-          as: "user",
-          required: false,
-          attributes: ["id", "name", "email"],
+        attributes: ["title", "description", "due_date", "status"],
+        include: [
+          {
+            model: workspace,
+            as: "workspace",
+            required: false,
+            attributes: ["id", "name"],
+          },
+          {
+            model: user,
+            as: "user",
+            required: false,
+            attributes: ["id", "name", "email"],
+          },
+        ],
+        order: [["createdAt", "DESC"]],
+        limit: 5,
+      });
+    } else {
+      _tasks = await task.findAll({
+        where: {
+          is_archived: false,
+          workspace_id: req.params.id,
         },
-      ],
-    });
-
+        include: [
+          {
+            model: workspace,
+            as: "workspace",
+            required: false,
+            attributes: ["id", "name"],
+          },
+          {
+            model: user,
+            as: "user",
+            required: false,
+            attributes: ["id", "name", "email"],
+          },
+        ],
+      });
+    }
     if (!_tasks) {
       return res.status(404).json({ message: "No tasks found!" });
     }

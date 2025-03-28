@@ -4,8 +4,8 @@ import { jwtDecode } from "jwt-decode";
 import PomodoroFocus from "./contents/pomodoro-focus";
 import { AiOutlineClockCircle } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
-import { FaGem } from "react-icons/fa";
-import { FaBolt, FaDiamond } from "react-icons/fa6";
+import { FaCheckCircle, FaGem } from "react-icons/fa";
+import { FaBolt, FaCheck, FaClock, FaDiamond } from "react-icons/fa6";
 import AiSummary from "./contents/ai-summary";
 
 const Home = () => {
@@ -19,8 +19,10 @@ const Home = () => {
   const [userData, setUserData] = useState(null);
   const [userId, setUserId] = useState(null);
   const [workspaces, setWorkspaces] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [showAiSummary, setShowAiSummary] = useState(false);
   const [workspaceLoading, setWorkspaceLoading] = useState(false);
+  const [taskLoading, setTaskLoading] = useState(false);
 
   //fetching currently logged in user id from the jwt token
   useEffect(() => {
@@ -85,8 +87,28 @@ const Home = () => {
     }
   };
 
+  const fetchTasks = async () => {
+    setTaskLoading(true);
+    try {
+      const response = await fetch(`${apiURL}/api/tasks/?home=true`, {
+        method: "GET",
+        headers: header,
+      });
+      if (!response.ok) throw new Error("Network response was not ok");
+
+      const data = await response.json();
+      // console.log(data);
+      setTasks(data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setTaskLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchWorkspaces();
+    fetchTasks();
   }, []);
 
   const [time, setTime] = useState(new Date().toLocaleTimeString());
@@ -158,13 +180,18 @@ const Home = () => {
 
       {/* main */}
       <div className="flex gap-3 justify-between flex-col md:flex-row p-2">
-        <div className="h-fit grow flex-1 flex gap-3 overflow-x-auto border-x-1">
+        <div className="h-fit grow flex-1 flex gap-3 overflow-x-auto border-x-1 p-2">
           {/* Workspaces */}
           <div>
-            <div className="flex items-center text-sm gap-2">
+            {/* <div className="flex items-center text-sm gap-2">
+              <AiOutlineClockCircle />
+              Recent Workspaces
+            </div> */}
+            <div className="font-bold flex items-center gap-2">
               <AiOutlineClockCircle />
               Recent Workspaces
             </div>
+
             {workspaceLoading ? (
               <div className="flex flex-col w-64 justify-center items-center gap-2 p-2">
                 <div className="border-2 w-full animate-pulse bg-gray-100 rounded-box flex flex-col p-3 gap-3">
@@ -282,36 +309,72 @@ const Home = () => {
           </div>
           {/* Today Tasks */}
           <div>
-            <div className="font-bold">Tasks</div>
-            <ul className="flex flex-col gap-2">
-              {tasks.map((task) => (
-                <li
-                  key={task.id}
-                  title={task.description}
-                  className="flex gap-2 items-center border-1 border-black p-3 rounded-box hover:bg-gray-50 hover:border-r-4 hover:border-b-4 hover:cursor-pointer"
-                >
-                  {/* Emoji */}
-                  <div className="text-3xl">{task.emoji}</div>
-                  {/* Main Content */}
-                  <div className="border-l-1 pl-3">
-                    {/* Task Title */}
-                    <div>{task.title}</div>
-                    {/* Due Date */}
-                    <div className="font-bold text-sm">{task.dueDate}</div>
-                    {/* Status */}
-                    <div
-                      className={`text-xs px-1 w-fit ${
-                        task.status === "done"
-                          ? "bg-green-600 text-white"
-                          : "bg-red-600 text-white"
-                      }`}
-                    >
-                      {task.status === "done" ? "Completed" : "Pending"}
+            <div className="font-bold">Latest Tasks</div>
+            {taskLoading ? (
+              <div className="flex flex-col w-64 justify-center items-center gap-2 p-2">
+                <div className="border-2 w-full animate-pulse bg-gray-100 rounded-box flex flex-col p-3 gap-3">
+                  <div className="w-full h-[20px] animate-pulse bg-gray-300 rounded"></div>
+                  <div className="w-[150px] h-[20px] animate-pulse bg-gray-300 rounded"></div>
+                </div>
+                <div className="border-2 w-full animate-pulse bg-gray-100 rounded-box flex flex-col p-3 gap-3">
+                  <div className="w-full h-[20px] animate-pulse bg-gray-300 rounded"></div>
+                  <div className="w-[150px] h-[20px] animate-pulse bg-gray-300 rounded"></div>
+                </div>
+                <div className="border-2 w-full animate-pulse bg-gray-100 rounded-box flex flex-col p-3 gap-3">
+                  <div className="w-full h-[20px] animate-pulse bg-gray-300 rounded"></div>
+                  <div className="w-[150px] h-[20px] animate-pulse bg-gray-300 rounded"></div>
+                </div>
+              </div>
+            ) : (
+              <ul className="flex flex-col gap-2">
+                {tasks.map((task) => (
+                  <li
+                    key={task.id}
+                    title={task.description}
+                    className="flex gap-4 items-center bg-white shadow-md border p-4 rounded-xl hover:bg-gray-100 transition-all duration-200"
+                  >
+                    {/* Task Status Icon */}
+                    <div className="text-3xl text-green-500">
+                      {task.status === "done" ? <FaCheckCircle /> : <FaClock />}
                     </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
+
+                    {/* Main Content */}
+                    <div className="flex flex-col w-full">
+                      {/* Task Title */}
+                      <div className="text-lg font-semibold flex items-center gap-2">
+                        {task.title}
+                      </div>
+
+                      {/* Task Metadata */}
+                      <div className="flex justify-between items-center text-sm text-gray-500 mt-1">
+                        {/* Due Date */}
+                        <span className="flex items-center gap-1">
+                          📅 {new Date(task.due_date).toLocaleDateString()}
+                        </span>
+
+                        {/* Workspace Name */}
+                        <span className="bg-gray-200 px-2 py-1 rounded text-xs">
+                          {task.workspace?.name}
+                        </span>
+                      </div>
+
+                      {/* Task Status */}
+                      <div className="mt-2">
+                        <span
+                          className={`text-xs px-3 py-1 rounded-full font-medium ${
+                            task.status === "done"
+                              ? "bg-green-500 text-white"
+                              : "bg-yellow-500 text-white"
+                          }`}
+                        >
+                          {task.status === "done" ? "Completed" : "Todo"}
+                        </span>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
 
@@ -365,43 +428,43 @@ export default Home;
 //       "Used for managing volunteer schedules, tasks, and events for community service initiatives.",
 //   },
 // ];
-const tasks = [
-  {
-    emoji: "🛒",
-    title: "Buy Groceries",
-    dueDate: "December 31, 2024",
-    status: "done",
-    description: "Purchase vegetables, fruits, and other essential groceries.",
-  },
-  {
-    emoji: "📚",
-    title: "Do Homework",
-    dueDate: "January 1, 2025",
-    status: "not_done",
-    description: "Complete assignments for Compiler Design and NLP.",
-  },
-  {
-    emoji: "🧹",
-    title: "Clean the Room",
-    dueDate: "January 2, 2025",
-    status: "not_done",
-    description: "Organize books, dust shelves, and vacuum the floor.",
-  },
-  {
-    emoji: "📅",
-    title: "Prepare for the Meeting",
-    dueDate: "January 3, 2025",
-    status: "done",
-    description: "Finalize the presentation slides and review key points.",
-  },
-  {
-    emoji: "🚶",
-    title: "Go for a Walk",
-    dueDate: "January 4, 2025",
-    status: "not_done",
-    description: "Enjoy a 30-minute evening walk in the park.",
-  },
-];
+// const tasks = [
+//   {
+//     emoji: "🛒",
+//     title: "Buy Groceries",
+//     dueDate: "December 31, 2024",
+//     status: "done",
+//     description: "Purchase vegetables, fruits, and other essential groceries.",
+//   },
+//   {
+//     emoji: "📚",
+//     title: "Do Homework",
+//     dueDate: "January 1, 2025",
+//     status: "not_done",
+//     description: "Complete assignments for Compiler Design and NLP.",
+//   },
+//   {
+//     emoji: "🧹",
+//     title: "Clean the Room",
+//     dueDate: "January 2, 2025",
+//     status: "not_done",
+//     description: "Organize books, dust shelves, and vacuum the floor.",
+//   },
+//   {
+//     emoji: "📅",
+//     title: "Prepare for the Meeting",
+//     dueDate: "January 3, 2025",
+//     status: "done",
+//     description: "Finalize the presentation slides and review key points.",
+//   },
+//   {
+//     emoji: "🚶",
+//     title: "Go for a Walk",
+//     dueDate: "January 4, 2025",
+//     status: "not_done",
+//     description: "Enjoy a 30-minute evening walk in the park.",
+//   },
+// ];
 const teams = [
   {
     emoji: "👨‍💻",
