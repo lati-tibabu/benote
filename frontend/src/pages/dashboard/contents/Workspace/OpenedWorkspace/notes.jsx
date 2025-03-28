@@ -45,7 +45,7 @@ const Notes = () => {
   // adding new note
   const handleAddNewNote = async () => {
     const newTitle = "Untitled note " + new Date().toTimeString();
-    const workspaceId = workspace.id;
+    // const workspaceId = workspace.id;
     const userId = userData.id;
 
     const newNoteData = {
