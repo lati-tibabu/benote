@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineSend } from "react-icons/ai";
-import { jwtDecode } from "jwt-decode";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FaTriangleExclamation } from "react-icons/fa6";
+import { useSelector } from "react-redux";
 
 const AiGeneratedTask = () => {
   const [userPrompt, setUserPrompt] = useState(null);
   const [aiResponse, setAiResponse] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState();
-  const [userData, setUserData] = useState(null);
   const { workspaceId } = useParams();
   const [generatedTasks, setGeneratedTasks] = useState([]);
 
@@ -28,15 +27,8 @@ const AiGeneratedTask = () => {
     model: "gemini-1.5-flash",
   });
 
-  // storing the logged in user data in the userData
-  useEffect(() => {
-    try {
-      const data = jwtDecode(token);
-      setUserData(data);
-    } catch (error) {
-      console.error(error);
-    }
-  }, []);
+  // storing the authenticated user data in the userData
+  const userData = useSelector((state) => state.auth.user);
 
   const generationConfig = {
     temperature: 0.3,
@@ -177,8 +169,7 @@ const AiGeneratedTask = () => {
       }
       toast.success("Tasks succesfully added to workspace");
       const data = await response.json();
-      console.log(data);
-
+      // console.log(data);
       setUserPrompt("");
       setAiResponse(null);
       setGeneratedTasks([]);

@@ -1,27 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
 import { useSelector } from "react-redux";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const AddNewTask = () => {
   const apiURL = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("jwt");
-
-  const workspace = useSelector((state) => state.workspace.workspace);
-  const belongsToTeam = workspace?.belongs_to_team;
-
-  let userData = null;
-  try {
-    userData = token ? jwtDecode(token) : null;
-  } catch (error) {
-    console.error("Invalid token:", error);
-  }
-
   const header = {
     authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
+
+  const workspace = useSelector((state) => state.workspace.workspace);
+  const userData = useSelector((state) => state.auth.user) || {};
+
+  const belongsToTeam = workspace?.belongs_to_team;
 
   const [users, setUsers] = useState([]);
   const [taskData, setTaskData] = useState({
@@ -52,7 +45,7 @@ const AddNewTask = () => {
 
       fetchUsers();
     }
-  }, [belongsToTeam, apiURL, token]);
+  }, [belongsToTeam]);
 
   const createTask = async (e) => {
     e.preventDefault();
@@ -134,7 +127,6 @@ const AddNewTask = () => {
           <label className="block text-gray-700">Due Date</label>
           <input
             type="datetime-local"
-            // value={taskData.due_date || new Date().toISOString().slice(0, 16)}
             value={taskData.due_date}
             onChange={(e) =>
               setTaskData({ ...taskData, due_date: e.target.value })

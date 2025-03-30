@@ -4,12 +4,12 @@ import { FaWalking } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const Unexpected = () => {
-  const navigate = useNavigate();
-  const handleError = (e) => {
-    e.preventDefault();
-    alert("Your report is submitted!");
-    navigate("/");
-  };
+  // const navigate = useNavigate();
+  // const handleError = (e) => {
+  //   e.preventDefault();
+  //   alert("Your report is submitted!");
+  //   navigate("/");
+  // };
   return (
     <div className="w-screen h-screen bg-white text-black flex items-center justify-center">
       <div className="flex flex-col items-center gap-4">
@@ -18,7 +18,7 @@ const Unexpected = () => {
         <div className="text-xl font-semibold text-center">
           Error Happening!
         </div>
-        <form
+        {/* <form
           onSubmit={handleError}
           className="flex flex-col gap-3 w-80 bg-gray-100 p-5 rounded-lg shadow-md items-center"
         >
@@ -30,7 +30,14 @@ const Unexpected = () => {
           <button className="btn text-white bg-black w-fit">
             Report Error
           </button>
-        </form>
+        </form> */}
+        <p>
+          <strong>
+            This is beta version app, it is still under development.
+          </strong>
+          <span className="3xl">🪲 Bug is inevitable</span>
+          Please go <a href="/auth/login">this</a> and try logging in again.
+        </p>
       </div>
     </div>
   );

@@ -38,6 +38,7 @@ import {
 } from "react-icons/gi";
 import { stopAlarm } from "../../redux/slices/pomodoroSlice";
 import { setTheme, toggleTheme } from "../../redux/slices/themeSlice";
+import { clearAuthenticatedUser } from "../../redux/slices/authSlice";
 
 function Dashboard() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -52,38 +53,19 @@ function Dashboard() {
   const workspaceEmoji =
     useSelector((state) => state.workspace.workspace.emoji) || "";
 
-  const token = localStorage.getItem("jwt");
-  let userData = null;
-  if (token) {
-    try {
-      userData = jwtDecode(token);
-    } catch (error) {
-      console.error("Invalid token:", error);
-    }
-  }
+  const userData = useSelector((state) => state.auth.user) || {};
 
   const loc = location.pathname.split("/").slice(2);
 
   const [collapsedNav, setCollapsedBar] = useState(false);
 
-  // console.log("location", loc[0]);
-
-  // const navigationLoc = location.pathname.split("/").slice(2);
-
-  // console.log("location", loc);
-
   const handleNavigation = (link, workspaceId) => () => {
     navigate(`/app/workspace/open/${workspaceId}/${link}`);
   };
 
-  // const onPage = (link) => {
-  //   return location.pathname.endsWith(link);
-  // };
   const onPage = (link) => location.pathname.includes(link);
 
   // checking location for whether to open submenu or not depending on which page we are or user is currently at
-
-  // const location
 
   const toggleMobileNav = () => {
     setIsMobileNavOpen(!isMobileNavOpen);
@@ -92,6 +74,7 @@ function Dashboard() {
   const handleLogout = () => {
     localStorage.removeItem("jwt");
     localStorage.removeItem("jwt_expiration");
+    dispatch(clearAuthenticatedUser());
     navigate("/auth/login");
   };
   const email = userData?.email;
@@ -101,7 +84,6 @@ function Dashboard() {
   };
 
   const handleCollapseBar = () => {
-    // alert("Collapsed");
     setCollapsedBar((prev) => !prev);
   };
 

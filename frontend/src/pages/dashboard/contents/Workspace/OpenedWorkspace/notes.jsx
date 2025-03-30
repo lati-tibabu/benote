@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { FaBolt, FaTrash } from "react-icons/fa";
 import { AiOutlineFile, AiOutlineMore, AiOutlinePlus } from "react-icons/ai";
 import { useNavigate, useParams } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 import { toast, ToastContainer } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { clearNotes, setNotes } from "../../../../../redux/slices/notesSlice";
@@ -15,29 +14,11 @@ const Notes = () => {
     authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
-
-  // const workspace = location2.state?.workspace || {};
-
   const { workspaceId } = useParams();
   const useGemini = localStorage.getItem("useGemini") === "true" ? true : false;
-
-  // const [notes, setNotes] = useState([]);
   const notes = useSelector((state) => state.notes.notes) || [];
-
-  // for holding the currently loggedin user data
-  const [userData, setUserData] = useState(null);
-
   const [loading, setLoading] = useState(false);
-
-  // storing the logged in user data in the userData
-  useEffect(() => {
-    try {
-      const data = jwtDecode(token);
-      setUserData(data);
-    } catch (error) {
-      console.error(error);
-    }
-  }, [token]);
+  const userData = useSelector((state) => state.auth.user) || {};
 
   // adding new note
   const handleAddNewNote = async () => {
@@ -100,6 +81,7 @@ const Notes = () => {
   };
 
   //fetching all notes for the given workspace up on mounting the component
+
   useEffect(() => {
     fetchNotes();
   }, []);

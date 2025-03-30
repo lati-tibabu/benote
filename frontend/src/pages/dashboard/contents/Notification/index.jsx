@@ -1,5 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const Notifications = () => {
@@ -8,13 +9,7 @@ const Notifications = () => {
   const header = {
     authorization: `Bearer ${token}`,
   };
-
-  var userData;
-  try {
-    userData = jwtDecode(token);
-  } catch (error) {
-    console.error(error);
-  }
+  const userData = useSelector((state) => state.auth.user) || {};
 
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);

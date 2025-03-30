@@ -1,25 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineSend } from "react-icons/ai";
-import { jwtDecode } from "jwt-decode";
-import {
-  GoogleGenerativeAI,
-  HarmCategory,
-  HarmBlockThreshold,
-} from "@google/generative-ai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import MarkdownRenderer from "../../../../../../components/markdown-renderer";
-// import { set } from "lodash";
-
-// let userName = null;
 
 const AiGeneratedNote = () => {
   const [userPrompt, setUserPrompt] = useState(null);
   const [aiResponse, setAiResponse] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState();
-  const [userData, setUserData] = useState(null);
   const { workspaceId } = useParams();
 
   const [noteData, setNoteData] = useState({
@@ -43,24 +34,8 @@ const AiGeneratedNote = () => {
   });
 
   const navigate = useNavigate();
-  const [addedTodo, setAddedTodo] = useState(false);
 
-  // storing the logged in user data in the userData
-  useEffect(() => {
-    try {
-      const data = jwtDecode(token);
-      setUserData(data);
-    } catch (error) {
-      console.error(error);
-    }
-  }, []);
-
-  // console.log(userData.name);
-  // useEffect(() => {
-  //   userName = userData?.name;
-  // }, [userData]);
-
-  // console.log(noteGenerationPrompt);
+  const userData = useSelector((state) => state.auth.user) || {};
 
   const generationConfig = {
     temperature: 0.3,
@@ -129,7 +104,6 @@ const AiGeneratedNote = () => {
   }, [aiResponse]);
 
   const handleAcceptAiResponse = async () => {
-    // console.log(noteData);
     try {
       const response = await fetch(`${apiURL}/api/notes`, {
         method: "POST",
@@ -162,10 +136,8 @@ const AiGeneratedNote = () => {
     } catch (err) {
       console.error("Error creating note: ", err);
     }
-    // console.log(aiResponse);
   };
 
-  // Define the noteGenerationPrompt dynamically here
   const noteGenerationPrompt = (userName) => {
     return `
       You are now an intelligent note assistant. Your task is to assist the user by either restructuring large text inputs into well-organized Markdown format or generating structured notes from scratch based on a topic.
@@ -201,13 +173,11 @@ const AiGeneratedNote = () => {
         - Use **clear headings** and **subheadings** to organize content effectively.
         - search internet if you could 
         - add emojis to make it more fun and if user dont like make it without emojis
-        - add emijis to title
+        - add emojis to title
         - today is ${new Date().toLocaleDateString()} and time is ${new Date().toLocaleTimeString()}
         - generate a very long output possible unless user wants a short one, and dont raise that you've generated longer output.
     `;
   };
-
-  // console.log(noteGenerationPrompt("lati"));
 
   return (
     <div>
@@ -251,15 +221,17 @@ const AiGeneratedNote = () => {
         ) : (
           <div>
             <div className="text-xl font-semibold">
-              {aiResponse?.title || "No title generated"}
+              {aiResponse?.title || "Title of the note"}
             </div>
             <div className="flex flex-col gap-2 mt-2">
               <MarkdownRenderer
-                content={aiResponse.content || "No content generated"}
+                content={
+                  aiResponse.content ||
+                  "**To be generated or no content generated**"
+                }
               />
             </div>
           </div>
-          // {error && <p>{error}</p>}
         )}
       </div>
     </div>

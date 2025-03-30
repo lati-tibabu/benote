@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineSend } from "react-icons/ai";
-import { jwtDecode } from "jwt-decode";
-import {
-  GoogleGenerativeAI,
-  HarmCategory,
-  HarmBlockThreshold,
-} from "@google/generative-ai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -15,8 +10,9 @@ const AiGeneratedTodo = () => {
   const [aiResponse, setAiResponse] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState();
-  const [userData, setUserData] = useState(null);
   const { workspaceId } = useParams();
+
+  const userData = useSelector((state) => state.auth.user) || {};
 
   const [todoData, setTodoData] = useState({
     user_id: userData?.id,
@@ -39,16 +35,6 @@ const AiGeneratedTodo = () => {
 
   const navigate = useNavigate();
   const [addedTodo, setAddedTodo] = useState(false);
-
-  // storing the logged in user data in the userData
-  useEffect(() => {
-    try {
-      const data = jwtDecode(token);
-      setUserData(data);
-    } catch (error) {
-      console.error(error);
-    }
-  }, []);
 
   const generationConfig = {
     temperature: 0.3,
@@ -152,7 +138,7 @@ const AiGeneratedTodo = () => {
       const itemResponse = await fetch(`${apiURL}/api/todoItems`, {
         method: "POST",
         headers: header,
-        body: JSON.stringify({ tasks: aiResponse.tasks }), // Send tasks as a JSON string
+        body: JSON.stringify({ tasks: aiResponse.tasks }),
       });
 
       if (!itemResponse.ok) {
@@ -177,9 +163,6 @@ const AiGeneratedTodo = () => {
     } catch (err) {
       console.error("Error creating todo list: ", err);
     }
-
-    // console.log(aiResponse);
-    // acceptAiResponse();
   };
 
   return (
@@ -241,7 +224,6 @@ const AiGeneratedTodo = () => {
                 ))}
             </div>
           </div>
-          // {error && <p>{error}</p>}
         )}
       </div>
     </div>

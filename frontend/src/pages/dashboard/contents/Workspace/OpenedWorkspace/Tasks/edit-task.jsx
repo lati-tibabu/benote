@@ -14,14 +14,9 @@ const EditTask = (props) => {
   };
 
   const workspace = useSelector((state) => state.workspace.workspace);
-  const { workspaceId } = useParams();
+  const userData = useSelector((state) => state.auth.user);
 
-  let userData;
-  try {
-    userData = jwtDecode(token);
-  } catch (error) {
-    console.error(error);
-  }
+  const { workspaceId } = useParams();
 
   const [users, setUsers] = useState([]);
   const [taskData, setTaskData] = useState({

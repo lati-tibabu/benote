@@ -41,7 +41,7 @@ const WorkspaceOpened = () => {
     if (workspace?.id) {
       navigate("overview");
     }
-    console.log(workspace);
+    // console.log(workspace);
   }, [workspace]);
 
   // const handleWorkspaceDelete = async () => {

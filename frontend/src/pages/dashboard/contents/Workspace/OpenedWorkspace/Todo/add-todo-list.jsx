@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { jwtDecode } from "jwt-decode";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const AddNewTodoList = (props) => {
@@ -11,25 +10,19 @@ const AddNewTodoList = (props) => {
     "Content-Type": "application/json",
   };
 
-  const location2 = useLocation();
   // const [workspace, setWorkspace] = useState(location2.state?.workspace || {});
-  const workspace = useSelector((state) => state.workspace.workspace);
   const [addedTodo, setAddedTodo] = useState(false);
 
-  var userData;
-  try {
-    userData = jwtDecode(token);
-  } catch (error) {
-    console.error(error);
-  }
+  const workspace = useSelector((state) => state.workspace.workspace);
+  const userData = useSelector((state) => state.auth.user) || {};
+  const { workspaceId } = useParams();
 
   const navigate = useNavigate();
 
-  const [users, setUsers] = useState([]);
   const [todoData, setTodoData] = useState({
     user_id: userData.id,
     title: "",
-    workspace_id: workspace.id,
+    workspace_id: workspaceId,
   });
 
   const createTodo = async (e) => {
@@ -43,7 +36,7 @@ const AddNewTodoList = (props) => {
           "Content-Type": "application/json",
         },
       });
-      const data = await response.json();
+
       if (response.ok) {
         setAddedTodo(!addedTodo);
         setTodoData((prev) => ({
@@ -51,10 +44,10 @@ const AddNewTodoList = (props) => {
           title: "",
         }));
         // alert("Todo list is created successfully");
-        navigate(`/app/workspace/open/${workspace.id}/todo-lists`, {
+        navigate(`/app/workspace/open/${workspaceId}/todo-lists`, {
           state: { addedTodo: addedTodo },
         });
-        // window.location.href = `/app/workspace/open/${workspace.id}/todo-lists`;
+        // window.location.href = `/app/workspace/open/${workspaceId}/todo-lists`;
       }
     } catch (err) {
       console.error("Error creating todo list: ", err);

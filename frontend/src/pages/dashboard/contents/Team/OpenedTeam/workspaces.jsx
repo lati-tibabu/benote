@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import AddNew from "../../Workspace/add_new";
+import { setWorkspaceTeam } from "../../../../../redux/slices/workspaceSlice";
 
 const TeamWorkspaces = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -11,27 +12,29 @@ const TeamWorkspaces = () => {
     "Content-Type": "application/json",
   };
 
-  const [workspaces, setWorkspaces] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // const [workspaces, setWorkspaces] = useState([]);
+  const workspaces =
+    useSelector((state) => state.workspace.workspaceTeam) || [];
+
+  const [loading, setLoading] = useState(false);
 
   const team = useSelector((state) => state.team.team);
+  const { teamId } = useParams();
+  const dispatch = useDispatch();
+  const location = useLocation();
 
   const loadWorkspaces = async () => {
+    !workspaces.length && setLoading(true);
     try {
-      const response = await fetch(`${apiURL}/api/workspaces/${team.id}/team`, {
+      const response = await fetch(`${apiURL}/api/workspaces/${teamId}/team`, {
         method: "GET",
         headers: header,
       });
       if (!response.ok) {
-        // console.log(response.status);
-        // console.log(response.statusText);
         throw new Error("Error fetching workspace for the team");
       }
-
       const data = await response.json();
-      console.log(data);
-
-      setWorkspaces(data);
+      dispatch(setWorkspaceTeam(data));
     } catch (error) {
       console.error(error);
     } finally {
@@ -40,16 +43,13 @@ const TeamWorkspaces = () => {
   };
 
   useEffect(() => {
-    if (team.id) {
+    if (teamId) {
       loadWorkspaces();
     }
-  }, [team]);
-
-  // console.log(workspaces);
+  }, [team, location]);
 
   const navigate = useNavigate();
   const handleWorkspaceOpen = (workspaceId) => {
-    // alert(`opening ${workspaceId}`);
     navigate(`/app/workspace/open/${workspaceId}`);
   };
 
@@ -125,7 +125,7 @@ const TeamWorkspaces = () => {
               ✕
             </button>
           </form>
-          <AddNew teamId={team.id} />
+          <AddNew teamId={teamId} />
         </div>
       </dialog>
     </div>

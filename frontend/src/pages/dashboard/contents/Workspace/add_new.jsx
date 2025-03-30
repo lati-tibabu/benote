@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { AiOutlineDelete } from "react-icons/ai";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify"; // Import toast library
 import "react-toastify/dist/ReactToastify.css"; // Import toast styles
+import { useSelector } from "react-redux";
 
 const AddNew = (props) => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -20,41 +20,16 @@ const AddNew = (props) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [emojiText, setEmojiText] = useState("");
   const [worskapceLoading, setWorkspaceLoading] = useState(false);
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  // const [teams, setTeams] = useState([]);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const decodeToken = () => {
-      if (token) {
-        try {
-          const decoded = jwtDecode(token);
-          setUserData(decoded);
-        } catch (error) {
-          console.error("Error decoding JWT:", error);
-          toast.error("Invalid token. Please log in again."); // Display error to user
-          // Consider clearing the invalid token from localStorage:
-          localStorage.removeItem("jwt");
-          // Redirect to login page if necessary
-          navigate("/login");
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        setLoading(false);
-      }
-    };
-
-    decodeToken();
-  }, [token, navigate]);
+  const userData = useSelector((state) => state.auth.user) || {};
 
   const [workspaceData, setWorkspaceData] = useState({
     owned_by: null, // Initialize to null
     name: "",
     description: "",
-    belongs_to_team: teamId ?? null,
+    belongs_to_team: teamId ? teamId : null,
   });
 
   useEffect(() => {
@@ -65,28 +40,6 @@ const AddNew = (props) => {
     }));
   }, [userData]);
 
-  // const fetchTeams = async () => {
-  //   try {
-  //     const response = await fetch(`${apiURL}/api/teams`, {
-  //       headers: header,
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error(`Failed to fetch teams: ${response.status}`);
-  //     }
-
-  //     const data = await response.json();
-  //     setTeams(data);
-  //   } catch (error) {
-  //     console.error("Error fetching teams:", error);
-  //     toast.error("Failed to load teams."); // Display error to user
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchTeams();
-  // }, []);
-
   const createWorkspace = async (e) => {
     e.preventDefault();
     setWorkspaceLoading(true);
@@ -96,6 +49,8 @@ const AddNew = (props) => {
       setWorkspaceLoading(false);
       return;
     }
+
+    // console.log(workspaceData);
 
     try {
       const workspaceResponse = await fetch(`${apiURL}/api/workspaces`, {
@@ -124,7 +79,7 @@ const AddNew = (props) => {
           team_id: teamId || workspaceData.belongs_to_team || null,
         };
 
-        console.log("Membership data being sent:", membershipData); // Log the data being sent
+        // console.log("Membership data being sent:", membershipData); // Log the data being sent
 
         const membershipResponse = await fetch(
           `${apiURL}/api/workspaces/${workspaceId}/members`,
@@ -172,10 +127,6 @@ const AddNew = (props) => {
     });
     setShowEmojiPicker(false);
   };
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div className="w-full flex">
@@ -262,33 +213,6 @@ const AddNew = (props) => {
               <Picker data={data} onEmojiSelect={handleEmojiSelect} />
             )}
           </fieldset>
-
-          {/* commenting out part that was allowing a user to create a workspace for a team implicitly */}
-          {/* {!teamId && (
-            <fieldset className="fieldset flex flex-col gap-1">
-              <legend className="fieldset-legend">Teams</legend>
-              <select
-                className="select bg-white dark:bg-black dark:text-white"
-                onChange={(e) =>
-                  setWorkspaceData({
-                    ...workspaceData,
-                    belongs_to_team:
-                      e.target.value === "" ? null : e.target.value,
-                  })
-                }
-              >
-                <option value="" disabled selected>
-                  Pick a team
-                </option>
-                {teams.map((team) => (
-                  <option key={team.team.id} value={team.team.id}>
-                    {team.team.name}
-                  </option>
-                ))}
-              </select>
-              <span className="fieldset-label">Optional</span>
-            </fieldset>
-          )} */}
 
           {worskapceLoading ? (
             <div>

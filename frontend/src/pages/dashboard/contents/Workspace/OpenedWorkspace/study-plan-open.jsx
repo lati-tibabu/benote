@@ -1,4 +1,3 @@
-import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -17,7 +16,6 @@ const StudyPlanOpened = () => {
   const [plan, setPlan] = useState();
   const [cellSelected, setCellSelected] = useState(false);
   const [targetCell, setTargetCell] = useState(null);
-  const [userData, setUserData] = useState({});
   const [timeBlocks, setTimeBlocks] = useState([]);
   const [timeBlockData, setTimeBlockData] = useState({
     start_time: "",
@@ -30,15 +28,7 @@ const StudyPlanOpened = () => {
   });
   const [openPlanDetails, setOpenPlanDetails] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState(null);
-
-  useEffect(() => {
-    try {
-      const data = jwtDecode(token);
-      setUserData(data);
-    } catch (error) {
-      console.error(error);
-    }
-  }, [token]);
+  const userData = useSelector((state) => state.auth.user) || {};
 
   const fetchStudyPlan = async (id) => {
     try {
@@ -52,7 +42,6 @@ const StudyPlanOpened = () => {
       const data = await response.json();
       setPlan(data);
       setTimeBlocks(data.timeBlocks);
-      // console.log(data.timeBlocks);
     } catch (error) {
       console.error("Error: ", error);
     }

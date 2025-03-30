@@ -1,8 +1,7 @@
-import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const StudyPlans = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -20,17 +19,10 @@ const StudyPlans = () => {
     end_date: "",
     workspace_id: "",
   });
-  const [userData, setUserData] = useState(null);
+
   const [errorMsg, setErrorMsg] = useState(null);
 
-  useEffect(() => {
-    try {
-      const data = jwtDecode(token);
-      setUserData(data);
-    } catch (error) {
-      console.error(error);
-    }
-  }, [token]);
+  const userData = useSelector((state) => state.auth.user) || {};
 
   const workspace = useSelector((state) => state.workspace.workspace);
 
@@ -128,7 +120,6 @@ const StudyPlans = () => {
   const navigate = useNavigate();
 
   const handleOpenPlan = (planId) => {
-    // alert(planId);
     navigate(`plan/${planId}`);
   };
 

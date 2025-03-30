@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const SendInvitation = (props) => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -11,12 +12,14 @@ const SendInvitation = (props) => {
     "Content-Type": "application/json",
   };
 
-  var userData;
-  try {
-    userData = jwtDecode(token);
-  } catch (error) {
-    console.error(error);
-  }
+  // var userData;
+  // try {
+  //   userData = jwtDecode(token);
+  // } catch (error) {
+  //   console.error(error);
+  // }
+
+  const userData = useSelector((state) => state.auth.user) || {};
 
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -32,7 +35,7 @@ const SendInvitation = (props) => {
         headers: header,
       });
       const data = await response.json();
-      console.log("from invitation", data);
+      // console.log("from invitation", data);
 
       if (response.ok) {
         return data; // User found
@@ -70,7 +73,7 @@ const SendInvitation = (props) => {
         );
 
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
 
         if (response.ok) {
           // Create the notification data

@@ -32,15 +32,16 @@ const OpenedNote = () => {
 
   const [previewMode, setPreviewMode] = useState(true);
 
-  // for holding the currently loggedin user data
-  const [userData, setUserData] = useState(null);
+  // for holding the currently authenticated user data
+
+  const userData = useSelector((state) => state.auth.user);
 
   // Use a single `noteData` state for title, content, and other note information
   const [noteData, setNoteData] = useState({
     title: "",
     content: "",
-    workspace_id: workspace.id, // Initialize from workspace
-    owned_by: userData?.id, // Initialize from user data
+    workspace_id: workspace.id,
+    owned_by: userData?.id,
   });
 
   // Use separate `noteInput` state to store only the editor content
@@ -49,17 +50,7 @@ const OpenedNote = () => {
   const [loading, setLoading] = useState(false);
   const [autoSaving, setAutoSaving] = useState(false);
 
-  // storing the logged in user data in the userData
-  useEffect(() => {
-    try {
-      const data = jwtDecode(token);
-      setUserData(data);
-    } catch (error) {
-      console.error(error);
-    }
-  }, [token]);
-
-  //managing the edit mode and preview mode
+  // Managing the edit mode and preview mode
   const handleChangeMode = () => {
     setEditMode((prev) => !prev);
   };

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
-import { AiOutlineDelete } from "react-icons/ai";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const AddNew = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -12,12 +12,7 @@ const AddNew = () => {
     "Content-Type": "application/json",
   };
 
-  var userData;
-  try {
-    userData = jwtDecode(token);
-  } catch (error) {
-    console.error(error);
-  }
+  const userData = useSelector((state) => state.auth.user) || {};
 
   const [teamData, setTeamData] = useState({
     name: "",
@@ -38,7 +33,8 @@ const AddNew = () => {
 
       const data = await response.json();
       if (response.ok) {
-        window.location.href = "/app/team";
+        toast.success("Team succesfully created!");
+        navigate(`/app/team/open/${data.id}`);
       } else {
         console.error("Failed to create team:", data);
       }
@@ -72,20 +68,6 @@ const AddNew = () => {
               className="p-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-950"
               required
             />
-          </fieldset>
-
-          <fieldset className="fieldset flex flex-col gap-1">
-            <label htmlFor="description">Description</label>
-            <textarea
-              id="description"
-              name="description"
-              value={teamData.description}
-              onChange={(e) =>
-                setTeamData({ ...teamData, description: e.target.value })
-              }
-              className="p-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-950"
-              placeholder="e.g. This team is for software development projects"
-            ></textarea>
           </fieldset>
 
           <button

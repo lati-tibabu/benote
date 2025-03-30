@@ -11,8 +11,6 @@ import { jwtDecode } from "jwt-decode";
 import { setWorkspace } from "../../../../../redux/slices/workspaceSlice";
 import { FaBolt } from "react-icons/fa6";
 import AiGeneratedTask from "./Tasks/ai-generated-task";
-// /import { useReactToPdf } from "react-to-pdf";
-// import { usePDF } from "react-to-pdf";
 
 const Tasks = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -21,8 +19,6 @@ const Tasks = () => {
     authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
-
-  // check whether ai usage is enabled or not
 
   const useGemini = localStorage.getItem("useGemini") === "true" ? true : false;
 
@@ -44,12 +40,7 @@ const Tasks = () => {
 
   const dispatch = useDispatch();
 
-  let userData = null;
-  try {
-    userData = token ? jwtDecode(token) : null;
-  } catch (error) {
-    console.error("Invalid token:", error);
-  }
+  const userData = useSelector((state) => state.auth.user) || {};
 
   const fetchTasks = async () => {
     try {

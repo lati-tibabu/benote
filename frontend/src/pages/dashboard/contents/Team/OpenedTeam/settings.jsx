@@ -14,7 +14,6 @@ const TeamSettings = () => {
   const team = useSelector((state) => state.team.team);
   const [teamName, setTeamName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [loggedUserId, setLoggedUserId] = useState(null);
 
   const apiURL = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("jwt");
@@ -22,19 +21,6 @@ const TeamSettings = () => {
     authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
-  //fetching currently logged in user id from the jwt token
-  useEffect(() => {
-    try {
-      if (token) {
-        const data = jwtDecode(token);
-        setLoggedUserId(data.id);
-      } else {
-        console.log("token not found");
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }, [token]);
 
   useEffect(() => {
     getTeamDetails();
@@ -100,7 +86,6 @@ const TeamSettings = () => {
         body: action !== "remove" ? JSON.stringify({ user_id: userId }) : null,
       });
       if (!response.ok) {
-        // console.log(response.status);
         if (response.status === 401 && action != "remove") {
           toast.error("401, Unauthorized to do promotion");
         }

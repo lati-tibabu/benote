@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
 
 import PomodoroFocus from "./contents/pomodoro-focus";
 import { AiOutlineClockCircle } from "react-icons/ai";
@@ -7,6 +6,9 @@ import { useNavigate } from "react-router-dom";
 import { FaCheckCircle, FaGem } from "react-icons/fa";
 import { FaBolt, FaCheck, FaClock, FaDiamond } from "react-icons/fa6";
 import AiSummary from "./contents/ai-summary";
+import { useDispatch, useSelector } from "react-redux";
+import { setWorkspaceRecent } from "../../../../redux/slices/workspaceSlice";
+import { setTasksRecent } from "../../../../redux/slices/tasksSlice";
 
 const Home = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -16,60 +18,21 @@ const Home = () => {
     "Content-Type": "application/json",
   };
 
-  const [userData, setUserData] = useState(null);
-  const [userId, setUserId] = useState(null);
-  const [workspaces, setWorkspaces] = useState([]);
-  const [tasks, setTasks] = useState([]);
   const [showAiSummary, setShowAiSummary] = useState(false);
   const [workspaceLoading, setWorkspaceLoading] = useState(false);
   const [taskLoading, setTaskLoading] = useState(false);
 
-  //fetching currently logged in user id from the jwt token
-  useEffect(() => {
-    try {
-      if (token) {
-        const data = jwtDecode(token);
-        setUserId(data.id);
-      } else {
-        console.log("token not found");
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }, [token]);
+  const userData = useSelector((state) => state.auth.user) || {};
 
-  // loading the user data from database
+  const dispatch = useDispatch();
 
-  const loadUserData = async () => {
-    if (!userId) {
-      return;
-    }
-    try {
-      const response = await fetch(`${apiURL}/api/users/${userId}`, {
-        method: "GET",
-        headers: header,
-      });
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
+  const workspaces =
+    useSelector((state) => state.workspace.workspaceRecent) || [];
 
-      const data = await response.json();
-      setUserData(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    if (userId) {
-      loadUserData();
-    }
-  }, [userId]);
-
-  // console.log(userData);
+  const tasks = useSelector((state) => state.tasks.taskRecent) || [];
 
   const fetchWorkspaces = async () => {
-    setWorkspaceLoading(true);
+    !workspaces.length && setWorkspaceLoading(true);
     try {
       const response = await fetch(`${apiURL}/api/workspaces/?home=true`, {
         method: "GET",
@@ -78,7 +41,8 @@ const Home = () => {
       if (!response.ok) throw new Error("Network response was not ok");
 
       const data = await response.json();
-      setWorkspaces(data);
+      // setWorkspaces(data);
+      dispatch(setWorkspaceRecent(data));
     } catch (error) {
       alert("Error fetching recent workspaces");
       console.log(error);
@@ -88,7 +52,7 @@ const Home = () => {
   };
 
   const fetchTasks = async () => {
-    setTaskLoading(true);
+    !tasks.length && setTaskLoading(true);
     try {
       const response = await fetch(`${apiURL}/api/tasks/?home=true`, {
         method: "GET",
@@ -98,7 +62,8 @@ const Home = () => {
 
       const data = await response.json();
       // console.log(data);
-      setTasks(data);
+      // setTasks(data);
+      dispatch(setTasksRecent(data));
     } catch (error) {
       console.log(error);
     } finally {

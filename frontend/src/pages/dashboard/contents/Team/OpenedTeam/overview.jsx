@@ -1,16 +1,13 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import AddNew from "../../Workspace/add_new";
 import SendInvitation from "../invite_user";
 
 const TeamOverview = () => {
-  const location2 = useLocation();
-  // const team = location2.state?.team || {};
   const team = useSelector((state) => state.team.team);
-  // console.log(team.id);
+  const { teamId } = useParams();
 
-  // console.log(location2.pathname.split);
   return Object.keys(team).length === 0 ? (
     <div className="flex flex-col gap-4 p-6 min-h-full">
       <div className="h-6 w-3/4 bg-gray-300 rounded animate-pulse"></div>
@@ -22,7 +19,6 @@ const TeamOverview = () => {
       {/* right side */}
       <div className="flex-1 p-3 flex flex-col gap-5">
         {/* summary */}
-        {/* <div className="border-1 border-black p-2 rounded-md"> */}
         <div>
           <h1 className="font-bold text-lg">Team Summary</h1>
           <div>
@@ -116,7 +112,7 @@ const TeamOverview = () => {
               ✕
             </button>
           </form>
-          <AddNew teamId={team.id} />
+          <AddNew teamId={teamId} />
         </div>
       </dialog>
       <dialog id="invitation_modal" className="modal overflow-x-scroll">

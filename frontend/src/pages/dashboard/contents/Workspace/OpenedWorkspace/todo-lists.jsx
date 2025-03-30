@@ -4,11 +4,9 @@ import ToDoCard from "../../../../../components/_workspaces/todo_card";
 import TodoMinimizedCard from "../../../../../components/_workspaces/todo_minimized_card";
 import AddNewTodoList from "./Todo/add-todo-list";
 import { useLocation, useParams } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 import { useSelector } from "react-redux";
 import AiGeneratedTodo from "./Todo/ai-generated-todo";
 import { ToastContainer } from "react-toastify";
-// import React from "react";
 
 const TodoLists = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -18,28 +16,14 @@ const TodoLists = () => {
     "Content-Type": "application/json",
   };
 
-  const [userData, setUserData] = useState();
-
-  // storing the logged in user data in the userData
-  useEffect(() => {
-    try {
-      const data = jwtDecode(token);
-      setUserData(data);
-    } catch (error) {
-      console.error(error);
-    }
-  }, []);
+  const userData = useSelector((state) => state.auth.user) || {};
 
   const location = useLocation();
   const addedNewTodo = location.state?.addedTodo;
 
-  // const workspace = location2.state?.workspace || {};
-  // const [workspace, setWorkspace] = useState(location2.state?.workspace || {});
   const workspace = useSelector((state) => state.workspace.workspace);
   const { workspaceId } = useParams();
   const useGemini = localStorage.getItem("useGemini") === "true" ? true : false;
-
-  // console.log("from redux", workspace);
 
   const [todoList, setTodoList] = useState([]);
   const [todoListDeleted, setTodoListDeleted] = useState(false);

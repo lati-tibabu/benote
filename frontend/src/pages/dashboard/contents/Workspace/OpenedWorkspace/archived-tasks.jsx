@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
 import { AiOutlineDelete, AiOutlineUndo } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const ArchivedTasks = () => {
   const apiURL = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("jwt");
-  const navigate = useNavigate();
 
   const header = {
     authorization: `Bearer ${token}`,
@@ -14,13 +13,6 @@ const ArchivedTasks = () => {
   };
 
   const [archivedTasks, setArchivedTasks] = useState([]);
-
-  let userData;
-  try {
-    userData = jwtDecode(token);
-  } catch (error) {
-    console.error(error);
-  }
 
   // Fetch archived tasks
   const fetchArchivedTasks = async () => {

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { AiOutlineFileAdd, AiOutlineFolderAdd } from "react-icons/ai";
 import AddNew from "./add_new";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { setWorkspaceList } from "../../../../redux/slices/workspaceSlice";
 
 function Workspace() {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -11,17 +12,22 @@ function Workspace() {
     authorization: `Bearer ${token}`,
   };
 
-  const [workspaces, setWorkspaces] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // const [workspaces, setWorkspaces] = useState([]);
+  const workspaces =
+    useSelector((state) => state.workspace.workspaceList) || [];
+
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   const getWorkspace = async () => {
+    !workspaces.length && setLoading(true);
     try {
       const response = await fetch(`${apiURL}/api/workspaces`, {
         method: "GET",
         headers: header,
       });
       const data = await response.json();
-      setWorkspaces(data);
+      dispatch(setWorkspaceList(data));
       setLoading(false);
     } catch (error) {
       console.error(error);
@@ -32,11 +38,9 @@ function Workspace() {
 
   const updateWorkspace = location?.state?.workspaceUpdate || false;
 
-  // console.log(updateWorkspace);
-
   useEffect(() => {
     getWorkspace();
-  }, [updateWorkspace]);
+  }, [updateWorkspace, location]);
 
   const navigate = useNavigate();
 
@@ -54,9 +58,7 @@ function Workspace() {
               className="btn btn-soft rounded-full mb-2"
               onClick={() => document.getElementById("my_modal_3").showModal()}
             >
-              {/* <AiOutlineFolderAdd className="inline-block" /> */}
-              <FaPlus />
-              Add New Workspace
+              + Create New
             </button>
           )}
 
@@ -136,8 +138,7 @@ function Workspace() {
                     document.getElementById("my_modal_3").showModal()
                   }
                 >
-                  <FaPlus className="inline-block" size={40} />
-                  Add New Workspace
+                  + Create New
                 </button>
               </div>
             )}

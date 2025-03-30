@@ -3,7 +3,6 @@ import { AiOutlineDelete, AiOutlineSend } from "react-icons/ai";
 import { FaReply, FaThumbsUp } from "react-icons/fa";
 import { FaMessage, FaPaperPlane, FaXmark } from "react-icons/fa6";
 import { useParams } from "react-router-dom";
-import { set } from "lodash";
 import { ToastContainer } from "react-toastify";
 
 const Discussions = () => {
@@ -37,8 +36,7 @@ const Discussions = () => {
       );
 
       if (!response.ok) {
-        console.log(response);
-
+        // console.log(response);
         throw new Error("Failed to fetch discussions");
       }
 
