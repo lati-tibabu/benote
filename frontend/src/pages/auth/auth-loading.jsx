@@ -11,7 +11,10 @@ function AuthLoading() {
 
     if (token) {
       localStorage.setItem("jwt", token);
-      localStorage.setItem("jwt_expiration", Date.now() + 60 * 60 * 1000);
+      localStorage.setItem(
+        "jwt_expiration",
+        Date.now() + 30 * 24 * 60 * 60 * 1000
+      );
 
       navigate("/app/home"); // Redirect to the protected route AFTER setting the token
     } else {
