@@ -207,7 +207,7 @@ const AiGeneratedNote = () => {
     `;
   };
 
-  console.log(noteGenerationPrompt("lati"));
+  // console.log(noteGenerationPrompt("lati"));
 
   return (
     <div>
