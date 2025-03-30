@@ -5,9 +5,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { toast, ToastContainer } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import { setNotes } from "../../../../../redux/slices/notesSlice";
+import { clearNotes, setNotes } from "../../../../../redux/slices/notesSlice";
 import AiGeneratedNote from "./Notes/ai-generated-note";
-import { FaPlus } from "react-icons/fa6";
 
 const Notes = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -18,7 +17,7 @@ const Notes = () => {
   };
 
   // const workspace = location2.state?.workspace || {};
-  const workspace = useSelector((state) => state.workspace.workspace) || [];
+
   const { workspaceId } = useParams();
   const useGemini = localStorage.getItem("useGemini") === "true" ? true : false;
 
@@ -27,8 +26,6 @@ const Notes = () => {
 
   // for holding the currently loggedin user data
   const [userData, setUserData] = useState(null);
-
-  const [noteCreated, setNoteCreated] = useState(false);
 
   const [loading, setLoading] = useState(false);
 
@@ -44,7 +41,12 @@ const Notes = () => {
 
   // adding new note
   const handleAddNewNote = async () => {
-    const newTitle = "Untitled note " + new Date().toTimeString();
+    const newTitle = `Note_${new Date()
+      .toISOString()
+      .replace(/\..+/, "")
+      .replace(/:/g, "-")
+      .replace(/T/g, "_")}`;
+
     // const workspaceId = workspace.id;
     const userId = userData.id;
 
@@ -63,13 +65,9 @@ const Notes = () => {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        setNoteCreated((prev) => !prev);
-        setNoteData(data);
-        setNoteInput(data.content || "");
         toast.success("Note created succesfully");
+        fetchNotes();
       } else {
-        // alert("Error creating the note");
         toast.error("Error creating the note");
         console.log(await response.text());
       }
@@ -79,6 +77,7 @@ const Notes = () => {
   };
 
   const dispatch = useDispatch();
+
   //fetching all notes for the given workspace
   const fetchNotes = async () => {
     setLoading(true);
@@ -89,12 +88,10 @@ const Notes = () => {
       });
 
       if (!response.ok) {
-        // setNotes([]);
-        dispatch(setNotes([]));
+        dispatch(clearNotes());
       }
       const data = await response.json();
       dispatch(setNotes(data));
-      // setNotes(data);
     } catch (error) {
       console.error("error happening", error);
     } finally {
@@ -102,10 +99,10 @@ const Notes = () => {
     }
   };
 
-  //fetching all notes for the given workspace
+  //fetching all notes for the given workspace up on mounting the component
   useEffect(() => {
     fetchNotes();
-  }, [workspace, noteCreated]);
+  }, []);
 
   //deleting note
   const handleDeleteNote = async (id) => {
@@ -144,7 +141,6 @@ const Notes = () => {
             {useGemini && (
               <div
                 className="btn bg-gradient-to-tr from-pink-500 transition-all duration-300 to-blue-600 text-white border-white hover:border-pink-500 btn-soft rounded-full"
-                // onClick={() => alert("hey developer, you wanna add a todo list")}
                 onClick={() =>
                   document.getElementById("ai_gen_note").showModal()
                 }
