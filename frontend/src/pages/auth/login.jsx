@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
+import { useDispatch } from "react-redux";
+import { jwtDecode } from "jwt-decode";
+import { setAuthenticatedUser } from "../../redux/slices/authSlice";
 
 function Login() {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -12,6 +15,8 @@ function Login() {
     email: "",
     password: "",
   });
+
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData({
@@ -40,6 +45,16 @@ function Login() {
           "jwt_expiration",
           Date.now() + 30 * 24 * 60 * 60 * 1000
         );
+        // const data = await response.json();
+
+        const data = jwtDecode(result.token);
+        const authenticatedUser = {
+          id: data.id,
+          email: data.email,
+          name: data.name,
+        };
+        dispatch(setAuthenticatedUser(authenticatedUser));
+
         navigate("/app/home");
         setLoginLoading(false);
       } else {
