@@ -35,6 +35,8 @@ import TeamTodoLists from "../pages/dashboard/contents/Team/OpenedTeam/todo-list
 import StudyPlanOpened from "../pages/dashboard/contents/Workspace/OpenedWorkspace/study-plan-open";
 import OpenedNote from "../pages/dashboard/contents/Workspace/OpenedWorkspace/Notes/opened-note";
 
+import Classroom from "../pages/dashboard/contents/Classroom";
+
 const dashboardRoutes = {
   path: "/app",
   errorElement: <Unexpected />,
@@ -120,6 +122,10 @@ const dashboardRoutes = {
           ],
         },
       ],
+    },
+    {
+      path: "classroom",
+      element: <ProtectedRoute component={Classroom} />,
     },
     { path: "profile", element: <ProtectedRoute component={Profile} /> },
     {

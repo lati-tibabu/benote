@@ -29,7 +29,11 @@ import { jwtDecode } from "jwt-decode";
 import { useDispatch, useSelector } from "react-redux";
 // const crypto = require("crypto");
 import { SHA256 } from "crypto-js";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import {
+  FaChalkboardTeacher,
+  FaChevronLeft,
+  FaChevronRight,
+} from "react-icons/fa";
 import { FaBolt, FaMoon, FaStop, FaSun } from "react-icons/fa6";
 import {
   GiArtificialIntelligence,
@@ -202,6 +206,20 @@ function Dashboard() {
               >
                 <AiOutlineTeam size={20} />
                 {!collapsedNav && <span>Teams</span>}
+              </Link>
+
+              <Link
+                to="classroom"
+                className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
+                  loc[0] === "classroom"
+                    ? "font-bold bg-blue-100 text-blue-800 rounded"
+                    : "text-gray-800"
+                }`}
+                onClick={() => setIsMobileNavOpen(false)}
+                title="Classroom"
+              >
+                <FaChalkboardTeacher size={20} />
+                {!collapsedNav && <span>Classroom</span>}
               </Link>
             </div>
 
