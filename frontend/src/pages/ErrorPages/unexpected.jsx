@@ -1,42 +1,40 @@
 import React from "react";
 import { AiFillWarning } from "react-icons/ai";
-import { FaWalking } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const Unexpected = () => {
-  // const navigate = useNavigate();
-  // const handleError = (e) => {
-  //   e.preventDefault();
-  //   alert("Your report is submitted!");
-  //   navigate("/");
-  // };
+  const navigate = useNavigate();
+
+  const handleRetry = () => {
+    navigate("/auth/login");
+  };
+
   return (
-    <div className="w-screen h-screen bg-white text-black flex items-center justify-center">
-      <div className="flex flex-col items-center gap-4">
-        {/* <AiFillWarning size={70} color="red" /> */}
-        <img src="/ErrorPics/unexpected-warning.png" width={200} alt="" />
-        <div className="text-xl font-semibold text-center">
-          Error Happening!
-        </div>
-        {/* <form
-          onSubmit={handleError}
-          className="flex flex-col gap-3 w-80 bg-gray-100 p-5 rounded-lg shadow-md items-center"
+    <div className="w-screen h-screen flex flex-col items-center justify-center bg-gray-100 text-gray-800 p-6">
+      <div className="bg-white shadow-lg rounded-xl p-8 text-center max-w-lg">
+        <AiFillWarning
+          size={70}
+          className="text-green-500 animate-bounce mx-auto"
+        />
+        <h1 className="text-3xl font-bold mt-4">Oops! Something went wrong</h1>
+        <p className="text-gray-600 mt-2">
+          This is a beta version, and errors are expected. If you encountered an
+          issue, try logging in again.
+        </p>
+        <img
+          src="/ErrorPics/unexpected-warning.png"
+          width={180}
+          alt="Error Illustration"
+          className="mx-auto my-4"
+        />
+        <button
+          onClick={handleRetry}
+          className="bg-black text-white px-6 py-3 rounded-lg shadow-md hover:bg-gray-800 transition duration-300"
         >
-          <input
-            type="text"
-            placeholder="Describe the issue..."
-            className="input input-bordered w-full bg-transparent"
-          />
-          <button className="btn text-white bg-black w-fit">
-            Report Error
-          </button>
-        </form> */}
-        <p>
-          <strong>
-            This is beta version app, it is still under development.
-          </strong>
-          <span className="3xl">🪲 Bug is inevitable</span>
-          Please go <a href="/auth/login">this</a> and try logging in again.
+          Try Again
+        </button>
+        <p className="text-sm text-gray-500 mt-3">
+          If the issue persists, please report it.
         </p>
       </div>
     </div>

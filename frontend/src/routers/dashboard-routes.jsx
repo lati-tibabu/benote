@@ -36,6 +36,7 @@ import StudyPlanOpened from "../pages/dashboard/contents/Workspace/OpenedWorkspa
 import OpenedNote from "../pages/dashboard/contents/Workspace/OpenedWorkspace/Notes/opened-note";
 
 import Classroom from "../pages/dashboard/contents/Classroom";
+import OpenedClassroom from "../pages/dashboard/contents/Classroom/contents/opened-classroom";
 
 const dashboardRoutes = {
   path: "/app",
@@ -127,6 +128,11 @@ const dashboardRoutes = {
       path: "classroom",
       element: <ProtectedRoute component={Classroom} />,
     },
+    {
+      path: "classroom/:classroomId",
+      element: <ProtectedRoute component={OpenedClassroom} />,
+    },
+
     { path: "profile", element: <ProtectedRoute component={Profile} /> },
     {
       path: "llm-setting",

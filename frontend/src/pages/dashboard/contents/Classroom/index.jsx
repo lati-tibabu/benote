@@ -1,9 +1,12 @@
 import React from "react";
 import AddNew from "./contents/add-new";
+import { ToastContainer } from "react-toastify";
+import ClassroomList from "./contents/classroom-list";
 
 const Classroom = () => {
   return (
     <div>
+      <ToastContainer />
       <div>
         <button
           className="btn rounded-full"
@@ -12,7 +15,16 @@ const Classroom = () => {
           + Create New
         </button>
       </div>
-      <div></div>
+      <div className="flex flex-col md:flex-row">
+        <div className="border m-2 p-3 rounded-md">
+          <p className="font-bold ">Classroom I created</p>
+          <ClassroomList requestType="created" />
+        </div>
+        <div className="border m-2 p-3 rounded-md">
+          <p className="font-bold ">Classroom I Joined</p>
+          <ClassroomList requestType="joined" />
+        </div>
+      </div>
 
       <dialog id="add_classroom" className="modal overflow-x-scroll">
         <div className="modal-box bg-white p-4 rounded-md shadow-md sm:w-fit lg:w-1/2 mx-auto mt-10 scrollbar-hide">
