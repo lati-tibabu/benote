@@ -3,6 +3,10 @@ const router = express.Router();
 
 const classroomControllers = require("../controllers/classroomControllers");
 
+const authMiddleware = require("../middlewares/authMiddleware");
+
+router.use(authMiddleware.authMiddleware);
+
 router.post("/", classroomControllers.createClassroom);
 router.get("/", classroomControllers.readClassrooms);
 router.get("/:id", classroomControllers.readClassroom);

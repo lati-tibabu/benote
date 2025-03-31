@@ -1,4 +1,4 @@
-const { classroom } = require("../models");
+const { classroom, user } = require("../models");
 
 const createClassroom = async (req, res) => {
   try {
@@ -10,8 +10,44 @@ const createClassroom = async (req, res) => {
 };
 
 const readClassrooms = async (req, res) => {
+  const requestType = req.query.requestType || "created";
+  const userId = req.user.id;
+
+  if (requestType === "joined") {
+    try {
+      const student = await user.findByPk(userId, {
+        include: [
+          {
+            model: classroom,
+            as: "enrolledClassrooms",
+            attributes: ["id", "name", "description"],
+          },
+        ],
+      });
+      if (!student) {
+        throw new Error("Student not found");
+      }
+
+      return res.json(student.enrolledClassrooms);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
   try {
-    const classrooms = await classroom.findAll();
+    const classrooms = await classroom.findAll({
+      where: {
+        teacher_id: userId,
+      },
+      include: [
+        {
+          model: user,
+          as: "teacher",
+          attributes: ["id", "name", "email"],
+        },
+      ],
+    });
+
     res.json(classrooms);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -66,4 +102,16 @@ module.exports = {
   readClassroom,
   updateClassroom,
   deleteClassroom,
+};
+
+const addStudentToClassroom = async (studentId, classroomId) => {
+  const student = await user.findByPk(studentId);
+  const classroom = await classroom.findByPk(classroomId);
+
+  if (!student || !classroom) {
+    throw new Error("Student or Classroom not found");
+  }
+
+  await student.addEnrolledClassroom(classroom); // Uses alias "enrolledClassrooms"
+  console.log(`Student ${studentId} enrolled in Classroom ${classroomId}`);
 };
