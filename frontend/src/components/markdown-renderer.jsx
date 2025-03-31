@@ -77,7 +77,7 @@ const MarkdownRenderer = ({ content }) => {
             <blockquote className="border-l-4 pl-4" {...props} />
           ),
           img: ({ node, ...props }) => (
-            <img {...props} className="max-w-full rounded-box" />
+            <img {...props} className="max-w-full rounded-box mx-auto p-2" />
           ),
         }}
       >
