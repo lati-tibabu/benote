@@ -61,7 +61,7 @@ const Notes = () => {
 
   //fetching all notes for the given workspace
   const fetchNotes = async () => {
-    setLoading(true);
+    !notes.length && setLoading(true);
     try {
       const response = await fetch(`${apiURL}/api/notes/${workspaceId}`, {
         method: "GET",
