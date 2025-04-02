@@ -7,6 +7,7 @@ const MarkdownRenderer = ({ content }) => {
   return (
     <div className="flex flex-col gap-4 hover:[&>*]:bg-gray-100 hover:[&>*]:cursor-pointer">
       <MarkDown
+        // className="border-2 overflow-hidden"
         remarkPlugins={[remarkGfm]}
         components={{
           code: CodeHighlighter,
@@ -17,9 +18,9 @@ const MarkdownRenderer = ({ content }) => {
             const firstChar = props.children[0]?.toString().trim().charAt(0);
             return (
               <p
-                className={`${
+                className={`text-justify${
                   firstChar === "#"
-                    ? "font-bold bg-blue-200 w-fit p-1 rounded-full text-blue-700"
+                    ? "font-bold bg-blue-200 w-fit p-1 rounded text-blue-700"
                     : ""
                 }`}
                 {...props}
@@ -65,7 +66,10 @@ const MarkdownRenderer = ({ content }) => {
           ),
 
           table: ({ node, ...props }) => (
-            <table className="table-auto border-collapse" {...props} />
+            <table
+              className="table-auto border-collapse overflow-auto"
+              {...props}
+            />
           ),
           th: ({ node, ...props }) => (
             <th className="border px-4 py-2 bg-gray-200" {...props} />

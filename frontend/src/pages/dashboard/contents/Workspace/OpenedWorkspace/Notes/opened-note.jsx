@@ -14,6 +14,7 @@ import { jwtDecode } from "jwt-decode";
 import { toast, ToastContainer } from "react-toastify";
 import { useSelector } from "react-redux";
 import MarkdownRenderer from "../../../../../../components/markdown-renderer";
+import EditableMarkdown from "../../../../../../components/editable-markdown";
 
 const OpenedNote = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -309,7 +310,7 @@ const OpenedNote = () => {
               )}
               {/* viewing area */}
               {previewMode && (
-                <div className="flex-1 shadow-md p-2 text-wrap overflow-auto border-1 rounded max-w-3xl mx-auto">
+                <div className="flex-1 shadow-md p-2 text-wrap overflow-auto border-1 rounded sm:max-w-3xl sm:mx-auto">
                   <div className="flex items-center justify-between border-b-2">
                     <p className="font-bold text-gray-400 px-2 rounded-t-md">
                       Viewing Area
@@ -324,6 +325,7 @@ const OpenedNote = () => {
                   </div>
                   <div ref={noteRef}>
                     <MarkdownRenderer content={noteInput} />
+                    {/* <EditableMarkdown /> */}
                   </div>
                 </div>
               )}
@@ -343,6 +345,11 @@ const styles = `
         font-family: "Nunito", Arial, sans-serif;
         margin: 20px;
         color: #333;
+      }
+      img {
+        margin-left: auto;
+        margin-right: auto;
+        padding: 0.5rem;
       }
       h1 {
         font-size: 2rem;
