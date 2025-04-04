@@ -1,9 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { AiOutlineDelete, AiOutlineSend } from "react-icons/ai";
-import { FaReply, FaThumbsUp } from "react-icons/fa";
-import { FaMessage, FaPaperPlane, FaXmark } from "react-icons/fa6";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  AiOutlineDelete,
+  AiOutlineDisconnect,
+  AiOutlineWifi,
+} from "react-icons/ai";
+import { FaReply } from "react-icons/fa";
+import { FaConnectdevelop, FaPaperPlane, FaXmark } from "react-icons/fa6";
 import { useParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import useSocket from "../../../../../hooks/useSocket";
+import MarkdownRenderer from "../../../../../components/markdown-renderer";
 
 const Discussions = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -12,6 +18,7 @@ const Discussions = () => {
     authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
+
   const { teamId } = useParams();
   const [discussions, setDiscussions] = useState(null);
   const [discussionData, setDiscussionData] = useState({
@@ -19,11 +26,50 @@ const Discussions = () => {
     team_id: teamId,
     discussion_id: null,
   });
+
   const [replyData, setReplyData] = useState({
     replying: false,
     replyingTo: null,
     content: "",
   });
+
+  const socket = useSocket(apiURL);
+
+  const [isConnected, setIsConnected] = useState(socket?.connected);
+
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [discussions]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const onConnect = () => {
+      setIsConnected(true);
+    };
+
+    const onDisconnect = () => {
+      setIsConnected(false);
+    };
+
+    const onConnectError = (error) => {
+      console.error("Connection Error");
+      setIsConnected(false);
+    };
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.on("connect_error", onConnectError);
+
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("connect_error", onConnectError);
+    };
+  }, [socket]);
+  // console.log("Socket", socket?.connected);
 
   const fetchDiscussions = async () => {
     try {
@@ -46,6 +92,35 @@ const Discussions = () => {
       console.error(error);
     }
   };
+
+  useEffect(() => {
+    if (socket) {
+      socket.emit("teamDiscussionRegister", teamId);
+    }
+
+    return () => {
+      if (socket) {
+        socket.off("disconnect");
+      }
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    if (socket) {
+      const messageListener = (data) => {
+        console.log("New message received", data);
+        fetchDiscussions();
+      };
+
+      socket.on("message", messageListener);
+
+      return () => {
+        if (socket) {
+          socket.off("message", messageListener);
+        }
+      };
+    }
+  }, [socket]);
 
   useEffect(() => {
     fetchDiscussions();
@@ -83,7 +158,6 @@ const Discussions = () => {
   };
 
   const handleDeleteDiscussion = async (discussionId) => {
-    // alert(`Deleting ${discussionId}`);
     if (!window.confirm("Are you sure you want to delete this discussion?"))
       return;
     try {
@@ -98,6 +172,9 @@ const Discussions = () => {
         toast.error("Unable to delete, are you the owner of the post");
         throw new Error("Failed to delete discussion");
       }
+      if (socket) {
+        socket.emit("discussionMessage", "update", teamId);
+      }
       fetchDiscussions();
     } catch (error) {
       console.error(error);
@@ -107,54 +184,51 @@ const Discussions = () => {
 
   const DiscussionThread = ({ discussion }) => {
     return (
-      <div className="ml-4 pl-1 mt-2 min-w-80 bg-white hover:bg-gray-50 p-2 rounded-lg">
-        <div className="flex items-center gap-1 px-4 py-1 justify-between">
-          <div className="flex items-center gap-1 py-1">
-            <div className="p-4 w-5 h-5 bg-orange-600 flex items-center justify-center rounded-full text-white font-bold">
+      <div className="ml-6 pl-2 mt-3 min-w-80 bg-white hover:bg-gray-50 p-4 rounded-xl shadow-sm border border-gray-200">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-orange-600 flex items-center justify-center rounded-full text-white font-semibold text-lg">
               {discussion["user.name"][0]}
             </div>
-            <div className="font-bold text-sm">{discussion["user.name"]}</div>
+            <div className="font-semibold text-gray-800 text-sm">
+              {discussion["user.name"]}
+            </div>
           </div>
           <div
             onClick={() => handleDeleteDiscussion(discussion.id)}
-            className="cursor-pointer hover:text-red-500 text-sm"
+            className="cursor-pointer hover:text-red-500 text-gray-600 text-lg transition-colors"
           >
             <AiOutlineDelete />
           </div>
         </div>
-        <div className="rounded-lg border-2 border-gray-100 p-2">
-          <div className="p-2" title={discussion["user.email"]}>
-            {discussion.content}
+
+        <div className="mt-3 border border-gray-200 rounded-lg p-3 bg-gray-50">
+          <div className="text-gray-700" title={discussion["user.email"]}>
+            <MarkdownRenderer content={discussion.content} />
           </div>
-          <div className="px-2">
-            <div className="text-xs text-gray-500">
-              {formatPostDate(discussion.createdAt)}
-            </div>
-            <div className="flex items-center mt-2 gap-2">
-              {/* <button className="flex items-center gap-1 text-sm text-blue-500 hover:text-blue-700">
-              <FaThumbsUp />
-              Like
-              {discussion?.likes}
-            </button> */}
-              <button
-                className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
-                onClick={() => {
-                  setReplyData({
-                    replying: true,
-                    replyingTo: discussion.id,
-                    content: discussion.content,
-                  });
-                }}
-              >
-                <FaReply />
-                Reply
-                {discussion.replies?.length > 0 &&
-                  " (" + discussion.replies?.length + ")"}
-              </button>
-            </div>
+          <div className="mt-2 text-xs text-gray-500">
+            {formatPostDate(discussion.createdAt)}
+          </div>
+          <div className="flex items-center mt-3 gap-3">
+            <button
+              className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition"
+              onClick={() => {
+                setReplyData({
+                  replying: true,
+                  replyingTo: discussion.id,
+                  content: discussion.content,
+                });
+              }}
+            >
+              <FaReply className="text-gray-500" />
+              Reply{" "}
+              {discussion.replies?.length > 0 &&
+                `(${discussion.replies.length})`}
+            </button>
           </div>
         </div>
-        <div className="ml-4">
+
+        <div className="ml-6 mt-2">
           {discussion.replies?.length > 0 &&
             discussion.replies.map((reply) => (
               <DiscussionThread key={reply.id} discussion={reply} />
@@ -166,7 +240,6 @@ const Discussions = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // alert("submitting");
     if (!discussionData.content) {
       alert("Discussion content cannot be empty");
       return;
@@ -181,6 +254,11 @@ const Discussions = () => {
         throw new Error("Failed to submit discussion");
       }
       const data = await response.json();
+
+      if (socket) {
+        socket.emit("discussionMessage", "update", teamId);
+      }
+
       setDiscussionData({ content: "", team_id: teamId, discussion_id: null });
       setReplyData({ replying: false, replyingTo: null, content: "" });
       fetchDiscussions();
@@ -193,9 +271,21 @@ const Discussions = () => {
   return (
     <div>
       <ToastContainer />
-      Discussions
+      <div className="text-sm font-bold">
+        {isConnected ? (
+          <span className="text-green-600 flex items-center gap-2">
+            Connected <AiOutlineWifi />
+          </span>
+        ) : (
+          <span className="text-red-500 flex items-center gap-2">
+            Disconnected
+            <AiOutlineDisconnect />
+          </span>
+        )}
+      </div>
+
       <div className="rounded-lg p-2">
-        <div className="flex flex-col h-96 max-w-4xl mx-auto overflow-auto gap-2 shadow rounded-lg p-2">
+        <div className="flex flex-col h-96 max-w-4xl mx-auto overflow-auto gap-2 shadow rounded-lg p-2 scrollbar-hide">
           {discussions ? (
             discussions?.map((discussion) => (
               <DiscussionThread discussion={discussion} />
@@ -203,9 +293,10 @@ const Discussions = () => {
           ) : (
             <span className="loading loading-spinner"></span>
           )}
+          <div ref={bottomRef} />
         </div>
       </div>
-      {/* form section */}
+      {/* form section for input of post and reply*/}
       <div>
         {replyData.replying && (
           <div className="flex flex-col border-t-2 border-blue-400 mt-2 p-2 mx-auto max-w-xl">
