@@ -319,7 +319,7 @@ function Dashboard() {
         </div>
 
         {/* Main Content */}
-        <div className="w-full flex flex-col overflow-x-hidden">
+        <div className="w-full flex flex-col overflow-x-hidden h-screen overflow-y-auto">
           <div className="w-full p-2 flex items-center justify-between bg-white border-b-1">
             <div className="flex items-center gap-2">
               <div className="flex space-x-2">

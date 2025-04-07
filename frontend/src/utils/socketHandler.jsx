@@ -7,21 +7,37 @@ const SocketHandler = () => {
   const userData = useSelector((state) => state.auth.user) || {};
 
   const socket = useSocket(apiURL);
-  // console.log(apiURL);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket) {
+      console.warn(
+        "Socket not initialized yet, backend may not support socket connections."
+      );
+      return;
+    }
 
-    socket.emit("register", userData?.id);
+    try {
+      socket.emit("register", userData?.id);
 
-    socket.on("disconnect", () => {
-      console.log("Disconnected from server");
-    });
+      socket.on("disconnect", () => {
+        console.log("Disconnected from server");
+      });
 
-    return () => {
-      socket.off("disconnect");
-    };
-  }, [socket]);
+      socket.on("connect_error", () => {
+        console.error("Socket connection error:", err.message);
+      });
+
+      socket.on("error", (err) => {
+        console.error("Socket error:", err.message);
+      });
+
+      return () => {
+        socket.off("disconnect");
+        socket.off("connect_error");
+        socket.off("error");
+      };
+    } catch (error) {}
+  }, [socket, userData?.id]);
   return null;
 };
 

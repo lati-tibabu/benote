@@ -5,7 +5,7 @@ import {
   AiOutlineWifi,
 } from "react-icons/ai";
 import { FaReply } from "react-icons/fa";
-import { FaConnectdevelop, FaPaperPlane, FaXmark } from "react-icons/fa6";
+import { FaPaperPlane, FaXmark } from "react-icons/fa6";
 import { useParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import useSocket from "../../../../../hooks/useSocket";
@@ -44,7 +44,12 @@ const Discussions = () => {
   }, [discussions]);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket) {
+      console.warn(
+        "Socket not initialized yet, backend may not support socket connections."
+      );
+      return;
+    }
 
     const onConnect = () => {
       setIsConnected(true);
@@ -94,19 +99,43 @@ const Discussions = () => {
   };
 
   useEffect(() => {
-    if (socket) {
-      socket.emit("teamDiscussionRegister", teamId);
+    if (!socket) {
+      console.warn(
+        "Socket not initialized yet, backend may not support socket connections."
+      );
+      return;
     }
 
-    return () => {
-      if (socket) {
+    try {
+      socket.emit("teamDiscussionRegister", teamId);
+
+      socket.on("connect_error", (err) => {
+        console.error("Socket connection error:", err.message);
+      });
+      socket.on("error", (err) => {
+        console.error("Socket error:", err.message);
+      });
+
+      return () => {
         socket.off("disconnect");
-      }
-    };
-  }, [socket]);
+        socket.off("connect_error");
+        socket.off("error");
+        socket.off("teamDiscussionRegister");
+      };
+    } catch (error) {
+      console.error("Socket error:", error.message);
+    }
+  }, [socket, teamId]);
 
   useEffect(() => {
-    if (socket) {
+    if (!socket) {
+      console.warn(
+        "Socket not initialized yet, backend may not support socket connections."
+      );
+      return;
+    }
+
+    try {
       const messageListener = (data) => {
         console.log("New message received", data);
         fetchDiscussions();
@@ -119,8 +148,10 @@ const Discussions = () => {
           socket.off("message", messageListener);
         }
       };
+    } catch (error) {
+      console.error("Socket error:", error.message);
     }
-  }, [socket]);
+  }, [socket, teamId]);
 
   useEffect(() => {
     fetchDiscussions();
@@ -172,9 +203,12 @@ const Discussions = () => {
         toast.error("Unable to delete, are you the owner of the post");
         throw new Error("Failed to delete discussion");
       }
-      if (socket) {
+      if (socket && socket.connected) {
         socket.emit("discussionMessage", "update", teamId);
+      } else {
+        console.warn("Socket not connected. Cannot emit message.");
       }
+
       fetchDiscussions();
     } catch (error) {
       console.error(error);
@@ -253,10 +287,12 @@ const Discussions = () => {
       if (!response.ok) {
         throw new Error("Failed to submit discussion");
       }
-      const data = await response.json();
+      // const data = await response.json();
 
-      if (socket) {
+      if (socket && socket.connected) {
         socket.emit("discussionMessage", "update", teamId);
+      } else {
+        console.warn("Socket not connected. Cannot emit message.");
       }
 
       setDiscussionData({ content: "", team_id: teamId, discussion_id: null });
