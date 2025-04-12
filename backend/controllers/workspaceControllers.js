@@ -236,7 +236,21 @@ const readWorkspaces = async (req, res) => {
     if (!_workspaces && !_team_workspaces)
       return res.status(404).json("Workspace not found");
 
-    const combinedWorkspaces = [..._workspaces, ..._team_workspaces];
+    // Remove duplicates from `data` based on `item.id`. in my case workspace.workspace_id
+    // Step-by-step:
+    // 1. Map each item to a [id, item] pair.
+    // 2. Create a Map to ensure only one item per unique `id` is retained (last one wins).
+    // 3. Extract the Map values and convert them back into an array.
+
+    const combinedWorkspaces = Array.from(
+      new Map(
+        [..._workspaces, ..._team_workspaces].map((workspace) => [
+          workspace.workspace_id,
+          workspace,
+        ])
+      ).values()
+    );
+
     const sortedWorkspaces = combinedWorkspaces.sort(
       (a, b) => b.workspace.last_accessed_at - a.workspace.last_accessed_at
     );
