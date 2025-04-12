@@ -8,6 +8,7 @@ import {
   FaUndo,
 } from "react-icons/fa";
 import { FaHandDots } from "react-icons/fa6";
+import MarkdownRenderer from "../markdown-renderer";
 
 const TaskCard = (props) => {
   const handleStatusChange = (taskStatus) => {
@@ -99,7 +100,10 @@ const TaskCard = (props) => {
           <h3 className="font-semibold text-lg text-gray-900">
             {props.taskName}
           </h3>
-          <p className="text-sm text-gray-600">{props.taskDescription}</p>
+          <p className="text-sm text-gray-600">
+            <MarkdownRenderer content={props.taskDescription} />
+            {/* {props.taskDescription} */}
+          </p>
           <p className="text-sm">
             <strong>Assigned to: </strong>
             <span className="hover:underline cursor-pointer hover:text-blue-700">
