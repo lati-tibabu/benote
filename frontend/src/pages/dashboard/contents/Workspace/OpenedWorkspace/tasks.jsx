@@ -327,7 +327,7 @@ const Tasks = () => {
                     createdAt={new Date(task.createdAt)
                       .toUTCString()
                       .slice(0, 16)}
-                    daysLeft={() => {
+                    daysLeft={(() => {
                       const timeDiff =
                         new Date(task.due_date).getTime() - Date.now();
                       const daysLeft = Math.floor(
@@ -346,7 +346,7 @@ const Tasks = () => {
                       } else {
                         return "Less than an hour left";
                       }
-                    }}
+                    })()}
                   />
                 )
             )}
