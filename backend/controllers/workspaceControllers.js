@@ -101,9 +101,10 @@ const giveUserMembership = async (req, res) => {
 // Read
 const readWorkspaces = async (req, res) => {
   try {
-    const home = req.query.home;
+    const home = req.query.home; // check where the request is made from
     const userId = req.user.id;
     let _workspaces = null;
+    let _team_workspaces = null;
 
     if (!home) {
       _workspaces = await workspace_membership.findAll({
@@ -111,6 +112,42 @@ const readWorkspaces = async (req, res) => {
         where: {
           user_id: userId,
         },
+        include: [
+          {
+            model: workspace,
+            as: "workspace",
+            required: true,
+            include: [
+              {
+                model: team,
+                as: "team",
+                required: false,
+              },
+              {
+                model: workspace_membership,
+                as: "memberships",
+                required: false,
+                attributes: ["role"],
+                include: [
+                  {
+                    model: user,
+                    as: "user",
+                    attributes: ["name", "email"],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        order: [
+          [{ model: workspace, as: "workspace" }, "last_accessed_at", "DESC"],
+        ],
+      });
+      _team_workspaces = await workspace_membership.findAll({
+        where: {
+          role: "member",
+        },
+        attributes: ["role", "workspace_id"],
         include: [
           {
             model: workspace,
@@ -158,11 +195,55 @@ const readWorkspaces = async (req, res) => {
         ],
         limit: 5,
       });
+      _team_workspaces = await workspace_membership.findAll({
+        where: {
+          role: "member",
+        },
+        attributes: ["role", "workspace_id"],
+        include: [
+          {
+            model: workspace,
+            as: "workspace",
+            required: true,
+            include: [
+              {
+                model: team,
+                as: "team",
+                required: false,
+              },
+              {
+                model: workspace_membership,
+                as: "memberships",
+                required: false,
+                attributes: ["role"],
+                include: [
+                  {
+                    model: user,
+                    as: "user",
+                    attributes: ["name", "email"],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        order: [
+          [{ model: workspace, as: "workspace" }, "last_accessed_at", "DESC"],
+        ],
+      });
     }
 
-    if (!_workspaces) return res.status(404).json("Workspace not found");
+    if (!_workspaces && !_team_workspaces)
+      return res.status(404).json("Workspace not found");
 
-    res.json(_workspaces);
+    const combinedWorkspaces = [..._workspaces, ..._team_workspaces];
+    const sortedWorkspaces = combinedWorkspaces.sort(
+      (a, b) => b.workspace.last_accessed_at - a.workspace.last_accessed_at
+    );
+    if (home && sortedWorkspaces.length > 5) {
+      return res.status(200).json(sortedWorkspaces.slice(0, 5));
+    }
+    res.json(sortedWorkspaces);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -215,10 +296,54 @@ const readWorkspacesData = async (req, res) => {
       ],
     });
 
-    if (!_workspaces) {
+    const _team_workspaces = await workspace_membership.findAll({
+      where: {
+        role: "member",
+      },
+      attributes: [],
+      include: [
+        {
+          model: workspace,
+          as: "workspace",
+          required: true,
+          attributes: ["id", "emoji", "name", "description"],
+          include: [
+            {
+              model: task,
+              as: "tasks",
+              required: false,
+              attributes: [
+                "id",
+                "title",
+                "description",
+                "status",
+                "due_date",
+                "is_archived",
+              ],
+            },
+            {
+              model: todo,
+              as: "todos",
+              required: false,
+              attributes: ["id", "title"],
+              include: [
+                {
+                  model: todo_item,
+                  as: "todo_items",
+                  required: false,
+                  attributes: ["id", "title", "status"],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    if (!_workspaces && !_team_workspaces) {
       res.status(404).json({ message: "No workspaces found" });
     } else {
-      res.json(_workspaces);
+      res.json([..._workspaces, ..._team_workspaces]);
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -377,11 +502,9 @@ const deleteWorkspace = async (req, res) => {
       if (is_member_and_admin) {
         await _workspace.destroy();
       } else {
-        res
-          .status(401)
-          .json({
-            message: "Unauthorized: You are not an admin of this workspace",
-          });
+        res.status(401).json({
+          message: "Unauthorized: You are not an admin of this workspace",
+        });
       }
       res.json({ message: "Workspace succesfully deleted" });
     } else {
