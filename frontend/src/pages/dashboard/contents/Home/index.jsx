@@ -51,6 +51,8 @@ const Home = () => {
     }
   };
 
+  // console.log("workspaces", workspaces);
+
   const fetchTasks = async () => {
     !tasks.length && setTaskLoading(true);
     try {
@@ -175,77 +177,84 @@ const Home = () => {
             ) : (
               <div>
                 <ul className="flex flex-col gap-2 justify-stretch">
-                  {workspaces.map((workspace) => (
-                    <li key={workspace.workspace.id}>
-                      <div
-                        title={
-                          workspace.workspace.description ||
-                          workspace.workspace.name
-                        }
-                        className="flex gap-2 items-start cursor-default border-2 border-gray-200 p-3 rounded-box hover:bg-blue-50 hover:border-blue-500 hover:cursor-pointer"
-                        onClick={handleWorkspaceOpen(workspace.workspace.id)}
-                      >
-                        {/* icon */}
-                        <div className="text-3xl">
-                          {workspace.workspace.emoji}
-                        </div>
-                        {/* main */}
-                        <div className="border-l-1 pl-3">
-                          {/* name */}
-                          <div>{workspace.workspace.name}</div>
-                          {/* creation date */}
-                          <div className="text-sm text-gray-600">
-                            Accessed on{" "}
-                            {(() => {
-                              const accessedAt = new Date(
-                                workspace.workspace.last_accessed_at
-                              );
-                              const now = new Date();
-                              const options = {
-                                month: "short",
-                                day: "numeric",
-                                year: "numeric",
-                                hour: "numeric",
-                                minute: "numeric",
-                                hour12: true,
-                              };
-
-                              // Same day → Show only time (e.g., 3:45 PM)
-                              if (
-                                accessedAt.getDate() === now.getDate() &&
-                                accessedAt.getMonth() === now.getMonth() &&
-                                accessedAt.getFullYear() === now.getFullYear()
-                              ) {
-                                return accessedAt.toLocaleTimeString("en-US", {
-                                  hour: "numeric",
-                                  minute: "numeric",
-                                  hour12: true,
-                                });
-                              }
-
-                              // Same week → Show "Weekday, time" (e.g., Tue, 3:45 PM)
-                              const oneWeekAgo = new Date();
-                              oneWeekAgo.setDate(now.getDate() - 7);
-
-                              if (accessedAt > oneWeekAgo) {
-                                return accessedAt.toLocaleDateString("en-US", {
-                                  weekday: "short",
-                                  hour: "numeric",
-                                  minute: "numeric",
-                                  hour12: true,
-                                });
-                              }
-
-                              // Older than a week → Full date (e.g., Mar 10, 2024, 3:45 PM)
-                              return accessedAt.toLocaleDateString(
-                                "en-US",
-                                options
-                              );
-                            })()}
+                  {workspaces.length &&
+                    workspaces.map((workspace) => (
+                      <li key={workspace.workspace.id}>
+                        <div
+                          title={
+                            workspace.workspace.description ||
+                            workspace.workspace.name
+                          }
+                          className="flex gap-2 items-start cursor-default border-2 border-gray-200 p-3 rounded-box hover:bg-blue-50 hover:border-blue-500 hover:cursor-pointer"
+                          onClick={handleWorkspaceOpen(workspace.workspace.id)}
+                        >
+                          {/* icon */}
+                          <div className="text-3xl">
+                            {workspace.workspace.emoji}
                           </div>
+                          {/* main */}
+                          <div className="border-l-1 pl-3">
+                            {/* name */}
+                            <div>{workspace.workspace.name}</div>
+                            {/* creation date */}
+                            <div className="text-sm text-gray-600">
+                              Accessed on{" "}
+                              {(() => {
+                                const accessedAt = new Date(
+                                  workspace.workspace.last_accessed_at
+                                );
+                                const now = new Date();
+                                const options = {
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric",
+                                  hour: "numeric",
+                                  minute: "numeric",
+                                  hour12: true,
+                                };
 
-                          {/* private or team */}
-                          {/* <div>
+                                // Same day → Show only time (e.g., 3:45 PM)
+                                if (
+                                  accessedAt.getDate() === now.getDate() &&
+                                  accessedAt.getMonth() === now.getMonth() &&
+                                  accessedAt.getFullYear() === now.getFullYear()
+                                ) {
+                                  return accessedAt.toLocaleTimeString(
+                                    "en-US",
+                                    {
+                                      hour: "numeric",
+                                      minute: "numeric",
+                                      hour12: true,
+                                    }
+                                  );
+                                }
+
+                                // Same week → Show "Weekday, time" (e.g., Tue, 3:45 PM)
+                                const oneWeekAgo = new Date();
+                                oneWeekAgo.setDate(now.getDate() - 7);
+
+                                if (accessedAt > oneWeekAgo) {
+                                  return accessedAt.toLocaleDateString(
+                                    "en-US",
+                                    {
+                                      weekday: "short",
+                                      hour: "numeric",
+                                      minute: "numeric",
+                                      hour12: true,
+                                    }
+                                  );
+                                }
+
+                                // Older than a week → Full date (e.g., Mar 10, 2024, 3:45 PM)
+                                return accessedAt.toLocaleDateString(
+                                  "en-US",
+                                  options
+                                );
+                              })()}
+                            </div>
+
+                            {/* private or team */}
+                            {/* <div>
                           {workspace.workspace.type
                             .split("-")[0]
                             .toLowerCase()
@@ -264,10 +273,10 @@ const Home = () => {
                             </div>
                           )}
                         </div> */}
+                          </div>
                         </div>
-                      </div>
-                    </li>
-                  ))}
+                      </li>
+                    ))}
                 </ul>
               </div>
             )}

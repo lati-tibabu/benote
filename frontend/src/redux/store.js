@@ -10,6 +10,7 @@ import pomodoroReducer from "./slices/pomodoroSlice.js";
 import themeReducer from "./slices/themeSlice";
 import authReducer from "./slices/authSlice.js";
 import tasksReducer from "./slices/tasksSlice.js";
+import aiResponseReducer from "./slices/aiResponseSlice.js";
 
 // configuration
 const persistConfig = {
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
   theme: themeReducer,
   auth: authReducer,
   tasks: tasksReducer,
+  aiResponse: aiResponseReducer,
 });
 
 // Create a persisted reducer
