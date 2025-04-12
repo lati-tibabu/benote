@@ -89,6 +89,8 @@ module.exports = (sequelize, DataTypes) => {
         as: "gradedSubmissions",
       });
       this.hasMany(models.task, { foreignKey: "assigned_to", as: "tasks" });
+
+      this.hasOne(models.user, { foreignKey: "userId", as: "profile" });
     }
   }
 
