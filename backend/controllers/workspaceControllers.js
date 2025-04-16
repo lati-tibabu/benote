@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const {
   workspace,
   workspace_membership,
@@ -98,13 +99,32 @@ const giveUserMembership = async (req, res) => {
   }
 };
 
+const readTeamIds = async (req, res) => {
+  try {
+    const _teamArray = await team_membership.findAll({
+      where: {
+        user_id: req.user.id,
+      },
+      attributes: ["team_id"],
+    });
+
+    const ary = [];
+
+    _teamArray.forEach((element) => {
+      ary.push(element.team_id);
+    });
+    res.json(ary);
+  } catch (err) {}
+};
 // Read
 const readWorkspaces = async (req, res) => {
   try {
-    const home = req.query.home; // check where the request is made from
+    const { home } = req.query; // check where the request is made from
     const userId = req.user.id;
+
     let _workspaces = null;
     let _team_workspaces = null;
+    let _teams = null;
 
     if (!home) {
       _workspaces = await workspace_membership.findAll({
@@ -143,9 +163,21 @@ const readWorkspaces = async (req, res) => {
           [{ model: workspace, as: "workspace" }, "last_accessed_at", "DESC"],
         ],
       });
+      _teams = await team_membership.findAll({
+        where: {
+          user_id: userId,
+        },
+        // attributes: ["team_id"],
+      });
+      const arrayTeamId = [];
+      _teams.forEach((element) => {
+        arrayTeamId.push(element.team_id);
+      });
       _team_workspaces = await workspace_membership.findAll({
         where: {
-          role: "member",
+          team_id: {
+            [Op.in]: arrayTeamId,
+          },
         },
         attributes: ["role", "workspace_id"],
         include: [
@@ -195,9 +227,24 @@ const readWorkspaces = async (req, res) => {
         ],
         limit: 5,
       });
+      _teams = await team_membership.findAll({
+        where: {
+          user_id: userId,
+        },
+        // attributes: ["team_id"],
+      });
+
+      const arrayTeamId = [];
+
+      _teams.forEach((element) => {
+        arrayTeamId.push(element.team_id);
+      });
+
       _team_workspaces = await workspace_membership.findAll({
         where: {
-          role: "member",
+          team_id: {
+            [Op.in]: arrayTeamId,
+          },
         },
         attributes: ["role", "workspace_id"],
         include: [
@@ -538,4 +585,5 @@ module.exports = {
   updateWorkspace,
   deleteWorkspace,
   readWorkspacesData,
+  readTeamIds,
 };
