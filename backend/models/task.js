@@ -31,7 +31,16 @@ module.exports = (sequelize, DataTypes) => {
       },
       status: DataTypes.STRING,
       due_date: DataTypes.DATE,
-      assigned_to: DataTypes.UUID,
+      assigned_to: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+          model: "users",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      },
       workspace_id: {
         type: DataTypes.UUID,
         allowNull: false,
