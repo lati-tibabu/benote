@@ -15,5 +15,6 @@ router.post("/:id/members", workspaceController.giveUserMembership);
 router.get("/:id", workspaceController.readWorkspace);
 router.put("/:id", workspaceController.updateWorkspace);
 router.delete("/:id", workspaceController.deleteWorkspace);
+router.get("/teams/id/fetch", workspaceController.readTeamIds);
 
 module.exports = router;
