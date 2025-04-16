@@ -1,17 +1,5 @@
-// import bcrypt from "bcryptjs";
 const bcrypt = require("bcryptjs");
-// const jwt = require('jsonwebtoken');
-
-// const user = require('../models/user');
-
-const { user, workspace } = require("../models");
-
-// Basic CRUD operation on models...
-
-// Create
-// Read
-// Update
-// Delete
+const { user, workspace, workspace_membership } = require("../models");
 
 // Create
 const createUser = async (req, res) => {
@@ -137,7 +125,21 @@ const deleteUser = async (req, res) => {
     if (!_user) {
       return res.status(404).json({ message: "User not found!" });
     }
-    await _user.destroy();
+
+    try {
+      await _user.destroy();
+    } catch (destroyError) {
+      return res.status(500).json({ message: destroyError.message });
+    }
+
+    try {
+      await workspace_membership.destroy({ where: { user_id: userId } });
+    } catch (membershipError) {
+      console.error("Error destroying workspace memberships:", membershipError);
+      return res
+        .status(500)
+        .json({ message: "Failed to delete workspace memberships." });
+    }
     res.status(200).json({ message: "User deleted!" });
   } catch (error) {
     res.status(500).json({ message: error.message });
