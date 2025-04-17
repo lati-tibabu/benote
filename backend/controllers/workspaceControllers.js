@@ -167,7 +167,6 @@ const readWorkspaces = async (req, res) => {
         where: {
           user_id: userId,
         },
-        // attributes: ["team_id"],
       });
       const arrayTeamId = [];
       _teams.forEach((element) => {
@@ -231,7 +230,6 @@ const readWorkspaces = async (req, res) => {
         where: {
           user_id: userId,
         },
-        // attributes: ["team_id"],
       });
 
       const arrayTeamId = [];
