@@ -125,6 +125,31 @@ const readWorkspaces = async (req, res) => {
     let _workspaces = null;
     let _team_workspaces = null;
     let _teams = null;
+    const theInclude = {
+      model: workspace,
+      as: "workspace",
+      required: true,
+      include: [
+        {
+          model: team,
+          as: "team",
+          required: false,
+        },
+        {
+          model: workspace_membership,
+          as: "memberships",
+          required: false,
+          attributes: ["role"],
+          include: [
+            {
+              model: user,
+              as: "user",
+              attributes: ["name", "email"],
+            },
+          ],
+        },
+      ],
+    };
 
     if (!home) {
       _workspaces = await workspace_membership.findAll({
@@ -132,33 +157,7 @@ const readWorkspaces = async (req, res) => {
         where: {
           user_id: userId,
         },
-        include: [
-          {
-            model: workspace,
-            as: "workspace",
-            required: true,
-            include: [
-              {
-                model: team,
-                as: "team",
-                required: false,
-              },
-              {
-                model: workspace_membership,
-                as: "memberships",
-                required: false,
-                attributes: ["role"],
-                include: [
-                  {
-                    model: user,
-                    as: "user",
-                    attributes: ["name", "email"],
-                  },
-                ],
-              },
-            ],
-          },
-        ],
+        include: [theInclude],
         order: [
           [{ model: workspace, as: "workspace" }, "last_accessed_at", "DESC"],
         ],
@@ -179,33 +178,7 @@ const readWorkspaces = async (req, res) => {
           },
         },
         attributes: ["role", "workspace_id"],
-        include: [
-          {
-            model: workspace,
-            as: "workspace",
-            required: true,
-            include: [
-              {
-                model: team,
-                as: "team",
-                required: false,
-              },
-              {
-                model: workspace_membership,
-                as: "memberships",
-                required: false,
-                attributes: ["role"],
-                include: [
-                  {
-                    model: user,
-                    as: "user",
-                    attributes: ["name", "email"],
-                  },
-                ],
-              },
-            ],
-          },
-        ],
+        include: [theInclude],
         order: [
           [{ model: workspace, as: "workspace" }, "last_accessed_at", "DESC"],
         ],
@@ -311,97 +284,84 @@ const readWorkspaces = async (req, res) => {
 const readWorkspacesData = async (req, res) => {
   try {
     const userId = req.user.id;
-    const _workspaces = await workspace_membership.findAll({
+    let _workspaces = null;
+    let _team_workspaces = null;
+    let _teams = null;
+    const theInclude = {
+      model: workspace,
+      as: "workspace",
+      required: true,
+      attributes: ["id", "emoji", "name", "description"],
+      include: [
+        {
+          model: task,
+          as: "tasks",
+          required: false,
+          attributes: [
+            "id",
+            "title",
+            "description",
+            "status",
+            "due_date",
+            "is_archived",
+          ],
+        },
+        {
+          model: todo,
+          as: "todos",
+          required: false,
+          attributes: ["id", "title"],
+          include: [
+            {
+              model: todo_item,
+              as: "todo_items",
+              required: false,
+              attributes: ["id", "title", "status"],
+            },
+          ],
+        },
+      ],
+    };
+
+    _workspaces = await workspace_membership.findAll({
+      attributes: [],
       where: {
         user_id: userId,
       },
-      attributes: [],
-      include: [
-        {
-          model: workspace,
-          as: "workspace",
-          required: true,
-          attributes: ["id", "emoji", "name", "description"],
-          include: [
-            {
-              model: task,
-              as: "tasks",
-              required: false,
-              attributes: [
-                "id",
-                "title",
-                "description",
-                "status",
-                "due_date",
-                "is_archived",
-              ],
-            },
-            {
-              model: todo,
-              as: "todos",
-              required: false,
-              attributes: ["id", "title"],
-              include: [
-                {
-                  model: todo_item,
-                  as: "todo_items",
-                  required: false,
-                  attributes: ["id", "title", "status"],
-                },
-              ],
-            },
-          ],
-        },
-      ],
+      include: [theInclude],
     });
-
-    const _team_workspaces = await workspace_membership.findAll({
+    _teams = await team_membership.findAll({
       where: {
-        role: "member",
+        user_id: userId,
+      },
+    });
+    const arrayTeamId = [];
+    _teams.forEach((element) => {
+      arrayTeamId.push(element.team_id);
+    });
+    _team_workspaces = await workspace_membership.findAll({
+      where: {
+        team_id: {
+          [Op.in]: arrayTeamId,
+        },
       },
       attributes: [],
-      include: [
-        {
-          model: workspace,
-          as: "workspace",
-          required: true,
-          attributes: ["id", "emoji", "name", "description"],
-          include: [
-            {
-              model: task,
-              as: "tasks",
-              required: false,
-              attributes: [
-                "id",
-                "title",
-                "description",
-                "status",
-                "due_date",
-                "is_archived",
-              ],
-            },
-            {
-              model: todo,
-              as: "todos",
-              required: false,
-              attributes: ["id", "title"],
-              include: [
-                {
-                  model: todo_item,
-                  as: "todo_items",
-                  required: false,
-                  attributes: ["id", "title", "status"],
-                },
-              ],
-            },
-          ],
-        },
-      ],
+      include: [theInclude],
     });
 
     if (!_workspaces && !_team_workspaces) {
       res.status(404).json({ message: "No workspaces found" });
     } else {
+      const combinedWorkspaces = Array.from(
+        new Map(
+          [..._workspaces, ..._team_workspaces].map((workspace) => [
+            workspace.workspace_id,
+            workspace,
+          ])
+        ).values()
+      );
+
+      // res.json([..._workspaces, ..._team_workspaces]);
       res.json([..._workspaces, ..._team_workspaces]);
     }
   } catch (error) {
