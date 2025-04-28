@@ -10,11 +10,11 @@ import {
 
 import { AiOutlineDownload, AiOutlineEdit } from "react-icons/ai";
 import { useParams } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 import { toast, ToastContainer } from "react-toastify";
 import { useSelector } from "react-redux";
 import MarkdownRenderer from "../../../../../../components/markdown-renderer";
-import EditableMarkdown from "../../../../../../components/editable-markdown";
+import NoteChat from "./noteChat";
+import GeminiIcon from "../../../../../../components/geminiIcon";
 
 const OpenedNote = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -27,11 +27,12 @@ const OpenedNote = () => {
   const { note_id } = useParams();
 
   const workspace = useSelector((state) => state.workspace.workspace);
+  const useGemini = localStorage.getItem("useGemini") === "true" ? true : false;
 
   // for handling the edit mode and preview mode for note editing and viewing
   const [editMode, setEditMode] = useState(true);
-
   const [previewMode, setPreviewMode] = useState(true);
+  const [aiAssistMode, setAiAssistMode] = useState(false);
 
   // for holding the currently authenticated user data
 
@@ -190,6 +191,10 @@ const OpenedNote = () => {
     };
   };
 
+  const geminiAssistHandle = () => {
+    setAiAssistMode((prev) => !prev);
+  };
+
   return (
     <div className="flex flex-col h-full bg-white">
       <ToastContainer />
@@ -327,6 +332,46 @@ const OpenedNote = () => {
                     <MarkdownRenderer content={noteInput} />
                     {/* <EditableMarkdown /> */}
                   </div>
+                </div>
+              )}
+
+              {/* AI Assist area */}
+              {useGemini && (
+                <div
+                  className={`${
+                    aiAssistMode
+                      ? "flex-1 shadow-md p-2 text-wrap border-1 rounded overflow-hidden"
+                      : "absolute right-0"
+                  } `}
+                >
+                  <div
+                    className={`flex items-center justify-between ${
+                      aiAssistMode
+                        ? "border-b-2"
+                        : "rounded-full border-2 bg-white"
+                    }`}
+                  >
+                    <div
+                      className={`flex items-center gap-2 ${
+                        aiAssistMode && "hover:bg-gray-100"
+                      } p-2 rounded-md cursor-pointer`}
+                      onClick={geminiAssistHandle}
+                      title={
+                        aiAssistMode
+                          ? "Gemini AI Assist; Click to shrink"
+                          : "Gemini AI Assist; Click to expand"
+                      }
+                    >
+                      <GeminiIcon width={30} />
+                    </div>
+
+                    {aiAssistMode && (
+                      <p className="font-bold text-gray-400 px-2 rounded-t-md">
+                        Ask Gemini
+                      </p>
+                    )}
+                  </div>
+                  {aiAssistMode && <NoteChat noteContext={noteInput} />}
                 </div>
               )}
             </div>
