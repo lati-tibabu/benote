@@ -23,7 +23,8 @@ const MarkdownRenderer = ({ content }) => {
             const firstChar = props.children[0]?.toString().trim().charAt(0);
             return (
               <p
-                className={`text-justify${
+                // className={`text-justify${
+                className={`${
                   firstChar === "#"
                     ? "font-bold bg-blue-200 w-fit p-1 rounded text-blue-700"
                     : ""
