@@ -3,12 +3,17 @@ import MarkDown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import CodeHighlighter from "./_notes/code-highlighter";
 
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css"; // Import KaTeX styles
+
 const MarkdownRenderer = ({ content }) => {
   return (
     <div className="flex flex-col gap-4 hover:[&>*]:bg-gray-100 hover:[&>*]:cursor-pointer">
       <MarkDown
         // className="border-2 overflow-hidden"
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[remarkGfm, remarkMath]}
+        rehypePlugins={[rehypeKatex]}
         components={{
           code: CodeHighlighter,
           a: ({ node, ...props }) => (

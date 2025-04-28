@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import MarkDown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { FiFileText, FiAlertTriangle } from "react-icons/fi";
-import { FaRegStickyNote, FaUser, FaUserAlt } from "react-icons/fa";
-import CodeHighlighter from "../../../components/_notes/code-highlighter";
 import { AiOutlineUser } from "react-icons/ai";
+import MarkdownRenderer from "../../../components/markdown-renderer";
 
 const SharedNotes = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -67,88 +64,7 @@ const SharedNotes = () => {
                   </p>
                 </div>
               </div>
-              <MarkDown
-                remarkPlugins={[remarkGfm]}
-                components={{
-                  code: CodeHighlighter,
-                  // code: CodeHighlighter,
-                  a: ({ node, ...props }) => (
-                    <a className="text-blue-500 underline" {...props} />
-                  ),
-                  p: ({ node, ...props }) => {
-                    // if the first character is # or not
-                    const firstChar = props.children[0]
-                      ?.toString()
-                      .trim()
-                      .charAt(0);
-                    return (
-                      <p
-                        className={`text-sm ${
-                          firstChar === "#"
-                            ? "font-bold bg-blue-200 w-fit p-1 rounded-full text-blue-700"
-                            : ""
-                        }`}
-                        {...props}
-                      />
-                    );
-                  },
-
-                  ul: ({ node, ...props }) => (
-                    <ul className="list-disc pl-5 space-y-2" {...props} />
-                  ),
-                  ol: ({ node, ...props }) => (
-                    <ol className="list-decimal pl-5 space-y-2" {...props} />
-                  ),
-                  input: ({ node, ...props }) => {
-                    if (props.type === "checkbox") {
-                      return (
-                        <input
-                          type="checkbox"
-                          className="bg-white cursor-pointer bg-transparent focus:ring-0 rounded items-center"
-                          {...props}
-                        />
-                      );
-                    }
-                    return <input {...props} />;
-                  },
-                  h1: ({ node, ...props }) => (
-                    <h1 className="text-3xl font-bold" {...props} />
-                  ),
-                  h2: ({ node, ...props }) => (
-                    <h2 className="text-2xl font-bold" {...props} />
-                  ),
-                  h3: ({ node, ...props }) => (
-                    <h2 className="text-xl font-bold" {...props} />
-                  ),
-                  h4: ({ node, ...props }) => (
-                    <h2 className="text-lg font-bold" {...props} />
-                  ),
-                  h5: ({ node, ...props }) => (
-                    <h2 className="text-md font-bold" {...props} />
-                  ),
-                  h6: ({ node, ...props }) => (
-                    <h2 className="text-sm font-bold" {...props} />
-                  ),
-
-                  table: ({ node, ...props }) => (
-                    <table className="table-auto border-collapse" {...props} />
-                  ),
-                  th: ({ node, ...props }) => (
-                    <th className="border px-4 py-2 bg-gray-200" {...props} />
-                  ),
-                  td: ({ node, ...props }) => (
-                    <td className="border px-4 py-2" {...props} />
-                  ),
-                  blockquote: ({ node, ...props }) => (
-                    <blockquote className="border-l-4 pl-4" {...props} />
-                  ),
-                  img: ({ node, ...props }) => (
-                    <img {...props} className="max-w-full rounded-box" />
-                  ),
-                }}
-              >
-                {note.content}
-              </MarkDown>
+              <MarkdownRenderer content={note.content} />
             </div>
           ) : (
             <p className="text-gray-500">Loading note...</p>
