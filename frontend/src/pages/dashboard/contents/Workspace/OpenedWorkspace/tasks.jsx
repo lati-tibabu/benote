@@ -11,6 +11,7 @@ import { jwtDecode } from "jwt-decode";
 import { setWorkspace } from "../../../../../redux/slices/workspaceSlice";
 import { FaBolt } from "react-icons/fa6";
 import AiGeneratedTask from "./Tasks/ai-generated-task";
+import GeminiIcon from "../../../../../components/geminiIcon";
 
 const Tasks = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -259,13 +260,15 @@ const Tasks = () => {
         <div className="flex items-center gap-3">
           {useGemini && (
             <div
-              className="btn btn-sm bg-gradient-to-tr from-pink-500 transition-all duration-300 to-blue-600 text-white border-white hover:border-pink-500 btn-soft rounded-full"
+              // className="btn btn-sm bg-gradient-to-tr from-pink-500 transition-all duration-300 to-blue-600 text-white border-white hover:border-pink-500 btn-soft rounded-full"
+              className="btn transition-all duration-300 shadow-md bg-gray-100 hover:bg-gray-100 text-gray-700 border-white btn-soft rounded-full"
               // onClick={() =>
               //   alert("hey developer, you wanna generate task list")
               // }
               onClick={() => document.getElementById("ai_gen_task").showModal()}
             >
-              <FaBolt />
+              {/* <FaBolt /> */}
+              <GeminiIcon size={20} />
               Generate Tasks
             </div>
           )}

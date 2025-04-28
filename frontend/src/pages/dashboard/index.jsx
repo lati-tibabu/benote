@@ -43,6 +43,7 @@ import {
 import { stopAlarm } from "../../redux/slices/pomodoroSlice";
 import { setTheme, toggleTheme } from "../../redux/slices/themeSlice";
 import { clearAuthenticatedUser } from "../../redux/slices/authSlice";
+import GeminiIcon from "../../components/geminiIcon";
 
 function Dashboard() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -250,7 +251,8 @@ function Dashboard() {
                 onClick={() => setIsMobileNavOpen(false)}
                 title="LLM Setting"
               >
-                <FaBolt size={20} />
+                {/* <FaBolt size={20} /> */}
+                <GeminiIcon size={20} />
                 {!collapsedNav && <span>LLM Setting</span>}
               </Link>
               <Link

@@ -7,6 +7,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import AiGeneratedTodo from "./Todo/ai-generated-todo";
 import { ToastContainer } from "react-toastify";
+import GeminiIcon from "../../../../../components/geminiIcon";
 
 const TodoLists = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -233,12 +234,14 @@ const TodoLists = () => {
         <div className="flex items-center gap-3">
           {useGemini && (
             <div
-              className="btn bg-gradient-to-tr from-pink-500 transition-all duration-300 to-blue-600 text-white border-white hover:border-pink-500 btn-soft rounded-full"
+              // className="btn bg-gradient-to-tr from-pink-500 transition-all duration-300 to-blue-600 text-white border-white hover:border-pink-500 btn-soft rounded-full"
+              className="btn transition-all duration-300 shadow-md bg-gray-100 hover:bg-gray-100 text-gray-700 border-white btn-soft rounded-full"
               // onClick={() => alert("hey developer, you wanna add a todo list")}
               onClick={() => document.getElementById("ai_gen_todo").showModal()}
             >
-              <FaBolt />
-              Generate todo
+              {/* <FaBolt /> */}
+              <GeminiIcon size={20} />
+              Generate Todo
             </div>
           )}
           <div

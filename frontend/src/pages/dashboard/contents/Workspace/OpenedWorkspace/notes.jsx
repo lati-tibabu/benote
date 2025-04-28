@@ -6,6 +6,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { clearNotes, setNotes } from "../../../../../redux/slices/notesSlice";
 import AiGeneratedNote from "./Notes/ai-generated-note";
+import GeminiIcon from "../../../../../components/geminiIcon";
 
 const Notes = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -122,12 +123,14 @@ const Notes = () => {
           <div className="flex items-center gap-3">
             {useGemini && (
               <div
-                className="btn bg-gradient-to-tr from-pink-500 transition-all duration-300 to-blue-600 text-white border-white hover:border-pink-500 btn-soft rounded-full"
+                // className="btn bg-gradient-to-tr from-pink-500 transition-all duration-300 to-blue-600 text-white border-white hover:border-pink-500 btn-soft rounded-full"
+                className="btn transition-all duration-300 shadow-md bg-gray-100 hover:bg-gray-100 text-gray-700 border-white btn-soft rounded-full"
                 onClick={() =>
                   document.getElementById("ai_gen_note").showModal()
                 }
               >
-                <FaBolt />
+                {/* <FaBolt /> */}
+                <GeminiIcon size={20} />
                 Generate Note
               </div>
             )}
