@@ -174,6 +174,8 @@ const AiGeneratedNote = () => {
         - search internet if you could 
         - add emojis to make it more fun and if user dont like make it without emojis
         - add emojis to title
+        - for formulas you can Use LaTex and $ signs to format math equations and symbols.
+        - add a table of content if the note is long and has multiple sections.
         - today is ${new Date().toLocaleDateString()} and time is ${new Date().toLocaleTimeString()}
         - generate a very long output possible unless user wants a short one, and dont raise that you've generated longer output.
     `;
