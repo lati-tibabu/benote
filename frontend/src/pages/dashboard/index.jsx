@@ -22,6 +22,7 @@ import {
   AiOutlineStar,
   AiOutlineSun,
   AiOutlineMoon,
+  AiOutlineHeatMap,
 } from "react-icons/ai";
 import { HiMenu, HiX } from "react-icons/hi";
 import Footer1 from "../../components/_footers/footer1";
@@ -425,6 +426,7 @@ const workspaceSubMenus = [
   },
   { icon: <AiOutlineFileText />, label: "Notes", link: "notes" },
   // { icon: <AiOutlineTeam />, label: "Teams", link: "teams" },
+  { icon: <AiOutlineHeatMap />, label: "Roadmaps", link: "roadmaps" },
   { icon: <AiOutlineCalendar />, label: "Study Plan", link: "study-plans" },
   { icon: <AiOutlineSetting />, label: "Settings", link: "settings" },
 ];

@@ -13,6 +13,7 @@ import Tasks from "../pages/dashboard/contents/Workspace/OpenedWorkspace/tasks";
 import TodoLists from "../pages/dashboard/contents/Workspace/OpenedWorkspace/todo-lists";
 import Teams from "../pages/dashboard/contents/Workspace/OpenedWorkspace/teams";
 import Notes from "../pages/dashboard/contents/Workspace/OpenedWorkspace/notes";
+import Roadmaps from "../pages/dashboard/contents/Workspace/OpenedWorkspace/roadmaps";
 import Settings from "../pages/dashboard/contents/Workspace/OpenedWorkspace/settings";
 
 import Team from "../pages/dashboard/contents/Team";
@@ -34,6 +35,7 @@ import Resources from "../pages/dashboard/contents/Team/OpenedTeam/resources";
 import TeamTodoLists from "../pages/dashboard/contents/Team/OpenedTeam/todo-lists";
 import StudyPlanOpened from "../pages/dashboard/contents/Workspace/OpenedWorkspace/study-plan-open";
 import OpenedNote from "../pages/dashboard/contents/Workspace/OpenedWorkspace/Notes/opened-note";
+import OpenedRoadmap from "../pages/dashboard/contents/Workspace/OpenedWorkspace/roadmaps/opened-roadmap";
 
 import Classroom from "../pages/dashboard/contents/Classroom";
 import OpenedClassroom from "../pages/dashboard/contents/Classroom/contents/opened-classroom";
@@ -78,6 +80,14 @@ const dashboardRoutes = {
             {
               path: "notes/:note_id",
               element: <ProtectedRoute component={OpenedNote} />,
+            },
+            {
+              path: "roadmaps",
+              element: <ProtectedRoute component={Roadmaps} />,
+            },
+            {
+              path: "roadmaps/:roadmap_id",
+              element: <ProtectedRoute component={OpenedRoadmap} />,
             },
             {
               path: "settings",

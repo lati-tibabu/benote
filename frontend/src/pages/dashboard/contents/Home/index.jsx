@@ -9,6 +9,11 @@ import AiSummary from "./contents/ai-summary";
 import { useDispatch, useSelector } from "react-redux";
 import { setWorkspaceRecent } from "../../../../redux/slices/workspaceSlice";
 import { setTasksRecent } from "../../../../redux/slices/tasksSlice";
+import GeminiIcon from "../../../../components/geminiIcon";
+import TaskRecommendation from "./contents/task-recommendation";
+import TaskStatus from "./contents/task-status";
+import TaskActivityChart from "./contents/task-activity-chart";
+import TodayTodos from "./contents/today-todos";
 
 const Home = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -99,13 +104,15 @@ const Home = () => {
       {useGemini && (
         <div className="absolute right-0 flex">
           <div
-            className="flex h-10 items-center gap-2 bg-gradient-to-tr from-pink-500 to-blue-600 transition-all duration-300 text-white cursor-pointer p-2 rounded-l-lg border-white border-l-2 border-y-2 shadow"
+            // className="flex h-10 items-center gap-2 bg-gradient-to-tr from-pink-500 to-blue-600 transition-all duration-300 text-white cursor-pointer p-2 rounded-l-lg border-white border-l-2 border-y-2 shadow"
+            className="flex h-10 items-center gap-2 bg-gray-100 transition-all duration-300 text-black cursor-pointer p-2 rounded-l-lg border-white border-l-2 border-y-2 shadow"
             onClick={() => {
               setShowAiSummary(!showAiSummary);
             }}
           >
-            <FaBolt />
-            Ai Summary
+            {/* <FaBolt /> */}
+            <GeminiIcon />
+            <span className="font-semibold">Summary</span>
           </div>
           {showAiSummary && <AiSummary />}
         </div>
@@ -147,114 +154,118 @@ const Home = () => {
 
       {/* main */}
       <div className="flex gap-3 justify-between flex-col md:flex-row p-2">
-        <div className="h-fit grow flex-1 flex gap-3 overflow-x-auto border-x-1 p-2">
-          {/* Workspaces */}
-          <div>
-            {/* <div className="flex items-center text-sm gap-2">
+        <div className="h-fit grow flex flex-col flex-1 gap-3 overflow-x-auto border-x-1 p-2">
+          <div className="flex h-[30rem] gap-3 overflow-x-auto scrollbar-hide border-2 rounded-box  p-2">
+            {/* Workspaces */}
+            <div>
+              {/* <div className="flex items-center text-sm gap-2">
               <AiOutlineClockCircle />
               Recent Workspaces
             </div> */}
-            <div className="font-bold flex items-center gap-2">
-              <AiOutlineClockCircle />
-              Recent Workspaces
-            </div>
-
-            {workspaceLoading ? (
-              <div className="flex flex-col w-64 justify-center items-center gap-2 p-2">
-                <div className="border-2 w-full animate-pulse bg-gray-100 rounded-box flex flex-col p-3 gap-3">
-                  <div className="w-full h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                  <div className="w-[150px] h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                </div>
-                <div className="border-2 w-full animate-pulse bg-gray-100 rounded-box flex flex-col p-3 gap-3">
-                  <div className="w-full h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                  <div className="w-[150px] h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                </div>
-                <div className="border-2 w-full animate-pulse bg-gray-100 rounded-box flex flex-col p-3 gap-3">
-                  <div className="w-full h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                  <div className="w-[150px] h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                </div>
+              <div className="font-bold flex items-center gap-2">
+                <AiOutlineClockCircle />
+                Recent Workspaces
               </div>
-            ) : (
-              <div>
-                <ul className="flex flex-col gap-2 justify-stretch">
-                  {workspaces.length &&
-                    workspaces.map((workspace) => (
-                      <li key={workspace.workspace.id}>
-                        <div
-                          title={
-                            workspace.workspace.description ||
-                            workspace.workspace.name
-                          }
-                          className="flex gap-2 items-start cursor-default border-2 border-gray-200 p-3 rounded-box hover:bg-blue-50 hover:border-blue-500 hover:cursor-pointer"
-                          onClick={handleWorkspaceOpen(workspace.workspace.id)}
-                        >
-                          {/* icon */}
-                          <div className="text-3xl">
-                            {workspace.workspace.emoji}
-                          </div>
-                          {/* main */}
-                          <div className="border-l-1 pl-3">
-                            {/* name */}
-                            <div>{workspace.workspace.name}</div>
-                            {/* creation date */}
-                            <div className="text-sm text-gray-600">
-                              Accessed on{" "}
-                              {(() => {
-                                const accessedAt = new Date(
-                                  workspace.workspace.last_accessed_at
-                                );
-                                const now = new Date();
-                                const options = {
-                                  month: "short",
-                                  day: "numeric",
-                                  year: "numeric",
-                                  hour: "numeric",
-                                  minute: "numeric",
-                                  hour12: true,
-                                };
 
-                                // Same day → Show only time (e.g., 3:45 PM)
-                                if (
-                                  accessedAt.getDate() === now.getDate() &&
-                                  accessedAt.getMonth() === now.getMonth() &&
-                                  accessedAt.getFullYear() === now.getFullYear()
-                                ) {
-                                  return accessedAt.toLocaleTimeString(
-                                    "en-US",
-                                    {
-                                      hour: "numeric",
-                                      minute: "numeric",
-                                      hour12: true,
-                                    }
+              {workspaceLoading ? (
+                <div className="flex flex-col w-64 justify-center items-center gap-2 p-2">
+                  <div className="border-2 w-full animate-pulse bg-gray-100 rounded-box flex flex-col p-3 gap-3">
+                    <div className="w-full h-[20px] animate-pulse bg-gray-300 rounded"></div>
+                    <div className="w-[150px] h-[20px] animate-pulse bg-gray-300 rounded"></div>
+                  </div>
+                  <div className="border-2 w-full animate-pulse bg-gray-100 rounded-box flex flex-col p-3 gap-3">
+                    <div className="w-full h-[20px] animate-pulse bg-gray-300 rounded"></div>
+                    <div className="w-[150px] h-[20px] animate-pulse bg-gray-300 rounded"></div>
+                  </div>
+                  <div className="border-2 w-full animate-pulse bg-gray-100 rounded-box flex flex-col p-3 gap-3">
+                    <div className="w-full h-[20px] animate-pulse bg-gray-300 rounded"></div>
+                    <div className="w-[150px] h-[20px] animate-pulse bg-gray-300 rounded"></div>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <ul className="flex flex-col gap-2 justify-stretch">
+                    {workspaces.length &&
+                      workspaces.map((workspace) => (
+                        <li key={workspace.workspace.id}>
+                          <div
+                            title={
+                              workspace.workspace.description ||
+                              workspace.workspace.name
+                            }
+                            className="flex gap-2 items-start cursor-default border-2 border-gray-200 p-3 rounded-box hover:bg-blue-50 hover:border-blue-500 hover:cursor-pointer"
+                            onClick={handleWorkspaceOpen(
+                              workspace.workspace.id
+                            )}
+                          >
+                            {/* icon */}
+                            <div className="text-3xl">
+                              {workspace.workspace.emoji}
+                            </div>
+                            {/* main */}
+                            <div className="border-l-1 pl-3">
+                              {/* name */}
+                              <div>{workspace.workspace.name}</div>
+                              {/* creation date */}
+                              <div className="text-sm text-gray-600">
+                                Accessed on{" "}
+                                {(() => {
+                                  const accessedAt = new Date(
+                                    workspace.workspace.last_accessed_at
                                   );
-                                }
+                                  const now = new Date();
+                                  const options = {
+                                    month: "short",
+                                    day: "numeric",
+                                    year: "numeric",
+                                    hour: "numeric",
+                                    minute: "numeric",
+                                    hour12: true,
+                                  };
 
-                                // Same week → Show "Weekday, time" (e.g., Tue, 3:45 PM)
-                                const oneWeekAgo = new Date();
-                                oneWeekAgo.setDate(now.getDate() - 7);
+                                  // Same day → Show only time (e.g., 3:45 PM)
+                                  if (
+                                    accessedAt.getDate() === now.getDate() &&
+                                    accessedAt.getMonth() === now.getMonth() &&
+                                    accessedAt.getFullYear() ===
+                                      now.getFullYear()
+                                  ) {
+                                    return accessedAt.toLocaleTimeString(
+                                      "en-US",
+                                      {
+                                        hour: "numeric",
+                                        minute: "numeric",
+                                        hour12: true,
+                                      }
+                                    );
+                                  }
 
-                                if (accessedAt > oneWeekAgo) {
+                                  // Same week → Show "Weekday, time" (e.g., Tue, 3:45 PM)
+                                  const oneWeekAgo = new Date();
+                                  oneWeekAgo.setDate(now.getDate() - 7);
+
+                                  if (accessedAt > oneWeekAgo) {
+                                    return accessedAt.toLocaleDateString(
+                                      "en-US",
+                                      {
+                                        weekday: "short",
+                                        hour: "numeric",
+                                        minute: "numeric",
+                                        hour12: true,
+                                      }
+                                    );
+                                  }
+
+                                  // Older than a week → Full date (e.g., Mar 10, 2024, 3:45 PM)
                                   return accessedAt.toLocaleDateString(
                                     "en-US",
-                                    {
-                                      weekday: "short",
-                                      hour: "numeric",
-                                      minute: "numeric",
-                                      hour12: true,
-                                    }
+                                    options
                                   );
-                                }
+                                })()}
+                              </div>
 
-                                // Older than a week → Full date (e.g., Mar 10, 2024, 3:45 PM)
-                                return accessedAt.toLocaleDateString(
-                                  "en-US",
-                                  options
-                                );
-                              })()}
-                            </div>
-
-                            {/* private or team */}
-                            {/* <div>
+                              {/* private or team */}
+                              {/* <div>
                           {workspace.workspace.type
                             .split("-")[0]
                             .toLowerCase()
@@ -273,86 +284,99 @@ const Home = () => {
                             </div>
                           )}
                         </div> */}
+                            </div>
                           </div>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+            {/* Today Tasks */}
+            <div>
+              <div className="font-bold">Latest Tasks</div>
+              {taskLoading ? (
+                <div className="flex flex-col w-64 justify-center items-center gap-2 p-2">
+                  <div className="border-2 w-full animate-pulse bg-gray-100 rounded-box flex flex-col p-3 gap-3">
+                    <div className="w-full h-[20px] animate-pulse bg-gray-300 rounded"></div>
+                    <div className="w-[150px] h-[20px] animate-pulse bg-gray-300 rounded"></div>
+                  </div>
+                  <div className="border-2 w-full animate-pulse bg-gray-100 rounded-box flex flex-col p-3 gap-3">
+                    <div className="w-full h-[20px] animate-pulse bg-gray-300 rounded"></div>
+                    <div className="w-[150px] h-[20px] animate-pulse bg-gray-300 rounded"></div>
+                  </div>
+                  <div className="border-2 w-full animate-pulse bg-gray-100 rounded-box flex flex-col p-3 gap-3">
+                    <div className="w-full h-[20px] animate-pulse bg-gray-300 rounded"></div>
+                    <div className="w-[150px] h-[20px] animate-pulse bg-gray-300 rounded"></div>
+                  </div>
+                </div>
+              ) : (
+                <ul className="flex flex-col gap-2">
+                  {tasks.map((task) => (
+                    <li
+                      key={task.id}
+                      title={task.description}
+                      className="flex gap-4 items-center bg-white shadow-md border p-4 rounded-xl hover:bg-gray-100 transition-all duration-200"
+                    >
+                      {/* Task Status Icon */}
+                      <div className="text-3xl text-green-500">
+                        {task.status === "done" ? (
+                          <FaCheckCircle />
+                        ) : (
+                          <FaClock />
+                        )}
+                      </div>
+
+                      {/* Main Content */}
+                      <div className="flex flex-col w-full">
+                        {/* Task Title */}
+                        <div className="text-lg font-semibold flex items-center gap-2">
+                          {task.title}
                         </div>
-                      </li>
-                    ))}
+
+                        {/* Task Metadata */}
+                        <div className="flex justify-between items-center text-sm text-gray-500 mt-1">
+                          {/* Due Date */}
+                          <span className="flex items-center gap-1">
+                            📅 {new Date(task.due_date).toLocaleDateString()}
+                          </span>
+
+                          {/* Workspace Name */}
+                          <span className="bg-gray-200 px-2 py-1 rounded text-xs">
+                            {task.workspace?.name}
+                          </span>
+                        </div>
+
+                        {/* Task Status */}
+                        <div className="mt-2">
+                          <span
+                            className={`text-xs px-3 py-1 rounded-full font-medium ${
+                              task.status === "done"
+                                ? "bg-green-500 text-white"
+                                : "bg-yellow-500 text-white"
+                            }`}
+                          >
+                            {task.status === "done" ? "Completed" : "Todo"}
+                          </span>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
                 </ul>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-          {/* Today Tasks */}
-          <div>
-            <div className="font-bold">Latest Tasks</div>
-            {taskLoading ? (
-              <div className="flex flex-col w-64 justify-center items-center gap-2 p-2">
-                <div className="border-2 w-full animate-pulse bg-gray-100 rounded-box flex flex-col p-3 gap-3">
-                  <div className="w-full h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                  <div className="w-[150px] h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                </div>
-                <div className="border-2 w-full animate-pulse bg-gray-100 rounded-box flex flex-col p-3 gap-3">
-                  <div className="w-full h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                  <div className="w-[150px] h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                </div>
-                <div className="border-2 w-full animate-pulse bg-gray-100 rounded-box flex flex-col p-3 gap-3">
-                  <div className="w-full h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                  <div className="w-[150px] h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                </div>
-              </div>
-            ) : (
-              <ul className="flex flex-col gap-2">
-                {tasks.map((task) => (
-                  <li
-                    key={task.id}
-                    title={task.description}
-                    className="flex gap-4 items-center bg-white shadow-md border p-4 rounded-xl hover:bg-gray-100 transition-all duration-200"
-                  >
-                    {/* Task Status Icon */}
-                    <div className="text-3xl text-green-500">
-                      {task.status === "done" ? <FaCheckCircle /> : <FaClock />}
-                    </div>
-
-                    {/* Main Content */}
-                    <div className="flex flex-col w-full">
-                      {/* Task Title */}
-                      <div className="text-lg font-semibold flex items-center gap-2">
-                        {task.title}
-                      </div>
-
-                      {/* Task Metadata */}
-                      <div className="flex justify-between items-center text-sm text-gray-500 mt-1">
-                        {/* Due Date */}
-                        <span className="flex items-center gap-1">
-                          📅 {new Date(task.due_date).toLocaleDateString()}
-                        </span>
-
-                        {/* Workspace Name */}
-                        <span className="bg-gray-200 px-2 py-1 rounded text-xs">
-                          {task.workspace?.name}
-                        </span>
-                      </div>
-
-                      {/* Task Status */}
-                      <div className="mt-2">
-                        <span
-                          className={`text-xs px-3 py-1 rounded-full font-medium ${
-                            task.status === "done"
-                              ? "bg-green-500 text-white"
-                              : "bg-yellow-500 text-white"
-                          }`}
-                        >
-                          {task.status === "done" ? "Completed" : "Todo"}
-                        </span>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
+          <div className="flex flex-col h-fit gap-3 overflow-x-auto scrollbar-hide border-2 rounded-box  p-2">
+            <PomodoroFocus />
+            <TodayTodos />
           </div>
         </div>
-
-        <PomodoroFocus />
+        <div className="flex flex-col gap-2">
+          <TaskStatus />
+          <TaskActivityChart />
+          <TaskRecommendation />
+          {/* <PomodoroFocus /> */}
+        </div>
       </div>
     </div>
   );
