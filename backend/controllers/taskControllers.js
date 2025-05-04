@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const { task, workspace, user } = require("../models");
 const allowedUpdates = [
   "title",
@@ -121,12 +122,81 @@ const readTask = async (req, res) => {
   }
 };
 
+const readTaskNotDone = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    let _tasks = await task.findAndCountAll({
+      where: {
+        is_archived: false,
+        status: {
+          [Op.not]: "done",
+        },
+        assigned_to: userId,
+      },
+      attributes: ["title", "description", "due_date", "status"],
+      include: [
+        {
+          model: workspace,
+          as: "workspace",
+          required: false,
+          attributes: ["id", "name"],
+        },
+        {
+          model: user,
+          as: "user",
+          required: false,
+          attributes: ["name"],
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+      raw: true,
+    });
+
+    if (!_tasks) {
+      return res.status(404).json({ message: "No tasks found!" });
+    }
+    const newTasks = _tasks.rows.map((task) => {
+      let newTask = { ...task };
+      newTask.user = task["user.name"];
+      newTask.workspace = task["workspace.name"];
+      newTask.workspace_id = task["workspace.id"];
+
+      newTask.timeLeft = new Date(task.due_date) - new Date();
+      newTask.timeLeft = Math.floor(newTask.timeLeft / (1000 * 60 * 60 * 24)); // Convert to days
+
+      newTask.taskStatus = newTask.timeLeft < 0 ? "overdue" : "on time";
+
+      delete newTask["workspace.name"];
+      delete newTask["workspace.id"];
+      delete newTask["user.name"];
+      return newTask;
+    });
+
+    // _tasks = newTasks;
+    if (_tasks.length === 0) {
+      return res.status(404).json({ message: "No tasks found!" });
+    }
+
+    newTasks.sort((a, b) => {
+      return a.timeLeft - b.timeLeft;
+    });
+
+    res.json([_tasks.count, newTasks]);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Read all tasks assigned to a user
 const readTasksAssignedToUser = async (req, res) => {
   try {
+    const userId = req.user.id;
+
     const _tasks = await task.findAll({
       where: {
-        assigned_to: req.params.id,
+        assigned_to: userId,
+        is_archived: false,
       },
       include: [
         {
@@ -139,11 +209,30 @@ const readTasksAssignedToUser = async (req, res) => {
           model: user,
           as: "user",
           required: false,
-          attributes: ["id", "name", "email"],
+          attributes: ["name"],
         },
       ],
+      raw: true,
     });
-    res.json(_tasks);
+    const newTasks = _tasks.map((task) => {
+      let newTask = { ...task };
+      newTask.user = task["user.name"];
+      newTask.workspace = task["workspace.name"];
+      newTask.workspace_id = task["workspace.id"];
+      newTask.timeLeft = new Date(task.due_date) - new Date();
+      newTask.timeLeft = Math.floor(newTask.timeLeft / (1000 * 60 * 60 * 24)); // Convert to days
+      newTask.timeElapsed = Math.floor(
+        (new Date() - new Date(task.createdAt)) / (1000 * 60 * 60 * 24)
+      );
+
+      newTask.taskStatus = newTask.timeLeft < 0 ? "overdue" : "on time";
+      delete newTask["workspace.name"];
+      delete newTask["workspace.id"];
+      delete newTask["user.name"];
+      return newTask;
+    });
+
+    res.json(newTasks);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -274,6 +363,7 @@ module.exports = {
   readTasksAssignedToUser,
   readTasksAssignedToWorkspace,
   readArchivedTasks,
+  readTaskNotDone,
   archiveTask,
   unarchiveTask,
   updateTask,

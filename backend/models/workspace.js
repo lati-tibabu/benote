@@ -27,6 +27,10 @@ module.exports = (sequelize, DataTypes) => {
       });
       this.hasMany(models.note, { foreignKey: "workspace_id", as: "notes" });
       this.hasMany(models.todo, { foreignKey: "workspace_id", as: "todos" });
+      this.hasMany(models.roadmap, {
+        foreignKey: "workspace_id",
+        as: "roadmaps",
+      });
     }
   }
   workspace.init(
@@ -70,7 +74,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "workspace",
-    },
+    }
   );
   return workspace;
 };

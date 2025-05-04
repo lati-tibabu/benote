@@ -11,9 +11,13 @@ router.use(authMiddleWare.authMiddleware);
 router.post("/", taskController.createTask);
 
 // Read all tasks in a workspace (not archived)
+router.get("/", taskController.readTasks);
+
 router.get("/workspace/:id", taskController.readTasks);
 
-router.get("/", taskController.readTasks);
+router.get("/user", taskController.readTasksAssignedToUser);
+
+router.get("/notdone", taskController.readTaskNotDone);
 
 // Read all tasks assigned to a user
 router.get("/user/:id", taskController.readTasksAssignedToUser);

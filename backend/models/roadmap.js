@@ -10,9 +10,14 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.belongsTo(models.user, { foreignKey: "created_by", as: "user" });
-      this.hasMany(models.mindmap_item, {
-        foreignKey: "mindmap_id",
-        as: "mindmap_items",
+      this.hasMany(models.roadmap_item, {
+        foreignKey: "roadmap_id",
+        as: "roadmap_items",
+      });
+
+      this.belongsTo(models.workspace, {
+        foreignKey: "workspace_id",
+        as: "workspace",
       });
     }
   }
@@ -23,15 +28,37 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4,
       },
-      title: DataTypes.STRING,
-      description: DataTypes.STRING,
-      workpace_id: DataTypes.UUID,
-      created_by: DataTypes.UUID,
+      title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: "Roadmap item",
+      },
+      description: { type: DataTypes.TEXT, allowNull: true },
+      workspace_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+          model: "workspaces",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      },
+      created_by: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+          model: "users",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      },
     },
     {
       sequelize,
       modelName: "roadmap",
-    },
+    }
   );
   return roadmap;
 };

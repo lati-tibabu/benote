@@ -84,11 +84,18 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "submitted_by",
         as: "submittedSubmissions",
       });
+
       this.hasMany(models.submission, {
         foreignKey: "graded_by",
         as: "gradedSubmissions",
       });
+
       this.hasMany(models.task, { foreignKey: "assigned_to", as: "tasks" });
+
+      this.hasMany(models.roadmap, {
+        foreignKey: "created_by",
+        as: "roadmap",
+      });
 
       this.hasOne(models.user, { foreignKey: "userId", as: "profile" });
     }

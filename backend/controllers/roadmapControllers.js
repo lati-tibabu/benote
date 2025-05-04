@@ -1,19 +1,53 @@
-const { roadmap } = require("../models");
+const { where } = require("sequelize");
+const { roadmap, roadmap_item, sequelize } = require("../models");
 
 // Create
 const createRoadmap = async (req, res) => {
+  const t = await sequelize.transaction();
   try {
-    const _roadmap = await roadmap.create(req.body);
-    res.status(201).json(_roadmap);
+    const userId = req.user.id;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized!" });
+    }
+    const newRoadmap = await roadmap.create(
+      {
+        ...req.body,
+        created_by: userId,
+      },
+      { transaction: t }
+    );
+
+    await roadmap_item.create(
+      {
+        title: "Start",
+        description: "Start Here",
+        status: "",
+        roadmap_id: newRoadmap.id,
+      },
+      { transaction: t }
+    );
+
+    await t.commit();
+    res.status(201).json(newRoadmap);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    await t.rollback();
+    return res
+      .status(500)
+      .json({ message: "Failed to create roadmap.", error: error.message });
   }
 };
 
 // Read all
 const readRoadmaps = async (req, res) => {
+  const userId = req.user.id;
+  const { workspaceId } = req.query;
   try {
-    const _roadmaps = await roadmap.findAll();
+    const _roadmaps = await roadmap.findAll({
+      where: {
+        created_by: userId,
+        workspace_id: workspaceId,
+      },
+    });
     res.json(_roadmaps);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -23,7 +57,20 @@ const readRoadmaps = async (req, res) => {
 // Read one
 const readRoadmap = async (req, res) => {
   try {
-    const _roadmap = await roadmap.findByPk(req.params.id);
+    const userId = req.user.id;
+
+    const _roadmap = await roadmap.findByPk(req.params.id, {
+      where: {
+        created_by: userId,
+      },
+      include: [
+        {
+          model: roadmap_item,
+          as: "roadmap_items",
+        },
+      ],
+    });
+
     if (_roadmap) {
       res.json(_roadmap);
     } else {

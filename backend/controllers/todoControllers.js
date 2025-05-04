@@ -1,4 +1,7 @@
-const { todo } = require("../models");
+const { Op } = require("sequelize");
+const { todo, todo_item, workspace } = require("../models");
+// const workspace = require("../models/workspace");
+// const todo_item = require("../models/todo_item");
 
 // Create
 const createTodo = async (req, res) => {
@@ -27,10 +30,43 @@ const readTodos = async (req, res) => {
 
 const readTodosS = async (req, res) => {
   try {
+    const userId = req.user.id;
+    const date = req.query.date || null;
+
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
+
     const _todos = await todo.findAll({
       where: {
-        workspace_id: req.params.workspace_id,
+        user_id: userId,
+        ...(date === "today" && {
+          createdAt: {
+            [Op.between]: [startOfToday, endOfToday],
+          },
+        }),
       },
+
+      attributes: ["id", "title", "createdAt"],
+      // order: [["createdAt", "DESC"]],
+
+      // },
+      include: [
+        {
+          model: todo_item,
+          as: "todo_items",
+          required: false,
+          attributes: ["title", "status"],
+        },
+        {
+          model: workspace,
+          as: "workspace",
+          required: false,
+          attributes: ["id", "name"],
+        },
+      ],
     });
     res.json(_todos);
   } catch (error) {
@@ -86,6 +122,7 @@ const deleteTodo = async (req, res) => {
 module.exports = {
   createTodo,
   readTodos,
+  readTodosS,
   readTodo,
   updateTodo,
   deleteTodo,

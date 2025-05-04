@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       this.belongsTo(models.roadmap, {
         foreignKey: "roadmap_id",
-        as: "roadmap",
+        as: "roadmaps",
       });
     }
   }
@@ -22,15 +22,24 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4,
       },
-      title: DataTypes.STRING,
-      description: DataTypes.STRING,
-      status: DataTypes.STRING,
-      roadmap_id: DataTypes.UUID,
+      title: { type: DataTypes.STRING, allowNull: false },
+      description: { type: DataTypes.TEXT, allowNull: false },
+      status: { type: DataTypes.STRING, allowNull: true },
+      roadmap_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+          model: "roadmaps",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      },
     },
     {
       sequelize,
       modelName: "roadmap_item",
-    },
+    }
   );
   return roadmap_item;
 };
