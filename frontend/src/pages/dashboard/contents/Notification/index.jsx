@@ -13,15 +13,22 @@ const Notifications = () => {
 
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(5); // You can make this adjustable if needed
+  const [totalPages, setTotalPages] = useState(1);
 
   const fetchNotifications = async () => {
     try {
-      const response = await fetch(`${apiURL}/api/notifications`, {
-        method: "GET",
-        headers: header,
-      });
+      const response = await fetch(
+        `${apiURL}/api/notifications?page=${page}&limit=${limit}`,
+        {
+          method: "GET",
+          headers: header,
+        }
+      );
       const data = await response.json();
-      setNotifications(data);
+      setNotifications(data.notifications);
+      setTotalPages(data.totalPages);
     } catch (error) {
       console.log(error);
     }
@@ -29,19 +36,28 @@ const Notifications = () => {
 
   useEffect(() => {
     fetchNotifications();
-  }, []);
-
-  // console.log(notifications);
+  }, [page]);
 
   const handleAcceptInvitation = async (action) => {
     navigate(action.route);
+  };
+
+  const handleNext = () => {
+    if (page < totalPages) setPage((prev) => prev + 1);
+  };
+
+  const handlePrev = () => {
+    if (page > 1) setPage((prev) => prev - 1);
   };
 
   return (
     <div>
       <div className="flex flex-col gap-4">
         {notifications.map((notification) => (
-          <div className="collapse collapse-arrow border-1">
+          <div
+            key={notification.id}
+            className="collapse collapse-arrow border-1"
+          >
             <input type="radio" name="my-accordion-2" />
             <div className="collapse-title font-medium">
               <div className="flex justify-between">
@@ -73,6 +89,27 @@ const Notifications = () => {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Pagination Controls */}
+      <div className="flex justify-center gap-4 mt-6">
+        <button
+          className="btn btn-sm btn-outline"
+          onClick={handlePrev}
+          disabled={page === 1}
+        >
+          Previous
+        </button>
+        <span className="self-center">
+          Page {page} of {totalPages}
+        </span>
+        <button
+          className="btn btn-sm btn-outline"
+          onClick={handleNext}
+          disabled={page === totalPages}
+        >
+          Next
+        </button>
       </div>
     </div>
   );

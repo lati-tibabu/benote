@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
           "info",
           "warning",
           "error",
-          "success",
+          "success"
         ),
         allowNull: false,
         validate: {
@@ -72,11 +72,16 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       },
+      is_read: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
     },
     {
       sequelize,
       modelName: "notification",
-    },
+    }
   );
   return notification;
 };

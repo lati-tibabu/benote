@@ -1,5 +1,11 @@
 const { Op } = require("sequelize");
-const { task, workspace, user } = require("../models");
+const {
+  team_membership,
+  workspace_membership,
+  task,
+  workspace,
+  user,
+} = require("../models");
 const allowedUpdates = [
   "title",
   "description",
@@ -10,24 +16,73 @@ const allowedUpdates = [
   "is_archived",
 ];
 
+const { sendNotification } = require("../services/notificationService");
+
 // Create
+// const createTask = async (req, res) => {
+//   try {
+//     if (req.body) {
+//       if (Array.isArray(req.body)) {
+//         const _tasks = await task.bulkCreate(req.body);
+
+//         if (_tasks.length) {
+//           return res.status(201).json(_tasks);
+//         }
+//         return res.status(400).json({ message: "Invalid task details!" });
+//       }
+//       const _task = await task.create(req.body);
+//       res.status(201).json(_task);
+//     } else {
+//       res.status(400).json({ message: "Invalid task details!" });
+//     }
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
 const createTask = async (req, res) => {
   try {
-    if (req.body) {
-      if (Array.isArray(req.body)) {
-        const _tasks = await task.bulkCreate(req.body);
-
-        if (_tasks.length) {
-          return res.status(201).json(_tasks);
-        }
-        return res.status(400).json({ message: "Invalid task details!" });
-      }
-      const _task = await task.create(req.body);
-      res.status(201).json(_task);
-    } else {
-      res.status(400).json({ message: "Invalid task details!" });
+    if (!req.body) {
+      return res.status(400).json({ message: "Invalid task details!" });
     }
+
+    // Case: Multiple Tasks
+    if (Array.isArray(req.body)) {
+      const _tasks = await task.bulkCreate(req.body);
+
+      for (const t of _tasks) {
+        if (t.assigned_to) {
+          await sendNotification({
+            message: `You have been assigned a new task: "${t.title}"`,
+            type: "info",
+            receiver_id: t.assigned_to,
+            sender_id: req.user?.id || null,
+            action: { taskId: t.id },
+          });
+        }
+      }
+
+      return res
+        .status(201)
+        .json(_tasks.length ? _tasks : { message: "Invalid task details!" });
+    }
+
+    // Case: Single Task
+    const _task = await task.create(req.body);
+
+    if (_task.assigned_to) {
+      await sendNotification({
+        message: `You have been assigned a new task: "${_task.title}"`,
+        type: "info",
+        receiver_id: _task.assigned_to,
+        sender_id: req.user?.id || null,
+        action: { taskId: _task.id },
+      });
+    }
+
+    res.status(201).json(_task);
   } catch (error) {
+    console.error("Error in createTask:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -295,7 +350,6 @@ const readArchivedTasks = async (req, res) => {
   }
 };
 
-// Archive task
 const archiveTask = async (req, res) => {
   try {
     const _task = await task.findByPk(req.params.id);
@@ -326,12 +380,74 @@ const unarchiveTask = async (req, res) => {
 };
 
 // Update
+// const updateTask = async (req, res) => {
+//   try {
+//     const _task = await task.findByPk(req.params.id);
+//     if (_task) {
+//       await _task.update(req.body, { fields: allowedUpdates });
+//       const updatedTask = { ..._task.get() };
+//       res.json(updatedTask);
+//     } else {
+//       res.status(404).json({ message: "Task not found!" });
+//     }
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
 const updateTask = async (req, res) => {
   try {
+    // Fetch the task by ID
     const _task = await task.findByPk(req.params.id);
+    const { status } = req.query; // Get the status from the query parameters
     if (_task) {
+      // Update the task fields
       await _task.update(req.body, { fields: allowedUpdates });
       const updatedTask = { ..._task.get() };
+
+      if (status) {
+        // Get the workspace ID of the task
+        const workspaceId = _task.workspace_id;
+
+        const workspaceMembers = await workspace_membership.findAll({
+          where: { workspace_id: workspaceId },
+          attributes: ["user_id", "team_id"],
+        });
+
+        const userIdsSet = new Set();
+
+        for (const member of workspaceMembers) {
+          if (member.user_id) {
+            userIdsSet.add(member.user_id);
+          }
+
+          if (member.team_id) {
+            const teamMembers = await team_membership.findAll({
+              where: { team_id: member.team_id },
+              attributes: ["user_id"],
+            });
+
+            for (const teamMember of teamMembers) {
+              if (teamMember.user_id) {
+                userIdsSet.add(teamMember.user_id);
+              }
+            }
+          }
+        }
+
+        const message = `Task "${_task.title}" has been updated to ${status}.`;
+
+        for (const receiver_id of userIdsSet) {
+          await sendNotification({
+            message,
+            type: "info",
+            receiver_id,
+            sender_id: null,
+            action: { taskId: _task.id, workspace: _task.workspace_id },
+          });
+        }
+      }
+      // Return the updated task in the response
       res.json(updatedTask);
     } else {
       res.status(404).json({ message: "Task not found!" });

@@ -43,4 +43,7 @@ router.put("/:id/unarchive", taskController.unarchiveTask);
 // Delete a task
 router.delete("/:id", taskController.deleteTask);
 
+// check deadline notification
+// router.post("/check/deadlines", taskController.notifyUpcomingDeadlines);
+
 module.exports = router;

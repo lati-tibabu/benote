@@ -9,6 +9,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import PomodoroManager from "./utils/pomodoro-manager.jsx";
 import DarkReaderManager from "./utils/darkreader.jsx";
 import SocketHandler from "./utils/socketHandler.jsx";
+import NotificationScheduler from "./utils/NotificationScheduler.jsx";
 
 createRoot(document.getElementById("root")).render(
   // <StrictMode>{/* <App /> */}</StrictMode>
@@ -18,7 +19,9 @@ createRoot(document.getElementById("root")).render(
       <SocketHandler />
       <GoogleOAuthProvider>
         <PomodoroManager />
+        {/* <NotificationScheduler> */}
         <RouterProvider router={router} />
+        {/* </NotificationScheduler> */}
       </GoogleOAuthProvider>
     </Provider>
   </StrictMode>

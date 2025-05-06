@@ -7,8 +7,6 @@ import {
   AiOutlineUser,
   AiOutlineNotification,
   AiOutlineSetting,
-  AiOutlineDown,
-  AiOutlineRight,
   AiOutlineBlock,
   AiOutlineCheckCircle,
   AiOutlineOrderedList,
@@ -16,17 +14,12 @@ import {
   AiOutlineCalendar,
   AiFillInfoCircle,
   AiOutlinePoweroff,
-  AiOutlineLeft,
   AiOutlineArrowLeft,
-  AiOutlineArrowRight,
-  AiOutlineStar,
   AiOutlineSun,
   AiOutlineMoon,
   AiOutlineHeatMap,
 } from "react-icons/ai";
 import { HiMenu, HiX } from "react-icons/hi";
-import Footer1 from "../../components/_footers/footer1";
-import { jwtDecode } from "jwt-decode";
 import { useDispatch, useSelector } from "react-redux";
 // const crypto = require("crypto");
 import { SHA256 } from "crypto-js";
@@ -35,35 +28,36 @@ import {
   FaChevronLeft,
   FaChevronRight,
 } from "react-icons/fa";
-import { FaBolt, FaMoon, FaStop, FaSun } from "react-icons/fa6";
-import {
-  GiArtificialIntelligence,
-  GiSparkles,
-  GiStarStruck,
-} from "react-icons/gi";
 import { stopAlarm } from "../../redux/slices/pomodoroSlice";
-import { setTheme, toggleTheme } from "../../redux/slices/themeSlice";
+import { toggleTheme } from "../../redux/slices/themeSlice";
 import { clearAuthenticatedUser } from "../../redux/slices/authSlice";
 import GeminiIcon from "../../components/geminiIcon";
+import { sendBrowserNotification } from "../../utils/sendBrowserNotification";
 
 function Dashboard() {
-  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const apiURL = import.meta.env.VITE_API_URL;
+  const token = localStorage.getItem("jwt");
+  const header = {
+    authorization: `Bearer ${token}`,
+  };
+
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false); //mobile nav bar
+  const [latestNotification, setLatestNotification] = useState(null); //latest notification
+  const [unreadCount, setUnreadCount] = useState(0); //notification count
+  const [collapsedNav, setCollapsedBar] = useState(false); //collapsed nav bar
+  const [notificationPopping, setNotificationPopping] = useState(false); //notification popping
+
   const location = useLocation();
   const navigate = useNavigate();
 
   const workspaceTitle =
     useSelector((state) => state.workspace.workspace.name) || "Workspace";
-
   const teamTitle = useSelector((state) => state.team.team.name) || "Team";
-
   const workspaceEmoji =
     useSelector((state) => state.workspace.workspace.emoji) || "";
-
   const userData = useSelector((state) => state.auth.user) || {};
 
   const loc = location.pathname.split("/").slice(2);
-
-  const [collapsedNav, setCollapsedBar] = useState(false);
 
   const handleNavigation = (link, workspaceId) => () => {
     navigate(`/app/workspace/open/${workspaceId}/${link}`);
@@ -84,7 +78,6 @@ function Dashboard() {
     navigate("/auth/login");
   };
   const email = userData?.email;
-
   const getGravatarHash = (email) => {
     return SHA256(email.trim().toLowerCase()).toString();
   };
@@ -98,6 +91,80 @@ function Dashboard() {
 
   const theme = useSelector((state) => state.theme.theme);
 
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      try {
+        const response = await fetch(
+          `${apiURL}/api/notifications/unread-count`,
+          {
+            headers: header,
+          }
+        );
+        const data = await response.json();
+        setUnreadCount(data.unreadCount || 0);
+        // console.log("Unread Count:", data.unreadCount);
+      } catch (error) {
+        console.error("Error fetching unread notifications:", error);
+      }
+    };
+
+    // Initial fetch
+    fetchUnreadCount();
+
+    // Set interval to fetch unread count every second
+    const intervalId = setInterval(fetchUnreadCount, 1000);
+
+    // Cleanup the interval when the component unmounts
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    const fetchLatestNotification = async () => {
+      try {
+        const response = await fetch(`${apiURL}/api/notifications?latest=1`, {
+          headers: header,
+        });
+        const data = await response.json();
+        setLatestNotification(data);
+      } catch (error) {
+        console.error("Error fetching latest notification:", error);
+      }
+    };
+
+    // Initial fetch
+    fetchLatestNotification();
+
+    // // Set interval to fetch latest notification every 5 seconds
+    // const intervalId = setInterval(fetchLatestNotification, 5000);
+
+    // Cleanup the interval when the component unmounts
+    // return () => clearInterval(intervalId);
+  }, [unreadCount]);
+
+  useEffect(() => {
+    if (latestNotification) {
+      setNotificationPopping(true);
+      const timer = setTimeout(() => {
+        setNotificationPopping(false);
+        setLatestNotification(null);
+      }, 10000); // Notification will disappear after 10 seconds
+
+      return () => clearTimeout(timer); // Cleanup the timer on unmount
+    }
+  }, [latestNotification]);
+
+  const navigateToWorkspace = (id) => {
+    navigate(`/app/workspace/open/${id}/tasks`);
+  };
+
+  useEffect(() => {
+    if (latestNotification) {
+      sendBrowserNotification(
+        latestNotification.message,
+        latestNotification.type
+      );
+    }
+  }, [latestNotification]);
   return (
     <div className="bg-white text-black min-h-screen flex flex-col">
       {/* Top */}
@@ -133,6 +200,7 @@ function Dashboard() {
           {/* Navigation */}
           <div className={`${isMobileNavOpen ? "block" : "hidden"} sm:block`}>
             <div className="flex flex-col space-y-2 my-2">
+              {/* home link */}
               <Link
                 to="home"
                 className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
@@ -196,6 +264,7 @@ function Dashboard() {
                 )}
               </div>
 
+              {/* team link */}
               <Link
                 to="team"
                 className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
@@ -210,6 +279,7 @@ function Dashboard() {
                 {!collapsedNav && <span>Teams</span>}
               </Link>
 
+              {/* classroom link */}
               <Link
                 to="classroom"
                 className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
@@ -229,6 +299,7 @@ function Dashboard() {
 
             {/* Profile and Settings */}
             <div className="flex flex-col space-y-2 my-5">
+              {/* profile link */}
               <Link
                 to="profile"
                 className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
@@ -242,6 +313,8 @@ function Dashboard() {
                 <AiOutlineUser size={20} />
                 {!collapsedNav && <span>Profile</span>}
               </Link>
+
+              {/* ai functionlity link */}
               <Link
                 to="llm-setting"
                 className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
@@ -256,19 +329,29 @@ function Dashboard() {
                 <GeminiIcon size={20} />
                 {!collapsedNav && <span>LLM Setting</span>}
               </Link>
+
+              {/* notification link */}
               <Link
                 to="notification"
                 className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
-                  loc[0] === "notification"
+                  loc[0] === "notifications"
                     ? "font-bold bg-blue-100 text-blue-800 rounded"
                     : "text-gray-800"
                 }`}
                 onClick={() => setIsMobileNavOpen(false)}
-                title="Notification"
+                title="Notifications"
               >
-                <AiOutlineNotification size={20} />
-                {!collapsedNav && <span>Notification</span>}
+                <div className="relative">
+                  <AiOutlineNotification size={20} />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
+                </div>
+                {!collapsedNav && <span>Notifications</span>}
               </Link>
+
               <Link
                 to="setting"
                 className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
@@ -370,6 +453,24 @@ function Dashboard() {
                 </button>
               </div>
             )}
+
+            {latestNotification && (
+              <div
+                className="fixed z-20 bottom-5 right-5 bg-gray-800 text-white px-4 py-3 rounded-md shadow-md flex items-center gap-3"
+                onClick={() =>
+                  navigateToWorkspace(latestNotification?.action?.workspace)
+                }
+              >
+                <span className="text-sm">{latestNotification.message}</span>
+                <button
+                  onClick={() => setLatestNotification(null)}
+                  className="text-gray-300 hover:text-white text-xs px-2 py-1 border border-gray-500 rounded"
+                >
+                  ✖
+                </button>
+              </div>
+            )}
+
             {/* </div> */}
             <div className="flex items-center gap-1">
               {/* <div className="" onClick={() => dispatch(toggleTheme())}>
@@ -402,10 +503,6 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Footer */}
-      {/* <div className="bg-white text-white mt-auto border-t-2 border-black">
-        <Footer1 />
-      </div> */}
       <div className="w-full text-center mt-5 border-t-1">
         &copy; 2025 Student Productivity Hub
       </div>
