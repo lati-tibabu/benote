@@ -114,13 +114,16 @@ const Tasks = () => {
 
   const handleStatusChange = async (taskId, newStatus) => {
     try {
-      const response = await fetch(`${apiURL}/api/tasks/${taskId}`, {
-        method: "PUT",
-        headers: header,
-        body: JSON.stringify({
-          status: newStatus,
-        }),
-      });
+      const response = await fetch(
+        `${apiURL}/api/tasks/${taskId}?status=${newStatus}`, //statusChange=1&
+        {
+          method: "PUT",
+          headers: header,
+          body: JSON.stringify({
+            status: newStatus,
+          }),
+        }
+      );
       if (!response.ok) {
         toast.error("Error changing the status of the task");
         return;

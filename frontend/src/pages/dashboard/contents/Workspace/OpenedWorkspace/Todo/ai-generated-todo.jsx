@@ -4,6 +4,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import GeminiIcon from "../../../../../../components/geminiIcon";
 
 const AiGeneratedTodo = () => {
   const [userPrompt, setUserPrompt] = useState(null);
@@ -13,6 +14,9 @@ const AiGeneratedTodo = () => {
   const { workspaceId } = useParams();
 
   const userData = useSelector((state) => state.auth.user) || {};
+
+  const userSummary =
+    useSelector((state) => state.aiResponse.userSummary) || {};
 
   const [todoData, setTodoData] = useState({
     user_id: userData?.id,
@@ -35,6 +39,24 @@ const AiGeneratedTodo = () => {
 
   const navigate = useNavigate();
   const [addedTodo, setAddedTodo] = useState(false);
+  const [userActivityData, setUserActivityData] = useState(null);
+
+  const handleLoadUserActivityData = async () => {
+    try {
+      const response = await fetch(
+        `${apiURL}/api/workspaces/data?workspaceId=${workspaceId}`,
+        // `${apiURL}/api/workspaces/data`,
+        {
+          headers: header,
+        }
+      );
+      if (!response.ok) throw new Error("Network response was not ok");
+      const data = await response.json();
+      setUserActivityData(data);
+    } catch (error) {
+      console.error("Error loading user data:", error);
+    }
+  };
 
   const generationConfig = {
     temperature: 0.3,
@@ -77,7 +99,26 @@ const AiGeneratedTodo = () => {
             role: "user",
             parts: [
               {
-                text: "status include ('done' and 'not_done')\n you are now a helper of the user, you will analyze the prompt to help them generating todo list from their prompt. \n - You will never add tasks outside from the prompt \n - be creative with breaking the prompt down to more manageable taks \n - name property is the entire tasks collective name generated alongside with tasks be creative with it and if you wish use emoji with it",
+                // text: "status include ('done' and 'not_done')\n you are now a helper of the user, you will analyze the prompt to help them generating todo list from their prompt. \n - You will never add tasks outside from the prompt \n - be creative with breaking the prompt down to more manageable taks \n - name property is the entire tasks collective name generated alongside with tasks be creative with it and if you wish use emoji with it",
+                text: `Context: Today is ${new Date().toLocaleDateString()}.
+
+                You are an intelligent assistant helping the user generate a focused to-do list based on their input prompt.
+                
+                Instructions:
+                - You will analyze the user's prompt and generate a structured to-do list from it.
+                - If the input contains a \`userSummary\` in JSON format, use it to extract tasks and time blocks(most probably contain study plan) relevant for today, and include the current date as context.
+                - Do not invent or assume tasks not mentioned in the prompt or summary.
+                - Be creative in breaking down complex goals into actionable subtasks.
+                - Don't forget to include study plan in the time block if the user summary contains it.
+                
+                - Each to-do list must include:
+                  - A \`name\` property: a creative and concise collective title for the task list (you may include emojis for clarity or motivation).
+                  - A \`tasks\` array: a list of specific, actionable items derived from the prompt.
+                  - Each task should have a \`status\` property with one of two values: "done" or "not_done" (default to "not_done").
+                - Always remain within the boundaries of the input content, but optimize for clarity, actionability, and usefulness.
+                
+                Goal:
+                Turn the user’s intention into a realistic and motivating to-do list for today.`,
               },
             ],
           },
@@ -101,6 +142,25 @@ const AiGeneratedTodo = () => {
     } else {
       toast.error("API Key is invalid!");
     }
+  };
+
+  useEffect(() => {
+    if (userActivityData) {
+      console.log("userSummary:", JSON.stringify(userActivityData[0]));
+
+      if (apiKey.length > 0) {
+        setError(null);
+        setAiResponse(null);
+        userActivityData.length != 0 &&
+          requestAi(JSON.stringify(userActivityData[0]));
+      } else {
+        toast.error("API Key is invalid!");
+      }
+    }
+  }, [userActivityData]);
+
+  const handleUserSummaryPrompt = async () => {
+    await handleLoadUserActivityData();
   };
 
   useEffect(() => {
@@ -168,6 +228,16 @@ const AiGeneratedTodo = () => {
   return (
     <div>
       <div className="text-2xl text-gray-800 mt-5">Ai Generated Todo List</div>
+
+      <div>
+        <button
+          className="btn btn-ghost mt-5 flex items-center gap-2"
+          onClick={handleUserSummaryPrompt}
+        >
+          <GeminiIcon className="text-2xl text-gray-800 mt-5" />
+          Generate for user activity
+        </button>
+      </div>
       <form
         action=""
         className="border-2 p-3 mt-10 flex justify-between rounded-lg"

@@ -66,6 +66,9 @@ const AddNewTask = () => {
         }));
       } else {
         toast.error("Failed to create task");
+        console.log("Error creating task: ", response.statusText);
+        const errorData = await response.json();
+        console.log(errorData);
       }
     } catch (err) {
       console.error("Error creating task: ", err);

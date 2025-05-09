@@ -162,74 +162,80 @@ const Notes = () => {
           </div>
         ) : (
           <div className="list-none flex flex-col overflow-auto scrollbar-hide">
-            {notes.length === 0 ? (
-              <p>No notes found.</p>
-            ) : (
-              <table className="table">
-                <thead>
-                  <tr className="text-black">
-                    <th></th>
-                    <th>Title</th>
-                    <th>Created At</th>
-                    <th>Updated At</th>
-                    <th>Owner</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {notes?.map((note, index) => (
-                    <tr key={note.id}>
-                      <td>{index + 1}</td>
-                      <td
-                        className="flex items-center gap-1 hover:underline cursor-pointer"
-                        onClick={() => selectNote(note.id)}
-                      >
-                        {/* <FaFile  /> */}
-                        <AiOutlineFile size={20} />
-                        <p className="text-nowrap">{note.title}</p>
-                      </td>
-                      <td>{new Date(note.createdAt).toDateString()}</td>
-                      <td>{new Date(note.updatedAt).toDateString()}</td>
-                      <td>{note.user.name}</td>
-                      <td>
-                        <div className="dropdown flex justify-end cursor-pointer">
-                          <div role="button" tabIndex={0}>
-                            <AiOutlineMore size={24} />
-                          </div>
-                          <div
-                            role="button"
-                            tabIndex={0}
-                            className="flex group-hover:hidden"
-                          >
-                            <AiOutlineMore
-                              size={24}
-                              className="text-transparent"
-                            />
-                          </div>
-                          <ul
-                            tabIndex={0}
-                            className="dropdown-content menu bg-gray-50 rounded z-[1] w-fit p-2 shadow flex flex-col gap-2"
-                          >
-                            <div
-                              className="flex flex-row gap-2 items-center px-3 py-2 hover:bg-gray-100"
-                              onClick={() => handleDeleteNote(note.id)}
-                            >
-                              <div>
-                                <FaTrash />
-                              </div>
-                              <span>Delete</span>
-                            </div>
-                          </ul>
-                        </div>
-                      </td>
+            {Array.isArray(notes) ? (
+              notes.length === 0 ? (
+                <p>No notes found.</p>
+              ) : (
+                <table className="table">
+                  <thead>
+                    <tr className="text-black">
+                      <th></th>
+                      <th>Title</th>
+                      <th>Created At</th>
+                      <th>Updated At</th>
+                      <th>Owner</th>
+                      <th></th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {notes.map((note, index) => (
+                      <tr key={note.id}>
+                        <td>{index + 1}</td>
+                        <td
+                          className="flex items-center gap-1 hover:underline cursor-pointer"
+                          onClick={() => selectNote(note.id)}
+                        >
+                          <AiOutlineFile size={20} />
+                          <p className="text-nowrap">{note.title}</p>
+                        </td>
+                        <td>{new Date(note.createdAt).toDateString()}</td>
+                        <td>{new Date(note.updatedAt).toDateString()}</td>
+                        <td>{note.user.name}</td>
+                        <td>
+                          <div className="dropdown flex justify-end cursor-pointer">
+                            <div role="button" tabIndex={0}>
+                              <AiOutlineMore size={24} />
+                            </div>
+                            <div
+                              role="button"
+                              tabIndex={0}
+                              className="flex group-hover:hidden"
+                            >
+                              <AiOutlineMore
+                                size={24}
+                                className="text-transparent"
+                              />
+                            </div>
+                            <ul
+                              tabIndex={0}
+                              className="dropdown-content menu bg-gray-50 rounded z-[1] w-fit p-2 shadow flex flex-col gap-2"
+                            >
+                              <div
+                                className="flex flex-row gap-2 items-center px-3 py-2 hover:bg-gray-100"
+                                onClick={() => handleDeleteNote(note.id)}
+                              >
+                                <div>
+                                  <FaTrash />
+                                </div>
+                                <span>Delete</span>
+                              </div>
+                            </ul>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )
+            ) : (
+              <p className="bg-red-100 text-red-500 p-5">
+                Notes is not an array.
+              </p>
             )}
           </div>
         )}
       </div>
+
       <dialog id="ai_gen_note" className="modal overflow-x-scroll">
         <div className="modal-box bg-white p-4 rounded-md shadow-md sm:w-fit lg:w-1/2 mx-auto mt-10">
           <form method="dialog">
