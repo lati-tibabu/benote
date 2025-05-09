@@ -25,8 +25,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "workspace_id",
         as: "memberships",
       });
-      this.hasMany(models.note, { foreignKey: "workspace_id", as: "notes" });
       this.hasMany(models.todo, { foreignKey: "workspace_id", as: "todos" });
+      this.hasMany(models.time_block, {
+        foreignKey: "workspace_id",
+        as: "time_blocks",
+      });
       this.hasMany(models.roadmap, {
         foreignKey: "workspace_id",
         as: "roadmaps",

@@ -7,6 +7,7 @@ const {
   task,
   todo,
   todo_item,
+  time_block,
 } = require("../models");
 const { team } = require("../models");
 
@@ -320,6 +321,16 @@ const readWorkspacesData = async (req, res) => {
             },
           ],
         },
+        ...(req.query.workspaceId
+          ? [
+              {
+                model: time_block,
+                as: "time_blocks",
+                required: false,
+                attributes: ["job", "description", "start_time", "end_time"],
+              },
+            ]
+          : []),
       ],
     };
 
@@ -327,6 +338,7 @@ const readWorkspacesData = async (req, res) => {
       attributes: [],
       where: {
         user_id: userId,
+        ...(req.query.workspaceId && { workspace_id: req.query.workspaceId }),
       },
       include: [theInclude],
     });
@@ -344,6 +356,7 @@ const readWorkspacesData = async (req, res) => {
         team_id: {
           [Op.in]: arrayTeamId,
         },
+        ...(req.query.workspaceId && { workspace_id: req.query.workspaceId }),
       },
       attributes: [],
       include: [theInclude],

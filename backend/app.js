@@ -4,17 +4,17 @@ const sequelize = require("./models").sequelize;
 const routes = require("./routes");
 const cors = require("cors");
 const passport = require("./middlewares/passport");
+const path = require("path");
 
 app.use(passport.initialize());
 app.use(express.json());
 app.use(cors());
 
-// app.use((req, res, next) => {
-//   console.log(`Received request: ${req.method} ${req.url}`);
-//   next();
-// });
+// Serve static files from the 'uploads' directory
+// app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
-app.use("/api", routes);
+app.use("/api", routes); // in app.js or server.js
 
 app.get("/", (req, res) => {
   res.send("Hello from the productivity hub backend!");

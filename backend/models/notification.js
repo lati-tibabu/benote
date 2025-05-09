@@ -38,7 +38,8 @@ module.exports = (sequelize, DataTypes) => {
           "info",
           "warning",
           "error",
-          "success"
+          "success",
+          "study_plan"
         ),
         allowNull: false,
         validate: {

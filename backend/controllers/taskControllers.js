@@ -402,6 +402,11 @@ const updateTask = async (req, res) => {
     const { status } = req.query; // Get the status from the query parameters
     if (_task) {
       // Update the task fields
+      if (status && _task.assigned_to != req.user.id) {
+        return res
+          .status(403)
+          .json({ message: "You are not allowed to update this task!" });
+      }
       await _task.update(req.body, { fields: allowedUpdates });
       const updatedTask = { ..._task.get() };
 
