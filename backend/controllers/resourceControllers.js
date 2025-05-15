@@ -7,12 +7,12 @@ const { upload } = require("../middlewares/supabaseUpload");
 const multer = require("multer");
 
 // Static uploads directory (e.g., /public/uploads)
-const uploadDir = path.join(__dirname, "../public/uploads");
+// const uploadDir = path.join(__dirname, "../public/uploads");
 
-// Ensure upload directory exists
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+// // Ensure upload directory exists
+// if (!fs.existsSync(uploadDir)) {
+//   fs.mkdirSync(uploadDir, { recursive: true });
+// }
 
 // Multer storage setup
 // const storage = multer.diskStorage({
