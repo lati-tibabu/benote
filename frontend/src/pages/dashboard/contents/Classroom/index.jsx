@@ -2,6 +2,7 @@ import React from "react";
 import AddNew from "./contents/add-new";
 import { ToastContainer } from "react-toastify";
 import ClassroomList from "./contents/classroom-list";
+import ClassroomManagement from "./management/ClassroomManagement"; // Import the new component
 
 const Classroom = () => {
   return (
@@ -14,6 +15,7 @@ const Classroom = () => {
         >
           + Create New
         </button>
+        <a href="/classroom-management" className="btn rounded-full">Manage Classroom</a> {/* Add a link to the ClassroomManagement page */}
       </div>
       <div className="flex flex-col md:flex-row">
         <div className="border m-2 p-3 rounded-md">

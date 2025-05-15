@@ -2,8 +2,13 @@ const { assignment } = require("../models");
 
 // Create
 const createAssignment = async (req, res) => {
+  const userId = req.user.id;
+
   try {
-    const _assignment = await assignment.create(req.body);
+    const _assignment = await assignment.create({
+      ...req.body,
+      created_by: userId,
+    });
     res.status(201).json(_assignment);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -11,15 +16,37 @@ const createAssignment = async (req, res) => {
 };
 
 // Read
-const readAssignments = async (req, res) => {
+readAssignments = async (req, res) => {
+  const { classroomId, page = 1, pageSize = 10, search = "" } = req.query;
+
   try {
-    const _assignments = await assignment.findAll();
-    res.json(_assignments);
+    const limit = parseInt(pageSize);
+    const offset = (parseInt(page) - 1) * limit;
+
+    const whereClause = {
+      classroom_id: classroomId,
+    };
+
+    if (search) {
+      whereClause.title = { [Op.like]: `%${search}%` };
+    }
+
+    const { count, rows: _assignments } = await assignment.findAndCountAll({
+      where: whereClause,
+      limit: limit,
+      offset: offset,
+    });
+
+    res.json({
+      assignments: _assignments,
+      totalItems: count,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(count / limit),
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 const readAssignment = async (req, res) => {
   try {
     const _assignment = await assignment.findByPk(req.params.id);

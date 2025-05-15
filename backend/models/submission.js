@@ -28,7 +28,13 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
       },
       assignment_id: DataTypes.UUID,
-      submitted_by: DataTypes.UUID,
+      submitted_by: {
+        type: DataTypes.UUID,
+        references: { model: "users", key: "id", as: "student" },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      },
+      description: DataTypes.TEXT,
       file_path: DataTypes.STRING,
       submitted_at: DataTypes.DATE,
       graded_by: DataTypes.UUID,
@@ -38,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "submission",
-    },
+    }
   );
   return submission;
 };

@@ -2,7 +2,9 @@ const express = require("express");
 const router = express.Router();
 
 const assignmentController = require("../controllers/assignmentControllers");
-const { authMiddleware } = require("../middlewares/authMiddleware");
+
+const authMiddleware = require("../middlewares/authMiddleware");
+router.use(authMiddleware.authMiddleware);
 
 router.post("/", assignmentController.createAssignment);
 router.get("/", /*authMiddleware,*/ assignmentController.readAssignments);

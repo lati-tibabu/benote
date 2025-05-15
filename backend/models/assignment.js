@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
       },
       title: DataTypes.STRING,
-      description: DataTypes.STRING,
+      description: DataTypes.TEXT,
       due_date: DataTypes.DATE,
       classroom_id: DataTypes.UUID,
       created_by: DataTypes.UUID,
@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "assignment",
-    },
+    }
   );
   return assignment;
 };

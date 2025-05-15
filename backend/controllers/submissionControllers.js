@@ -1,9 +1,13 @@
-const { submission } = require("../models");
+const { submission, user } = require("../models");
 
 // Create
 const createSubmission = async (req, res) => {
   try {
-    const _submission = await submission.create(req.body);
+    const userId = req.user.id;
+    const _submission = await submission.create({
+      ...req.body,
+      submitted_by: userId,
+    });
     res.status(201).json(_submission);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -13,7 +17,18 @@ const createSubmission = async (req, res) => {
 // Read all
 const readSubmissions = async (req, res) => {
   try {
-    const _submissions = await submission.findAll();
+    const _submissions = await submission.findAll({
+      where: {
+        assignment_id: req.query.assignmentId,
+      },
+      include: [
+        {
+          model: user,
+          as: "student",
+          attributes: ["id", "name", "email"],
+        },
+      ],
+    });
     res.json(_submissions);
   } catch (error) {
     res.status(500).json({ message: error.message });
