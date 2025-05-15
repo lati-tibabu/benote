@@ -4,7 +4,7 @@ const sequelize = require("./models").sequelize;
 const routes = require("./routes");
 const cors = require("cors");
 const passport = require("./middlewares/passport");
-const path = require("path");
+// const path = require("path");
 
 app.use(passport.initialize());
 app.use(express.json());
@@ -12,7 +12,7 @@ app.use(cors());
 
 // Serve static files from the 'uploads' directory
 // app.use("/uploads", express.static("uploads"));
-app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
+// app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
 app.use("/api", routes); // in app.js or server.js
 
