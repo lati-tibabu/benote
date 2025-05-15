@@ -206,14 +206,16 @@ const Resources = () => {
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 mt-4">
-                  <button
+                  {/* <button
                     className="btn btn-xs btn-accent"
-                    onClick={() =>
-                      handleDownload(`${apiURL}/${res.path}`, res.name)
-                    }
+                    onClick={() => handleDownload(res.path, res.name)}
                   >
                     Download
-                  </button>
+                  </button> */}
+                  <a href={res.path} className="btn btn-xs btn-accent" download>
+                    {" "}
+                    Download
+                  </a>
                   <button
                     className="btn btn-xs btn-danger"
                     onClick={() => handleDelete(res.id)}
