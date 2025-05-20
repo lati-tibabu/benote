@@ -3,6 +3,14 @@ import MarkdownRenderer from "../../../../../../components/markdown-renderer";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { toast, ToastContainer } from "react-toastify";
 import { AiFillCopy } from "react-icons/ai";
+import {
+  FaMarkdown,
+  FaClipboardList,
+  FaCompressAlt,
+  FaSpellCheck,
+  FaExpand,
+  FaPage4,
+} from "react-icons/fa";
 
 const NoteChat = ({ noteContext = "There is no note provided" }) => {
   const apiKey = localStorage.getItem("geminiApiKey");
@@ -74,6 +82,9 @@ const NoteChat = ({ noteContext = "There is no note provided" }) => {
       toast.error("API Key is invalid!");
     }
   };
+  const noteMakingPrompt =
+    "You are a note-making assistant AI. The provided content is lengthy, unstructured, and may include irrelevant details. Analyze the content and generate a comprehensive, well-structured, and exam-focused note. Include all important points necessary for understanding and retention. Use bullet points for listing key information. Use tables for comparisons. Explain any code blocks clearly and emphasize their purpose with relevant examples. Ensure the final note is complete, logically organized, and easy to review. Do not include any explanatory or concluding text outside the note itself. Output only the refined note.";
+
   return (
     <div className="flex flex-col h-screen bg-gray-100 p-4">
       {/* <ToastContainer /> */}
@@ -89,7 +100,58 @@ const NoteChat = ({ noteContext = "There is no note provided" }) => {
           />
         </form>
       </div>
+      {/* Buttons for AI actions */}
+      <div className="flex gap-2 justify-around mb-4 overflow-auto hide-scrollbar">
+        <button
+          className="flex items-center gap-2 btn btn-sm bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-800"
+          onClick={() =>
+            requestAi("Convert the entire content to markdown rich")
+          }
+        >
+          <FaMarkdown /> Markdown
+        </button>
 
+        <button
+          className="flex items-center gap-2 btn btn-sm bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700"
+          onClick={() =>
+            requestAi(
+              "Quiz from the content make sure it is comprehensive and review"
+            )
+          }
+        >
+          <FaClipboardList /> Quiz
+        </button>
+
+        <button
+          className="flex items-center gap-2 btn btn-sm bg-slate-600 text-white px-4 py-2 rounded-md hover:bg-slate-700"
+          onClick={() => requestAi("Summarize the content")}
+        >
+          <FaCompressAlt /> Summarize
+        </button>
+
+        <button
+          className="flex items-center gap-2 btn btn-sm bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+          onClick={() => requestAi("Grammar correct and replace the original")}
+        >
+          <FaSpellCheck /> Grammar
+        </button>
+
+        <button
+          className="flex items-center gap-2 btn btn-sm bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+          onClick={() =>
+            requestAi("Expand the note to make it more comprehensive")
+          }
+        >
+          <FaExpand /> Expand
+        </button>
+
+        <button
+          className="flex items-center gap-2 btn btn-sm bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+          onClick={() => requestAi(noteMakingPrompt)}
+        >
+          <FaPage4 /> Notefy
+        </button>
+      </div>
       {/* Chat Area (Bot's response) */}
       <div className="flex-1 overflow-y-auto p-4 bg-white rounded-lg shadow-lg space-y-4">
         {/* AI's answer */}

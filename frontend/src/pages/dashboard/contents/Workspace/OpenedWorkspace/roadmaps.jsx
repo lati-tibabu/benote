@@ -4,7 +4,8 @@ import { FaMap } from "react-icons/fa6";
 import { useNavigate, useParams } from "react-router-dom";
 import GeminiIcon from "../../../../../components/geminiIcon";
 import { ToastContainer } from "react-toastify";
-import AIGeneratedRoadmap from "./roadmaps/ai-generated-roadmap-form";
+// import AIGeneratedRoadmap from "./roadmaps/ai-generated-roadmap";
+import AIGeneratedRoadmap from "./roadmaps/ai-generated-roadmap";
 import AddNewRoadmap from "./roadmaps/add-new";
 import { useSelector } from "react-redux";
 

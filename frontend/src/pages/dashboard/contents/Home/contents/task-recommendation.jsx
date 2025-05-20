@@ -82,9 +82,9 @@ const TaskRecommendation = () => {
   };
 
   return (
-    <div className="h-fit bg-white text-black p-6">
+    <div className="h-fit max-w-96 bg-white text-black p-6">
       <h2 className="text-2xl font-semibold mb-6 border-b border-black pb-2">
-        AI Recommended Tasks
+        Recommended Tasks
       </h2>
 
       {loading ? (

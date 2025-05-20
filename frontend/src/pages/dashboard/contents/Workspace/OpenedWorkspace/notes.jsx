@@ -7,6 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearNotes, setNotes } from "../../../../../redux/slices/notesSlice";
 import AiGeneratedNote from "./Notes/ai-generated-note";
 import GeminiIcon from "../../../../../components/geminiIcon";
+import FileToNoteUploader from "../../../../../components/FileToNoteUploader";
+// import FileToNoteUploader from "../../../../components/FileToNoteUploader"; // Adjust the import path as needed
 
 const Notes = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -234,6 +236,35 @@ const Notes = () => {
             )}
           </div>
         )}
+      </div>
+
+      <div className="mt-6 p-6 border rounded-xl bg-white shadow-sm">
+        <h3 className="text-xl font-semibold text-gray-800 mb-2 flex items-center gap-2">
+          <svg
+            className="w-5 h-5 text-blue-600"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          Upload File to Create Note
+        </h3>
+        <p className="text-sm text-gray-600 mb-4">
+          Supported formats:{" "}
+          <span className="font-medium text-gray-700">.doc</span>,{" "}
+          <span className="font-medium text-gray-700">.docx</span>,{" "}
+          <span className="font-medium text-gray-700">.txt</span>
+        </p>
+
+        <div className="bg-gray-50 border border-dashed border-gray-300 rounded-lg p-4">
+          <FileToNoteUploader />
+        </div>
       </div>
 
       <dialog id="ai_gen_note" className="modal overflow-x-scroll">

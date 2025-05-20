@@ -1,155 +1,151 @@
-import React, { useEffect, useState } from "react";
-import { AiOutlineEdit } from "react-icons/ai";
-import { FaXmark } from "react-icons/fa6";
-import MarkdownRenderer from "../../../../../../components/markdown-renderer";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import AddNewRoadmapItem from "./add-new-item";
+import { AiOutlinePlus } from "react-icons/ai";
+import MarkdownRenderer from "../../../../../../components/markdown-renderer";
+// import { Plus } from "lucide-react";
 
 const OpenedRoadmap = () => {
   const apiURL = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("jwt");
-  const header = {
-    authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
 
   const userData = useSelector((state) => state.auth.user) || {};
-  const { workspaceId, roadmap_id } = useParams();
+  const { roadmap_id } = useParams();
 
   const [roadmap, setRoadmap] = useState({});
   const [refreshList, setRefreshList] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [expandedItems, setExpandedItems] = useState({});
 
-  const [descriptionOpened, setDescriptionOpened] = useState(false);
-  const [mapDetail, setMapDetail] = useState("");
-  const [mapEditMode, setMapEditMode] = useState(false);
-
-  const handleMapOpened = (msg) => {
-    setDescriptionOpened(true);
-    setMapDetail(msg);
-  };
-
-  const handleMapClosed = () => {
-    setDescriptionOpened(false);
-    setMapEditMode(false);
-  };
-
-  const handleEditMap = () => {
-    setMapEditMode(!mapEditMode);
-  };
-
-  const fetchRoadmap = async () => {
-    const response = await fetch(`${apiURL}/api/roadmaps/${roadmap_id}`, {
-      method: "GET",
-      headers: header,
-    });
-
-    if (!response.ok) {
-      console.log("Error loading roadmap");
-      return;
-    }
-
-    const data = await response.json();
-    setRoadmap(data);
-  };
+  const roadmapItemsRef = useRef(null);
 
   useEffect(() => {
+    const fetchRoadmap = async () => {
+      const response = await fetch(`${apiURL}/api/roadmaps/${roadmap_id}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setRoadmap(data);
+      } else {
+        console.error("Failed to load roadmap.");
+      }
+    };
+
     fetchRoadmap();
   }, [roadmap_id, refreshList]);
 
+  const handleMouseDown = useCallback((e) => {
+    setIsDragging(true);
+    setStartX(e.clientX);
+    roadmapItemsRef.current.style.scrollBehavior = "auto";
+  }, []);
+
+  const handleMouseMove = useCallback(
+    (e) => {
+      if (!isDragging) return;
+      const x = e.clientX - startX;
+      roadmapItemsRef.current.scrollLeft -= x;
+      setStartX(e.clientX);
+    },
+    [isDragging, startX]
+  );
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+    roadmapItemsRef.current.style.scrollBehavior = "smooth";
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [handleMouseMove, handleMouseUp]);
+
+  const toggleExpand = (itemId) =>
+    setExpandedItems((prev) => ({ ...prev, [itemId]: !prev[itemId] }));
+
   return (
-    <div>
-      <h1>OpenedRoadmap</h1>
-
-      <div className="border border-black p-2 flex h-fit">
-        <div className="w-full p-2 ">
-          {roadmap?.roadmap_items?.map((item, i) => (
-            <div
-              className="w-fit max-w-96 h-fit mx-auto flex flex-col"
-              //   onMouseEnter={() => handleMapOpened(item.description)}
-              //   onMouseLeave={handleMouseLeave}
-              key={item.id}
-            >
-              <div className="border-2 border-black p-3 rounded">
-                <p>{item.title}</p>
-
-                <button
-                  className="text-blue-500 font-bold text-sm cursor-pointer"
-                  onClick={() => handleMapOpened(item)}
-                >
-                  Description
-                </button>
-              </div>
-
-              <div className="">
-                <div className="h-7 w-[3px] bg-black mx-auto"></div>
-              </div>
-            </div>
-          ))}
-
-          <div className="mx-auto w-fit">
-            <button
-              className="btn rounded-full"
-              onClick={() =>
-                document.getElementById("new-roadmap-item-form").showModal()
-              }
-            >
-              + add new
-            </button>
-          </div>
-        </div>
-
-        {descriptionOpened && (
-          <div className="border border-gray-400 shadow-lg bg-white absolute w-96 right-5 z-10 rounded-lg p-2 max-h-96 overflow-auto">
-            <div className="p-2 flex justify-between">
-              <AiOutlineEdit
-                className="cursor-pointer"
-                onClick={handleEditMap}
-              />
-              <FaXmark className="cursor-pointer" onClick={handleMapClosed} />
-            </div>
-
-            {mapEditMode ? (
-              <form action="">
-                <fieldset className="flex flex-col relative border-2 p-4 rounded-lg">
-                  <legend className="text-lg font-medium text-gray-600 mb-2">
-                    Title
-                  </legend>
-                  <input
-                    className="p-3 border rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 bg-transparent"
-                    type="text"
-                    value={mapDetail.title}
-                  />
-                </fieldset>
-                <fieldset className="flex flex-col relative border-2 p-4 rounded-lg">
-                  <legend className="text-lg font-medium text-gray-600 mb-2">
-                    Description
-                  </legend>
-                  <textarea
-                    className="border border-gray-300 bg-transparent"
-                    name=""
-                    id=""
-                    value={mapDetail.description}
-                  ></textarea>
-                </fieldset>
-              </form>
-            ) : (
-              <>
-                <h1 className="font-semibold">{mapDetail.title}</h1>
-                <MarkdownRenderer content={mapDetail.description} />
-              </>
-            )}
-          </div>
-        )}
+    <section className="p-6 space-y-6">
+      {/* Header */}
+      <div className="bg-blue-50 p-6 rounded-xl shadow-sm">
+        <h1 className="text-2xl font-bold text-blue-800">
+          {roadmap?.title || "Untitled Roadmap"}
+        </h1>
+        <p className="text-gray-600 mt-2">
+          {roadmap?.description || "No description provided."}
+        </p>
       </div>
 
-      <dialog id="new-roadmap-item-form" className="modal overflow-x-scroll">
-        <div className="modal-box bg-white p-4 rounded-md shadow-md sm:w-fit lg:w-1/2 mx-auto mt-10">
+      {/* Items */}
+      <div
+        ref={roadmapItemsRef}
+        onMouseDown={handleMouseDown}
+        style={{ cursor: isDragging ? "grabbing" : "grab" }}
+        className="flex gap-4 overflow-x-auto py-4 px-1 rounded-lg border bg-white shadow-inner"
+      >
+        {roadmap?.roadmap_items?.map((item, index) => (
+          <div
+            key={item.id}
+            className="min-w-[280px] max-w-[280px] bg-white border border-gray-200 p-4 rounded-xl shadow hover:shadow-md transition"
+          >
+            <h2 className="font-semibold text-lg text-gray-800">
+              {item.title}
+            </h2>
+            <MarkdownRenderer
+              content={item.description}
+              className={`text-sm text-gray-600 mt-2 ${
+                expandedItems[item.id] ? "" : "line-clamp-3"
+              }`}
+              style={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                display: expandedItems[item.id] ? "block" : "-webkit-box",
+                WebkitLineClamp: expandedItems[item.id] ? "none" : 3,
+                WebkitBoxOrient: "vertical",
+              }}
+            />
+            {item.description?.length > 100 && (
+              <button
+                className="text-blue-500 text-xs mt-2 underline"
+                onClick={() => toggleExpand(item.id)}
+              >
+                {expandedItems[item.id] ? "Show Less" : "Show More"}
+              </button>
+            )}
+          </div>
+        ))}
+
+        {/* Add New */}
+        <button
+          onClick={() =>
+            document.getElementById("new-roadmap-item-form").showModal()
+          }
+          className="min-w-[280px] max-w-[280px] max-h-[100px] flex flex-col items-center justify-center gap-2 bg-blue-100 hover:bg-blue-200 text-blue-700 border border-dashed border-blue-400 rounded-xl p-4 transition"
+        >
+          {/* <Plus className="w-6 h-6" /> */}
+          <AiOutlinePlus className="w-6 h-6" />
+          <span className="font-medium">Add New Item</span>
+        </button>
+      </div>
+
+      {/* Modal */}
+      <dialog id="new-roadmap-item-form" className="modal">
+        <div className="modal-box bg-white p-5 rounded-lg max-w-md">
           <form method="dialog">
-            {/* if there is a button in form, it will close the modal */}
             <button
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-              onClick={() => setRefreshList(!refreshList)}
+              onClick={() => setRefreshList((prev) => !prev)}
             >
               ✕
             </button>
@@ -157,42 +153,8 @@ const OpenedRoadmap = () => {
           <AddNewRoadmapItem />
         </div>
       </dialog>
-    </div>
+    </section>
   );
 };
 
 export default OpenedRoadmap;
-
-const roadmapItems = [
-  {
-    id: 1,
-    title: "Roadmap number 1",
-    description:
-      " Lorem, ipsum dolor sit amet consectetur adipisicing elit. Aliquid dolorem fugiat nostrum, voluptatum corporis magnam consectetur ratione saepe blanditiis animi quod repellendus! Ut nesciunt quibusdam quam ad autem, cum perspiciatis! Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
-  },
-  {
-    id: 2,
-    title: "Roadmap number 2 Just to find out",
-    description:
-      " # ipsum dolor \n sit amet consectetur adipisicing elit. Aliquid dolorem fugiat nostrum, voluptatum corporis magnam consectetur ratione saepe blanditiis animi quod repellendus! Ut nesciunt quibusdam quam ad autem, cum perspiciatis! Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
-  },
-  {
-    id: 3,
-    title: "Roadmap number 3 that everybody was lying",
-    description:
-      " dolor sit amet consectetur adipisicing elit. Aliquid dolorem fugiat nostrum, voluptatum corporis magnam consectetur ratione saepe blanditiis animi quod repellendus! Ut nesciunt quibusdam quam ad autem, cum perspiciatis! Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
-  },
-  {
-    id: 4,
-    title: "Roadmap fixer",
-    description:
-      " sit amet consectetur adipisicing elit. Aliquid dolorem fugiat nostrum, voluptatum corporis magnam consectetur ratione saepe blanditiis animi quod repellendus! Ut nesciunt quibusdam quam ad autem, cum perspiciatis! Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
-  },
-  {
-    id: 5,
-    title:
-      "sit amet consectetur adipisicing elit. Aliquid dolorem fugiat nostrum, voluptatum corporis magnam consectetur ratione saepe blanditiis animi quod repellendus! Ut nesciunt quibusdam quam ad autem, cum perspiciatis! Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
-    description:
-      " sit amet consectetur adipisicing elit. Aliquid dolorem fugiat nostrum, voluptatum corporis magnam consectetur ratione saepe blanditiis animi quod repellendus! Ut nesciunt quibusdam quam ad autem, cum perspiciatis! Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
-  },
-];

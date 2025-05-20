@@ -5,6 +5,7 @@ import { MdAssignment } from "react-icons/md";
 import { BiBook } from "react-icons/bi";
 import { AiOutlineDelete, AiOutlinePlus } from "react-icons/ai";
 import Assignment from "../management/Assignment";
+import Materials from "../management/Materials";
 
 const OpenedClassroom = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -220,12 +221,7 @@ const OpenedClassroom = () => {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold text-gray-700 mb-2">
-              Materials
-            </h2>
-            <p className="text-gray-500">
-              No materials available at the moment.
-            </p>
+            <Materials isTeacher={classroom?.isTeacher || false} />
           </section>
 
           <section>

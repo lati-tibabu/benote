@@ -112,7 +112,7 @@ function Dashboard() {
     fetchUnreadCount();
 
     // Set interval to fetch unread count every second
-    const intervalId = setInterval(fetchUnreadCount, 1000);
+    const intervalId = setInterval(fetchUnreadCount, 15000);
 
     // Cleanup the interval when the component unmounts
     return () => clearInterval(intervalId);
