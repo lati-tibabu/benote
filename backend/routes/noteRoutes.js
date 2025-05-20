@@ -8,12 +8,12 @@ router.post("/", noteController.createNote);
 router.get(
   "/:workspace_id",
   authMiddleware.authMiddleware,
-  noteController.readNotes,
+  noteController.readNotes
 );
 router.get(
   "/:workspace_id/:id",
   authMiddleware.authMiddleware,
-  noteController.readNote,
+  noteController.readNote
 );
 router.put("/:id", authMiddleware.authMiddleware, noteController.updateNote);
 router.delete("/:id", authMiddleware.authMiddleware, noteController.deleteNote);
@@ -21,7 +21,7 @@ router.get("/public/:id/note", noteController.readPublicNote);
 router.patch(
   "/:workspace_id/:id/publish",
   authMiddleware.authMiddleware,
-  noteController.publishNote,
+  noteController.publishNote
 );
 
 module.exports = router;

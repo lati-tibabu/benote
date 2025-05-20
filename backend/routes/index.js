@@ -23,6 +23,7 @@ const userTeamRoutes = require("./userTeamRoutes");
 const notificationRoutes = require("./notificationRoutes");
 const profileRoutes = require("./profileRoutes");
 const resourceRoutes = require("./resourceRoutes");
+const materialRoutes = require("./classroomMaterialsRoutes");
 
 const authRoutes = require("./authRoutes");
 const { logoutController } = require("../middlewares/authMiddleware");
@@ -51,6 +52,7 @@ router.use("/user-team", userTeamRoutes);
 router.use("/notifications", notificationRoutes);
 router.use("/profile", profileRoutes);
 router.use("/resources", resourceRoutes);
+router.use("/classroom-materials", materialRoutes);
 
 router.use("/auth", authRoutes);
 
