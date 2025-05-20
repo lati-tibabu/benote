@@ -7,9 +7,11 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css"; // Import KaTeX styles
 
-const MarkdownRenderer = ({ content }) => {
+const MarkdownRenderer = ({ content, className }) => {
   return (
-    <div className="flex flex-col gap-4 hover:[&>*]:bg-gray-100 hover:[&>*]:cursor-pointer">
+    <div
+      className={`flex flex-col gap-4 hover:[&>*]:bg-gray-100 hover:[&>*]:cursor-pointer ${className}`}
+    >
       <MarkDown
         // className="border-2 overflow-hidden"
         remarkPlugins={[remarkGfm, remarkMath]}
