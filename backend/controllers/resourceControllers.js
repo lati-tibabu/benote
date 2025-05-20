@@ -3,8 +3,8 @@ const fs = require("fs");
 const { resource } = require("../models");
 const { v4: uuidv4 } = require("uuid");
 const supabase = require("../services/supabaseClient");
-const { upload } = require("../middlewares/supabaseUpload");
-const multer = require("multer");
+// const { upload } = require("../middlewares/supabaseUpload");
+// const multer = require("multer");
 
 // Static uploads directory (e.g., /public/uploads)
 // const uploadDir = path.join(__dirname, "../public/uploads");

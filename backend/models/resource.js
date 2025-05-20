@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "team_id",
         as: "team",
       });
+      this.belongsTo(models.classroom, {
+        foreignKey: "classroom_id",
+        as: "classroom",
+      });
     }
   }
 
@@ -52,9 +56,19 @@ module.exports = (sequelize, DataTypes) => {
       },
       team_id: {
         type: DataTypes.UUID,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: "teams",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      },
+      classroom_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+          model: "classrooms",
           key: "id",
         },
         onDelete: "CASCADE",

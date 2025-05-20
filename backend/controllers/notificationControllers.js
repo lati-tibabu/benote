@@ -72,7 +72,7 @@ const readLatestNotification = async (req, res) => {
     const receiver_id = req.user.id;
 
     const latestNotification = await notification.findOne({
-      where: { receiver_id },
+      where: { receiver_id, is_read: false },
       attributes: ["id", "message", "type", "action", "createdAt", "is_read"],
       order: [["createdAt", "DESC"]],
     });

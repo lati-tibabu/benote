@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
         otherKey: "student_id",
         as: "students",
       });
+      this.hasMany(models.resource, {
+        foreignKey: "classroom_id",
+        as: "materials",
+      });
     }
   }
   classroom.init(

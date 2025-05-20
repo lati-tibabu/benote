@@ -3,6 +3,20 @@ const { roadmap_item } = require("../models");
 // Create
 const createRoadmapItem = async (req, res) => {
   try {
+    const roadmapData = req.body;
+
+    if (Array.isArray(roadmapData?.items)) {
+      const _roadmapItems = await roadmap_item.bulkCreate(roadmapData?.items);
+
+      if (_roadmapItems.length) {
+        return res.status(201).json(_roadmapItems);
+      } else {
+        return res
+          .status(400)
+          .json({ message: "Failed to create roadmap items." });
+      }
+    }
+
     const _roadmapItem = await roadmap_item.create(req.body);
     res.status(201).json(_roadmapItem);
   } catch (error) {
