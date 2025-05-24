@@ -124,18 +124,20 @@ const StudyPlans = () => {
   };
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Study Plans</h2>
+    <div className="bg-gradient-to-br from-gray-50 to-white min-h-screen p-6">
+      <h2 className="text-2xl font-extrabold tracking-tight text-gray-900 mb-6">
+        Study Plans
+      </h2>
       <button
-        className="btn btn-primary rounded-full mb-4"
+        className="btn bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full px-6 py-2 shadow-md transition mb-6"
         onClick={() => setIsOpen(true)}
       >
         + New Study Plan
       </button>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto rounded-2xl shadow-md bg-white/90 border border-gray-200">
         {studyPlans.length > 0 ? (
           <table className="table w-full">
-            <thead>
+            <thead className="bg-gray-50 text-gray-700 text-base">
               <tr>
                 <th>Title</th>
                 <th>Description</th>
@@ -146,23 +148,27 @@ const StudyPlans = () => {
             </thead>
             <tbody>
               {studyPlans.map((plan) => (
-                <tr key={plan.id}>
+                <tr key={plan.id} className="hover:bg-blue-50 transition">
                   <td
                     onClick={() => handleOpenPlan(plan.id)}
-                    className="hover:underline cursor-pointer"
+                    className="hover:underline cursor-pointer font-semibold text-blue-700"
                   >
                     {plan.title}
                   </td>
-                  <td>{plan.description}</td>
-                  <td>{new Date(plan.start_date).toLocaleDateString()}</td>
-                  <td>{new Date(plan.end_date).toLocaleDateString()}</td>
+                  <td className="text-gray-600">{plan.description}</td>
+                  <td className="text-xs text-gray-500">
+                    {new Date(plan.start_date).toLocaleDateString()}
+                  </td>
+                  <td className="text-xs text-gray-500">
+                    {new Date(plan.end_date).toLocaleDateString()}
+                  </td>
                   <td>
                     <button
-                      className="btn btn-sm btn-error text-sm flex flex-row items-center text-white"
+                      className="btn btn-sm bg-red-500 hover:bg-red-600 text-white rounded-full flex flex-row items-center gap-2 px-3 py-1 shadow transition"
                       onClick={() => handleDeletePlan(plan.id)}
                     >
                       <FaTrash />
-                      <p>Delete</p>
+                      <span>Delete</span>
                     </button>
                   </td>
                 </tr>
@@ -170,12 +176,14 @@ const StudyPlans = () => {
             </tbody>
           </table>
         ) : (
-          <p>No study plans found.</p>
+          <p className="text-gray-400 text-center py-8">
+            No study plans found.
+          </p>
         )}
       </div>
       {isOpen && (
         <div className="modal modal-open">
-          <div className="modal-box bg-white text-gray-800">
+          <div className="modal-box bg-white text-gray-800 rounded-2xl shadow-lg border border-gray-200">
             <h3 className="text-xl font-bold mb-4">Create Study Plan</h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -192,7 +200,7 @@ const StudyPlans = () => {
                   placeholder="Title"
                   value={formData.title}
                   onChange={handleChange}
-                  className="input input-bordered w-full bg-gray-100"
+                  className="input input-bordered w-full bg-gray-100 rounded-md"
                   required
                 />
               </div>
@@ -209,56 +217,58 @@ const StudyPlans = () => {
                   placeholder="Description"
                   value={formData.description}
                   onChange={handleChange}
-                  className="textarea textarea-bordered w-full bg-gray-100"
+                  className="textarea textarea-bordered w-full bg-gray-100 rounded-md"
                   required
                 ></textarea>
               </div>
-              <div>
-                <label
-                  htmlFor="start_date"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Start Date
-                </label>
-                <input
-                  id="start_date"
-                  type="date"
-                  name="start_date"
-                  value={formData.start_date}
-                  onChange={handleChange}
-                  className="input input-bordered w-full bg-gray-100"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="end_date"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  End Date
-                </label>
-                <input
-                  id="end_date"
-                  type="date"
-                  name="end_date"
-                  value={formData.end_date}
-                  onChange={handleChange}
-                  className="input input-bordered w-full bg-gray-100"
-                  required
-                />
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <label
+                    htmlFor="start_date"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Start Date
+                  </label>
+                  <input
+                    id="start_date"
+                    type="date"
+                    name="start_date"
+                    value={formData.start_date}
+                    onChange={handleChange}
+                    className="input input-bordered w-full bg-gray-100 rounded-md"
+                    required
+                  />
+                </div>
+                <div className="flex-1">
+                  <label
+                    htmlFor="end_date"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    End Date
+                  </label>
+                  <input
+                    id="end_date"
+                    type="date"
+                    name="end_date"
+                    value={formData.end_date}
+                    onChange={handleChange}
+                    className="input input-bordered w-full bg-gray-100 rounded-md"
+                    required
+                  />
+                </div>
               </div>
               {errorMsg && <p className="text-red-500 text-sm">{errorMsg}</p>}
-              <div className="modal-action">
+              <div className="modal-action flex gap-2 justify-end">
                 <button
                   type="button"
-                  className="btn btn-ghost text-gray-700"
+                  className="btn btn-ghost text-gray-700 rounded-full px-4 py-2"
                   onClick={() => setIsOpen(false)}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="btn btn-primary bg-blue-500 text-white"
+                  className="btn bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full px-6 py-2 shadow-md transition"
                 >
                   Save
                 </button>

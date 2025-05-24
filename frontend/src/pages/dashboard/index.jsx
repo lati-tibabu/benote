@@ -19,7 +19,7 @@ import {
   AiOutlineMoon,
   AiOutlineHeatMap,
 } from "react-icons/ai";
-import { HiMenu, HiX } from "react-icons/hi";
+import { HiMenu, HiSearch, HiX } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
 // const crypto = require("crypto");
 import { SHA256 } from "crypto-js";
@@ -33,6 +33,9 @@ import { toggleTheme } from "../../redux/slices/themeSlice";
 import { clearAuthenticatedUser } from "../../redux/slices/authSlice";
 import GeminiIcon from "../../components/geminiIcon";
 import { sendBrowserNotification } from "../../utils/sendBrowserNotification";
+import SearchModal from "./contents/SearchModal";
+import AiOverviewModal from "./contents/AiOverviewModal";
+import { FaRobot } from "react-icons/fa6";
 
 function Dashboard() {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -46,6 +49,10 @@ function Dashboard() {
   const [unreadCount, setUnreadCount] = useState(0); //notification count
   const [collapsedNav, setCollapsedBar] = useState(false); //collapsed nav bar
   const [notificationPopping, setNotificationPopping] = useState(false); //notification popping
+
+  const [searchOpened, setSearchOpened] = useState(false);
+  const [aiOverviewOpen, setAiOverviewOpen] = useState(false);
+  const [aiSummary, setAiSummary] = useState("");
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -172,6 +179,23 @@ function Dashboard() {
       );
     }
   }, [latestNotification]);
+
+  const toggleSearchOpened = () => {
+    setSearchOpened(!searchOpened);
+  };
+
+  // Example: fetch AI summary when modal opens
+  useEffect(() => {
+    if (aiOverviewOpen) {
+      // Simulate async fetch
+      setAiSummary("Generating summary...");
+      setTimeout(() => {
+        setAiSummary(
+          "This is your AI-generated productivity summary.\n\n- You have 3 tasks due today.\n- Your focus time is up 20% this week.\n- Team collaboration is active in 2 workspaces.\n\nKeep up the great work!"
+        );
+      }, 1200);
+    }
+  }, [aiOverviewOpen]);
 
   return (
     <div className="bg-white text-black min-h-screen flex flex-col">
@@ -330,7 +354,8 @@ function Dashboard() {
                 onClick={() => setIsMobileNavOpen(false)}
                 title="AskAI"
               >
-                <AiOutlineHeatMap size={20} />
+                {/* <AiOutlineRobot size={20} /> */}
+                <FaRobot />
                 {!collapsedNav && <span>AskAI</span>}
               </Link>
             </div>
@@ -447,18 +472,18 @@ function Dashboard() {
 
         {/* Main Content */}
         <div className="w-full flex flex-col overflow-x-hidden h-screen overflow-y-auto">
-          <div className="w-full p-2 flex items-center justify-between bg-white border-b-1">
+          <div className="w-full p-2 flex items-center justify-between bg-gradient-to-r from-white via-blue-50 to-green-50 border-b-1 shadow-sm rounded-t-xl px-6 py-4 sticky top-0 z-30">
             <div className="flex items-center gap-2">
               <div className="flex space-x-2">
                 <div
-                  className="p-2 hover:bg-gray-200 rounded-full cursor-pointer"
+                  className="p-2 hover:bg-blue-100 rounded-full cursor-pointer border border-transparent hover:border-blue-300 transition"
                   onClick={() => history.back()}
                 >
                   <AiOutlineArrowLeft />
                 </div>
               </div>
 
-              <div className="font-bold text-2xl">
+              <div className="font-bold text-2xl text-blue-900 tracking-tight drop-shadow-sm">
                 {loc[0]
                   ? loc[0].charAt(0).toUpperCase() + loc[0].slice(1)
                   : "Dashboard"}
@@ -467,15 +492,15 @@ function Dashboard() {
               loc[1] === "open" &&
               workspaceTitle &&
               workspaceEmoji ? (
-                <div className="flex border-l-2 border-gray-500 pl-2 w-48 sm:w-80 overflow-x-scroll scrollbar-hide">
-                  <div className="text-lg lg:text-2xl md:text-xl text-black flex items-center text-nowrap text-clip gap-2">
+                <div className="flex border-l-2 border-blue-200 pl-2 w-48 sm:w-80 overflow-x-scroll scrollbar-hide">
+                  <div className="text-lg lg:text-2xl md:text-xl text-blue-700 flex items-center text-nowrap text-clip gap-2">
                     {workspaceEmoji}
                     {workspaceTitle}
                   </div>
                 </div>
               ) : loc[0] === "team" && loc[1] === "open" && teamTitle ? (
-                <div className="flex border-l-2 border-gray-500 pl-2 w-80 overflow-x-scroll scrollbar-hide">
-                  <div className="text-lg lg:text-2xl md:text-xl text-black flex items-center gap-2 text-nowrap overflow-hidden">
+                <div className="flex border-l-2 border-blue-200 pl-2 w-80 overflow-x-scroll scrollbar-hide">
+                  <div className="text-lg lg:text-2xl md:text-xl text-blue-700 flex items-center gap-2 text-nowrap overflow-hidden">
                     {teamTitle}
                   </div>
                 </div>
@@ -515,25 +540,59 @@ function Dashboard() {
             )}
 
             {/* </div> */}
-            <div className="flex items-center gap-1">
-              {/* <div className="" onClick={() => dispatch(toggleTheme())}>
-                {theme}
-                <input type="checkbox" className="toggle" />
-              </div> */}
-              <div
-                className={`border-2 border-gray-800 rounded-box w-10 flex ${
-                  theme === "light"
-                    ? "justify-start"
-                    : "justify-end bg-blue-50 bg-opacity-20 text-gray-700"
-                } transition-all duration-500 cursor-pointer`}
-                onClick={() => dispatch(toggleTheme())}
-                title="Theme toggle"
-              >
-                <div className="w-5 h-5 rounded-full bg-black-200 flex items-center justify-center">
-                  {theme === "light" ? <AiOutlineSun /> : <AiOutlineMoon />}
-                </div>
+
+            {/* Search */}
+            <button
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold shadow hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+              onClick={toggleSearchOpened}
+              title="Search"
+              style={{ minWidth: 120 }}
+            >
+              <HiSearch size={22} className="mr-1" />
+              <span className="hidden sm:inline">Quick Search</span>
+            </button>
+
+            {/* AI Overview Button */}
+            <button
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold shadow hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200 ml-2"
+              onClick={() => setAiOverviewOpen(true)}
+              title="AI Overview"
+              style={{ minWidth: 120 }}
+            >
+              <span className="text-xl">🤖</span>
+              <span className="hidden sm:inline">AI Overview</span>
+            </button>
+
+            <SearchModal open={searchOpened} onClose={toggleSearchOpened} />
+            <AiOverviewModal
+              open={aiOverviewOpen}
+              onClose={() => setAiOverviewOpen(false)}
+            />
+
+            {/* Theme changing button - Modern Switch */}
+            <div className="flex items-center gap-3 ml-4">
+              <div className="flex items-center">
+                <span className="text-yellow-400 mr-2">
+                  <AiOutlineSun size={22} />
+                </span>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={theme === "dark"}
+                    onChange={() => dispatch(toggleTheme())}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-400 rounded-full peer dark:bg-gray-700 peer-checked:bg-gradient-to-r peer-checked:from-blue-500 peer-checked:to-indigo-600 transition-all duration-300"></div>
+                  <div className="absolute left-1 top-1 w-4 h-4 bg-white border border-gray-300 rounded-full shadow-md transition-all duration-300 peer-checked:translate-x-5"></div>
+                </label>
+                <span className="text-blue-900 ml-2">
+                  <AiOutlineMoon size={22} />
+                </span>
               </div>
-              <AiFillInfoCircle size={30} className="cursor-pointer" />
+              <AiFillInfoCircle
+                size={30}
+                className="cursor-pointer text-blue-400 hover:text-blue-600 transition"
+              />
             </div>
           </div>
 

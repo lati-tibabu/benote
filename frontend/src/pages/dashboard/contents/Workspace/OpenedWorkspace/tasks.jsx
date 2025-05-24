@@ -237,46 +237,39 @@ const Tasks = () => {
   };
 
   return (
-    <div>
+    <div className="bg-gradient-to-br from-gray-50 to-white min-h-screen p-4">
       <ToastContainer />
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
         <div className="flex gap-5">
-          <h1 className="text-xl font-bold">Tasks</h1>
-          {/* Check if the workspace is team based or private and show option to show all tasks or current user assigned tasks */}
+          <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">
+            Tasks
+          </h1>
           {workspace?.belongs_to_team && (
-            <label className="fieldset-label text-sm flex items-center gap-1">
+            <label className="fieldset-label text-sm flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full border border-gray-200">
               <input
                 type="checkbox"
-                // {allMemberTasks && checked}
                 checked={allMemberTasks ? true : false}
-                className="checkbox"
+                className="checkbox accent-blue-500"
                 onChange={(e) =>
                   setAllMemberTasks(e.target.checked ? true : false)
                 }
               />
               <div>Show tasks assigned to all member</div>
-              {/* {allMemberTasks ? "All Member" : "Only You"} */}
             </label>
           )}
         </div>
-
         <div className="flex items-center gap-3">
           {useGemini && (
             <div
-              // className="btn btn-sm bg-gradient-to-tr from-pink-500 transition-all duration-300 to-blue-600 text-white border-white hover:border-pink-500 btn-soft rounded-full"
-              className="btn transition-all duration-300 shadow-md bg-gray-100 hover:bg-gray-100 text-gray-700 border-white btn-soft rounded-full"
-              // onClick={() =>
-              //   alert("hey developer, you wanna generate task list")
-              // }
+              className="btn transition-all duration-300 shadow-md bg-gradient-to-tr from-pink-100 to-blue-100 hover:from-pink-200 hover:to-blue-200 text-gray-700 border-white btn-soft rounded-full flex items-center gap-2 px-4 py-2"
               onClick={() => document.getElementById("ai_gen_task").showModal()}
             >
-              {/* <FaBolt /> */}
               <GeminiIcon size={20} />
-              Generate Tasks
+              <span className="font-semibold">Generate Tasks</span>
             </div>
           )}
           <button
-            className="btn btn-sm"
+            className="btn btn-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full px-4 py-2 shadow-md transition"
             onClick={() => document.getElementById("add_task").showModal()}
           >
             + Add new task
@@ -285,30 +278,28 @@ const Tasks = () => {
       </div>
       {loading ? (
         <div className="p-3 h-screen/2 w-full flex gap-3 items-stretch">
-          <div className="rounded h-full p-3 flex-1 grow bg-gray-200 animate-pulse duration-200"></div>
-          <div className="rounded h-full p-3 flex-1 grow bg-gray-200 animate-pulse duration-200"></div>
-          <div className="rounded h-full p-3 flex-1 grow bg-gray-200 animate-pulse duration-200"></div>
-          <div className="rounded h-full p-3 flex-1 grow bg-gray-200 animate-pulse duration-200"></div>
+          <div className="rounded-xl h-full p-3 flex-1 grow bg-gray-200 animate-pulse duration-200"></div>
+          <div className="rounded-xl h-full p-3 flex-1 grow bg-gray-200 animate-pulse duration-200"></div>
+          <div className="rounded-xl h-full p-3 flex-1 grow bg-gray-200 animate-pulse duration-200"></div>
+          <div className="rounded-xl h-full p-3 flex-1 grow bg-gray-200 animate-pulse duration-200"></div>
         </div>
       ) : (
-        <div className="flex gap-2 justify-between overflow-x-scroll scrollbar-hide">
+        <div className="flex gap-6 justify-between overflow-x-auto scrollbar-hide pb-4">
           {/* to do */}
-          <div className="flex-1 flex flex-col gap-2 p-4 border-2 rounded-md grow">
-            {/* title */}
-            <div className="flex justify-between border-b-1 pb-2">
-              <div className="flex gap-1 items-center">
-                <h1 className="font-bold">To-do</h1>
-                <span className="p-2 bg-blue-200 text-blue-700 w-4 h-4 text-sm rounded-full flex justify-center items-center">
+          <div className="flex-1 flex flex-col gap-3 p-4 bg-white/80 border border-gray-200 rounded-2xl shadow-md min-w-[320px] transition hover:shadow-lg">
+            <div className="flex justify-between items-center border-b pb-2 mb-2">
+              <div className="flex gap-2 items-center">
+                <h1 className="font-bold text-lg text-blue-700">To-do</h1>
+                <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-semibold">
                   {tasks.filter((task) => task.status === "todo").length}
                 </span>
               </div>
               <div className="flex gap-2 items-center">
-                <button>
+                <button className="text-gray-400 hover:text-blue-500 transition">
                   <AiOutlineMore />
                 </button>
               </div>
             </div>
-            {/* tasks list */}
             {tasks?.map(
               (task) =>
                 task?.status == "todo" && (
@@ -344,7 +335,7 @@ const Tasks = () => {
                       );
 
                       if (timeDiff < 0) {
-                        return "Overdue"; // If overdue
+                        return "Overdue";
                       } else if (daysLeft > 0) {
                         return `${daysLeft} day(s) ${hoursLeft} hour(s) left`;
                       } else if (hoursLeft > 0) {
@@ -356,21 +347,20 @@ const Tasks = () => {
                   />
                 )
             )}
-            {/* single task card */}
           </div>
           {/* doing */}
-          <div className="flex-1 flex flex-col gap-2 p-4 border-2 rounded-md grow">
-            {/* title */}
-            <div className="flex justify-between border-b-1 pb-2">
-              <div className="flex gap-1 items-center">
-                <h1 className="font-bold">In progress</h1>
-                <span className="p-2 bg-blue-200 text-blue-700 w-4 h-4 text-sm rounded-full flex justify-center items-center">
+          <div className="flex-1 flex flex-col gap-3 p-4 bg-white/80 border border-gray-200 rounded-2xl shadow-md min-w-[320px] transition hover:shadow-lg">
+            <div className="flex justify-between items-center border-b pb-2 mb-2">
+              <div className="flex gap-2 items-center">
+                <h1 className="font-bold text-lg text-yellow-700">In progress</h1>
+                <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full font-semibold">
                   {tasks.filter((task) => task.status === "doing").length}
                 </span>
               </div>
-              <AiOutlineMore />
+              <button className="text-gray-400 hover:text-yellow-500 transition">
+                <AiOutlineMore />
+              </button>
             </div>
-            {/* task list */}
             {tasks.map(
               (task) =>
                 task.status == "doing" && (
@@ -406,7 +396,7 @@ const Tasks = () => {
                       );
 
                       if (timeDiff < 0) {
-                        return "Overdue"; // If overdue
+                        return "Overdue";
                       } else if (daysLeft > 0) {
                         return `${daysLeft} day(s) ${hoursLeft} hour(s) left`;
                       } else if (hoursLeft > 0) {
@@ -420,18 +410,18 @@ const Tasks = () => {
             )}
           </div>
           {/* done */}
-          <div className="flex-1 flex flex-col gap-2 p-4 border-2 rounded-md grow">
-            {/* title */}
-            <div className="flex justify-between border-b-1 pb-2">
-              <div className="flex gap-1 items-center">
-                <h1 className="font-bold">Done</h1>
-                <span className="p-2 bg-blue-200 text-blue-700 w-4 h-4 text-sm rounded-full flex justify-center items-center">
+          <div className="flex-1 flex flex-col gap-3 p-4 bg-white/80 border border-gray-200 rounded-2xl shadow-md min-w-[320px] transition hover:shadow-lg">
+            <div className="flex justify-between items-center border-b pb-2 mb-2">
+              <div className="flex gap-2 items-center">
+                <h1 className="font-bold text-lg text-green-700">Done</h1>
+                <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-semibold">
                   {tasks.filter((task) => task.status === "done").length}
                 </span>
               </div>
-              <AiOutlineMore />
+              <button className="text-gray-400 hover:text-green-500 transition">
+                <AiOutlineMore />
+              </button>
             </div>
-            {/* task list */}
             {tasks.map(
               (task) =>
                 task.status == "done" && (
@@ -467,7 +457,7 @@ const Tasks = () => {
                       );
 
                       if (timeDiff < 0) {
-                        return "Overdue"; // If overdue
+                        return "Overdue";
                       } else if (daysLeft > 0) {
                         return `${daysLeft} day(s) ${hoursLeft} hour(s) left`;
                       } else if (hoursLeft > 0) {
@@ -481,27 +471,26 @@ const Tasks = () => {
             )}
           </div>
           {/* archived */}
-          <div>
-            <div className="flex-1 flex flex-col gap-2 p-4 border-2 rounded-md grow">
-              {/* title */}
-              <div className="flex justify-between items-center border-b-1 pb-2 gap-4">
-                <div className="flex gap-1 items-center">
-                  <h1 className="font-bold">Archived</h1>
-                  <span className="p-2 bg-blue-200 text-blue-700 w-4 h-4 text-sm rounded-full flex justify-center items-center">
+          <div className="flex-1 min-w-[320px]">
+            <div className="flex flex-col gap-3 p-4 bg-gray-50 border border-gray-200 rounded-2xl shadow-md h-full transition hover:shadow-lg">
+              <div className="flex justify-between items-center border-b pb-2 mb-2 gap-4">
+                <div className="flex gap-2 items-center">
+                  <h1 className="font-bold text-lg text-gray-700">Archived</h1>
+                  <span className="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded-full font-semibold">
                     {archivedTasks.length}
                   </span>
                 </div>
-                {/* <AiOutlineMore /> */}
                 <div>
                   {!archivedWindow ? (
                     <FaWindowMaximize
-                      // className="cursor-pointer p-5"
+                      className="text-gray-400 hover:text-gray-700 cursor-pointer transition"
                       onClick={() => {
                         setArchivedWindow(true);
                       }}
                     />
                   ) : (
                     <FaWindowMinimize
+                      className="text-gray-400 hover:text-gray-700 cursor-pointer transition"
                       onClick={() => {
                         setArchivedWindow(false);
                       }}
@@ -509,8 +498,6 @@ const Tasks = () => {
                   )}
                 </div>
               </div>
-
-              {/* task list */}
               {archivedWindow &&
                 archivedTasks.map((task) => (
                   <TaskCard
@@ -546,7 +533,7 @@ const Tasks = () => {
                       );
 
                       if (timeDiff < 0) {
-                        return "Overdue"; // If overdue
+                        return "Overdue";
                       } else if (daysLeft > 0) {
                         return `${daysLeft} day(s) ${hoursLeft} hour(s) left`;
                       } else if (hoursLeft > 0) {

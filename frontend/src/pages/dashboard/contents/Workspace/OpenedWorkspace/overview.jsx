@@ -5,6 +5,14 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { toast } from "react-toastify";
 import MarkdownRenderer from "../../../../../components/markdown-renderer";
 import { setWorkspace } from "../../../../../redux/slices/workspaceSlice";
+import {
+  FaTasks,
+  FaRocket,
+  FaHourglassHalf,
+  FaCheckCircle,
+  FaHistory,
+  FaBell,
+} from "react-icons/fa";
 
 const Overview = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -164,62 +172,62 @@ const Overview = () => {
           {/* buttons */}
           <div className="flex flex-col gap-2">
             <button
-              // className="p-2 rounded-md bg-black text-white outline-none border-none hover:bg-gray-800"
-              className="p-3 bg-black text-white rounded-md shadow-md hover:bg-gray-800 transition"
+              className="p-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg shadow-lg hover:from-blue-700 hover:to-indigo-700 transition font-semibold text-lg flex items-center justify-center gap-2"
               onClick={() => handleCreateNewTask(workspace.id)}
             >
-              Create New Task
-            </button>
-            {/* <button className="p-2 rounded-md btn-secondary bg-gray-200 text-gray-800 outline-none border-none hover:bg-gray-300"> */}
-            <button className="p-3 bg-gray-200 text-gray-800 rounded-md border-2 border-gray-300 hover:bg-gray-300 transition">
-              Invite User
+              <FaTasks className="text-xl" /> <span>Create New Task</span>
             </button>
           </div>
-          {/* <button></button> */}
         </div>
         {/* notifications */}
         <div className="mt-8">
-          <h1 className="font-semibold text-2xl text-gray-800 mb-4">
-            Notifications
+          <h1 className="font-semibold text-2xl text-gray-800 mb-4 flex items-center gap-2">
+            <FaBell className="text-yellow-500" /> Notifications
+            <span className="text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full font-semibold">
+              Coming Soon
+            </span>
           </h1>
-          <div className="space-y-2 text-gray-600">
-            <li>Task D deadline approachin</li>
-            <li>New comment on Task E</li>
-            <li>Invitation to join Team Beta</li>
+          <div className="flex flex-col items-center justify-center h-24 text-gray-400 italic">
+            <FaBell className="text-4xl mb-2 text-yellow-400" />
+            <span>🔔 Notifications will appear here soon.</span>
           </div>
         </div>
       </div>
       {/* left side */}
       <div className="flex-2 p-6 bg-white rounded-lg border-2 border-gray-100">
-        {/* <div className="p-2 rounded-lg border-2 border-gray-100 bg-gray-600 text-white"> */}
-        <div>
-          <strong>Total Tasks </strong>
-          {workspace?.tasks.length}
+        <div className="mb-6">
+          <div className="flex items-center gap-2">
+            <FaTasks className="text-blue-500" />
+            <strong className="text-lg text-gray-700">Total Tasks</strong>
+            <span className="ml-2 text-2xl font-bold text-blue-700">
+              {workspace?.tasks.length}
+            </span>
+          </div>
         </div>
-        <div className="flex-2">
-          {/* tasks and deadline statuses and informations */}
-          <div className="flex flex-wrap gap-2 justify-between p-2">
-            <div className="grow flex flex-col items-center justify-between p-5 bg-blue-100 rounded-md shadow-md w-full sm:w-1/4">
+        <div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-2">
+            <div className="flex flex-col items-center justify-between p-6 bg-blue-50 rounded-xl shadow hover:shadow-lg transition w-full">
               <div className="flex flex-col items-center">
-                🚀
-                <h1 className="font-bold text-lg text-blue-600 text-center">
+                <FaRocket className="text-3xl text-blue-400 mb-1" />{" "}
+                {/* <span className="text-2xl">🚀</span> */}
+                <h1 className="font-bold text-lg text-blue-700 text-center">
                   Active Tasks
                 </h1>
               </div>
-              <span className="text-3xl font-bold text-blue-800">
+              <span className="text-3xl font-bold text-blue-800 mt-2">
                 {workspace?.tasks?.filter((task) => task.status === "doing")
                   ?.length || 0}
               </span>
             </div>
-
-            <div className="grow flex flex-col items-center justify-between p-5 bg-red-100 rounded-md shadow-md w-full sm:w-1/4">
+            <div className="flex flex-col items-center justify-between p-6 bg-red-50 rounded-xl shadow hover:shadow-lg transition w-full">
               <div className="flex flex-col items-center">
-                ⏳
-                <h1 className="font-bold text-lg text-red-600 text-center">
+                <FaHourglassHalf className="text-3xl text-red-400 mb-1" />{" "}
+                {/* <span className="text-2xl">⏳</span> */}
+                <h1 className="font-bold text-lg text-red-700 text-center">
                   Overdue Tasks
                 </h1>
               </div>
-              <span className="text-3xl font-bold text-red-800">
+              <span className="text-3xl font-bold text-red-800 mt-2">
                 {
                   workspace?.tasks.filter(
                     (task) =>
@@ -229,47 +237,32 @@ const Overview = () => {
                 }
               </span>
             </div>
-
-            <div className="grow flex flex-col items-center justify-between p-5 bg-green-100 rounded-md shadow-md w-full sm:w-1/4">
+            <div className="flex flex-col items-center justify-between p-6 bg-green-50 rounded-xl shadow hover:shadow-lg transition w-full">
               <div className="flex flex-col items-center">
-                ✅
-                <h1 className="font-bold text-lg text-green-600 text-center">
+                <FaCheckCircle className="text-3xl text-green-400 mb-1" />{" "}
+                {/* <span className="text-2xl">✅</span> */}
+                <h1 className="font-bold text-lg text-green-700 text-center">
                   Completed Tasks
                 </h1>
               </div>
-              <span className="text-3xl font-bold text-green-800">
+              <span className="text-3xl font-bold text-green-800 mt-2">
                 {workspace?.tasks?.filter((task) => task.status === "done")
                   ?.length || 0}
               </span>
             </div>
           </div>
           {/* Recent Activities */}
-          <div className="mt-8 p-5 bg-gray-100 rounded-md shadow-md">
-            <h1 className="font-semibold text-2xl text-gray-800 mb-4">
-              Recent Activities
+          <div className="mt-8 p-8 bg-gradient-to-r from-gray-100 to-blue-50 rounded-xl shadow-md flex flex-col items-center justify-center min-h-32">
+            <h1 className="font-semibold text-2xl text-gray-800 mb-4 flex items-center gap-2">
+              <FaHistory className="text-blue-400" /> Recent Activities
+              <span className="text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full font-semibold">
+                Coming Soon
+              </span>
             </h1>
-            <ul className="space-y-2 text-gray-600">
-              <li>User John updated Task A</li>
-              <li>User Jane completed Task B</li>
-              <li>Team Alpha uploaded a file</li>
-              <li>Reminder: Task C is due tomorrow</li>
-            </ul>
-          </div>
-
-          {/* AI SUmmary */}
-          <div className="max-w-96 mx-auto mt-8 p-5 bg-gray-100 rounded-md shadow-md">
-            {loading ? (
-              <div className="flex items-center justify-center mt-4">
-                <span className="loading loading-dots loading-lg"></span>
-              </div>
-            ) : (
-              aiSummary && (
-                <div className="p-4 bg-gray-100 rounded-md shadow-md mt-4">
-                  <h2 className="text-lg font-bold mb-2">Workspace Summary</h2>
-                  <MarkdownRenderer content={aiSummary} />
-                </div>
-              )
-            )}
+            <div className="flex flex-col items-center text-gray-400 italic">
+              <FaHistory className="text-4xl mb-2 text-blue-300" />
+              <span>🕒 Activity feed will be available soon.</span>
+            </div>
           </div>
         </div>
       </div>

@@ -1,14 +1,13 @@
 import React from "react";
 import { AiFillEdit, AiOutlineMore } from "react-icons/ai";
-import {
-  FaArchive,
-  FaGripHorizontal,
-  FaGripLines,
-  FaTrash,
-  FaUndo,
-} from "react-icons/fa";
-import { FaHandDots } from "react-icons/fa6";
+import { FaArchive, FaGripLines, FaTrash, FaUndo } from "react-icons/fa";
 import MarkdownRenderer from "../markdown-renderer";
+
+const statusColors = {
+  todo: "bg-blue-100 text-blue-700 border-blue-300",
+  doing: "bg-yellow-100 text-yellow-700 border-yellow-300",
+  done: "bg-green-100 text-green-700 border-green-300",
+};
 
 const TaskCard = (props) => {
   const handleStatusChange = (taskStatus) => {
@@ -34,107 +33,120 @@ const TaskCard = (props) => {
   const isArchived = props.isArchived || false;
 
   return (
-    <div className="flex flex-col border-2 rounded-lg p-2 min-w-64">
-      <div className="bg-gray-50 p-1 hover:cursor-grab active:cursor-grabbing">
-        <FaGripLines className="text-gray-400" />
+    <div
+      className="flex flex-col border border-gray-200 rounded-2xl p-4 min-w-72 shadow-sm bg-white transition-shadow hover:shadow-xl duration-200 group relative overflow-hidden"
+      style={{ minHeight: 260 }}
+    >
+      {/* Drag Handle */}
+      <div className="absolute left-3 top-3 opacity-60 group-hover:opacity-100 transition-opacity">
+        <FaGripLines className="text-gray-300" />
       </div>
-      <div className="flex flex-col gap-4 p-1 bg-white transition-transform transform">
-        {/* Dropdown Menu */}
-        <div className="relative flex justify-end">
-          <div className="dropdown">
-            <AiOutlineMore
-              size={22}
-              role="button"
-              tabIndex={0}
-              className="cursor-pointer"
-            />
-            <ul
-              tabIndex={0}
-              className="dropdown-content menu dark:bg-gray-100 bg-base-100 rounded-md w-40 p-2 shadow-lg text-left absolute right-0 mt-2"
-            >
-              {!isArchived && props.status === "todo" && (
-                <li>
-                  <button
-                    className="flex items-center gap-2 p-2 text-gray-700 hover:text-blue-500"
-                    onClick={handleEditButton}
-                  >
-                    <AiFillEdit />
-                    Edit
-                  </button>
-                </li>
-              )}
-              <li>
-                {!isArchived ? (
-                  <button
-                    className="flex items-center gap-2 p-2 text-gray-700 hover:text-blue-500"
-                    onClick={handleArchiveButton}
-                  >
-                    <FaArchive />
-                    Archive
-                  </button>
-                ) : (
-                  <button
-                    className="flex items-center gap-2 p-2 text-gray-700 hover:text-blue-500"
-                    onClick={handleUnarchiveButton}
-                  >
-                    <FaUndo />
-                    Unarchive
-                  </button>
-                )}
-              </li>
+      {/* Dropdown Menu */}
+      <div className="absolute right-3 top-3 z-10">
+        <div className="dropdown">
+          <AiOutlineMore
+            size={22}
+            role="button"
+            tabIndex={0}
+            className="cursor-pointer text-gray-400 hover:text-gray-700 transition"
+          />
+          <ul
+            tabIndex={0}
+            className="dropdown-content menu bg-white border border-gray-200 rounded-xl w-44 p-2 shadow-xl text-left absolute right-0 mt-2"
+          >
+            {!isArchived && props.status === "todo" && (
               <li>
                 <button
-                  className="flex items-center gap-2 p-2 text-red-600 hover:text-red-700"
-                  onClick={handleDeleteButton}
+                  className="flex items-center gap-2 p-2 text-gray-700 hover:text-blue-600 rounded-md hover:bg-blue-50 transition"
+                  onClick={handleEditButton}
                 >
-                  <FaTrash />
-                  Delete
+                  <AiFillEdit />
+                  Edit
                 </button>
               </li>
-            </ul>
-          </div>
+            )}
+            <li>
+              {!isArchived ? (
+                <button
+                  className="flex items-center gap-2 p-2 text-gray-700 hover:text-purple-600 rounded-md hover:bg-purple-50 transition"
+                  onClick={handleArchiveButton}
+                >
+                  <FaArchive />
+                  Archive
+                </button>
+              ) : (
+                <button
+                  className="flex items-center gap-2 p-2 text-gray-700 hover:text-green-600 rounded-md hover:bg-green-50 transition"
+                  onClick={handleUnarchiveButton}
+                >
+                  <FaUndo />
+                  Unarchive
+                </button>
+              )}
+            </li>
+            <li>
+              <button
+                className="flex items-center gap-2 p-2 text-red-600 hover:text-red-700 rounded-md hover:bg-red-50 transition"
+                onClick={handleDeleteButton}
+              >
+                <FaTrash />
+                Delete
+              </button>
+            </li>
+          </ul>
         </div>
-
-        {/* Task Details */}
-        <div className="border-b pb-2">
-          <h3 className="font-semibold text-lg text-gray-900">
-            {props.taskName}
-          </h3>
-          <p className="text-sm text-gray-600">
-            <MarkdownRenderer content={props.taskDescription} />
-            {/* {props.taskDescription} */}
-          </p>
-          <p className="text-sm">
-            <strong>Assigned to: </strong>
+      </div>
+      {/* Status Badge */}
+      {/* <div
+        className={` left-3 top-12 px-3 py-1 rounded-full border text-xs font-semibold ${
+          statusColors[props.status] ||
+          "bg-gray-100 text-gray-500 border-gray-200"
+        }`}
+      >
+        {isArchived
+          ? "Archived"
+          : props.status.charAt(0).toUpperCase() + props.status.slice(1)}
+      </div> */}
+      {/* Task Details */}
+      <div className="flex flex-col gap-3 mt-8">
+        <h3 className="font-semibold text-lg text-gray-900 truncate pr-8">
+          {props.taskName}
+        </h3>
+        <div className="text-sm text-gray-600 max-h-20 overflow-y-auto pr-2">
+          <MarkdownRenderer content={props.taskDescription} />
+        </div>
+        <div className="flex flex-wrap gap-2 text-xs text-gray-500 mt-1">
+          <span className="bg-gray-100 px-2 py-1 rounded-full">
+            <strong>Assigned:</strong>{" "}
             <span className="hover:underline cursor-pointer hover:text-blue-700">
               {props.taskAssignedTo}
             </span>
-          </p>
-          <p className="text-sm">
-            <strong>Due by: </strong>
+          </span>
+          <span className="bg-gray-100 px-2 py-1 rounded-full">
+            <strong>Due:</strong>{" "}
             <span className="text-red-500">{props.dueDate}</span>
-          </p>
-          <p className="text-sm">
-            <strong>Created: </strong>
-            <span className="">{props.createdAt}</span>
-          </p>
+          </span>
+          <span className="bg-gray-100 px-2 py-1 rounded-full">
+            <strong>Created:</strong> <span>{props.createdAt}</span>
+          </span>
         </div>
-
         {/* Days Elapsed */}
-        <div className="flex justify-between items-center text-sm">
-          {/* <div className="w-8 h-8 bg-gray-300 text-sm flex justify-center items-center rounded-full text-gray-800 font-bold"> */}
-          <div>{props.daysLeft}</div>
+        <div className="flex items-center gap-2 mt-2">
+          <span className="inline-block px-3 py-1 rounded-full bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 font-medium text-xs border border-blue-200">
+            {props.daysLeft}
+          </span>
         </div>
-
         {/* Action Buttons */}
         {!isArchived && (
-          <div className="text-sm">
-            <strong>Actions</strong>
-            <div className="flex gap-2 mt-2">
+          <div className="flex flex-col gap-1 mt-3">
+            <span className="text-xs text-gray-400 font-semibold mb-1">
+              Change Status
+            </span>
+            <div className="flex gap-2">
               {props.status !== "todo" && (
                 <button
                   onClick={() => handleStatusChange("todo")}
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md shadow hover:bg-blue-600 transition"
+                  className="px-4 py-2 text-xs font-medium text-white bg-blue-500 rounded-lg shadow hover:bg-blue-600 transition"
                 >
                   To Do
                 </button>
@@ -142,7 +154,7 @@ const TaskCard = (props) => {
               {props.status !== "doing" && (
                 <button
                   onClick={() => handleStatusChange("doing")}
-                  className="px-4 py-2 text-sm font-medium text-white bg-yellow-500 rounded-md shadow hover:bg-yellow-600 transition"
+                  className="px-4 py-2 text-xs font-medium text-white bg-yellow-500 rounded-lg shadow hover:bg-yellow-600 transition"
                 >
                   In Progress
                 </button>
@@ -150,7 +162,7 @@ const TaskCard = (props) => {
               {props.status !== "done" && (
                 <button
                   onClick={() => handleStatusChange("done")}
-                  className="px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-md shadow hover:bg-green-600 transition"
+                  className="px-4 py-2 text-xs font-medium text-white bg-green-500 rounded-lg shadow hover:bg-green-600 transition"
                 >
                   Completed
                 </button>

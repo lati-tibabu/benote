@@ -128,14 +128,14 @@ const Settings = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <div className="max-w-4xl mx-auto p-8 bg-gradient-to-br from-gray-50 to-white shadow-xl rounded-2xl">
       <ToastContainer />
-      <h2 className="text-3xl font-semibold text-gray-700 mb-6">
+      <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 mb-8">
         Workspace Settings
       </h2>
-      <form className="space-y-6">
-        <fieldset className="flex flex-col relative border-2 p-4 rounded-lg">
-          <legend className="text-lg font-medium text-gray-600 mb-2">
+      <form className="space-y-8">
+        <fieldset className="flex flex-col relative border border-gray-200 p-6 rounded-xl bg-white/90">
+          <legend className="text-lg font-semibold text-gray-600 mb-2 px-2">
             Workspace Name
           </legend>
           <input
@@ -144,14 +144,13 @@ const Settings = () => {
             onChange={(e) =>
               setUpdatedWorkspace({ ...updatedWorkspace, name: e.target.value })
             }
-            className="p-3 border rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 bg-transparent"
+            className="p-3 border rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 bg-transparent text-lg"
             placeholder="Enter workspace name"
             required
           />
         </fieldset>
-
-        <fieldset className="flex flex-col relative border-2 p-4 rounded-lg">
-          <legend className="text-lg font-medium text-gray-600 mb-2">
+        <fieldset className="flex flex-col relative border border-gray-200 p-6 rounded-xl bg-white/90">
+          <legend className="text-lg font-semibold text-gray-600 mb-2 px-2">
             Description
           </legend>
           <textarea
@@ -162,17 +161,16 @@ const Settings = () => {
                 description: e.target.value,
               })
             }
-            className="p-3 border rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 bg-transparent"
+            className="p-3 border rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 bg-transparent text-lg"
             placeholder="Enter workspace description"
             required
           />
         </fieldset>
-
-        <fieldset className="flex flex-col relative border-2 p-4 rounded-lg">
-          <legend className="text-lg font-medium text-gray-600 mb-2">
+        <fieldset className="flex flex-col relative border border-gray-200 p-6 rounded-xl bg-white/90">
+          <legend className="text-lg font-semibold text-gray-600 mb-2 px-2">
             Emoji
           </legend>
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-4">
             <input
               type="text"
               disabled
@@ -181,7 +179,7 @@ const Settings = () => {
             />
             <button
               type="button"
-              className="flex items-center gap-2 px-3 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
               onClick={() => setShowEmojiPicker(!showEmojiPicker)}
             >
               <FaRegSmile className="text-xl" />
@@ -195,7 +193,7 @@ const Settings = () => {
             />
           </div>
           {showEmojiPicker && (
-            <div className="absolute top-14 left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded-md z-50 p-2">
+            <div className="absolute top-16 left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded-xl z-50 p-4 border border-gray-200">
               <h3 className="text-center text-lg font-semibold mb-2">
                 Select an Emoji
               </h3>
@@ -203,9 +201,8 @@ const Settings = () => {
             </div>
           )}
         </fieldset>
-
-        <fieldset className="flex flex-col relative border-2 p-4 rounded-lg">
-          <legend className="text-lg font-medium text-gray-600 mb-2">
+        <fieldset className="flex flex-col relative border border-gray-200 p-6 rounded-xl bg-white/90">
+          <legend className="text-lg font-semibold text-gray-600 mb-2 px-2">
             Privacy Settings
           </legend>
           <select
@@ -216,36 +213,23 @@ const Settings = () => {
                 privacy: e.target.value,
               })
             }
-            className="p-3 border rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 bg-transparent"
+            className="p-3 border rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 bg-transparent text-lg"
           >
             <option value="Private">Private</option>
             <option value="Team-based">Team-based</option>
           </select>
         </fieldset>
-
-        <div className="flex flex-col sm:flex-row mt-6 gap-2">
+        <div className="flex flex-col sm:flex-row mt-8 gap-4">
           <button
             type="button"
             onClick={handleSave}
-            className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+            className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full shadow-md transition text-lg"
           >
             Save Settings
           </button>
           <button
             type="button"
-            onClick={() =>
-              handleMigrate(
-                workspace?.privacy === "Private" ? "Team-based" : "Private"
-              )
-            }
-            className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
-          >
-            Migrate to{" "}
-            {workspace?.privacy === "Private" ? "Team-based" : "Private"}
-          </button>
-          <button
-            type="button"
-            className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+            className="px-8 py-3 bg-red-600 text-white font-semibold rounded-full hover:bg-red-700 shadow-md transition text-lg"
             onClick={handleDelete}
           >
             Delete Workspace

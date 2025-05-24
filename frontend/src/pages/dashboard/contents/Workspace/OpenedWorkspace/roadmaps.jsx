@@ -54,28 +54,27 @@ const Roadmaps = () => {
   };
 
   return (
-    <div>
+    <div className="bg-gradient-to-br from-gray-50 to-white min-h-screen p-4">
       <ToastContainer />
-
-      <div className="flex flex-row items-center justify-between border-b-1 pb-2">
-        <h1 className="font-bold text-2xl">Roadmaps</h1>
-
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-3">
-            {useGemini && (
-              <div
-                className="btn transition-all duration-300 shadow-md bg-gray-100 hover:bg-gray-100 text-gray-700 border-white btn-soft rounded-full"
-                onClick={() =>
-                  document.getElementById("ai-gen-roadmap-form").showModal()
-                }
-              >
-                <GeminiIcon size={20} />
-                Generate Roadmaps
-              </div>
-            )}
-          </div>
+      {/* Header */}
+      <div className="flex flex-row items-center justify-between border-b border-gray-200 pb-4 mb-6 bg-white/80 rounded-2xl shadow-sm px-4">
+        <h1 className="font-extrabold text-2xl tracking-tight text-gray-900">
+          Roadmaps
+        </h1>
+        <div className="flex items-center gap-3">
+          {useGemini && (
+            <div
+              className="btn transition-all duration-300 shadow-md bg-gradient-to-tr from-pink-100 to-blue-100 hover:from-pink-200 hover:to-blue-200 text-gray-700 border-white btn-soft rounded-full flex items-center gap-2 px-4 py-2"
+              onClick={() =>
+                document.getElementById("ai-gen-roadmap-form").showModal()
+              }
+            >
+              <GeminiIcon size={20} />
+              <span className="font-semibold">Generate Roadmaps</span>
+            </div>
+          )}
           <button
-            className="btn btn-soft rounded-full"
+            className="btn bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full px-4 py-2 shadow-md transition flex items-center gap-2"
             onClick={() =>
               document.getElementById("new-roadmap-form").showModal()
             }
@@ -84,30 +83,35 @@ const Roadmaps = () => {
           </button>
         </div>
       </div>
-
-      <div>
-        <ul className="flex flex-col gap-2">
+      {/* Roadmaps List */}
+      <div className="mt-4">
+        <ul className="flex flex-col gap-3">
           {roadmaps?.map((roadmap, index) => (
             <li
-              className="p-3 flex items-center gap-3 cursor-pointer shadow rounded-md hover:bg-blue-50"
+              className="p-4 flex items-center gap-4 cursor-pointer bg-white/90 shadow-md rounded-2xl hover:bg-blue-50 transition border border-gray-200 group"
               key={roadmap.id}
               onClick={() => handleOpenRoadmap(roadmap.id)}
             >
-              <FaMap />
+              <FaMap className="text-blue-500 text-xl" />
               <div className="flex items-center justify-between w-full">
-                <p>{index + 1 + " " + roadmap.title}</p>
+                <span className="font-semibold text-gray-800 group-hover:text-blue-700 transition truncate max-w-[320px]">
+                  {index + 1}. {roadmap.title}
+                </span>
                 <div>
-                  <AiOutlineMore size={25} />
+                  <AiOutlineMore
+                    size={22}
+                    className="text-gray-400 group-hover:text-blue-600 transition"
+                  />
                 </div>
               </div>
             </li>
           ))}
         </ul>
       </div>
+      {/* AI Roadmap Modal */}
       <dialog id="ai-gen-roadmap-form" className="modal overflow-x-scroll">
         <div className="modal-box bg-white p-4 rounded-md shadow-md sm:w-fit lg:w-1/2 mx-auto mt-10">
           <form method="dialog">
-            {/* if there is a button in form, it will close the modal */}
             <button
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
               onClick={() => setRefreshList(!refreshList)}
@@ -118,10 +122,10 @@ const Roadmaps = () => {
           <AIGeneratedRoadmap />
         </div>
       </dialog>
+      {/* Add New Roadmap Modal */}
       <dialog id="new-roadmap-form" className="modal overflow-x-scroll">
         <div className="modal-box bg-white p-4 rounded-md shadow-md sm:w-fit lg:w-1/2 mx-auto mt-10">
           <form method="dialog">
-            {/* if there is a button in form, it will close the modal */}
             <button
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
               onClick={() => setRefreshList(!refreshList)}

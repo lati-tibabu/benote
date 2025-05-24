@@ -226,27 +226,25 @@ const TodoLists = () => {
     totalTodos > 0 ? Math.ceil((completedTodos / totalTodos) * 100) : 0;
 
   return (
-    <div className="">
+    <div className="bg-gradient-to-br from-gray-50 to-white min-h-screen p-4">
       <ToastContainer />
       {/* top-section : for quick managements like adding to do list*/}
-      <div className="flex gap-4 justify-between  items-center p-2 border-b-2">
-        <h1 className="font-bold text-lg">TO-DO List</h1>
+      <div className="flex gap-4 justify-between items-center p-4 border-b border-gray-200 mb-6 bg-white/80 rounded-2xl shadow-sm">
+        <h1 className="font-extrabold text-2xl tracking-tight text-gray-900">
+          To-Do Lists
+        </h1>
         <div className="flex items-center gap-3">
           {useGemini && (
             <div
-              // className="btn bg-gradient-to-tr from-pink-500 transition-all duration-300 to-blue-600 text-white border-white hover:border-pink-500 btn-soft rounded-full"
-              className="btn transition-all duration-300 shadow-md bg-gray-100 hover:bg-gray-100 text-gray-700 border-white btn-soft rounded-full"
-              // onClick={() => alert("hey developer, you wanna add a todo list")}
+              className="btn transition-all duration-300 shadow-md bg-gradient-to-tr from-pink-100 to-blue-100 hover:from-pink-200 hover:to-blue-200 text-gray-700 border-white btn-soft rounded-full flex items-center gap-2 px-4 py-2"
               onClick={() => document.getElementById("ai_gen_todo").showModal()}
             >
-              {/* <FaBolt /> */}
               <GeminiIcon size={20} />
-              Generate Todo
+              <span className="font-semibold">Generate Todo</span>
             </div>
           )}
           <div
-            className="btn btn-soft rounded-full"
-            // onClick={() => alert("hey developer, you wanna add a todo list")}
+            className="btn bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full px-4 py-2 shadow-md transition flex items-center gap-2"
             onClick={() => document.getElementById("my_modal_3").showModal()}
           >
             <FaPlus />
@@ -254,27 +252,19 @@ const TodoLists = () => {
           </div>
         </div>
       </div>
-
-      {/* <div>Opened todo list {openedTodoList.id}</div> */}
       {/* bottom-section where viewing and real businesses takes place*/}
-      <div className="overflow-scroll scrollbar-hide">
-        <div className="flex p-1 gap-3 w-fit sm:w-full ">
+      <div className="overflow-x-auto scrollbar-hide pt-4">
+        <div className="flex gap-6 w-fit sm:w-full">
           {/* selecting area */}
-          {/* <div className="flex flex-col max-h-screen w-80 overflow-y-scroll border rounded-md scrollbar-hide gap-1 p-3"> */}
-          <div className="flex flex-col gap-2 p-1 border-2 border-gray-100 rounded-2xl">
-            {/* <div className="border-2">
-              <input
-                type="text"
-                className="bg-transparent border-none outline-none ring-0 "
-              />
-            </div> */}
+          <div className="flex flex-col gap-2 p-3 bg-white/80 border border-gray-200 rounded-2xl shadow-md min-w-[300px] max-h-[80vh] overflow-y-auto">
             {todoList.length > 0 ? (
               todoList.map((item, index) => (
                 <TodoMinimizedCard
-                  className={`hover:bg-gray-200 hover:cursor-pointer w-72 ${
-                    openedTodoList.id === item.id && "border-blue-500"
+                  className={`hover:bg-blue-50 hover:cursor-pointer w-64 rounded-xl border transition shadow-sm ${
+                    openedTodoList.id === item.id
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 bg-white"
                   }`}
-                  // onClick={() => alert(`card number ${index} clicked`)}
                   title={item.title}
                   createdAt={item.createdAt}
                   deleteTodoList={() => handleTodoListDelete(item.id)}
@@ -284,24 +274,24 @@ const TodoLists = () => {
                 />
               ))
             ) : (
-              <span>No todo list</span>
+              <span className="text-gray-400 text-center py-8">No todo list</span>
             )}
           </div>
           {/* viewing area */}
-          <div className="w-80 sm:w-full">
+          <div className="flex-1 min-w-[320px] max-w-2xl">
             {/* todo progress */}
             {Object.keys(openedTodoList).length > 0 && (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 mb-4">
                 <progress
-                  className="progress progress-success transition"
+                  className="progress progress-success transition w-48 h-3 rounded-full"
                   value={progress}
                   max="100"
                 ></progress>
-                <div className="flex items-center w-fit font-bold">
+                <div className="flex items-center w-fit font-bold text-gray-700">
                   <span className="flex">
                     <p>{progress}</p> %
                   </span>
-                  <p className="ml-1">completed</p>
+                  <p className="ml-1 text-sm font-medium">completed</p>
                 </div>
               </div>
             )}
@@ -317,12 +307,10 @@ const TodoLists = () => {
           </div>
         </div>
       </div>
-
       {/* modal for adding new todo list */}
       <dialog id="my_modal_3" className="modal overflow-x-scroll">
         <div className="modal-box bg-white p-4 rounded-md shadow-md sm:w-fit lg:w-1/2 mx-auto mt-10">
           <form method="dialog">
-            {/* if there is a button in form, it will close the modal */}
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
@@ -334,7 +322,6 @@ const TodoLists = () => {
       <dialog id="ai_gen_todo" className="modal overflow-x-scroll">
         <div className="modal-box bg-white p-4 rounded-md shadow-md sm:w-fit lg:w-1/2 mx-auto mt-10">
           <form method="dialog">
-            {/* if there is a button in form, it will close the modal */}
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
