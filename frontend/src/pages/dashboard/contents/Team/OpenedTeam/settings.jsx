@@ -119,21 +119,21 @@ const TeamSettings = () => {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto bg-white shadow-md rounded-md">
+    <div className="p-6 max-w-4xl mx-auto bg-gray-50 shadow-lg rounded-lg">
       <ToastContainer />
-      <h2 className="text-2xl font-semibold mb-4">Team Settings</h2>
+      <h2 className="text-3xl font-bold mb-6 text-gray-800">Team Settings</h2>
 
-      <div className="mb-4">
-        <label className="block text-lg font-medium">Team Name:</label>
+      <div className="mb-6">
+        <label className="block text-lg font-medium text-gray-700">Team Name:</label>
         <input
           type="text"
-          className="w-full px-3 py-2 border rounded-md focus:ring focus:ring-blue-200 mt-2 bg-transparent text-black"
+          className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300 mt-2 bg-white text-gray-800 shadow-sm"
           placeholder="Team name..."
           value={teamName}
           onChange={(e) => setTeamName(e.target.value)}
         />
         <button
-          className={`mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition ${
+          className={`mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all shadow-md ${
             loading ? "opacity-50 cursor-not-allowed" : ""
           }`}
           onClick={updateTeamName}
@@ -143,41 +143,41 @@ const TeamSettings = () => {
         </button>
       </div>
 
-      <h3 className="text-xl font-semibold mt-6 mb-3">Team Members</h3>
+      <h3 className="text-2xl font-semibold mt-8 mb-4 text-gray-800">Team Members</h3>
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse border border-gray-200">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border p-2">Name</th>
-              <th className="border p-2">Email</th>
-              <th className="border p-2">Role</th>
-              <th className="border p-2">Actions</th>
+        <table className="w-full border-collapse border border-gray-300 rounded-lg shadow-sm">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="border p-3 text-left text-gray-700">Name</th>
+              <th className="border p-3 text-left text-gray-700">Email</th>
+              <th className="border p-3 text-left text-gray-700">Role</th>
+              <th className="border p-3 text-left text-gray-700">Actions</th>
             </tr>
           </thead>
           <tbody>
             {team?.members?.map((member) => (
-              <tr key={member.id} className="border">
-                <td className="border p-2">{member.name}</td>
-                <td className="border p-2">{member.email}</td>
-                <td className="border p-2 capitalize">{member.role}</td>
-                <td className="border p-2 space-x-2">
+              <tr key={member.id} className="border hover:bg-gray-50 transition">
+                <td className="border p-3 text-gray-800">{member.name}</td>
+                <td className="border p-3 text-gray-800">{member.email}</td>
+                <td className="border p-3 capitalize text-gray-800">{member.role}</td>
+                <td className="border p-3 space-x-2">
                   {member.role === "admin" ? (
                     <button
-                      className="px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
+                      className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 shadow-md"
                       onClick={() => handleMemberAction(member.id, "demote")}
                     >
                       Demote
                     </button>
                   ) : (
                     <button
-                      className="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600"
+                      className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 shadow-md"
                       onClick={() => handleMemberAction(member.id, "promote")}
                     >
                       Promote
                     </button>
                   )}
                   <button
-                    className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700"
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 shadow-md"
                     onClick={() => handleMemberAction(member.id, "remove")}
                   >
                     Remove
@@ -189,12 +189,17 @@ const TeamSettings = () => {
         </table>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-8 flex justify-between items-center">
         <button
-          className="px-4 py-2 bg-red-700 text-white rounded-md hover:bg-red-800"
+          className="px-6 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 shadow-md"
           onClick={deleteTeam}
         >
           Delete Team
+        </button>
+        <button
+          className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 shadow-md"
+        >
+          Leave Team
         </button>
       </div>
     </div>

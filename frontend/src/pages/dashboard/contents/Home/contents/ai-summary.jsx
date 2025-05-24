@@ -13,7 +13,7 @@ const AiSummary = () => {
 
   const [userActivityData, setUserActivityData] = useState(null);
   const [processing, setProcessing] = useState(false);
-  // const [aiResponse, setAiResponse] = useState(null);
+  const useGemini = localStorage.getItem("useGemini") === "true" ? true : false;
 
   const [genAI, setGenAI] = useState(null);
 
@@ -146,16 +146,18 @@ const AiSummary = () => {
   };
 
   return (
-    <div className="bg-white shadow-sm p-6 mb-4 h-screen max-w-96 overflow-auto z-20">
+    <div className="bg-white shadow-sm p-6 mb-4 h-screen w-full overflow-auto z-20 scrollbar-hide border-2 rounded ">
       <div className="flex items-center justify-between mb-5">
         <div className="text-xl font-semibold flex items-center">
-          <AiOutlineInfoCircle className="mr-2 text-blue-500" />
+          {/* <AiOutlineInfoCircle className="mr-2 text-blue-500" /> */}
           <p>AI Summary</p>
         </div>
-        <button className="btn btn-sm" onClick={handleLoadUserActivityData}>
-          <FaGears />
-          Generate Summary
-        </button>
+        {useGemini && (
+          <button className="btn btn-sm" onClick={handleLoadUserActivityData}>
+            <FaGears />
+            Generate Summary
+          </button>
+        )}
       </div>
 
       {processing && <span className="loading loading-dots loading-lg"></span>}

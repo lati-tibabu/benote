@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
@@ -29,6 +29,7 @@ const StudyPlanOpened = () => {
   const [openPlanDetails, setOpenPlanDetails] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState(null);
   const userData = useSelector((state) => state.auth.user) || {};
+  const tableRef = useRef(null);
 
   const fetchStudyPlan = async (id) => {
     try {
@@ -51,11 +52,26 @@ const StudyPlanOpened = () => {
     fetchStudyPlan(plan_id);
   }, [plan_id]);
 
+  useEffect(() => {
+    if (tableRef.current) {
+      const rowToScroll = tableRef.current.querySelector("tr:nth-child(7)");
+      if (rowToScroll) {
+        rowToScroll.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, [plan]);
+
   const start = new Date(plan?.start_date).getTime();
   const end = new Date(plan?.end_date).getTime();
 
   const duration = end - start;
   const days = duration / 86400000;
+
+  const formatTime = (hour) => {
+    const period = hour >= 12 ? "PM" : "AM";
+    const formattedHour = hour % 12 || 12;
+    return `${formattedHour}:00 ${period}`;
+  };
 
   const handlePlanAdd = async (e) => {
     e.preventDefault();
@@ -154,14 +170,17 @@ const StudyPlanOpened = () => {
         </div>
 
         <div>
-          <div className="overflow-x-auto max-h-96 scrollbar-hide">
+          <div
+            className="overflow-x-auto max-h-96 scrollbar-hide"
+            ref={tableRef}
+          >
             <table className="table border-0 ">
               {/* calendar table head */}
               <thead className="sticky top-0 z-10 bg-purple-50">
                 <tr className="text-black">
                   <th></th>
                   {[...Array(days)].map((_, index) => (
-                    <th className="sticky left-0 z-10 bg-purple-50">
+                    <th key={index} className="sticky left-0 z-10 bg-purple-50">
                       <div className="flex flex-col">
                         <span className="font-bold text-lg ">
                           {new Date(
@@ -190,7 +209,7 @@ const StudyPlanOpened = () => {
                 {[...Array(24)].map((_, i) => (
                   <tr key={i} className="border-0">
                     <td className="p-2 text-center font-medium bg-gray-100 sticky left-0 z-5">
-                      {i}:00
+                      {formatTime(i)}
                     </td>
 
                     {[...Array(days)].map((_, index) => {

@@ -127,7 +127,7 @@ const StudyPlans = () => {
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">Study Plans</h2>
       <button
-        className="btn btn-soft rounded-full mb-4"
+        className="btn btn-primary rounded-full mb-4"
         onClick={() => setIsOpen(true)}
       >
         + New Study Plan
@@ -174,54 +174,92 @@ const StudyPlans = () => {
         )}
       </div>
       {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+        <div className="modal modal-open">
+          <div className="modal-box bg-white text-gray-800">
             <h3 className="text-xl font-bold mb-4">Create Study Plan</h3>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <input
-                type="text"
-                name="title"
-                placeholder="Title"
-                value={formData.title}
-                onChange={handleChange}
-                className="input input-bordered w-full bg-white"
-                required
-              />
-              <input
-                type="text"
-                name="description"
-                placeholder="Description"
-                value={formData.description}
-                onChange={handleChange}
-                className="input input-bordered w-full bg-white"
-                required
-              />
-              <input
-                type="date"
-                name="start_date"
-                value={formData.start_date}
-                onChange={handleChange}
-                className="input input-bordered w-full bg-white"
-                required
-              />
-              <input
-                type="date"
-                name="end_date"
-                value={formData.end_date}
-                onChange={handleChange}
-                className="input input-bordered w-full bg-white"
-                required
-              />
+              <div>
+                <label
+                  htmlFor="title"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Title
+                </label>
+                <input
+                  id="title"
+                  type="text"
+                  name="title"
+                  placeholder="Title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  className="input input-bordered w-full bg-gray-100"
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  placeholder="Description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  className="textarea textarea-bordered w-full bg-gray-100"
+                  required
+                ></textarea>
+              </div>
+              <div>
+                <label
+                  htmlFor="start_date"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Start Date
+                </label>
+                <input
+                  id="start_date"
+                  type="date"
+                  name="start_date"
+                  value={formData.start_date}
+                  onChange={handleChange}
+                  className="input input-bordered w-full bg-gray-100"
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="end_date"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  End Date
+                </label>
+                <input
+                  id="end_date"
+                  type="date"
+                  name="end_date"
+                  value={formData.end_date}
+                  onChange={handleChange}
+                  className="input input-bordered w-full bg-gray-100"
+                  required
+                />
+              </div>
               {errorMsg && <p className="text-red-500 text-sm">{errorMsg}</p>}
-              <div className="flex justify-end space-x-2">
+              <div className="modal-action">
                 <button
                   type="button"
-                  className="btn btn-ghost"
+                  className="btn btn-ghost text-gray-700"
                   onClick={() => setIsOpen(false)}
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary">
+                <button
+                  type="submit"
+                  className="btn btn-primary bg-blue-500 text-white"
+                >
                   Save
                 </button>
               </div>

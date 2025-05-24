@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import AddNew from "./add_new";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaTh, FaList, FaSearch } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { setWorkspaceList } from "../../../../redux/slices/workspaceSlice";
 
@@ -12,140 +12,184 @@ function Workspace() {
     authorization: `Bearer ${token}`,
   };
 
-  // const [workspaces, setWorkspaces] = useState([]);
   const workspaces =
     useSelector((state) => state.workspace.workspaceList) || [];
 
   const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch();
+  const [viewMode, setViewMode] = useState("grid");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterType, setFilterType] = useState(""); // separate filter state
 
-  const getWorkspace = async () => {
-    !workspaces.length && setLoading(true);
-    try {
-      const response = await fetch(`${apiURL}/api/workspaces`, {
-        method: "GET",
-        headers: header,
-      });
-      const data = await response.json();
-      dispatch(setWorkspaceList(data));
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-      setLoading(false); // Handle loading state even in error
-    }
-  };
+  const dispatch = useDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const updateWorkspace = location?.state?.workspaceUpdate || false;
 
   useEffect(() => {
+    const getWorkspace = async () => {
+      if (!workspaces.length) setLoading(true);
+      try {
+        const response = await fetch(`${apiURL}/api/workspaces`, {
+          method: "GET",
+          headers: header,
+        });
+        const data = await response.json();
+        dispatch(setWorkspaceList(data));
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     getWorkspace();
   }, [updateWorkspace, location]);
 
-  const navigate = useNavigate();
-
-  const handleWorkspaceOpen = (workspaceId) => () => {
-    navigate(`/app/workspace/open/${workspaceId}`);
+  const handleWorkspaceOpen = (id) => () => {
+    navigate(`/app/workspace/open/${id}`);
   };
 
+  const toggleViewMode = () => {
+    setViewMode((prev) => (prev === "grid" ? "list" : "grid"));
+  };
+
+  const filteredWorkspaces = workspaces.filter((workspace) => {
+    const nameMatch = workspace.workspace.name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const typeMatch =
+      !filterType ||
+      (filterType === "team" && workspace.workspace.belongs_to_team) ||
+      (filterType === "private" && !workspace.workspace.belongs_to_team);
+    return nameMatch && typeMatch;
+  });
+
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col px-6 py-8 bg-gray-50">
       {location.pathname === "/app/workspace" ? (
-        <div>
-          {workspaces.length > 0 && !loading && (
+        <>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
             <button
-              // className="p-1 font-bold hover:underline hover:text-blue-700 flex items-center gap-1"
-              className="btn btn-soft rounded-full mb-2"
+              className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-all"
               onClick={() => document.getElementById("my_modal_3").showModal()}
             >
-              + Create New
+              <FaPlus /> Create New
             </button>
-          )}
 
-          <ul className="flex flex-row flex-wrap gap-4 items-stretch">
-            {loading ? (
-              Array.from({ length: 3 }).map((_, index) => (
-                <li key={index} className="w-60">
-                  <div className="animate-pulse flex flex-col items-center justify-center gap-3">
-                    <div className="h-24 w-24 bg-gray-300 rounded-full"></div>
-                    <div className="h-6 w-3/4 bg-gray-300 rounded"></div>
-                    <div className="h-4 w-1/2 bg-gray-300 rounded"></div>
-                  </div>
-                </li>
-              ))
-            ) : workspaces.length > 0 ? (
-              workspaces.map((workspace) => (
-                <li
-                  key={workspace.workspace.id}
-                  className="grow max-w-80 h-full"
-                  onClick={handleWorkspaceOpen(workspace.workspace.id)}
-                >
+            <div className="flex items-center gap-6 flex-wrap w-full md:w-auto">
+              <div className="relative w-full md:w-64">
+                <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search Workspaces..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white"
+                />
+              </div>
+
+              <select
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                className="px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white"
+              >
+                <option value="">All</option>
+                <option value="team">Team</option>
+                <option value="private">Private</option>
+              </select>
+
+              <button
+                className="flex items-center gap-2 px-6 py-3 border rounded-lg shadow-md hover:bg-gray-100 transition-all"
+                onClick={toggleViewMode}
+              >
+                {viewMode === "grid" ? <FaList /> : <FaTh />}
+                {viewMode === "grid" ? "List View" : "Grid View"}
+              </button>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+              {[...Array(3)].map((_, idx) => (
+                <div key={idx} className="h-32 bg-gray-200 rounded-lg"></div>
+              ))}
+            </div>
+          ) : filteredWorkspaces.length > 0 ? (
+            viewMode === "grid" ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredWorkspaces.map((workspace) => (
                   <div
-                    title={workspace.workspace.description}
-                    // className="relative flex flex-col gap-2 items-center cursor-pointer border-1 border-black p-3 rounded-box hover:bg-gray-50 hover:border-r-4 hover:border-b-4 overflow-hidden transition-all duration-200"
-                    className="relative flex gap-2 items-start cursor-default border-2 border-gray-200 p-3 rounded-box hover:bg-blue-50 hover:border-blue-500 hover:cursor-pointer overflow-hidden shadow h-full"
+                    key={workspace.workspace.id}
+                    className="p-6 bg-white shadow-lg rounded-lg cursor-pointer hover:shadow-xl transition-all"
+                    onClick={handleWorkspaceOpen(workspace.workspace.id)}
                   >
-                    {/* Blurred Emoji Background */}
-                    <div
-                      className="absolute inset-0 filter blur-lg bg-cover bg-no-repeat bg-center opacity-30"
-                      style={{
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 50 50'%3E%3Ctext x='0' y='40' font-size='50'%3E${encodeURIComponent(
-                          workspace.workspace.emoji
-                        )}%3C/text%3E%3C/svg%3E")`,
-                      }}
-                    ></div>
-
-                    {/* Foreground Content */}
-                    <div className="relative z-10">
-                      <div className="text-3xl text-center m-5">
-                        {workspace.workspace.emoji}
-                      </div>
-                      <div className="border-t-1 border-black pl-3">
-                        <div>{workspace.workspace.name}</div>
-                        <div>{workspace.role}</div>
-                        <div className="font-bold text-sm">
-                          {new Date(
-                            workspace.workspace.createdAt
-                          ).toUTCString()}
-                        </div>
-                        <div>
-                          {workspace.workspace.belongs_to_team ? (
-                            <div className="flex items-center gap-1">
-                              <div className="bg-blue-600 text-white px-1 w-fit text-xs">
-                                Team
-                              </div>
-                              <div className="text-xs hover:underline hover:text-blue-700">
-                                {workspace.workspace.team.name}
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="bg-green-600 text-white px-1 w-fit text-xs">
-                              Private
-                            </div>
-                          )}
-                        </div>
+                    <div className="flex items-center gap-4">
+                      <span className="text-4xl">{workspace.workspace.emoji}</span>
+                      <div>
+                        <h3 className="text-xl font-semibold text-gray-800">
+                          {workspace.workspace.name}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {workspace.workspace.belongs_to_team
+                            ? "Team"
+                            : "Private"} Workspace
+                        </p>
                       </div>
                     </div>
+                    <div className="mt-4 text-sm text-gray-500">
+                      Role: {workspace.role}
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      Created:{" "}
+                      {new Date(
+                        workspace.workspace.createdAt
+                      ).toLocaleDateString()}
+                    </div>
                   </div>
-                </li>
-              ))
-            ) : (
-              <div className="flex flex-col items-center justify-center w-full h-96">
-                <h1 className="text-2xl text-gray-500">No Workspaces Found</h1>
-                <button
-                  className="p-1 font-bold hover:underline hover:text-blue-700 flex items-center gap-1"
-                  onClick={() =>
-                    document.getElementById("my_modal_3").showModal()
-                  }
-                >
-                  + Create New
-                </button>
+                ))}
               </div>
-            )}
-          </ul>
+            ) : (
+              <table className="table-auto w-full border border-gray-300 rounded-lg shadow-md">
+                <thead className="bg-gray-100 text-left">
+                  <tr>
+                    <th className="px-6 py-3 border">Workspace</th>
+                    <th className="px-6 py-3 border">Role</th>
+                    <th className="px-6 py-3 border">Type</th>
+                    <th className="px-6 py-3 border">Created</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredWorkspaces.map((workspace) => (
+                    <tr
+                      key={workspace.workspace.id}
+                      onClick={handleWorkspaceOpen(workspace.workspace.id)}
+                      className="hover:bg-gray-50 cursor-pointer"
+                    >
+                      <td className="px-6 py-3 border flex items-center gap-3">
+                        <span className="text-2xl">{workspace.workspace.emoji}</span>
+                        {workspace.workspace.name}
+                      </td>
+                      <td className="px-6 py-3 border">{workspace.role}</td>
+                      <td className="px-6 py-3 border">
+                        {workspace.workspace.belongs_to_team ? "Team" : "Private"}
+                      </td>
+                      <td className="px-6 py-3 border">
+                        {new Date(workspace.workspace.createdAt).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )
+          ) : (
+            <div className="text-center text-gray-500 py-10">
+              No workspaces match your criteria.
+            </div>
+          )}
 
-          <dialog id="my_modal_3" className="modal overflow-x-scroll">
-            <div className="modal-box bg-white p-4 rounded-md shadow-md sm:w-fit lg:w-1/2 mx-auto mt-10 scrollbar-hide">
+          <dialog id="my_modal_3" className="modal">
+            <div className="modal-box bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl overflow-y-auto max-h-[90vh]">
               <form method="dialog">
                 <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
                   ✕
@@ -154,7 +198,7 @@ function Workspace() {
               <AddNew />
             </div>
           </dialog>
-        </div>
+        </>
       ) : (
         <div className="h-full">
           <Outlet />

@@ -1,7 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams, Outlet } from "react-router-dom";
 import { setWorkspace } from "../../../../redux/slices/workspaceSlice";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { toast } from "react-toastify";
+import MarkdownRenderer from "../../../../components/markdown-renderer";
 
 const WorkspaceOpened = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -15,8 +18,15 @@ const WorkspaceOpened = () => {
   const { workspaceId } = useParams();
   const navigate = useNavigate();
 
-  // Get workspace from Redux store
   const workspace = useSelector((state) => state.workspace.workspace);
+
+  const [userActivityData, setUserActivityData] = useState(null);
+  const [aiSummary, setAiSummary] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const apiKey = localStorage.getItem("geminiApiKey");
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   const getWorkspaceDetails = async (id) => {
     try {
@@ -33,6 +43,57 @@ const WorkspaceOpened = () => {
     }
   };
 
+  const handleLoadUserActivityData = async () => {
+    try {
+      const response = await fetch(
+        `${apiURL}/api/workspaces/data?workspaceId=${workspaceId}`,
+        {
+          headers: header,
+        }
+      );
+      if (!response.ok) throw new Error("Network response was not ok");
+      const data = await response.json();
+      setUserActivityData(data);
+      console.log("Workspace data: ", data);
+    } catch (error) {
+      console.error("Error loading user data:", error);
+    }
+  };
+
+  const generateWorkspaceSummary = async (activityData) => {
+    setLoading(true);
+    try {
+      const chatSession = model.startChat({
+        generationConfig: {
+          temperature: 0.3,
+          topP: 0.95,
+          topK: 40,
+          maxOutputTokens: 8192,
+        },
+        history: [
+          {
+            role: "user",
+            parts: [
+              {
+                text: JSON.stringify(activityData),
+              },
+            ],
+          },
+        ],
+      });
+
+      const result = await chatSession.sendMessage(
+        "Generate a workspace summary."
+      );
+      setAiSummary(result.response.text());
+    } catch (error) {
+      console.error("Error generating AI summary:", error);
+      toast.error("Failed to generate workspace summary.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (workspaceId) getWorkspaceDetails(workspaceId);
   }, [workspaceId]);
@@ -41,30 +102,19 @@ const WorkspaceOpened = () => {
     if (workspace?.id) {
       navigate("overview");
     }
-    // console.log(workspace);
   }, [workspace]);
 
-  // const handleWorkspaceDelete = async () => {
-  //   if (!window.confirm("Are you sure you want to delete this workspace?"))
-  //     return;
-
-  //   try {
-  //     const response = await fetch(`${apiURL}/api/workspaces/${workspace.id}`, {
-  //       method: "DELETE",
-  //       headers: header,
-  //     });
-  //     if (!response.ok) throw new Error("Failed to delete");
-
-  //     alert("Workspace deleted");
-  //     navigate("/app/workspace", { state: { workspaceUpdate: true } });
-  //   } catch (error) {
-  //     console.error("Error deleting workspace:", error);
-  //     alert("Failed to delete workspace");
+  // useEffect(() => {
+  //   if (workspaceId) {
+  //     handleLoadUserActivityData();
   //   }
-  // };
+  // }, [workspaceId]);
 
-  // const handleNavigation = (link) => () =>
-  //   navigate(link, { state: { workspace } });
+  // useEffect(() => {
+  //   if (userActivityData) {
+  //     generateWorkspaceSummary(userActivityData);
+  //   }
+  // }, [userActivityData]);
 
   return (
     <div className="h-full flex flex-col justify-between rounded-md shadow-sm">
@@ -72,6 +122,18 @@ const WorkspaceOpened = () => {
         <div className="grow w-full">
           <Outlet />
         </div>
+        {/* {loading ? (
+          <div className="flex items-center justify-center mt-4">
+            <span className="loading loading-dots loading-lg"></span>
+          </div>
+        ) : (
+          aiSummary && (
+            <div className="p-4 bg-gray-100 rounded-md shadow-md mt-4">
+              <h2 className="text-lg font-bold mb-2">Workspace Summary</h2>
+              <MarkdownRenderer content={aiSummary} />
+            </div>
+          )
+        )} */}
       </div>
     </div>
   );

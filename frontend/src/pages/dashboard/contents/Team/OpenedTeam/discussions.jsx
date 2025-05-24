@@ -218,10 +218,10 @@ const Discussions = () => {
 
   const DiscussionThread = ({ discussion }) => {
     return (
-      <div className="ml-6 pl-2 mt-3 min-w-80 bg-white hover:bg-gray-50 p-4 rounded-xl shadow-sm border border-gray-200">
+      <div className="ml-6 pl-2 mt-3 bg-white hover:bg-gray-50 p-4 rounded-lg shadow-md border border-gray-200 transition-all">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-orange-600 flex items-center justify-center rounded-full text-white font-semibold text-lg">
+            <div className="w-10 h-10 bg-blue-500 flex items-center justify-center rounded-full text-white font-semibold text-lg">
               {discussion["user.name"][0]}
             </div>
             <div className="font-semibold text-gray-800 text-sm">
@@ -245,7 +245,7 @@ const Discussions = () => {
           </div>
           <div className="flex items-center mt-3 gap-3">
             <button
-              className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition"
+              className="flex items-center gap-2 text-sm text-blue-500 hover:text-blue-700 transition"
               onClick={() => {
                 setReplyData({
                   replying: true,
@@ -254,7 +254,7 @@ const Discussions = () => {
                 });
               }}
             >
-              <FaReply className="text-gray-500" />
+              <FaReply className="text-blue-400" />
               Reply{" "}
               {discussion.replies?.length > 0 &&
                 `(${discussion.replies.length})`}
@@ -304,10 +304,16 @@ const Discussions = () => {
     }
     // console.log(discussionData);
   };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setDiscussionData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
   return (
-    <div>
+    <div className="p-6 bg-gray-50 min-h-screen">
       <ToastContainer />
-      <div className="text-sm font-bold">
+      <div className="text-sm font-bold mb-4">
         {isConnected ? (
           <span className="text-green-600 flex items-center gap-2">
             Connected <AiOutlineWifi />
@@ -320,60 +326,57 @@ const Discussions = () => {
         )}
       </div>
 
-      <div className="rounded-lg p-2">
-        <div className="flex flex-col h-96 max-w-4xl mx-auto overflow-auto gap-2 shadow rounded-lg p-2 scrollbar-hide">
+      <div className="rounded-lg p-4 bg-white shadow-md">
+        <div className="flex flex-col h-96 max-w-4xl mx-auto overflow-auto gap-4 scrollbar-hide">
           {discussions ? (
-            discussions?.map((discussion) => (
-              <DiscussionThread discussion={discussion} />
+            discussions.map((discussion) => (
+              <DiscussionThread key={discussion.id} discussion={discussion} />
             ))
           ) : (
-            <span className="loading loading-spinner"></span>
+            <div className="flex justify-center items-center h-full">
+              <span className="loading loading-spinner text-blue-500"></span>
+            </div>
           )}
           <div ref={bottomRef} />
         </div>
       </div>
-      {/* form section for input of post and reply*/}
-      <div>
+
+      <div className="mt-6">
         {replyData.replying && (
-          <div className="flex flex-col border-t-2 border-blue-400 mt-2 p-2 mx-auto max-w-xl">
-            <div className="text-sm flex items-center gap-1 text-gray-500">
+          <div className="flex flex-col border-t-2 border-blue-400 mt-2 p-4 bg-white rounded-lg shadow-md max-w-xl mx-auto">
+            <div className="text-sm flex items-center gap-2 text-gray-500">
               <FaReply />
               Replying To
-              <div className="p-2">
-                <FaXmark
-                  color="red"
-                  className="cursor-pointer"
-                  onClick={() => {
-                    setReplyData({
-                      replying: false,
-                      replyingTo: null,
-                      content: "",
-                    });
-                  }}
-                />
-              </div>
+              <FaXmark
+                color="red"
+                className="cursor-pointer ml-auto"
+                onClick={() => {
+                  setReplyData({
+                    replying: false,
+                    replyingTo: null,
+                    content: "",
+                  });
+                }}
+              />
             </div>
-            <div>
-              <div className="flex items-center gap-1 px-4 py-1 text-sm">
-                {(replyData.content || "No content").slice(0, 50) + "..."}
-              </div>
+            <div className="mt-2 text-gray-700 text-sm">
+              {(replyData.content || "No content").slice(0, 50) + "..."}
             </div>
           </div>
         )}
+
         <form
-          className="flex items-center gap-2 mt-2 p-2 max-w-3xl mx-auto"
+          className="flex items-center gap-4 mt-4 p-4 bg-white rounded-lg shadow-md max-w-3xl mx-auto"
           onSubmit={handleSubmit}
         >
           <textarea
             name="content"
-            onChange={(e) =>
-              setDiscussionData({ ...discussionData, content: e.target.value })
-            }
+            onChange={handleInputChange}
             value={discussionData.content}
             placeholder="Ask a question or start a discussion..."
-            className="w-full h-16 p-3 text-sm rounded-lg resize-none bg-transparent focus:ring-2 focus:ring-blue-400 focus:outline-none border border-gray-400 bg-gray-100 transition-all"
+            className="w-full h-16 p-3 text-sm rounded-lg resize-none bg-gray-100 focus:ring-2 focus:ring-blue-400 focus:outline-none border border-gray-300 transition-all"
           ></textarea>
-          <button className="flex items-center gap-1 text-sm text-blue-500 hover:text-blue-700 bg-gray-50 p-3 rounded-lg shadow">
+          <button className="flex items-center gap-2 text-sm text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg shadow-md">
             <FaPaperPlane /> Send
           </button>
         </form>

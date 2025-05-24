@@ -2,6 +2,7 @@ import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { AiOutlineCheckCircle, AiOutlineCloseCircle } from "react-icons/ai";
 
 const Notifications = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -56,36 +57,33 @@ const Notifications = () => {
         {notifications.map((notification) => (
           <div
             key={notification.id}
-            className="collapse collapse-arrow border-1"
+            className="border border-gray-300 rounded-lg shadow-md p-4 bg-white hover:shadow-lg transition-shadow duration-300"
           >
-            <input type="radio" name="my-accordion-2" />
-            <div className="collapse-title font-medium">
-              <div className="flex justify-between">
-                <p>{notification.message}</p>
-                <p className="text-xs text-gray-600">
-                  {new Date(notification.createdAt).toLocaleString()}
-                </p>
-              </div>
+            <div className="flex justify-between items-center">
+              <p className="text-sm font-medium text-gray-800">
+                {notification.message}
+              </p>
+              <p className="text-xs text-gray-500">
+                {new Date(notification.createdAt).toLocaleString()}
+              </p>
             </div>
             {notification.type === "invitation" && (
-              <div className="collapse-content">
-                <div className="flex gap-4">
-                  <button
-                    className="btn btn-outline btn-sm btn-success"
-                    onClick={() => handleAcceptInvitation(notification.action)}
-                  >
-                    Accept
-                  </button>
-                  <button className="btn btn-outline btn-sm btn-error">
-                    Decline
-                  </button>
-                </div>
+              <div className="mt-3 flex gap-2">
+                <button
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-lg hover:bg-green-600 transition-colors duration-300"
+                  onClick={() => handleAcceptInvitation(notification.action)}
+                >
+                  <AiOutlineCheckCircle /> Accept
+                </button>
+                <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors duration-300">
+                  <AiOutlineCloseCircle /> Decline
+                </button>
               </div>
             )}
-            <div className="p-4">
-              <div className="badge badge-accent badge-outline">
+            <div className="mt-2">
+              <span className="inline-block px-3 py-1 text-xs font-medium text-gray-700 bg-gray-200 rounded-full">
                 {notification.type}
-              </div>
+              </span>
             </div>
           </div>
         ))}

@@ -29,14 +29,13 @@ const OpenedNote = () => {
   const workspace = useSelector((state) => state.workspace.workspace);
   const useGemini = localStorage.getItem("useGemini") === "true" ? true : false;
 
+  // for holding the currently authenticated user data
+  const userData = useSelector((state) => state.auth.user);
+
   // for handling the edit mode and preview mode for note editing and viewing
   const [editMode, setEditMode] = useState(true);
   const [previewMode, setPreviewMode] = useState(true);
   const [aiAssistMode, setAiAssistMode] = useState(false);
-
-  // for holding the currently authenticated user data
-
-  const userData = useSelector((state) => state.auth.user);
 
   // Use a single `noteData` state for title, content, and other note information
   const [noteData, setNoteData] = useState({
@@ -167,6 +166,13 @@ const OpenedNote = () => {
   const noteRef = useRef(null);
 
   const handleSaveNoteAsPDF = () => {
+    const includeTitle = confirm(
+      "Do you want to include the document title as a header in the PDF?"
+    );
+    const includePageNumbers = confirm(
+      "Do you want to include page numbers in the PDF?"
+    );
+
     const printWindow = window.open("", "_blank");
 
     printWindow.document.write(`<html><head><title>${noteData?.title}</title>`);
@@ -177,13 +183,46 @@ const OpenedNote = () => {
       <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet"></link>`);
 
     printWindow.document.write(styles);
-    printWindow.document.write("</head><body>");
+    printWindow.document.write(`</head><body>`);
+
+    if (includeTitle) {
+      printWindow.document.write(`
+          <header style="text-align: center; font-size: 1.5rem; font-weight: bold; margin-bottom: 20px;">
+            ${noteData?.title}
+          </header>
+        `);
+    }
+
     printWindow.document.write(noteRef.current.innerHTML);
-    printWindow.document.write("</body></html>");
+
+    if (includePageNumbers) {
+      printWindow.document.write(`
+          <footer style="position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 0.875rem;">
+            Page <span class="pageNumber"></span>
+          </footer>
+        `);
+    }
+
+    printWindow.document.write(`</body></html>`);
 
     printWindow.document.close();
 
     printWindow.onload = () => {
+      if (includePageNumbers) {
+        const style = document.createElement("style");
+        style.innerHTML = `
+              @media print {
+                @page {
+                  counter-increment: page;
+                }
+                .pageNumber::after {
+                  content: counter(page);
+                }
+              }
+            `;
+        printWindow.document.head.appendChild(style);
+      }
+
       setTimeout(() => {
         printWindow.print();
         printWindow.close();
@@ -384,12 +423,14 @@ const OpenedNote = () => {
 
 export default OpenedNote;
 
+// Updated styles for a more professional and modern look
 const styles = `
     <style>
       body {
         font-family: "Nunito", Arial, sans-serif;
         margin: 20px;
         color: #333;
+        background-color: #f9f9f9;
       }
       img {
         margin-left: auto;
@@ -399,62 +440,36 @@ const styles = `
       h1 {
         font-size: 2rem;
         font-weight: bold;
+        color: #2c3e50;
       }
       h2 {
         font-size: 1.5rem;
         font-weight: bold;
+        color: #34495e;
       }
       h3 {
         font-size: 1.25rem;
         font-weight: bold;
-      }
-      h4 {
-        font-size: 1.125rem;
-        font-weight: bold;
-      }
-      h5 {
-        font-size: 1rem;
-        font-weight: bold;
-      }
-      h6 {
-        font-size: 0.875rem;
-        font-weight: bold;
+        color: #7f8c8d;
       }
       p {
-        line-height: 1.6;
+        line-height: 1.8;
+        color: #4d4d4d;
       }
       .font-bold {
         font-weight: bold;
       }
       .bg-blue-200 {
-        background-color: #bbdefb;
+        background-color: #d6eaff;
       }
       .bg-gray-200 {
-        background-color: #e0e0e0;
+        background-color: #eaeaea;
       }
       .text-blue-500 {
-        color: #3b82f6;
+        color: #3498db;
       }
       .text-blue-700 {
-        color: #1d4ed8;
-      }
-      .text-3xl {
-        font-size: 1.875rem;
-      }
-      .text-2xl {
-        font-size: 1.5rem;
-      }
-      .text-xl {
-        font-size: 1.25rem;
-      }
-      .text-lg {
-        font-size: 1.125rem;
-      }
-      .text-md {
-        font-size: 1rem;
-      }
-      .text-sm {
-        font-size: 0.875rem;
+        color: #2980b9;
       }
       .rounded-full {
         border-radius: 9999px;
@@ -479,12 +494,10 @@ const styles = `
       }
       .border {
         border: 1px solid #d1d5db;
+        border-radius: 8px;
       }
       .border-l-4 {
         border-left: 4px solid #374151;
-      }
-      .border-collapse {
-        border-collapse: collapse;
       }
       .table-auto {
         table-layout: auto;
@@ -505,9 +518,30 @@ const styles = `
       }
       .rounded-box {
         border-radius: 0.375rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       }
       .underline {
         text-decoration: underline;
+      }
+      .btn {
+        background-color: #3498db;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+      }
+      .btn:hover {
+        background-color: #2980b9;
+      }
+      .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+      }
+      .shadow-md {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .hover\:bg-gray-100:hover {
+        background-color: #f0f0f0;
       }
     </style>
   `;

@@ -124,6 +124,13 @@ function Dashboard() {
         const response = await fetch(`${apiURL}/api/notifications?latest=1`, {
           headers: header,
         });
+
+        if (response.status === 204) {
+          // No new notifications
+          setLatestNotification(null);
+          return;
+        }
+
         const data = await response.json();
         setLatestNotification(data);
       } catch (error) {
@@ -179,7 +186,9 @@ function Dashboard() {
           {/* Logo */}
           <div className="flex items-center justify-between mb-3">
             <div className="flex gap-2 text-xs font-bold items-center">
-              <img src="/rect19.png" alt="Logo" className="h-12 w-auto" />
+              <Link to="/">
+                <img src="/rect19.png" alt="Logo" className="h-12 w-auto" />
+              </Link>
               {/* <span>Student Productivity Hub</span> */}
             </div>
             <button
@@ -309,6 +318,21 @@ function Dashboard() {
                 <AiOutlineFileText size={20} />
                 {!collapsedNav && <span>News</span>}
               </Link>
+
+              {/* AskAI link */}
+              <Link
+                to="askAI"
+                className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
+                  loc[0] === "askAI"
+                    ? "font-bold bg-blue-100 text-blue-800 rounded"
+                    : "text-gray-800"
+                }`}
+                onClick={() => setIsMobileNavOpen(false)}
+                title="AskAI"
+              >
+                <AiOutlineHeatMap size={20} />
+                {!collapsedNav && <span>AskAI</span>}
+              </Link>
             </div>
 
             <hr />
@@ -408,11 +432,12 @@ function Dashboard() {
               >
                 <li>
                   <button
-                    className="text-red-500 hover:bg-red-100 p-2 rounded-md text-sm"
+                    className="flex items-center gap-2 text-red-500 hover:text-white bg-red-100 hover:bg-red-500 p-2 rounded-md text-sm transition-all duration-300 shadow-md hover:shadow-lg"
                     onClick={handleLogout}
                     title="Logout"
                   >
-                    <AiOutlinePoweroff />
+                    <AiOutlinePoweroff size={20} />
+                    <span>Logout</span>
                   </button>
                 </li>
               </ul>
@@ -471,13 +496,15 @@ function Dashboard() {
             )}
 
             {latestNotification && (
-              <div
-                className="fixed z-20 bottom-5 right-5 bg-gray-800 text-white px-4 py-3 rounded-md shadow-md flex items-center gap-3"
-                onClick={() =>
-                  navigateToWorkspace(latestNotification?.action?.workspace)
-                }
-              >
-                <span className="text-sm">{latestNotification.message}</span>
+              <div className="fixed z-20 bottom-5 right-5 bg-gray-800 text-white px-4 py-3 rounded-md shadow-md flex items-center gap-3">
+                <span
+                  className="text-sm hover:underline cursor-pointer"
+                  onClick={() =>
+                    navigateToWorkspace(latestNotification?.action?.workspace)
+                  }
+                >
+                  {latestNotification.message}
+                </span>
                 <button
                   onClick={() => setLatestNotification(null)}
                   className="text-gray-300 hover:text-white text-xs px-2 py-1 border border-gray-500 rounded"

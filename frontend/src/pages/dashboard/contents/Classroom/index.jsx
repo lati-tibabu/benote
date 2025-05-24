@@ -6,32 +6,31 @@ import ClassroomManagement from "./management/ClassroomManagement"; // Import th
 
 const Classroom = () => {
   return (
-    <div>
+    <div className="p-6 bg-gray-100 min-h-screen">
       <ToastContainer />
-      <div>
+      <div className="flex justify-end mb-4">
         <button
-          className="btn rounded-full"
+          className="btn bg-blue-600 text-white px-6 py-2 rounded-full shadow-md hover:bg-blue-700 transition"
           onClick={() => document.getElementById("add_classroom").showModal()}
         >
           + Create New
         </button>
-        <a href="/classroom-management" className="btn rounded-full">Manage Classroom</a> {/* Add a link to the ClassroomManagement page */}
       </div>
-      <div className="flex flex-col md:flex-row">
-        <div className="border m-2 p-3 rounded-md">
-          <p className="font-bold ">Classroom I created</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white border border-gray-200 shadow-md p-6 rounded-lg">
+          <p className="font-bold text-lg mb-4">Classroom I created</p>
           <ClassroomList requestType="created" />
         </div>
-        <div className="border m-2 p-3 rounded-md">
-          <p className="font-bold ">Classroom I Joined</p>
+        <div className="bg-white border border-gray-200 shadow-md p-6 rounded-lg">
+          <p className="font-bold text-lg mb-4">Classroom I Joined</p>
           <ClassroomList requestType="joined" />
         </div>
       </div>
 
-      <dialog id="add_classroom" className="modal overflow-x-scroll">
-        <div className="modal-box bg-white p-4 rounded-md shadow-md sm:w-fit lg:w-1/2 mx-auto mt-10 scrollbar-hide">
+      <dialog id="add_classroom" className="modal">
+        <div className="modal-box bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl mx-auto">
           <form method="dialog">
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 text-gray-500 hover:text-gray-800">
               ✕
             </button>
           </form>

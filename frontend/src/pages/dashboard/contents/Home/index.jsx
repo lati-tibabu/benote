@@ -100,49 +100,45 @@ const Home = () => {
   };
   const useGemini = localStorage.getItem("useGemini") === "true" ? true : false;
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50 p-4 font-sans antialiased">
+      {/* AI Summary Toggle
       {useGemini && (
-        <div className="absolute right-0 flex">
+        <div className="absolute right-0 top-10 flex">
           <div
-            // className="flex h-10 items-center gap-2 bg-gradient-to-tr from-pink-500 to-blue-600 transition-all duration-300 text-white cursor-pointer p-2 rounded-l-lg border-white border-l-2 border-y-2 shadow"
-            className="flex h-10 items-center gap-2 bg-gray-100 transition-all duration-300 text-black cursor-pointer p-2 rounded-l-lg border-white border-l-2 border-y-2 shadow"
-            onClick={() => {
-              setShowAiSummary(!showAiSummary);
-            }}
+            className="flex items-center gap-2 px-4 py-2 bg-white border rounded-l-lg shadow-sm cursor-pointer hover:bg-gray-100 z-10"
+            // className="flex h-10 items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-700 text-white shadow-lg
+            //            hover:from-purple-700 hover:to-indigo-800 transition-all duration-300
+            //            px-4 py-2 rounded-l-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75"
+            onClick={() => setShowAiSummary(!showAiSummary)}
           >
-            {/* <FaBolt /> */}
             <GeminiIcon />
-            <span className="font-semibold">Summary</span>
+            <span className="font-medium text-gray-700">AI Summary</span>
           </div>
           {showAiSummary && <AiSummary />}
         </div>
-      )}
-      {/* top */}
-      <div className="p-6 mx-auto mb-5 h-[50vh] flex flex-col justify-center items-center text-center bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl shadow-lg text-white animate-fadeIn">
-        <span className="text-2xl sm:text-4xl font-semibold">
-          Hello, <strong>{userData && userData.name}</strong> 👋 How are you
-          doing!
+      )} */}
+      {/* Top Section */}
+      <div
+        className="p-8 my-6 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl shadow-xl text-gray-900 
+                      flex flex-col justify-center items-center text-center animate-fade-in-down"
+      >
+        <h1 className="text-3xl sm:text-5xl font-extrabold mb-2 leading-tight">
+          Hello,{" "}
+          <strong className="text-blue-600">{userData && userData.name}</strong>{" "}
+          👋
+        </h1>
+        <p className="text-lg sm:text-xl text-gray-700 mb-4">
+          How are you doing today?
+        </p>
+        <span className="text-xl sm:text-2xl font-mono text-blue-600 tracking-wide">
+          {time}
         </span>
-        <span>{time}</span>
-        <div className="mt-4">
-          <p className="font-bold text-3xl uppercase flex items-center gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M8 7v4l4 2 4-2V7m4 5a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+        <div className="mt-6 flex items-center space-x-3 text-gray-800">
+          <FaClock className="h-7 w-7 text-blue-500" />
+          <p className="font-bold text-2xl uppercase">
             {new Date().toLocaleDateString("en-US", { weekday: "long" })}
           </p>
-          <p className="text-lg tracking-wide opacity-90">
+          <p className="text-lg opacity-90">
             {new Date().toLocaleDateString("en-US", {
               year: "numeric",
               month: "long",
@@ -152,174 +148,144 @@ const Home = () => {
         </div>
       </div>
 
-      {/* main */}
-      <div className="flex gap-3 justify-between flex-col md:flex-row p-2">
-        <div className="h-fit grow flex flex-col flex-1 gap-3 overflow-x-auto border-x-1 p-2">
-          <div className="flex h-[30rem] gap-3 overflow-x-auto scrollbar-hide border-2 rounded-box  p-2">
-            {/* Workspaces */}
-            <div>
-              {/* <div className="flex items-center text-sm gap-2">
-              <AiOutlineClockCircle />
+      {/* Main Content Area */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4">
+        {/* Left Column - Workspaces and Today's Todos */}
+        <div className="md:col-span-2 flex flex-col gap-6">
+          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <AiOutlineClockCircle className="text-blue-500 text-2xl" />
               Recent Workspaces
-            </div> */}
-              <div className="font-bold flex items-center gap-2">
-                <AiOutlineClockCircle />
-                Recent Workspaces
+            </h2>
+            {workspaceLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 animate-pulse">
+                {[...Array(3)].map((_, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-100 rounded-lg p-4 h-28 flex flex-col justify-between"
+                  >
+                    <div className="h-5 bg-gray-300 rounded w-3/4 mb-2"></div>
+                    <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+                    <div className="h-4 bg-gray-300 rounded w-full"></div>
+                  </div>
+                ))}
               </div>
+            ) : (
+              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {workspaces.length ? (
+                  workspaces.map((workspace) => (
+                    <li key={workspace.workspace.id}>
+                      <div
+                        title={
+                          workspace.workspace.description ||
+                          workspace.workspace.name
+                        }
+                        className="flex flex-col p-4 rounded-lg shadow-sm border border-gray-200 
+                                   hover:bg-blue-50 hover:border-blue-400 transition-all duration-200 cursor-pointer h-full"
+                        onClick={handleWorkspaceOpen(workspace.workspace.id)}
+                      >
+                        <div className="text-4xl mb-3">
+                          {workspace.workspace.emoji}
+                        </div>
+                        <div className="font-medium text-lg text-gray-800 truncate mb-1">
+                          {workspace.workspace.name}
+                        </div>
+                        <div className="text-sm text-gray-500 mt-auto">
+                          Accessed:{" "}
+                          {(() => {
+                            const accessedAt = new Date(
+                              workspace.workspace.last_accessed_at
+                            );
+                            const now = new Date();
+                            const options = {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                              hour: "numeric",
+                              minute: "numeric",
+                              hour12: true,
+                            };
 
-              {workspaceLoading ? (
-                <div className="flex flex-col w-64 justify-center items-center gap-2 p-2">
-                  <div className="border-2 w-full animate-pulse bg-gray-100 rounded-box flex flex-col p-3 gap-3">
-                    <div className="w-full h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                    <div className="w-[150px] h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                  </div>
-                  <div className="border-2 w-full animate-pulse bg-gray-100 rounded-box flex flex-col p-3 gap-3">
-                    <div className="w-full h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                    <div className="w-[150px] h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                  </div>
-                  <div className="border-2 w-full animate-pulse bg-gray-100 rounded-box flex flex-col p-3 gap-3">
-                    <div className="w-full h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                    <div className="w-[150px] h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <ul className="flex flex-col gap-2 justify-stretch">
-                    {workspaces.length &&
-                      workspaces.map((workspace) => (
-                        <li key={workspace.workspace.id}>
-                          <div
-                            title={
-                              workspace.workspace.description ||
-                              workspace.workspace.name
+                            if (
+                              accessedAt.getDate() === now.getDate() &&
+                              accessedAt.getMonth() === now.getMonth() &&
+                              accessedAt.getFullYear() === now.getFullYear()
+                            ) {
+                              return accessedAt.toLocaleTimeString("en-US", {
+                                hour: "numeric",
+                                minute: "numeric",
+                                hour12: true,
+                              });
                             }
-                            className="flex gap-2 items-start cursor-default border-2 border-gray-200 p-3 rounded-box hover:bg-blue-50 hover:border-blue-500 hover:cursor-pointer"
-                            onClick={handleWorkspaceOpen(
-                              workspace.workspace.id
-                            )}
-                          >
-                            {/* icon */}
-                            <div className="text-3xl">
-                              {workspace.workspace.emoji}
-                            </div>
-                            {/* main */}
-                            <div className="border-l-1 pl-3">
-                              {/* name */}
-                              <div>{workspace.workspace.name}</div>
-                              {/* creation date */}
-                              <div className="text-sm text-gray-600">
-                                Accessed on{" "}
-                                {(() => {
-                                  const accessedAt = new Date(
-                                    workspace.workspace.last_accessed_at
-                                  );
-                                  const now = new Date();
-                                  const options = {
-                                    month: "short",
-                                    day: "numeric",
-                                    year: "numeric",
-                                    hour: "numeric",
-                                    minute: "numeric",
-                                    hour12: true,
-                                  };
 
-                                  // Same day → Show only time (e.g., 3:45 PM)
-                                  if (
-                                    accessedAt.getDate() === now.getDate() &&
-                                    accessedAt.getMonth() === now.getMonth() &&
-                                    accessedAt.getFullYear() ===
-                                      now.getFullYear()
-                                  ) {
-                                    return accessedAt.toLocaleTimeString(
-                                      "en-US",
-                                      {
-                                        hour: "numeric",
-                                        minute: "numeric",
-                                        hour12: true,
-                                      }
-                                    );
-                                  }
+                            const oneWeekAgo = new Date();
+                            oneWeekAgo.setDate(now.getDate() - 7);
 
-                                  // Same week → Show "Weekday, time" (e.g., Tue, 3:45 PM)
-                                  const oneWeekAgo = new Date();
-                                  oneWeekAgo.setDate(now.getDate() - 7);
+                            if (accessedAt > oneWeekAgo) {
+                              return accessedAt.toLocaleDateString("en-US", {
+                                weekday: "short",
+                                hour: "numeric",
+                                minute: "numeric",
+                                hour12: true,
+                              });
+                            }
 
-                                  if (accessedAt > oneWeekAgo) {
-                                    return accessedAt.toLocaleDateString(
-                                      "en-US",
-                                      {
-                                        weekday: "short",
-                                        hour: "numeric",
-                                        minute: "numeric",
-                                        hour12: true,
-                                      }
-                                    );
-                                  }
+                            return accessedAt.toLocaleDateString(
+                              "en-US",
+                              options
+                            );
+                          })()}
+                        </div>
+                      </div>
+                    </li>
+                  ))
+                ) : (
+                  <p className="text-gray-500 text-center col-span-full py-8">
+                    No recent workspaces to display.
+                  </p>
+                )}
+              </ul>
+            )}
+          </div>
 
-                                  // Older than a week → Full date (e.g., Mar 10, 2024, 3:45 PM)
-                                  return accessedAt.toLocaleDateString(
-                                    "en-US",
-                                    options
-                                  );
-                                })()}
-                              </div>
-
-                              {/* private or team */}
-                              {/* <div>
-                          {workspace.workspace.type
-                            .split("-")[0]
-                            .toLowerCase()
-                            .trim() === "team" ? (
-                            <div className="flex items-center gap-1">
-                              <div className="bg-blue-600 text-white px-1 w-fit text-xs">
-                                {workspace.workspace.type.split("-")[0]}
-                              </div>
-                              <div className="text-xs hover:underline hover:text-blue-700">
-                                {workspace.workspace.type.split("-")[1]}
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="bg-green-600 text-white px-1 w-fit text-xs">
-                              {workspace.workspace.type}
-                            </div>
-                          )}
-                        </div> */}
-                            </div>
-                          </div>
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-            {/* Today Tasks */}
-            <div>
-              <div className="font-bold">Latest Tasks</div>
-              {taskLoading ? (
-                <div className="flex flex-col w-64 justify-center items-center gap-2 p-2">
-                  <div className="border-2 w-full animate-pulse bg-gray-100 rounded-box flex flex-col p-3 gap-3">
-                    <div className="w-full h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                    <div className="w-[150px] h-[20px] animate-pulse bg-gray-300 rounded"></div>
+          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200 overflow-auto">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <FaClock className="text-green-500 text-2xl" />
+              Latest Tasks
+            </h2>
+            {taskLoading ? (
+              <div className="grid grid-cols-1 gap-4 animate-pulse">
+                {[...Array(3)].map((_, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-100 rounded-lg p-4 h-24 flex flex-col justify-between"
+                  >
+                    <div className="h-5 bg-gray-300 rounded w-full mb-2"></div>
+                    <div className="flex justify-between">
+                      <div className="h-4 bg-gray-300 rounded w-1/4"></div>
+                      <div className="h-4 bg-gray-300 rounded w-1/6"></div>
+                    </div>
                   </div>
-                  <div className="border-2 w-full animate-pulse bg-gray-100 rounded-box flex flex-col p-3 gap-3">
-                    <div className="w-full h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                    <div className="w-[150px] h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                  </div>
-                  <div className="border-2 w-full animate-pulse bg-gray-100 rounded-box flex flex-col p-3 gap-3">
-                    <div className="w-full h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                    <div className="w-[150px] h-[20px] animate-pulse bg-gray-300 rounded"></div>
-                  </div>
-                </div>
-              ) : (
-                <ul className="flex flex-col gap-2">
-                  {tasks.map((task) => (
+                ))}
+              </div>
+            ) : (
+              <ul className="grid grid-cols-1 gap-4">
+                {tasks.length ? (
+                  tasks.map((task) => (
                     <li
                       key={task.id}
                       title={task.description}
-                      className="flex gap-4 items-center bg-white shadow-md border p-4 rounded-xl hover:bg-gray-100 transition-all duration-200"
+                      className="flex items-center bg-white shadow-sm border border-gray-200 p-4 rounded-lg 
+                                 hover:bg-gray-50 transition-all duration-200 w-fit"
                     >
                       {/* Task Status Icon */}
-                      <div className="text-3xl text-green-500">
+                      <div
+                        className={`text-3xl mr-4 ${
+                          task.status === "done"
+                            ? "text-green-500"
+                            : "text-yellow-500"
+                        }`}
+                      >
                         {task.status === "done" ? (
                           <FaCheckCircle />
                         ) : (
@@ -328,54 +294,63 @@ const Home = () => {
                       </div>
 
                       {/* Main Content */}
-                      <div className="flex flex-col w-full">
+                      <div className="flex-1">
                         {/* Task Title */}
-                        <div className="text-lg font-semibold flex items-center gap-2">
+                        <div className="text-lg font-semibold text-gray-800 mb-1 truncate">
                           {task.title}
                         </div>
 
                         {/* Task Metadata */}
-                        <div className="flex justify-between items-center text-sm text-gray-500 mt-1">
+                        <div className="flex justify-between items-center text-sm text-gray-500">
                           {/* Due Date */}
                           <span className="flex items-center gap-1">
                             📅 {new Date(task.due_date).toLocaleDateString()}
                           </span>
 
                           {/* Workspace Name */}
-                          <span className="bg-gray-200 px-2 py-1 rounded text-xs">
-                            {task.workspace?.name}
-                          </span>
-                        </div>
-
-                        {/* Task Status */}
-                        <div className="mt-2">
-                          <span
-                            className={`text-xs px-3 py-1 rounded-full font-medium ${
-                              task.status === "done"
-                                ? "bg-green-500 text-white"
-                                : "bg-yellow-500 text-white"
-                            }`}
-                          >
-                            {task.status === "done" ? "Completed" : "Todo"}
-                          </span>
+                          {task.workspace?.name && (
+                            <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs font-medium">
+                              {task.workspace.name}
+                            </span>
+                          )}
                         </div>
                       </div>
+
+                      {/* Task Status */}
+                      <div className="ml-4">
+                        <span
+                          className={`text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wide ${
+                            task.status === "done"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-yellow-100 text-yellow-700"
+                          }`}
+                        >
+                          {task.status === "done" ? "Completed" : "Pending"}
+                        </span>
+                      </div>
                     </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+                  ))
+                ) : (
+                  <p className="text-gray-500 text-center py-8">
+                    No recent tasks to display.
+                  </p>
+                )}
+              </ul>
+            )}
           </div>
-          <div className="flex flex-col h-fit gap-3 overflow-x-auto scrollbar-hide border-2 rounded-box  p-2">
+
+          <div className="flex flex-col gap-6">
             <PomodoroFocus />
             <TodayTodos />
+            <AiSummary />
           </div>
         </div>
-        <div className="flex flex-col gap-2">
+
+        {/* Right Column - Side Components */}
+        <div className="md:col-span-1 flex flex-col gap-6">
           <TaskStatus />
           <TaskActivityChart />
           <TaskRecommendation />
-          {/* <PomodoroFocus /> */}
         </div>
       </div>
     </div>
@@ -383,124 +358,3 @@ const Home = () => {
 };
 
 export default Home;
-
-// const workspaces = [
-//   {
-//     emoji: "🧑‍🎓",
-//     name: "Academic Tasks",
-//     creationDate: "December 31, 2024",
-//     type: "Private",
-//     description:
-//       "A personal workspace for organizing homework, project deadlines, and study schedules.",
-//   },
-//   {
-//     emoji: "💻",
-//     name: "Code Studio",
-//     creationDate: "December 15, 2024",
-//     type: "Team - DevSquad",
-//     description:
-//       "Collaborative workspace for tracking coding projects, version control, and debugging tasks within the team.",
-//   },
-//   {
-//     emoji: "📝",
-//     name: "Research Notes",
-//     creationDate: "December 10, 2024",
-//     type: "Private",
-//     description:
-//       "Dedicated to managing and organizing notes, references, and drafts for ongoing research papers.",
-//   },
-//   {
-//     emoji: "🎮",
-//     name: "Game Night Plan",
-//     creationDate: "December 20, 2024",
-//     type: "Team - Weekend Warriors",
-//     description:
-//       "A shared workspace for planning team gaming events, including schedules, challenges, and score tracking.",
-//   },
-//   {
-//     emoji: "🌍",
-//     name: "Community Outreach",
-//     creationDate: "December 5, 2024",
-//     type: "Team - Helping Hands",
-//     description:
-//       "Used for managing volunteer schedules, tasks, and events for community service initiatives.",
-//   },
-// ];
-// const tasks = [
-//   {
-//     emoji: "🛒",
-//     title: "Buy Groceries",
-//     dueDate: "December 31, 2024",
-//     status: "done",
-//     description: "Purchase vegetables, fruits, and other essential groceries.",
-//   },
-//   {
-//     emoji: "📚",
-//     title: "Do Homework",
-//     dueDate: "January 1, 2025",
-//     status: "not_done",
-//     description: "Complete assignments for Compiler Design and NLP.",
-//   },
-//   {
-//     emoji: "🧹",
-//     title: "Clean the Room",
-//     dueDate: "January 2, 2025",
-//     status: "not_done",
-//     description: "Organize books, dust shelves, and vacuum the floor.",
-//   },
-//   {
-//     emoji: "📅",
-//     title: "Prepare for the Meeting",
-//     dueDate: "January 3, 2025",
-//     status: "done",
-//     description: "Finalize the presentation slides and review key points.",
-//   },
-//   {
-//     emoji: "🚶",
-//     title: "Go for a Walk",
-//     dueDate: "January 4, 2025",
-//     status: "not_done",
-//     description: "Enjoy a 30-minute evening walk in the park.",
-//   },
-// ];
-const teams = [
-  {
-    emoji: "👨‍💻",
-    name: "DevSquad",
-    creationDate: "December 15, 2024",
-    members: 8,
-    description:
-      "A development team working on building innovative web and mobile applications.",
-  },
-  {
-    emoji: "📖",
-    name: "Study Circle",
-    creationDate: "December 20, 2024",
-    members: 5,
-    description:
-      "Group of students collaborating on exam preparation and sharing resources.",
-  },
-  {
-    emoji: "🤝",
-    name: "Helping Hands",
-    creationDate: "December 10, 2024",
-    members: 12,
-    description:
-      "Community volunteers focused on organizing outreach programs and charity events.",
-  },
-  {
-    emoji: "🎮",
-    name: "Weekend Warriors",
-    creationDate: "December 5, 2024",
-    members: 6,
-    description: "Gaming team participating in weekend tournaments and events.",
-  },
-  {
-    emoji: "🎨",
-    name: "Creative Minds",
-    creationDate: "December 18, 2024",
-    members: 4,
-    description:
-      "A team of artists and designers collaborating on creative projects.",
-  },
-];
