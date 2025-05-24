@@ -5,31 +5,35 @@ import Footer1 from "../../components/_footers/footer1";
 
 function AuthPages() {
   return (
-    <div className="bg-gray-200 min-h-screen text-black flex flex-col min-w-fit min-w-screen">
-      {/* header */}
-      <div className="p-5 justify-between flex flex-row items-center border-2 rounded-2xl border-gray-200 m-1 sticky top-0 z-10 bg-white">
-        <div className="flex flex-row items-center gap-3">
+    <div className="bg-gray-100 min-h-screen flex flex-col">
+      {/* Header */}
+      <header className="bg-white py-4 px-6 sticky top-0 z-10 flex justify-between items-center">
+        <div className="flex items-center gap-3">
           <Link to="/">
-            <img
-              src="/rect19.png"
-              alt=""
-              // width={40}
-              className="cursor-pointer w-14"
-            />
+            <img src="/rect19.png" alt="Logo" className="cursor-pointer w-12" />
           </Link>
-          <p className="md:block hidden">Student Productivity Hub</p>
+          <h1 className="text-lg font-bold text-gray-800 hidden md:block">
+            Student Productivity Hub
+          </h1>
         </div>
-        <Link to={"/info"}>
-          <div className="hidden md:block cursor-pointer bg-black rounded-full p-2">
-            <AiOutlineInfo color="white" />
+        {/* <Link to="/info" className="hidden md:block">
+          <div className="bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700 transition">
+            <AiOutlineInfo size={24} />
           </div>
-        </Link>
-      </div>
-      <div className="mx-auto my-10 shadow-lg bg-gray-100 rounded-lg">
-        <Outlet />
-      </div>
-      {/* footer */}
-      <Footer1 />
+        </Link> */}
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-grow flex items-center justify-center py-10">
+        <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg p-6">
+          <Outlet />
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-200 py-4 text-center text-sm text-gray-600">
+        <Footer1 />
+      </footer>
     </div>
   );
 }

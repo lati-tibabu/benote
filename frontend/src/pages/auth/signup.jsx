@@ -106,16 +106,24 @@ function Signup() {
 
   return (
     <div className="flex flex-row w-fit">
-      <div className="p-5 px-8 min-w-80 max-w-96 transition-all duration-150">
+      <div className="m-5 min-w-80 max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg">
         <div>
           <div>
-            <h1 className="text-2xl font-bold">Create your account</h1>
-            <p className="text-xs">Enter your details to sign up</p>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">
+              Create your account
+            </h1>
+            <p className="text-sm text-gray-600">
+              Enter your details to sign up
+            </p>
           </div>
-          <div className="mt-10">
-            <form onSubmit={handleSignup} className="flex flex-col gap-2">
+
+          <div className="mt-8">
+            <form onSubmit={handleSignup} className="flex flex-col gap-4">
               <div className="flex flex-col">
-                <label htmlFor="firstName-input" className="text-sm">
+                <label
+                  htmlFor="firstName-input"
+                  className="text-sm font-medium text-gray-700"
+                >
                   First Name
                 </label>
                 <input
@@ -123,15 +131,18 @@ function Signup() {
                   id="firstName-input"
                   name="firstName"
                   value={formData.firstName}
-                  className="bg-white border rounded border-gray-400 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="First Name"
+                  className="bg-gray-50 border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter your first name"
                   onChange={handleChange}
                   required
                 />
               </div>
 
               <div className="flex flex-col">
-                <label htmlFor="lastName-input" className="text-sm">
+                <label
+                  htmlFor="lastName-input"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Last Name
                 </label>
                 <input
@@ -139,15 +150,18 @@ function Signup() {
                   id="lastName-input"
                   name="lastName"
                   value={formData.lastName}
-                  className="bg-white border rounded border-gray-400 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Last Name"
+                  className="bg-gray-50 border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter your last name"
                   onChange={handleChange}
                   required
                 />
               </div>
 
               <div className="flex flex-col">
-                <label htmlFor="email-input" className="text-sm">
+                <label
+                  htmlFor="email-input"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Email
                 </label>
                 <input
@@ -155,8 +169,8 @@ function Signup() {
                   id="email-input"
                   name="email"
                   value={formData.email}
-                  className="bg-white border rounded border-gray-400 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Email"
+                  className="bg-gray-50 border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter your email"
                   onChange={handleChange}
                   required
                 />
@@ -168,7 +182,10 @@ function Signup() {
               </div>
 
               <div className="flex flex-col">
-                <label htmlFor="password-input" className="text-sm">
+                <label
+                  htmlFor="password-input"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Password
                 </label>
                 <input
@@ -176,20 +193,23 @@ function Signup() {
                   id="password-input"
                   name="password"
                   value={formData.password}
-                  className="bg-white border rounded border-gray-400 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Password"
+                  className="bg-gray-50 border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter your password"
                   onChange={handleChange}
                   required
                 />
                 {!isPasswordValid && (
-                  <span className="text-sm text-red-500 text-wrap">
+                  <span className="text-sm text-red-500">
                     {passwordErrorMessage}
                   </span>
                 )}
               </div>
 
               <div className="flex flex-col">
-                <label htmlFor="confirmPassword-input" className="text-sm">
+                <label
+                  htmlFor="confirmPassword-input"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Confirm Password
                 </label>
                 <input
@@ -197,45 +217,56 @@ function Signup() {
                   id="confirmPassword-input"
                   name="confirmPassword"
                   value={formData.confirmPassword}
-                  className="bg-white border rounded border-gray-400 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Confirm Password"
+                  className="bg-gray-50 border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Confirm your password"
                   onChange={handleChange}
                   required
                 />
               </div>
 
-              <div className="flex flex-col gap-2 text-center">
+              <div className="flex flex-col gap-4">
                 {signUpLoading ? (
-                  <span className="loading"></span>
+                  <div className="flex justify-center">
+                    <span className="loader"></span>
+                  </div>
                 ) : (
                   <button
                     type="submit"
-                    className="btn bg-gray-700 text-white"
+                    className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition duration-300"
                     disabled={!isPasswordValid}
                   >
                     Sign Up
                   </button>
                 )}
-                <hr />
-                <p className="text-sm">or sign up with</p>
-                <div className="flex flex-row justify-center items-center gap-5 border-black p-2 bg-white cursor-pointer rounded-md shadow-lg select-none">
-                  <img
-                    src="/google-color-icon.svg"
-                    alt="google-icon"
-                    className="w-6 h-6"
-                  />
-                  <p>Continue with Google</p>
-                </div>
+              </div>
+
+              <div className="flex items-center my-4">
+                <hr className="flex-grow border-gray-300" />
+                <span className="px-4 text-sm text-gray-500">or</span>
+                <hr className="flex-grow border-gray-300" />
+              </div>
+
+              <div className="flex items-center justify-center gap-3 bg-gray-50 border border-gray-300 rounded-lg p-3 cursor-pointer hover:shadow-md transition duration-300">
+                <img
+                  src="/google-color-icon.svg"
+                  alt="Google Icon"
+                  className="w-6 h-6"
+                />
+                <span className="text-sm font-medium text-gray-700">
+                  Continue with Google
+                </span>
               </div>
             </form>
           </div>
         </div>
 
-        <div className="flex flex-row text-sm mt-3 gap-1">
-          <p>Already have an account? </p>
-          <Link to={"/auth/login"}>
-            <p className="text-blue-700 hover:underline">Login here!</p>
-          </Link>
+        <div className="text-center mt-6 text-sm text-gray-600">
+          <p>
+            Already have an account?{" "}
+            <Link to="/auth/login" className="text-blue-600 hover:underline">
+              Login here!
+            </Link>
+          </p>
         </div>
       </div>
 

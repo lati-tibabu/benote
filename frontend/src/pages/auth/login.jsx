@@ -105,92 +105,108 @@ function Login() {
   };
 
   return (
-    <div className="m-5 min-w-80">
+    <div className="m-5 min-w-80 max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg">
       <div>
-        <div>
-          <h1 className="text-2xl font-bold">Welcome back!</h1>
-          <p className="text-xs">Enter to login to your account</p>
-        </div>
-
-        <div className="mt-10">
-          <form onSubmit={handleLogin} className="flex flex-col gap-2">
-            <div className="flex flex-col">
-              <label htmlFor="email-input" className="text-sm">
-                email
-              </label>
-              <input
-                type="email"
-                id="email-input"
-                name="email"
-                value={formData.email}
-                className="bg-white border rounded border-gray-400 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="email"
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label htmlFor="password-input" className="text-sm">
-                password
-              </label>
-              <input
-                type="password"
-                id="password-input"
-                name="password"
-                value={formData.password}
-                className="bg-white border rounded border-gray-400 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="password"
-                onChange={handleChange}
-              />
-            </div>
-            <div className="flex flex-row gap-10">
-              <div className="text-sm text-blue-700 cursor-pointer hover:underline">
-                Forgot your password?
-              </div>
-            </div>
-
-            {/* login buttons */}
-            <div className="flex flex-col gap-2 text-center">
-              <div>
-                {loginError && (
-                  <p className="text-red-500 text-sm">{loginErrorMessage}</p>
-                )}
-              </div>
-              {loginLoading ? (
-                <span className="loading"></span>
-              ) : (
-                <button className="btn bg-gray-700 text-white" type="submit">
-                  login
-                </button>
-              )}
-              <hr />
-              <p className="text-sm">or login with</p>
-              <div
-                className="google-login-button flex flex-row justify-center items-center gap-5 border-black p-2 bg-white cursor-pointer rounded-md shadow-lg select-none"
-                onClick={redirectToGoogle}
-              >
-                <img
-                  src="/google-color-icon.svg"
-                  alt="google-icon"
-                  className="w-6 h-6"
-                />
-                <p>Continue with Google</p>
-              </div>
-              {/* <button
-                onClick={redirectToGoogle}
-                className="google-login-button"
-              >
-                Continue with Google
-              </button> */}
-            </div>
-          </form>
-        </div>
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome back!</h1>
+        <p className="text-sm text-gray-600">
+          Enter your credentials to log in to your account
+        </p>
       </div>
-      <div className="flex flex-row text-sm mt-3 gap-1">
-        <p>Don't have an account? </p>
-        <Link to={"/auth/signup"}>
-          <p className="text-blue-700 hover:underline">Register here!</p>
-        </Link>
+
+      <div className="mt-8">
+        <form onSubmit={handleLogin} className="flex flex-col gap-4">
+          <div className="flex flex-col">
+            <label
+              htmlFor="email-input"
+              className="text-sm font-medium text-gray-700"
+            >
+              Email
+            </label>
+            <input
+              type="email"
+              id="email-input"
+              name="email"
+              value={formData.email}
+              className="bg-gray-50 border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter your email"
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label
+              htmlFor="password-input"
+              className="text-sm font-medium text-gray-700"
+            >
+              Password
+            </label>
+            <input
+              type="password"
+              id="password-input"
+              name="password"
+              value={formData.password}
+              className="bg-gray-50 border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter your password"
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="text-right">
+            <Link
+              to="/auth/forgot-password"
+              className="text-sm text-blue-600 hover:underline"
+            >
+              Forgot your password?
+            </Link>
+          </div>
+
+          <div className="flex flex-col gap-4">
+            {loginError && (
+              <p className="text-red-500 text-sm">{loginErrorMessage}</p>
+            )}
+            {loginLoading ? (
+              <div className="flex justify-center">
+                <span className="loader"></span>
+              </div>
+            ) : (
+              <button
+                type="submit"
+                className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition duration-300"
+              >
+                Log In
+              </button>
+            )}
+          </div>
+
+          <div className="flex items-center my-4">
+            <hr className="flex-grow border-gray-300" />
+            <span className="px-4 text-sm text-gray-500">or</span>
+            <hr className="flex-grow border-gray-300" />
+          </div>
+
+          <div
+            className="flex items-center justify-center gap-3 bg-gray-50 border border-gray-300 rounded-lg p-3 cursor-pointer hover:shadow-md transition duration-300"
+            onClick={redirectToGoogle}
+          >
+            <img
+              src="/google-color-icon.svg"
+              alt="Google Icon"
+              className="w-6 h-6"
+            />
+            <span className="text-sm font-medium text-gray-700">
+              Continue with Google
+            </span>
+          </div>
+        </form>
+      </div>
+
+      <div className="text-center mt-6 text-sm text-gray-600">
+        <p>
+          Don’t have an account?{" "}
+          <Link to="/auth/signup" className="text-blue-600 hover:underline">
+            Register here!
+          </Link>
+        </p>
       </div>
     </div>
   );
