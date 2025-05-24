@@ -40,6 +40,7 @@ import OpenedRoadmap from "../pages/dashboard/contents/Workspace/OpenedWorkspace
 import Classroom from "../pages/dashboard/contents/Classroom";
 import OpenedClassroom from "../pages/dashboard/contents/Classroom/contents/opened-classroom";
 import News from "../pages/dashboard/contents/News";
+import AskAI from "../pages/dashboard/contents/AskAI/askAI";
 
 const dashboardRoutes = {
   path: "/app",
@@ -157,6 +158,7 @@ const dashboardRoutes = {
       element: <ProtectedRoute component={Notification} />,
     },
     { path: "setting", element: <ProtectedRoute component={Setting} /> },
+    { path: "askAI", element: <ProtectedRoute component={AskAI} /> },
   ],
 };
 
