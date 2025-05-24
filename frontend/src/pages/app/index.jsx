@@ -42,7 +42,7 @@ function Home() {
           </Link>
         </nav> */}
         <div className="flex gap-3">
-          <Link to="/login">
+          <Link to="/auth/login">
             <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-white text-blue-700 border border-blue-600 hover:bg-blue-50 font-semibold shadow-sm transition-all duration-200">
               <span className="text-lg">
                 <i className="">
@@ -63,7 +63,7 @@ function Home() {
               Login
             </button>
           </Link>
-          <Link to="/signup">
+          <Link to="/auth/signup">
             <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 font-semibold shadow-sm transition-all duration-200">
               <span className="text-lg">
                 <i className="">
