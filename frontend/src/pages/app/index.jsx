@@ -20,17 +20,75 @@ function Home() {
   return (
     <div className="flex flex-col bg-gradient-to-br from-blue-50 via-white to-blue-100 text-gray-800 min-h-screen">
       {/* Header Section */}
-      <header className="p-4 shadow-md w-full flex flex-row justify-between items-center bg-white/80 backdrop-blur-md sticky top-0 z-20 animate-fade-in">
-        <img
-          src="rect19.png"
-          alt="Logo"
-          className="w-14 drop-shadow-lg animate-logo-pop"
-        />
-        <Link to="/app/home">
-          <button className="btn btn-outline btn-black text-white bg-black hover:bg-gray-700 hover:text-gray-50 shadow-lg px-6 py-2 rounded-full font-semibold transition-all duration-200 animate-btn-slide-in">
-            Get Started
-          </button>
-        </Link>
+      <header className="p-4 w-full flex flex-row justify-between items-center backdrop-blur-sm z-20 animate-fade-in">
+        <div className="flex items-center gap-4">
+          <img src="rect19.png" alt="Logo" className="w-14 animate-logo-pop" />
+          <span className="ml-2 text-xl font-bold text-blue-700 hidden sm:inline">
+            Student Productivity Hub
+          </span>
+        </div>
+        {/* <nav className="flex-1 flex justify-center gap-8 text-base font-medium">
+          <Link
+            to="/app/about"
+            className="hover:text-blue-600 transition-colors duration-150"
+          >
+            About Us
+          </Link>
+          <Link
+            to="/app/contact"
+            className="hover:text-blue-600 transition-colors duration-150"
+          >
+            Contact Us
+          </Link>
+        </nav> */}
+        <div className="flex gap-3">
+          <Link to="/login">
+            <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-white text-blue-700 border border-blue-600 hover:bg-blue-50 font-semibold shadow-sm transition-all duration-200">
+              <span className="text-lg">
+                <i className="">
+                  <svg
+                    width="1em"
+                    height="1em"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </i>
+              </span>
+              Login
+            </button>
+          </Link>
+          <Link to="/signup">
+            <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 font-semibold shadow-sm transition-all duration-200">
+              <span className="text-lg">
+                <i className="">
+                  <svg
+                    width="1em"
+                    height="1em"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h8v-2h2v2h6v-2c0-2.66-5.33-4-8-4z"
+                      fill="currentColor"
+                    />
+                    <path
+                      d="M17 11v-2h-2V7h-2v2h-2v2h2v2h2v-2h2z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </i>
+              </span>
+              Sign Up
+            </button>
+          </Link>
+        </div>
       </header>
 
       {/* Hero Section */}
@@ -40,8 +98,8 @@ function Home() {
             🚀 Student Productivity Hub
           </h1>
           <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-xl animate-fade-in-up delay-200">
-            Your ultimate platform to boost academic performance and manage tasks
-            efficiently.
+            Your ultimate platform to boost academic performance and manage
+            tasks efficiently.
           </p>
           <Link to="/app/home">
             <button
@@ -57,9 +115,7 @@ function Home() {
               Get Started
               <AiOutlineArrowRight
                 className={`transition-all duration-300 ${
-                  buttonHovered
-                    ? "w-6 h-6 opacity-100 ml-1"
-                    : "w-0 opacity-0"
+                  buttonHovered ? "w-6 h-6 opacity-100 ml-1" : "w-0 opacity-0"
                 }`}
               />
             </button>
@@ -84,9 +140,9 @@ function Home() {
             🎓 Boost Your Academic Performance
           </h2>
           <p className="text-lg text-gray-600">
-            The Student Productivity Hub provides a range of tools and resources to
-            help students improve their productivity and achieve their academic
-            goals.
+            The Student Productivity Hub provides a range of tools and resources
+            to help students improve their productivity and achieve their
+            academic goals.
           </p>
         </div>
         <div className="w-full md:w-1/2 flex justify-center">
@@ -111,8 +167,8 @@ function Home() {
               Task Management
             </h4>
             <p className="text-gray-600 text-base">
-              Stay organized by creating and managing tasks, setting deadlines, and
-              receiving AI-powered recommendations.
+              Stay organized by creating and managing tasks, setting deadlines,
+              and receiving AI-powered recommendations.
             </p>
           </div>
           <div className="feature-item text-center bg-white/90 rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 border-t-4 border-blue-200 hover:border-blue-500 animate-card-pop hover:scale-105 delay-100">
@@ -131,8 +187,8 @@ function Home() {
               Collaboration Tools
             </h4>
             <p className="text-gray-600 text-base">
-              Work seamlessly with peers on group projects with integrated chat and
-              file-sharing features.
+              Work seamlessly with peers on group projects with integrated chat
+              and file-sharing features.
             </p>
           </div>
           <div className="feature-item text-center bg-white/90 rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 border-t-4 border-blue-200 hover:border-blue-500 animate-card-pop hover:scale-105 delay-300">
