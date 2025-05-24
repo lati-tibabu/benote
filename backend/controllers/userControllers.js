@@ -146,6 +146,59 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// Fetch all minimal related data for the current user
+const getUserOverview = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    // Dynamically require all models to avoid circular dependencies
+    const models = require("../models");
+    const _user = await user.findByPk(userId, {
+      attributes: [],
+      include: [
+        {
+          model: models.workspace,
+          as: "workspace",
+          attributes: ["id", "name", "description"],
+        },
+
+        {
+          model: models.team,
+          as: "teams",
+          attributes: ["id", "name"],
+          through: { attributes: [] },
+        },
+        {
+          model: models.notification,
+          as: "receivedNotifications",
+          attributes: ["id", "message", "type", "createdAt"],
+        },
+        { model: models.roadmap, as: "roadmaps", attributes: ["id", "title"] },
+        {
+          model: models.classroom,
+          as: "classrooms",
+          attributes: ["id", "name"],
+        },
+        {
+          model: models.study_plan,
+          as: "study_plans",
+          attributes: ["id", "title"],
+        },
+        {
+          model: models.task,
+          as: "tasks",
+          attributes: ["id", "title", "status"],
+        },
+      ],
+    });
+    if (!_user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json(_user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // getting other models for the user
 const getWorkspaces = async (req, res) => {
   try {
@@ -168,4 +221,5 @@ module.exports = {
   readUser,
   updateUser,
   deleteUser,
+  getUserOverview,
 };

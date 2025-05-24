@@ -10,5 +10,10 @@ router.post("/email", userControllers.readUserByEmail);
 router.get("/:id", userControllers.readUser);
 router.put("/", authMiddleware.authMiddleware, userControllers.updateUser);
 router.delete("/", authMiddleware.authMiddleware, userControllers.deleteUser);
+router.get(
+  "/overview/fetch",
+  authMiddleware.authMiddleware,
+  userControllers.getUserOverview
+);
 
 module.exports = router;
