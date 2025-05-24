@@ -78,7 +78,8 @@ const readLatestNotification = async (req, res) => {
     });
 
     if (!latestNotification) {
-      return res.status(404).json({ message: "No notifications found!" });
+      // Avoid sending unnecessary responses when no notifications exist
+      return res.status(204).send(); // 204 No Content
     }
 
     res.json(latestNotification);

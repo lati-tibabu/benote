@@ -39,6 +39,7 @@ import OpenedRoadmap from "../pages/dashboard/contents/Workspace/OpenedWorkspace
 
 import Classroom from "../pages/dashboard/contents/Classroom";
 import OpenedClassroom from "../pages/dashboard/contents/Classroom/contents/opened-classroom";
+import News from "../pages/dashboard/contents/News";
 
 const dashboardRoutes = {
   path: "/app",
@@ -142,7 +143,10 @@ const dashboardRoutes = {
       path: "classroom/:classroomId",
       element: <ProtectedRoute component={OpenedClassroom} />,
     },
-
+    {
+      path: "news",
+      element: <ProtectedRoute component={News} />,
+    },
     { path: "profile", element: <ProtectedRoute component={Profile} /> },
     {
       path: "llm-setting",

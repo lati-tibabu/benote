@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const { resource } = require("../models");
+const { resource, user } = require("../models");
 const { v4: uuidv4 } = require("uuid");
 const supabase = require("../services/supabaseClient");
 // const { upload } = require("../middlewares/supabaseUpload");
@@ -83,6 +83,13 @@ const getAllResources = async (req, res) => {
       where: {
         team_id: teamId,
       },
+      include: [
+        {
+          model: user,
+          as: "uploader",
+          attributes: ["id", "name"],
+        },
+      ],
     });
     res.json(_resources);
   } catch (err) {

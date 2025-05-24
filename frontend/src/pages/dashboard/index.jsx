@@ -165,6 +165,7 @@ function Dashboard() {
       );
     }
   }, [latestNotification]);
+
   return (
     <div className="bg-white text-black min-h-screen flex flex-col">
       {/* Top */}
@@ -292,6 +293,21 @@ function Dashboard() {
               >
                 <FaChalkboardTeacher size={20} />
                 {!collapsedNav && <span>Classroom</span>}
+              </Link>
+
+              {/* News link */}
+              <Link
+                to="news"
+                className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
+                  loc[0] === "news"
+                    ? "font-bold bg-blue-100 text-blue-800 rounded"
+                    : "text-gray-800"
+                }`}
+                onClick={() => setIsMobileNavOpen(false)}
+                title="News"
+              >
+                <AiOutlineFileText size={20} />
+                {!collapsedNav && <span>News</span>}
               </Link>
             </div>
 
