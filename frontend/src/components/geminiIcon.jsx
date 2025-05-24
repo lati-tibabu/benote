@@ -1,4 +1,5 @@
 import React from "react";
+import { FaBook, FaBrain } from "react-icons/fa";
 
 /**
  * GeminiIcon component renders a Gemini icon with a specified size.
@@ -11,7 +12,7 @@ import React from "react";
 const GeminiIcon = ({ size = 28 }) => {
   return (
     <div style={{ width: `${size}px` }}>
-      <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+      {/* <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
         <path
           d="M16 8.016A8.522 8.522 0 008.016 16h-.032A8.521 8.521 0 000 8.016v-.032A8.521 8.521 0 007.984 0h.032A8.522 8.522 0 0016 7.984v.032z"
           fill="url(#prefix__paint0_radial_980_20147)"
@@ -30,7 +31,8 @@ const GeminiIcon = ({ size = 28 }) => {
             <stop offset=".672" stopColor="#1BA1E3" />
           </radialGradient>
         </defs>
-      </svg>
+      </svg> */}
+      <FaBrain />
     </div>
   );
 };
