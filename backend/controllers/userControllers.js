@@ -1,19 +1,78 @@
 const bcrypt = require("bcryptjs");
 const { user, workspace, workspace_membership } = require("../models");
+const emailService = require("../services/emailService");
 
 // Create
 const createUser = async (req, res) => {
   try {
     const salt = await bcrypt.genSalt(10);
+    const verification_token = Math.floor(Math.random() * 1000000);
     const userData = {
       name: req.body.name,
       email: req.body.email,
       password_hash: await bcrypt.hash(req.body.password, salt),
       role: "user",
+      verification_token,
     };
     // const _user = await user.create(req.body);
     const _user = await user.create(userData);
+    // Send verification email
+    const verificationLink = `${process.env.FRONTEND_URL}/auth/verify?user?id=${_user.id}&token=${verification_token}`;
+    const subject = "Verify your email";
+    const text = `Please verify your email by clicking on the following link: ${verificationLink} <br> or here is the verification token <h2>${verification_token}</h2>`;
+    await emailService.sendEmail(_user.email, subject, text);
+
     res.status(201).json(_user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const verifyUser = async (req, res) => {
+  try {
+    const { userId, token } = req.params;
+    const _user = await user.findByPk(userId);
+
+    if (!_user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (_user.verification_token !== token) {
+      return res.status(403).json({ message: "Invalid verification token" });
+    }
+
+    await _user.update({ is_verified: true, verification_token: null });
+    res.json({ message: "User verified successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// regenerate verification token and send to the user
+const regenerateVerificationToken = async (req, res) => {
+  try {
+    const userId = req.query.id;
+    const _user = await user.findByPk(userId);
+
+    if (!_user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const newVerificationToken = Math.floor(Math.random() * 1000000);
+    if (_user.is_verified) {
+      return res.status(400).json({
+        message: "User is already verified, no need to regenerate token",
+      });
+    }
+    await _user.update({ verification_token: newVerificationToken });
+
+    // Send new verification email
+    const verificationLink = `${process.env.FRONTEND_URL}/auth/verify?user?id=${_user.id}&token=${newVerificationToken}`;
+    const subject = "New Verification Required";
+    const text = `Please verify your email by clicking on the following link: ${verificationLink} <br> or here is the new verification token <h2>${newVerificationToken}</h2>`;
+    await emailService.sendEmail(_user.email, subject, text);
+
+    res.json({ message: "New verification token sent to your email" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -199,21 +258,18 @@ const getUserOverview = async (req, res) => {
   }
 };
 
-// getting other models for the user
-const getWorkspaces = async (req, res) => {
-  try {
-    const _workspaces = await findByPk(req.params.id, {
-      include: [
-        {
-          model: workspace,
-          as: "workspace",
-          attributes: ["name, description"],
-        },
-      ],
-    });
-  } catch (error) {}
-};
+const sendEmail = async (req, res) => {
+  const { to, subject, text } = req.body;
+  const html = req.body.html || "<p>" + text + "</p>";
 
+  try {
+    const email = await emailService.sendEmail(to, subject, text, html);
+    res.status(200).json({ message: "Email sent successfully", email });
+  } catch (error) {
+    console.error("Error sending email:", error);
+    res.status(500).json({ message: "Failed to send email", error });
+  }
+};
 module.exports = {
   createUser,
   readUsers,
@@ -222,4 +278,7 @@ module.exports = {
   updateUser,
   deleteUser,
   getUserOverview,
+  sendEmail,
+  verifyUser,
+  regenerateVerificationToken,
 };

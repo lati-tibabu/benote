@@ -118,6 +118,15 @@ module.exports = (sequelize, DataTypes) => {
       },
       password_hash: DataTypes.STRING,
       role: DataTypes.STRING,
+      verification_token: DataTypes.STRING,
+      is_verified: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      is_deleted: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
     },
     {
       sequelize,

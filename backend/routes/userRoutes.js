@@ -15,5 +15,12 @@ router.get(
   authMiddleware.authMiddleware,
   userControllers.getUserOverview
 );
+// router.post("/send/email", userControllers.sendEmail);
+router.get("/verify/:userId/:token", userControllers.verifyUser);
+router.post(
+  "/regenerate/verification-token",
+  // authMiddleware.authMiddleware,
+  userControllers.regenerateVerificationToken
+);
 
 module.exports = router;
