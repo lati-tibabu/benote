@@ -520,7 +520,7 @@ function Dashboard() {
               </div>
             )}
 
-            {latestNotification && (
+            {latestNotification && localStorage.getItem("notificationEnabled") !== "false" && (
               <div className="fixed z-20 bottom-5 right-5 bg-gray-800 text-white px-4 py-3 rounded-md shadow-md flex items-center gap-3">
                 <span
                   className="text-sm hover:underline cursor-pointer"

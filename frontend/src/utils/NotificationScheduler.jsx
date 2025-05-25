@@ -9,6 +9,9 @@ const NotificationScheduler = ({ children }) => {
 
   useEffect(() => {
     const checkUpcomingDeadlines = async () => {
+      // Only send notification requests if notifications are enabled in localStorage
+      const notificationEnabled = localStorage.getItem("notificationEnabled");
+      if (notificationEnabled === "false") return;
       try {
         const response = await fetch(`${apiURL}/api/tasks/check/deadlines`, {
           method: "POST",
