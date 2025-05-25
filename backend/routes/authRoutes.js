@@ -10,7 +10,7 @@ router.post("/", authController.loginUser);
 // Google OAuth login
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] }),
+  passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
 router.get(
@@ -31,7 +31,9 @@ router.get(
         ? process.env.PROD_CLIENT_URL
         : process.env.DEV_CLIENT_URL;
     res.redirect(`${clientURL}/auth/loading?token=${req.user.token}`); // Redirect to loading route
-  },
+  }
 );
 
+router.post("/forgot-password", authController.sendForgotPasswordEmail);
+router.put("/reset-password", authController.resetPassword);
 module.exports = router;

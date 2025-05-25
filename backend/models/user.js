@@ -127,6 +127,8 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
+      forgot_password_token: DataTypes.STRING,
+      forgot_password_token_expiry: DataTypes.DATE,
     },
     {
       sequelize,
