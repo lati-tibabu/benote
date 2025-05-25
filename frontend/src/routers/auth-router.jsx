@@ -4,6 +4,7 @@ import Login from "../pages/auth/login";
 import SignUp from "../pages/auth/signup";
 import AuthPages from "../pages/auth/index";
 import AuthLoading from "../pages/auth/auth-loading";
+const VerifyUser = React.lazy(() => import("../pages/auth/verify-user"));
 
 const authRoutes = {
   path: "/auth",
@@ -12,6 +13,7 @@ const authRoutes = {
     { path: "loading", element: <AuthLoading /> },
     { path: "login", element: <Login /> },
     { path: "signup", element: <SignUp /> },
+    { path: "verify", element: <VerifyUser /> },
   ],
 };
 

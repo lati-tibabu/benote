@@ -277,27 +277,43 @@ function Signup() {
       />
       <div className="relative">
         <dialog ref={dialogRef} className="modal text-white">
-          <div className="modal-box bg-gray-800 text-white rounded-lg p-5 relative">
-            <div className="flex flex-col items-center">
-              <AiOutlineCheckCircle size={48} className="text-white mb-4" />
-              <h3 className="font-bold text-lg">
+          <div className="modal-box bg-gradient-to-br from-blue-700 via-blue-800 to-gray-900 text-white rounded-2xl p-8 shadow-2xl relative max-w-md mx-auto animate-fade-in">
+            <button
+              onClick={() => dialogRef.current?.close()}
+              className="absolute top-4 right-4 text-gray-300 hover:text-white transition-colors text-2xl focus:outline-none"
+              aria-label="Close"
+            >
+              <IoMdClose />
+            </button>
+            <div className="flex flex-col items-center gap-2">
+              <span className="bg-green-600 rounded-full p-3 mb-2 shadow-lg">
+                <AiOutlineCheckCircle size={48} className="text-white" />
+              </span>
+              <h3 className="font-extrabold text-2xl mb-2 tracking-tight text-center">
                 Account Successfully Created!
               </h3>
-              <p className="py-4 text-center text-gray-300">
-                Your account has been created. You can now log in to start using
-                the app.
+              <p className="py-2 text-center text-gray-200 text-base">
+                Your account has been created.<br />
+                <span className="text-blue-200">A verification link and code has been sent to your email.</span>
               </p>
+              <div className="bg-gray-800/60 rounded-lg p-4 text-sm text-gray-300 mb-2 w-full">
+                <span className="font-semibold text-white">Next Steps:</span>
+                <ul className="list-disc list-inside mt-1 space-y-1">
+                  <li>Check your inbox and verify your account.</li>
+                  <li>If you can't find the email, check your spam folder.</li>
+                  <li>After verification, you can log in and start using the app.</li>
+                </ul>
+              </div>
               <Link
                 to="/auth/login"
-                className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition"
+                className="mt-4 w-full text-center bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition-all duration-200"
               >
                 Login Here
               </Link>
             </div>
           </div>
-
           <form method="dialog" className="modal-backdrop">
-            <button>close</button>
+            <button tabIndex={-1} aria-label="Close Modal">close</button>
           </form>
         </dialog>
       </div>

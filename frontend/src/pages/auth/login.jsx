@@ -39,22 +39,26 @@ function Login() {
 
       if (response.ok) {
         const result = await response.json();
+        if (result.is_verified === false) {
+          navigate(`/auth/verify?user=${result.user}`);
+          setLoginLoading(false);
+          return;
+        }
         const token = result.token;
         localStorage.setItem("jwt", token);
         localStorage.setItem(
           "jwt_expiration",
           Date.now() + 30 * 24 * 60 * 60 * 1000
         );
-        // const data = await response.json();
 
         const data = jwtDecode(result.token);
+
         const authenticatedUser = {
           id: data.id,
           email: data.email,
           name: data.name,
         };
         dispatch(setAuthenticatedUser(authenticatedUser));
-
         navigate("/app/home");
         setLoginLoading(false);
       } else {
