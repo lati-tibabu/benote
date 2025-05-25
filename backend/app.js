@@ -22,7 +22,7 @@ app.get("/", (req, res) => {
 
 app.get("/database", (req, res) => {
   sequelize
-    .sync({ force: true })
+    .sync({ alter: true })
     .then(() => {
       res.status(201).send("Database synced");
     })
