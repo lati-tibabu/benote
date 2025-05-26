@@ -9,7 +9,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendEmail = (to, subject, text, html = null) => {
+const sendEmail = async (to, subject, text, html = null) => {
   const mailOption = {
     from: process.env.EMAIL_USER,
     to,
@@ -17,13 +17,14 @@ const sendEmail = (to, subject, text, html = null) => {
     text,
     html,
   };
-  //   if (html) {
-  //     mailOption.html = html;
-  //   }
-
   try {
-    const email = transporter.sendMail(mailOption);
-    return email;
+    // Await the sendMail promise and check for errors in the callback
+    const info = await transporter.sendMail(mailOption);
+    // If the response contains a rejected array (for some transports), throw an error
+    if (info.rejected && info.rejected.length > 0) {
+      throw new Error(`Email rejected for: ${info.rejected.join(", ")}`);
+    }
+    return info;
   } catch (e) {
     console.error("Error sending email:", e);
     throw e;

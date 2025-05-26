@@ -4,6 +4,7 @@ const emailService = require("../services/emailService");
 
 // Create
 const createUser = async (req, res) => {
+  let _user = null;
   try {
     const salt = await bcrypt.genSalt(10);
     const verification_token = Math.floor(Math.random() * 1000000);
@@ -14,16 +15,31 @@ const createUser = async (req, res) => {
       role: "user",
       verification_token,
     };
-    // const _user = await user.create(req.body);
-    const _user = await user.create(userData);
+    _user = await user.create(userData);
     // Send verification email
     const verificationLink = `${process.env.FRONTEND_URL}/auth/verify?user?id=${_user.id}&token=${verification_token}`;
     const subject = "Verify your email";
     const text = `Please verify your email by clicking on the following link: ${verificationLink} <br> or here is the verification token <h2>${verification_token}</h2>`;
-    await emailService.sendEmail(_user.email, subject, text);
-
+    try {
+      await emailService.sendEmail(_user.email, subject, text);
+    } catch (emailError) {
+      // Rollback user creation if email fails
+      await _user.destroy();
+      return res
+        .status(500)
+        .json({
+          message:
+            "Failed to send verification email. Please check your email address and try again.",
+        });
+    }
     res.status(201).json(_user);
   } catch (error) {
+    // If user was created but error happened after, ensure cleanup
+    if (_user && _user.id) {
+      try {
+        await _user.destroy();
+      } catch (e) {}
+    }
     res.status(500).json({ message: error.message });
   }
 };

@@ -12,6 +12,7 @@ function Signup() {
   const [isEmailValid, setIsEmailValid] = useState(true);
   const [isPasswordValid, setIsPasswordValid] = useState(true);
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+  const [signupError, setSignupError] = useState("");
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -25,6 +26,7 @@ function Signup() {
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    setSignupError("");
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match");
       return;
@@ -50,11 +52,11 @@ function Signup() {
         openModal();
       } else {
         const error = await response.json();
-        alert(`Signup failed: ${error.message || "Something went wrong"}`);
+        setSignupError(error.message || "Signup failed. Please try again.");
       }
     } catch (error) {
       console.error("Error during signup:", error);
-      alert("Something went wrong, please try again.");
+      setSignupError("Something went wrong, please try again.");
     } finally {
       setSignUpLoading(false);
     }
@@ -231,7 +233,11 @@ function Signup() {
           </div>
           */}
         </form>
-
+        {signupError && (
+          <div className="mt-4 text-red-600 text-center text-sm font-semibold bg-red-100 border border-red-300 rounded p-2">
+            {signupError}
+          </div>
+        )}
         <div className="text-center mt-6 text-sm text-gray-600">
           <p>
             Already have an account?{" "}
