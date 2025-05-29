@@ -44,7 +44,7 @@ const MySubmission = ({ assignmentId, isTeacher }) => {
 
   const handleEdit = (submission) => {
     setEditId(submission.id);
-    setEditContent(submission.content || "");
+    setEditContent(submission.description || "");
   };
 
   const handleDelete = (submissionId) => {
@@ -73,7 +73,7 @@ const MySubmission = ({ assignmentId, isTeacher }) => {
       const res = await fetch(`${apiURL}/api/submissions/my/${editId}`, {
         method: "PUT",
         headers: header,
-        body: JSON.stringify({ content: editContent }),
+        body: JSON.stringify({ description: editContent }),
       });
       if (!res.ok) throw new Error("Failed to update submission");
       const updated = await res.json();
@@ -112,55 +112,87 @@ const MySubmission = ({ assignmentId, isTeacher }) => {
   if (!assignmentId) return null;
 
   return (
-    <div className="max-w-2xl mx-auto mb-10 p-8 bg-gradient-to-br from-white to-blue-50 rounded-2xl shadow-xl border border-blue-100">
-      <h3 className="text-2xl font-bold text-gray-800 mb-4 tracking-tight flex items-center gap-2">
-        <span>My Submissions</span>
-      </h3>
-      <p className="mb-6 text-gray-600 text-base leading-relaxed">
-        First select an assignment in <strong>Assignment</strong> tab to view
-        submissions.
-        <br />
-        Here you can view, edit, and delete your submissions for this
-        assignment.
-        {isTeacher && (
-          <span> As a teacher, you can also manage student submissions.</span>
-        )}
-      </p>
+    <div className="max-w-2xl mx-auto mb-12 p-10 bg-white/90 rounded-3xl shadow-2xl border border-blue-100 flex flex-col gap-8">
+      <div>
+        <h3 className="text-3xl font-extrabold text-gray-900 mb-2 tracking-tight flex items-center gap-3">
+          <span className="inline-block w-2 h-7 bg-blue-500 rounded-full"></span>
+          My Submissions
+        </h3>
+        <p className="mb-6 text-gray-600 text-base leading-relaxed">
+          Select an assignment in the <strong>Assignment</strong> tab to view or
+          submit your work.
+          <br />
+          You can view, edit, or delete your submissions for this assignment
+          here.
+        </p>
+      </div>
       {loading ? (
-        <div className="text-center text-gray-400 py-8 text-lg font-medium">
+        <div className="flex items-center justify-center text-gray-400 py-12 text-lg font-medium min-h-[120px]">
           Loading...
         </div>
       ) : error ? (
-        <div className="text-center text-red-500 py-8 text-lg font-medium">
+        <div className="flex items-center justify-center text-red-500 py-12 text-lg font-medium min-h-[120px]">
           {error}
         </div>
       ) : (
-        <ul className="space-y-6">
+        <ul className="space-y-7">
           {mySubmissions.length === 0 && (
-            <li className="text-gray-400 text-center py-8 text-lg font-medium bg-white/70 rounded-xl border border-gray-100">
+            <li className="flex flex-col items-center justify-center text-gray-400 text-center py-12 text-lg font-medium bg-white/80 rounded-2xl border border-gray-100 shadow-inner min-h-[120px]">
+              <svg
+                className="w-12 h-12 mb-2 text-gray-200"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 20h9"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4v16m0 0H3"
+                />
+              </svg>
               No submissions yet.
             </li>
           )}
           {mySubmissions.map((submission) => (
-            <li className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 group hover:shadow-md hover:border-blue-200 transition flex flex-col gap-2">
+            <li
+              key={submission.id}
+              className={`relative bg-white rounded-2xl border border-gray-100 shadow-md p-7 group transition flex flex-col gap-3 ${
+                editId === submission.id
+                  ? "ring-2 ring-blue-400"
+                  : "hover:shadow-lg hover:border-blue-200"
+              }`}
+            >
               {editId === submission.id ? (
                 <>
+                  <label
+                    htmlFor="edit-content"
+                    className="block text-gray-700 font-semibold mb-2"
+                  >
+                    Edit Submission
+                  </label>
                   <textarea
-                    className="textarea textarea-bordered w-full min-h-[80px] focus:ring-2 focus:ring-blue-400 transition mb-3"
-                    rows={4}
+                    id="edit-content"
+                    className="w-full min-h-[100px] rounded-xl border border-blue-200 bg-blue-50/60 p-4 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition shadow-sm resize-vertical mb-4"
+                    rows={6}
                     value={editContent}
                     onChange={(e) => setEditContent(e.target.value)}
                     autoFocus
                   />
-                  <div className="flex gap-3 justify-end">
+                  <div className="flex gap-3 justify-end mt-2">
                     <button
-                      className="px-6 py-2 rounded-lg bg-green-600 text-white font-semibold shadow hover:bg-green-700 transition"
+                      className="px-7 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition"
                       onClick={handleSave}
                     >
                       Save
                     </button>
                     <button
-                      className="px-6 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold shadow hover:bg-gray-300 transition"
+                      className="px-7 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold shadow hover:bg-gray-300 transition"
                       onClick={() => setEditId(null)}
                     >
                       Cancel
@@ -169,34 +201,36 @@ const MySubmission = ({ assignmentId, isTeacher }) => {
                 </>
               ) : (
                 <>
-                  <div className="mb-2 whitespace-pre-line prose max-w-none">
+                  <div className="prose max-w-none text-gray-800 bg-gray-50 p-5 rounded-xl border border-gray-100 shadow-inner mb-2">
                     <MarkdownRenderer
                       content={submission.description || submission.content}
                     />
-                    <div className="mt-2 text-xs text-gray-500">
-                      Submitted at:{" "}
+                  </div>
+                  <div className="flex flex-wrap items-center justify-between gap-2 mt-1">
+                    <div className="text-xs text-gray-500">
+                      Submitted:{" "}
                       {new Date(submission.submitted_at).toLocaleString()}
                       {submission.updatedAt !== submission.submitted_at && (
-                        <span className="ml-2">
-                          · Updated at:{" "}
+                        <span className="ml-2 text-blue-500">
+                          · Updated:{" "}
                           {new Date(submission.updatedAt).toLocaleString()}
                         </span>
                       )}
                     </div>
-                  </div>
-                  <div className="flex gap-3 justify-end mt-2">
-                    <button
-                      className="px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition"
-                      onClick={() => handleEdit(submission)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="px-6 py-2 rounded-lg bg-red-600 text-white font-semibold shadow hover:bg-red-700 transition"
-                      onClick={() => handleDelete(submission.id)}
-                    >
-                      Delete
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        className="px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition"
+                        onClick={() => handleEdit(submission)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="px-6 py-2 rounded-lg bg-red-600 text-white font-semibold shadow hover:bg-red-700 transition"
+                        onClick={() => handleDelete(submission.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </>
               )}

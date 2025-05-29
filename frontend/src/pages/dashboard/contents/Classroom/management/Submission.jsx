@@ -78,108 +78,152 @@ const Submission = ({ assignmentId, isTeacher }) => {
   if (!assignmentId) return null;
 
   return (
-    <div className="mt-10 flex gap-10 max-w-6xl mx-auto">
-      <div className="flex-1">
-        <h2 className="text-3xl font-bold text-gray-800 mb-6 tracking-tight">
+    <div className="mt-12 flex flex-col md:flex-row gap-10 max-w-6xl mx-auto">
+      {/* Submissions Sidebar */}
+      <aside className="md:w-1/2 lg:w-2/5 xl:w-1/3 bg-white/80 rounded-2xl border border-gray-100 shadow-lg p-6 flex flex-col min-h-[500px]">
+        <h2 className="text-2xl font-semibold text-gray-900 mb-6 tracking-tight flex items-center gap-2">
+          <span className="inline-block w-2 h-6 bg-blue-500 rounded-full mr-2"></span>
           Submissions
         </h2>
         {loading ? (
-          <div className="text-center text-gray-400 py-8 text-lg font-medium">
+          <div className="flex-1 flex items-center justify-center text-gray-400 text-lg font-medium">
             Loading submissions...
           </div>
         ) : error ? (
-          <div className="text-center text-red-500 py-8 text-lg font-medium">
+          <div className="flex-1 flex items-center justify-center text-red-500 text-lg font-medium">
             {error}
           </div>
         ) : (
-          <>
-            {mySubmission && (
-              <div className="mb-8 bg-blue-50/80 rounded-xl border border-blue-100 shadow p-6">
-                <h3 className="text-xl font-semibold text-gray-800 mb-3">
-                  Your Submission
-                </h3>
-                {editMode ? (
-                  <>
-                    <textarea
-                      className="textarea textarea-bordered w-full min-h-[80px] focus:ring-2 focus:ring-blue-400 transition mb-4"
-                      rows={4}
-                      value={editContent}
-                      onChange={(e) => setEditContent(e.target.value)}
-                      autoFocus
-                    />
-                    <div className="flex gap-3 justify-end">
-                      <button
-                        className="px-6 py-2 rounded-lg bg-green-600 text-white font-semibold shadow hover:bg-green-700 transition"
-                        onClick={handleSave}
-                      >
-                        Save
-                      </button>
-                      <button
-                        className="px-6 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold shadow hover:bg-gray-300 transition"
-                        onClick={() => setEditMode(false)}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="mb-3 whitespace-pre-line prose max-w-none text-gray-700">
-                      <MarkdownRenderer content={mySubmission.content} />
-                    </div>
-                    <div className="flex gap-3 justify-end">
-                      <button
-                        className="px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition"
-                        onClick={handleEdit}
-                      >
-                        Edit
-                      </button>
-                    </div>
-                  </>
+          <ul className="flex-1 space-y-3 overflow-y-auto pr-2 custom-scrollbar">
+            {submissions.length === 0 && (
+              <li className="text-gray-400 text-center py-8">
+                No submissions yet.
+              </li>
+            )}
+            {submissions.map((submission) => (
+              <li
+                key={submission.id}
+                className={`group flex items-center gap-4 p-4 rounded-xl border transition-all cursor-pointer select-none shadow-sm hover:shadow-md hover:border-blue-300/70 bg-white/90 hover:bg-blue-50/60 ${
+                  selectedSubmission && selectedSubmission.id === submission.id
+                    ? "ring-2 ring-blue-500 border-blue-400 bg-blue-50/80"
+                    : "border-gray-100"
+                }`}
+                onClick={() => setSelectedSubmission(submission)}
+              >
+                {/* Avatar/Initials */}
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-lg shadow-sm border border-blue-200">
+                  {submission?.student?.name?.[0]?.toUpperCase() || "?"}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-base font-medium text-gray-900 truncate group-hover:text-blue-700 transition">
+                    {submission?.student?.name}
+                  </p>
+                  <div className="mt-1 text-xs text-gray-500 flex flex-wrap gap-2">
+                    <span>
+                      Submitted:{" "}
+                      {new Date(submission.submitted_at).toLocaleString()}
+                    </span>
+                    {new Date(submission.updatedAt).toTimeString() !==
+                      new Date(submission.submitted_at).toTimeString() && (
+                      <span className="text-blue-500">
+                        · Updated:{" "}
+                        {new Date(submission.updatedAt).toLocaleString()}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <svg
+                  className="w-5 h-5 text-gray-300 group-hover:text-blue-400 transition"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </li>
+            ))}
+          </ul>
+        )}
+      </aside>
+      {/* Submission detail panel */}
+      <main className="flex-1 flex items-start">
+        {selectedSubmission ? (
+          <div className="w-full max-w-xl bg-white rounded-2xl shadow-2xl border border-gray-100 p-10 animate-fade-in flex flex-col relative min-h-[400px]">
+            <button
+              className="absolute left-6 top-6 text-gray-400 hover:text-blue-600 transition text-sm font-medium flex items-center gap-1"
+              onClick={() => setSelectedSubmission(null)}
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+              Back
+            </button>
+            <div className="mb-6 pt-2">
+              <h3 className="text-2xl font-bold text-gray-900 mb-1 tracking-tight flex items-center gap-2">
+                <span className="inline-block w-2 h-6 bg-blue-500 rounded-full"></span>
+                Submission Detail
+              </h3>
+              <p className="text-gray-700 font-medium text-lg flex items-center gap-2 mt-2">
+                <span className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-base border border-blue-200">
+                  {selectedSubmission.student?.name?.[0]?.toUpperCase() || "?"}
+                </span>
+                {selectedSubmission.student?.name}
+              </p>
+              <div className="mt-2 text-xs text-gray-500">
+                Submitted:{" "}
+                {new Date(selectedSubmission.submitted_at).toLocaleString()}
+                {new Date(selectedSubmission.updatedAt).toTimeString() !==
+                  new Date(selectedSubmission.submitted_at).toTimeString() && (
+                  <span className="ml-2 text-blue-500">
+                    · Updated:{" "}
+                    {new Date(selectedSubmission.updatedAt).toLocaleString()}
+                  </span>
                 )}
               </div>
-            )}
-            <ul className="space-y-4">
-              {submissions.map((submission) => (
-                <li
-                  key={submission.id}
-                  className={`bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex items-center gap-4 cursor-pointer hover:shadow-md hover:border-blue-200 transition ${
-                    selectedSubmission &&
-                    selectedSubmission.id === submission.id
-                      ? "ring-2 ring-blue-400"
-                      : ""
-                  }`}
-                  onClick={() => setSelectedSubmission(submission)}
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="text-lg font-medium text-gray-800 truncate">
-                      {submission?.student?.name}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-      </div>
-      {/* Submission detail panel */}
-      {selectedSubmission && (
-        <div className="w-1/3 min-w-[320px] max-w-md bg-white rounded-2xl shadow-2xl border border-gray-100 p-8 animate-fade-in flex flex-col">
-          <h3 className="text-2xl font-bold mb-2 text-gray-800">
-            Submission Detail
-          </h3>
-          <p className="mb-4 text-gray-700 font-medium text-lg">
-            {selectedSubmission.student?.name}
-          </p>
-          <div className="prose max-w-none text-gray-700 bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <MarkdownRenderer
-              content={
-                selectedSubmission.description || selectedSubmission.content
-              }
-            />
+            </div>
+            <div className="prose max-w-none text-gray-800 bg-gray-50 p-6 rounded-xl border border-gray-100 shadow-inner min-h-[180px]">
+              <MarkdownRenderer
+                content={
+                  selectedSubmission.description || selectedSubmission.content
+                }
+              />
+            </div>
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="w-full max-w-xl flex flex-col items-center justify-center min-h-[400px] text-gray-400 text-lg font-medium select-none">
+            <svg
+              className="w-16 h-16 mb-4 text-gray-200"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 20h9" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4v16m0 0H3"
+              />
+            </svg>
+            Select a submission to view details
+          </div>
+        )}
+      </main>
     </div>
   );
 };

@@ -61,11 +61,14 @@ const Assignment = ({ classroomId, isTeacher, onAssignmentClick }) => {
     };
 
     try {
-      const response = await fetch(`${apiURL}/api/assignments`, {
-        method: "POST",
-        headers: header,
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `${apiURL}/api/assignments?classroomId=${classroomId}`,
+        {
+          method: "POST",
+          headers: header,
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (response.ok) {
         setForm({ title: "", description: "", due_date: "" });
