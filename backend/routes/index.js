@@ -24,6 +24,7 @@ const notificationRoutes = require("./notificationRoutes");
 const profileRoutes = require("./profileRoutes");
 const resourceRoutes = require("./resourceRoutes");
 const materialRoutes = require("./classroomMaterialsRoutes");
+const searchRoutes = require("./search");
 
 const authRoutes = require("./authRoutes");
 const { logoutController } = require("../middlewares/authMiddleware");
@@ -55,6 +56,7 @@ router.use("/resources", resourceRoutes);
 router.use("/classroom-materials", materialRoutes);
 
 router.use("/auth", authRoutes);
+router.use("/search", searchRoutes);
 
 router.post("/logout", logoutController);
 

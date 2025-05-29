@@ -11,5 +11,9 @@ router.get("/", /*authMiddleware,*/ assignmentController.readAssignments);
 router.get("/:id", assignmentController.readAssignment);
 router.put("/:id", assignmentController.updateAssignment);
 router.delete("/:id", assignmentController.deleteAssignment);
+router.get(
+  "/classroom/all",
+  assignmentController.readAllAssignmentsInClassroom
+);
 
 module.exports = router;

@@ -24,5 +24,9 @@ router.delete("/:team_id/members/:user_id", teamController.removeUserMember);
 router.get("/:id", teamController.readTeam);
 router.put("/:id", teamController.updateTeam);
 router.delete("/:id", teamController.deleteTeam);
+router.put(
+  "/:id/membership/invitation",
+  teamController.acceptMembershipInvitation
+);
 
 module.exports = router;
