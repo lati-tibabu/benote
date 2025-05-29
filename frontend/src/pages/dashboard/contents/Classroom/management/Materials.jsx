@@ -101,87 +101,99 @@ const Materials = ({ isTeacher }) => {
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-semibold text-gray-700 mb-4">Materials</h2>
+    <div className="max-w-4xl mx-auto p-6 bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl border border-gray-200">
+      <h2 className="text-3xl font-bold text-gray-800 mb-8 tracking-tight">
+        Materials
+      </h2>
 
       {isTeacher && (
         <form
           onSubmit={handleUpload}
-          className="bg-white shadow-md rounded-lg p-4 mb-6"
+          className="mb-10 bg-white/80 rounded-xl shadow p-6 flex flex-col gap-4 border border-gray-100"
         >
-          <div className="mb-4">
+          <div className="flex flex-col gap-2">
+            <label className="font-medium text-gray-700">File</label>
             <input
               type="file"
               onChange={(e) => setFile(e.target.files[0])}
-              className="block w-full text-sm text-gray-500"
+              className="file-input bg-white text-black file-input-bordered w-full focus:ring-2 focus:ring-blue-400 transition"
             />
           </div>
-          <div className="mb-4">
+          <div className="flex flex-col gap-2">
+            <label className="font-medium text-gray-700">Description</label>
             <textarea
               placeholder="Enter file description (optional)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+              className="textarea bg-white text-black textarea-bordered w-full min-h-[60px] focus:ring-2 focus:ring-blue-400 transition"
             />
           </div>
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            Upload
-          </button>
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              className="px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition"
+            >
+              Upload
+            </button>
+          </div>
         </form>
       )}
 
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-medium text-gray-600">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl font-semibold text-gray-700">
           Uploaded Materials
         </h3>
         <button
           onClick={() => setIsGridView(!isGridView)}
-          className="text-sm text-blue-500"
+          className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-lg hover:bg-blue-100 transition"
         >
           Switch to {isGridView ? "List" : "Grid"} View
         </button>
       </div>
 
       {loading ? (
-        <p className="text-gray-500">Loading materials...</p>
+        <div className="text-center text-gray-400 py-12 text-lg font-medium">
+          Loading materials...
+        </div>
       ) : materials.length === 0 ? (
-        <p className="text-gray-500">No materials available at the moment.</p>
+        <div className="text-center text-gray-400 py-12 text-lg font-medium">
+          No materials available at the moment.
+        </div>
       ) : (
         <div
           className={`grid ${
             isGridView ? "grid-cols-2 md:grid-cols-3" : "grid-cols-1"
-          } gap-4`}
+          } gap-6`}
         >
           {materials.map((material) => (
             <div
               key={material.id}
-              className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm"
+              className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex flex-col justify-between group hover:shadow-md hover:border-blue-200 transition"
             >
-              <h4 className="font-semibold text-gray-800 break-words mb-1">
-                {material.name}
-              </h4>
-              <p className="text-sm text-gray-500 mb-1">
-                {material.description || "No description"}
-              </p>
-              <p className="text-xs text-gray-400 mb-2">
-                Size: {formatBytes(parseInt(material.size))}
-              </p>
-              <div className="flex gap-2">
+              <div>
+                <h4 className="text-lg font-semibold text-gray-800 group-hover:text-blue-700 break-words mb-1 truncate">
+                  {material.name}
+                </h4>
+                <p className="text-sm text-gray-500 mb-1 line-clamp-2">
+                  {material.description || "No description"}
+                </p>
+                <p className="text-xs text-gray-400 mb-2">
+                  Size: {formatBytes(parseInt(material.size))}
+                </p>
+              </div>
+              <div className="flex gap-3 mt-2">
                 <a
                   href={material.path}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-blue-600 hover:underline"
+                  className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-lg hover:bg-blue-100 transition"
                 >
                   Download
                 </a>
                 {userData?.id === material.uploader_id && (
                   <button
                     onClick={() => handleDelete(material.id)}
-                    className="text-sm text-red-500 hover:underline"
+                    className="text-sm font-medium text-red-600 bg-red-50 px-3 py-1 rounded-lg hover:bg-red-100 transition"
                   >
                     Delete
                   </button>

@@ -6,31 +6,35 @@ import ClassroomManagement from "./management/ClassroomManagement"; // Import th
 
 const Classroom = () => {
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-blue-50 p-8">
       <ToastContainer />
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-end mb-8">
         <button
-          className="btn bg-blue-600 text-white px-6 py-2 rounded-full shadow-md hover:bg-blue-700 transition"
+          className="px-7 py-2 rounded-full bg-blue-600 text-white font-semibold shadow-lg hover:bg-blue-700 transition text-lg"
           onClick={() => document.getElementById("add_classroom").showModal()}
         >
           + Create New
         </button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white border border-gray-200 shadow-md p-6 rounded-lg">
-          <p className="font-bold text-lg mb-4">Classroom I created</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto">
+        <div className="bg-white border border-gray-100 shadow-xl p-8 rounded-2xl flex flex-col">
+          <p className="font-bold text-2xl mb-6 text-gray-800 tracking-tight">
+            Classrooms I Created
+          </p>
           <ClassroomList requestType="created" />
         </div>
-        <div className="bg-white border border-gray-200 shadow-md p-6 rounded-lg">
-          <p className="font-bold text-lg mb-4">Classroom I Joined</p>
+        <div className="bg-white border border-gray-100 shadow-xl p-8 rounded-2xl flex flex-col">
+          <p className="font-bold text-2xl mb-6 text-gray-800 tracking-tight">
+            Classrooms I Joined
+          </p>
           <ClassroomList requestType="joined" />
         </div>
       </div>
 
       <dialog id="add_classroom" className="modal">
-        <div className="modal-box bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl mx-auto">
+        <div className="modal-box bg-white p-8 rounded-2xl shadow-2xl w-full max-w-2xl mx-auto relative">
           <form method="dialog">
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 text-gray-500 hover:text-gray-800">
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-6 top-6 text-gray-400 hover:text-gray-700 text-xl font-bold">
               ✕
             </button>
           </form>
