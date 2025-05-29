@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaUserGraduate } from "react-icons/fa";
 import { AiOutlineDelete, AiOutlinePlus } from "react-icons/ai";
+import { PiSignOutBold } from "react-icons/pi";
 import Assignment from "../management/Assignment";
 import Materials from "../management/Materials";
 import Submission from "../management/Submission";
@@ -27,6 +28,7 @@ const OpenedClassroom = () => {
   const [submissions, setSubmissions] = useState([]);
   const [submissionsLoading, setSubmissionsLoading] = useState(false);
   const [selectedAssignmentId, setSelectedAssignmentId] = useState(null);
+  const [userEmail, setUserEmail] = useState("");
 
   // Tab state
   const [activeTab, setActiveTab] = useState("overview");
@@ -65,6 +67,15 @@ const OpenedClassroom = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         setClassroom(data);
+        // Set user email if student
+        if (token) {
+          try {
+            const jwtPayload = JSON.parse(atob(token.split(".")[1]));
+            setUserEmail(jwtPayload.email);
+          } catch (e) {
+            setUserEmail("");
+          }
+        }
       } catch (e) {
         setError(e.message);
       } finally {
@@ -141,6 +152,32 @@ const OpenedClassroom = () => {
     }
   };
 
+  const handleLeaveClassroom = async () => {
+    if (!userEmail) return;
+    setActionLoading(true);
+    try {
+      const response = await fetch(
+        `${apiURL}/api/classrooms/${classroomId}/leave`,
+        {
+          method: "POST",
+          headers: header,
+          body: JSON.stringify({ email: userEmail }),
+        }
+      );
+      if (!response.ok) {
+        const data = await response.json();
+        toast.error(data.message || "Failed to leave classroom.");
+        return;
+      }
+      toast.success("You have left the classroom.");
+      navigate("/app/classrooms");
+    } catch (e) {
+      toast.error(e.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
       <ToastContainer />
@@ -166,12 +203,26 @@ const OpenedClassroom = () => {
                 {classroom?.description}
               </p>
             </div>
-            <button
-              onClick={() => navigate(-1)}
-              className="px-6 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white rounded-xl shadow-md font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
-            >
-              Back
-            </button>
+            <div className="flex gap-3 items-center">
+              <button
+                onClick={() => navigate(-1)}
+                className="px-6 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white rounded-xl shadow-md font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
+              >
+                Back
+              </button>
+              {/* Show Leave Classroom button if not teacher and student is enrolled */}
+              {!classroom.isTeacher &&
+              classroom.students &&
+              classroom.students.some((s) => s.email === userEmail) ? (
+                <button
+                  onClick={handleLeaveClassroom}
+                  disabled={actionLoading}
+                  className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-red-500 to-red-400 hover:from-red-600 hover:to-red-500 text-white rounded-xl shadow-md font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-300"
+                >
+                  <PiSignOutBold className="text-xl" /> Leave Classroom
+                </button>
+              ) : null}
+            </div>
           </div>
 
           {/* Highlighted selected assignment name globally */}

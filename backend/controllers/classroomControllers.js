@@ -209,19 +209,10 @@ const removeStudentFromClassroom = async (req, res) => {
 
   const studentId = student.id; // Get the student ID
 
-  // Find the classroom
   try {
     const userId = req.user.id;
     const _student = await user.findByPk(studentId);
     const _classroom = await classroom.findByPk(classroomId);
-
-    // Check if the user is a teacher of the classroom
-    if (_classroom.teacher_id !== userId) {
-      return res.status(403).json({
-        message:
-          "You are not authorized to remove students from this classroom",
-      });
-    }
 
     if (!_student || !_classroom) {
       return res
@@ -229,7 +220,22 @@ const removeStudentFromClassroom = async (req, res) => {
         .json({ message: "Student or Classroom not found" });
     }
 
-    await _student.removeEnrolledClassrooms(_classroom); // Uses alias "studentClassroomss"
+    // Allow if teacher is removing student, or student is removing themselves
+    if (_classroom.teacher_id !== userId && userId !== studentId) {
+      return res.status(403).json({
+        message:
+          "You are not authorized to remove this student from this classroom",
+      });
+    }
+
+    // Prevent teacher from removing themselves as a student (should not happen, but for safety)
+    if (_classroom.teacher_id === studentId && userId === studentId) {
+      return res.status(400).json({
+        message: "Teacher cannot leave their own classroom.",
+      });
+    }
+
+    await _student.removeEnrolledClassrooms(_classroom);
 
     await sendNotification({
       message: `You have been removed from Classroom "${_classroom.name}"`,
