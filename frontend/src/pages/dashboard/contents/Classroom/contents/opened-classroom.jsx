@@ -281,13 +281,14 @@ const OpenedClassroom = () => {
             )}
             {activeTab === "submissions" && selectedAssignmentId && (
               <div className="space-y-6">
-                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 shadow-sm">
-                  <MySubmission
-                    assignmentId={selectedAssignmentId}
-                    isTeacher={classroom?.isTeacher}
-                  />
-                </div>
-                {classroom?.isTeacher && (
+                {!classroom?.isTeacher ? (
+                  <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 shadow-sm">
+                    <MySubmission
+                      assignmentId={selectedAssignmentId}
+                      isTeacher={classroom?.isTeacher}
+                    />
+                  </div>
+                ) : (
                   <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 shadow-sm">
                     <Submission assignmentId={selectedAssignmentId} />
                   </div>
