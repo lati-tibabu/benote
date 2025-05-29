@@ -22,6 +22,13 @@ const readClassrooms = async (req, res) => {
             model: classroom,
             as: "enrolledClassrooms",
             attributes: ["id", "name", "description"],
+            include: [
+              {
+                model: user,
+                as: "teacher",
+                attributes: ["id", "name", "email"],
+              },
+            ],
           },
         ],
       });
