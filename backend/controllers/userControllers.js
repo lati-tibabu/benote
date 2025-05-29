@@ -25,12 +25,10 @@ const createUser = async (req, res) => {
     } catch (emailError) {
       // Rollback user creation if email fails
       await _user.destroy();
-      return res
-        .status(500)
-        .json({
-          message:
-            "Failed to send verification email. Please check your email address and try again.",
-        });
+      return res.status(500).json({
+        message:
+          "Failed to send verification email. Please check your email address and try again.",
+      });
     }
     res.status(201).json(_user);
   } catch (error) {

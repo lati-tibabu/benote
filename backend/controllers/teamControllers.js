@@ -2,6 +2,8 @@ const { team, team_membership, user } = require("../models");
 // const { team, team_membership } = require('../models');
 const { Sequelize, where } = require("sequelize");
 
+const { sendNotification } = require("../services/notificationService");
+
 const createTeam = async (req, res) => {
   const { name } = req.body;
   const userId = req.user.id;
@@ -16,7 +18,7 @@ const createTeam = async (req, res) => {
     // Create the team
     const _team = await team.create(
       { name, created_by: userId },
-      { transaction },
+      { transaction }
     );
 
     // Assign the creator as an admin in the membership table
@@ -25,8 +27,9 @@ const createTeam = async (req, res) => {
         team_id: _team.id,
         user_id: userId,
         role: "admin",
+        invitation_accepted: true,
       },
-      { transaction },
+      { transaction }
     );
 
     await transaction.commit(); // Commit transaction
@@ -73,6 +76,8 @@ const giveUserMembership = async (req, res) => {
       user_id: req.body.user_id,
       role: "member",
     });
+
+    // Send notification to the user being added
 
     res.status(201).json(_membership);
   } catch (error) {
@@ -135,7 +140,7 @@ const promoteTeamAdmin = async (req, res) => {
             team_id: teamId,
             user_id: req.body.user_id,
           },
-        },
+        }
       );
       res.status(200).json(_membership);
     }
@@ -196,7 +201,7 @@ const demoteTeamAdmin = async (req, res) => {
             team_id: req.params.team_id,
             user_id: req.body.user_id,
           },
-        },
+        }
       );
       res.status(200).json(_membership);
     }
@@ -207,6 +212,45 @@ const demoteTeamAdmin = async (req, res) => {
   }
 };
 
+const acceptMembershipInvitation = async (req, res) => {
+  try {
+    const teamId = req.params.id;
+    const userId = req.user.id;
+
+    const isMemberAndInvitationNotAccepted = await team_membership.findOne({
+      where: {
+        team_id: teamId,
+        user_id: userId,
+        invitation_accepted: false,
+      },
+    });
+
+    if (!isMemberAndInvitationNotAccepted) {
+      return res
+        .status(400)
+        .json({ message: "User not member or invitation not exist" });
+    }
+
+    const _invitation = await team_membership.update(
+      {
+        invitation_accepted: true,
+      },
+      {
+        where: {
+          team_id: teamId,
+          user_id: userId,
+        },
+      }
+    );
+    return res
+      .status(200)
+      .json({ invitation: _invitation, message: "invitation Accepted " });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
 const removeUserMember = async (req, res) => {
   try {
     const teamId = req.params.team_id;
@@ -274,6 +318,7 @@ const readTeam = async (req, res) => {
       where: {
         team_id: team_id,
         user_id: req.user.id,
+        invitation_accepted: true,
       },
     });
 
@@ -335,7 +380,7 @@ const readTeams = async (req, res) => {
 
     const memberships = await team_membership.findAll({
       attributes: ["role", "team_id"],
-      where: { user_id: req.user.id },
+      where: { user_id: req.user.id, invitation_accepted: true },
       include: [
         {
           model: team,
@@ -470,4 +515,5 @@ module.exports = {
   promoteTeamAdmin,
   demoteTeamAdmin,
   removeUserMember,
+  acceptMembershipInvitation,
 };
