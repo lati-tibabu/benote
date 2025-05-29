@@ -155,6 +155,12 @@ const addStudentToClassroom = async (req, res) => {
       });
     }
 
+    if (_classroom.teacher_id === studentId) {
+      return res.status(400).json({
+        message: `${email}(${_student.name}) is the teacher of Classroom ${_classroom.name}. You cannot add yourself as a student.`,
+      });
+    }
+
     // Check if the student is already member of classroom
     const enrolledClassrooms = await _student.getEnrolledClassrooms({
       where: { id: classroomId },

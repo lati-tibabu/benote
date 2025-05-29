@@ -7,6 +7,7 @@ import Materials from "../management/Materials";
 import Submission from "../management/Submission";
 import MySubmission from "../management/MySubmission";
 import Communication from "../management/Communication";
+import { toast, ToastContainer } from "react-toastify";
 
 const OpenedClassroom = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -86,7 +87,20 @@ const OpenedClassroom = () => {
           body: JSON.stringify({ email }),
         }
       );
-      if (!response.ok) throw new Error("Failed to add student.");
+      if (!response.ok) {
+        // toast.error(
+        //   (await response.json().message) || "Failed to add student."
+        // );
+        const data = await response.json();
+        // console.log("Error response:", data);
+        // console.log("Failed to add student:", await response.json());
+        toast.error(data.message || "Failed to add student.");
+
+        // throw new Error("Failed to add student.");
+        return;
+      }
+
+      // Clear email input after successful addition
       setEmail("");
       const updated = await fetch(`${apiURL}/api/classrooms/${classroomId}`, {
         method: "GET",
@@ -129,6 +143,7 @@ const OpenedClassroom = () => {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
+      <ToastContainer />
       {loading && (
         <div className="flex justify-center items-center h-40">
           <span className="text-lg text-gray-400 animate-pulse">
