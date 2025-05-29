@@ -27,7 +27,9 @@ const TeamOverview = () => {
               <p className="font-semibold text-gray-800">{team.name}</p>
             </div>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-medium text-gray-600">Description:</h3>
+              <h3 className="text-sm font-medium text-gray-600">
+                Description:
+              </h3>
               <p className="text-gray-800">{team.description}</p>
             </div>
             <div className="flex items-center gap-2">

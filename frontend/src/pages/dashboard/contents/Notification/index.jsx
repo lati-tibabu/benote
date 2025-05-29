@@ -39,8 +39,60 @@ const Notifications = () => {
     fetchNotifications();
   }, [page]);
 
+  // const handleAcceptClassroomInvitation = async (action) => {
+  //   // navigate(action.route);
+  //   console.log(action);
+
+  //   try {
+  //     const response = await fetch(
+  //       `${apiURL}/api/teams/${action.team_id}/membership/invitation`,
+  //       {
+  //         method: "PUT",
+  //         headers: header,
+  //       }
+  //     );
+
+  //     const data = await response.json();
+
+  //     if (!response.ok) {
+  //       throw new Error(data.message || "Failed to accept invitation");
+  //     }
+
+  //     navigate(action.route);
+  //     console.log("Invitation accepted:", data);
+  //     return data;
+  //   } catch (error) {
+  //     console.error("Error:", error.message);
+  //     throw error;
+  //   }
+  // };
+
   const handleAcceptInvitation = async (action) => {
-    navigate(action.route);
+    // navigate(action.route);
+    console.log(action);
+
+    try {
+      const response = await fetch(
+        `${apiURL}/api/teams/${action.team_id}/membership/invitation`,
+        {
+          method: "PUT",
+          headers: header,
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to accept invitation");
+      }
+
+      navigate(action.route);
+      console.log("Invitation accepted:", data);
+      return data;
+    } catch (error) {
+      console.error("Error:", error.message);
+      throw error;
+    }
   };
 
   const handleNext = () => {
@@ -76,7 +128,7 @@ const Notifications = () => {
                   <AiOutlineCheckCircle /> Accept
                 </button>
                 <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors duration-300">
-                  <AiOutlineCloseCircle /> Decline
+                  <AiOutlineCloseCircle /> Ignore
                 </button>
               </div>
             )}

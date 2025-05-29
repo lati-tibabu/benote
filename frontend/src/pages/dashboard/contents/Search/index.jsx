@@ -3,12 +3,14 @@ import React, { useState, useEffect, useCallback } from "react";
 const apiURL = import.meta.env.VITE_API_URL;
 
 const Search = () => {
-  const [userOverview, setUserOverview] = useState(null);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState({});
   const [activeTab, setActiveTab] = useState("workspace");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const pageSize = 10;
 
   // Define categories with their respective fields for searching and display
   const categories = [
@@ -19,7 +21,7 @@ const Search = () => {
     { key: "roadmaps", label: "Roadmaps", fields: ["title"] },
     { key: "classrooms", label: "Classrooms", fields: ["name"] },
     {
-      key: "receivedNotifications",
+      key: "notifications",
       label: "Notifications",
       fields: ["message", "type"],
     },
@@ -34,74 +36,76 @@ const Search = () => {
     };
   }, []);
 
-  // Fetch user overview data on component mount
-  useEffect(() => {
-    const fetchUserOverview = async () => {
+  // Fetch search results from backend API
+  const fetchSearchResults = useCallback(
+    async (tabKey, searchQuery, pageNum = 1) => {
+      setLoading(true);
+      setError(null);
       try {
-        setLoading(true);
-        setError(null);
-        const response = await fetch(`${apiURL}/api/users/overview/fetch`, {
-          method: "GET",
-          headers: getAuthHeader(),
-        });
+        const response = await fetch(
+          `${apiURL}/api/search?type=${tabKey}&query=${encodeURIComponent(
+            searchQuery
+          )}&page=${pageNum}&pageSize=${pageSize}`,
+          {
+            headers: getAuthHeader(),
+          }
+        );
         if (!response.ok) {
           if (response.status === 401) {
             throw new Error("Unauthorized: Please log in again.");
           }
           throw new Error(
-            `Failed to fetch user overview: ${response.statusText}`
+            `Failed to fetch search results: ${response.statusText}`
           );
         }
         const data = await response.json();
-        setUserOverview(data);
-        setResults(data); // Initialize results with all data
+        setResults((prev) => ({ ...prev, [tabKey]: data.results }));
+        setTotal(data.total || 0);
       } catch (err) {
-        console.error("Error fetching user overview:", err);
         setError(err.message);
+        setResults((prev) => ({ ...prev, [tabKey]: [] }));
+        setTotal(0);
       } finally {
         setLoading(false);
       }
-    };
+    },
+    [getAuthHeader]
+  );
 
-    fetchUserOverview();
-  }, [getAuthHeader]); // Dependency on getAuthHeader to re-run if it changes (though it's memoized)
+  // Fetch results when query or activeTab or page changes
+  useEffect(() => {
+    if (query.trim() !== "") {
+      fetchSearchResults(activeTab, query, page);
+    } else {
+      // If query is empty, clear results for the tab
+      setResults((prev) => ({ ...prev, [activeTab]: [] }));
+      setTotal(0);
+    }
+    // eslint-disable-next-line
+  }, [query, activeTab, page]);
 
   // Handle search input changes
   const handleSearch = (e) => {
-    const q = e.target.value;
-    setQuery(q);
+    setQuery(e.target.value);
+    setPage(1);
+  };
 
-    if (!userOverview) return; // If data hasn't loaded yet, do nothing
-
-    if (!q) {
-      setResults(userOverview); // If query is empty, show all data
-      return;
+  // Handle tab change
+  const handleTabChange = (tabKey) => {
+    setActiveTab(tabKey);
+    setPage(1);
+    // Optionally trigger search for the new tab if query is not empty
+    if (query.trim() !== "") {
+      fetchSearchResults(tabKey, query, 1);
     }
+  };
 
-    const filtered = {};
-    // Iterate over defined categories to filter relevant data
-    categories.forEach((cat) => {
-      const items = userOverview[cat.key];
-      if (Array.isArray(items)) {
-        filtered[cat.key] = items.filter((item) => {
-          // Check if any of the specified fields for the category include the query
-          return cat.fields.some((field) => {
-            const value = item[field];
-            return (
-              typeof value === "string" &&
-              value.toLowerCase().includes(q.toLowerCase())
-            );
-          });
-        });
-      } else {
-        // For non-array properties (like id, name, email directly on userOverview),
-        // we can decide whether to search them or not.
-        // For this component, we're primarily searching within the arrays.
-        // If you want to search user's name or email, you'd add them to 'categories'
-        // or handle them separately.
-      }
-    });
-    setResults(filtered);
+  // Pagination controls
+  const handlePrevPage = () => {
+    if (page > 1) setPage(page - 1);
+  };
+  const handleNextPage = () => {
+    if (page < Math.ceil(total / pageSize)) setPage(page + 1);
   };
 
   // Helper to render a modern card for each item in a category
@@ -113,7 +117,7 @@ const Search = () => {
       study_plans: "border-purple-200 bg-purple-50 hover:shadow-purple-200",
       roadmaps: "border-pink-200 bg-pink-50 hover:shadow-pink-200",
       classrooms: "border-indigo-200 bg-indigo-50 hover:shadow-indigo-200",
-      receivedNotifications: "border-gray-200 bg-gray-50 hover:shadow-gray-200",
+      notifications: "border-gray-200 bg-gray-50 hover:shadow-gray-200",
     };
     return (
       <div
@@ -140,7 +144,7 @@ const Search = () => {
               </div>
             )
         )}
-        {catKey === "receivedNotifications" && (
+        {catKey === "notifications" && (
           <div className="flex justify-between items-center mt-1">
             <span className="text-xs text-gray-500">
               {item.type &&
@@ -170,20 +174,12 @@ const Search = () => {
     );
   };
 
-  if (loading) {
-    return <div className="text-center p-4">Loading user data...</div>;
-  }
-
-  if (error) {
-    return <div className="text-center p-4 text-red-500">Error: {error}</div>;
-  }
-
   return (
     <div className="p-4 bg-white rounded-lg max-w-3xl max-h-[500px] mx-auto overflow-scroll scrollbar-hide">
       <div className="mb-4">
         <p className="text-2xl font-extrabold text-gray-800">Search Result</p>
         <p className="text-md text-gray-600">
-          Your search results across all categories will be displayed here.
+          Search your data by category. Results are fetched from the server.
         </p>
         <input
           type="text"
@@ -204,7 +200,7 @@ const Search = () => {
                 ? "bg-blue-100 text-blue-700 border-b-2 border-blue-500"
                 : "text-gray-600 hover:bg-gray-100 hover:text-blue-500"
             }`}
-            onClick={() => setActiveTab(cat.key)}
+            onClick={() => handleTabChange(cat.key)}
           >
             {cat.label} ({results[cat.key]?.length || 0})
           </button>
@@ -213,20 +209,43 @@ const Search = () => {
 
       {/* Tab Content */}
       <div className="bg-gray-50 p-4 rounded-b-lg min-h-[200px] overflow-y-auto">
-        {query && Object.values(results).every((arr) => arr.length === 0) ? (
+        {loading ? (
+          <div className="text-center p-4">Loading...</div>
+        ) : error ? (
+          <div className="text-center p-4 text-red-500">Error: {error}</div>
+        ) : query &&
+          (!results[activeTab] || results[activeTab].length === 0) ? (
           <p className="text-gray-500 text-center">
-            No results found for "{query}" in any category.
+            No results found for "{query}" in this category.
           </p>
         ) : (
-          categories.map((cat) =>
-            activeTab === cat.key ? (
-              <div key={cat.key}>
-                {renderList(results[cat.key], cat.fields, cat.key)}
-              </div>
-            ) : null
+          renderList(
+            results[activeTab],
+            categories.find((c) => c.key === activeTab)?.fields || [],
+            activeTab
           )
         )}
       </div>
+      {/* Pagination */}
+      {query && total > pageSize && (
+        <div className="flex justify-center mt-4 gap-2">
+          <button
+            onClick={handlePrevPage}
+            disabled={page === 1}
+            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <span>{`Page ${page} of ${Math.ceil(total / pageSize)}`}</span>
+          <button
+            onClick={handleNextPage}
+            disabled={page === Math.ceil(total / pageSize)}
+            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 };

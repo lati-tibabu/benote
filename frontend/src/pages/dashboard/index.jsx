@@ -1,23 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   AiOutlineHome,
-  AiOutlineUnorderedList,
-  AiOutlineTeam,
   AiOutlineUser,
   AiOutlineNotification,
   AiOutlineSetting,
-  AiOutlineBlock,
-  AiOutlineCheckCircle,
-  AiOutlineOrderedList,
-  AiOutlineFileText,
-  AiOutlineCalendar,
-  AiFillInfoCircle,
   AiOutlinePoweroff,
   AiOutlineArrowLeft,
   AiOutlineSun,
   AiOutlineMoon,
-  AiOutlineHeatMap,
 } from "react-icons/ai";
 import { HiMenu, HiSearch, HiX } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
@@ -35,7 +26,24 @@ import GeminiIcon from "../../components/geminiIcon";
 import { sendBrowserNotification } from "../../utils/sendBrowserNotification";
 import SearchModal from "./contents/SearchModal";
 import AiOverviewModal from "./contents/AiOverviewModal";
-import { FaRobot } from "react-icons/fa6";
+import {
+  PiStudentBold,
+  PiBooksDuotone,
+  PiUsersThreeDuotone,
+  PiChalkboardTeacherDuotone,
+  PiNewspaperDuotone,
+  PiRobotDuotone,
+  PiUserCircleDuotone,
+  PiGearDuotone,
+  PiBellRingingDuotone,
+  PiSignOutDuotone,
+  PiHouseDuotone,
+  PiListChecksDuotone,
+  PiNotePencilDuotone,
+  PiCalendarCheckDuotone,
+  PiMapTrifoldDuotone,
+  PiSlidersHorizontalDuotone,
+} from "react-icons/pi";
 
 function Dashboard() {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -197,382 +205,461 @@ function Dashboard() {
     }
   }, [aiOverviewOpen]);
 
+  // Responsive navigation state
+  const [showSidebar, setShowSidebar] = useState(window.innerWidth >= 640);
+
+  // Handle window resize for responsive sidebar
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        setShowSidebar(false);
+        setCollapsedBar(false); // Always expand on mobile
+      } else {
+        setShowSidebar(true);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Toggle sidebar for mobile
+  const handleSidebarToggle = () => {
+    setShowSidebar((prev) => !prev);
+    setIsMobileNavOpen((prev) => !prev);
+    setCollapsedBar(false); // Always expand on mobile open
+  };
+
+  const [profilePopoverOpen, setProfilePopoverOpen] = useState(false);
+  const profileRef = useRef(null);
+
+  // Handle outside click for profile popover
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setProfilePopoverOpen(false);
+      }
+    }
+    if (profilePopoverOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [profilePopoverOpen]);
+
   return (
     <div className="bg-white text-black min-h-screen flex flex-col">
       {/* Top */}
-      <div className="bg-gray-200 w-full min-h-screen flex-1 flex flex-col sm:flex-row overflow-x-scroll scrollbar-hide">
-        {/* Sidebar or navigtion bar or column*/}
-        <div
-          className={`w-full ${
-            collapsedNav ? "sm:w-20" : "sm:w-64"
-          } p-6 shadow bg-white border-black sm:relative z-10 backdrop-blur-2xl transition-all duration-300 overflow-x-hidden scrollbar-hide`}
-        >
-          {/* Logo */}
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex gap-2 text-xs font-bold items-center">
-              <Link to="/">
-                <img src="/rect19.png" alt="Logo" className="h-12 w-auto" />
+      <div className="w-full flex-1 flex flex-col sm:flex-row overflow-x-scroll scrollbar-hide">
+        {/* Hamburger for mobile */}
+        {!showSidebar && (
+          <button
+            className="fixed top-4 left-4 z-50 p-2 rounded-full bg-blue-600 text-white shadow-lg sm:hidden"
+            onClick={handleSidebarToggle}
+            aria-label="Open sidebar"
+          >
+            <HiMenu size={28} />
+          </button>
+        )}
+        {/* Sidebar */}
+        {(showSidebar || isMobileNavOpen) && (
+          <aside
+            className={`fixed sm:static top-0 left-0 z-40 h-full bg-white/90 border-r border-blue-100 shadow-lg sm:shadow-none p-6 transition-transform duration-300 transform ${
+              showSidebar || isMobileNavOpen
+                ? "translate-x-0"
+                : "-translate-x-full"
+            } sm:translate-x-0`}
+            style={{
+              width: collapsedNav && showSidebar ? 80 : 256,
+              minWidth: collapsedNav && showSidebar ? 80 : 256,
+            }}
+          >
+            {/* Logo, collapse/expand, and profile */}
+            <div className="flex items-center justify-between mb-6 relative">
+              <Link to="/" className="flex gap-2 items-center">
+                <img src="/rect19.png" alt="Logo" className="h-10 w-auto" />
+                {!collapsedNav && showSidebar && (
+                  <span className="font-black text-lg tracking-tight text-blue-700">
+                    SPH
+                  </span>
+                )}
               </Link>
-              {/* <span>Student Productivity Hub</span> */}
-            </div>
-            <button
-              onClick={toggleMobileNav}
-              className="sm:hidden focus:outline-none text-gray-600"
-            >
-              {isMobileNavOpen ? <HiX size={28} /> : <HiMenu size={28} />}
-            </button>
-            <div
-              className="hidden sm:block p-3 hover:bg-gray-200 rounded-full cursor-pointer"
-              onClick={handleCollapseBar}
-            >
-              {collapsedNav ? <FaChevronRight /> : <FaChevronLeft />}
-            </div>
-          </div>
-
-          {/* <hr className="hidden md:block h-1/2 rounded-md bg-gray-300" /> */}
-
-          {/* Navigation */}
-          <div className={`${isMobileNavOpen ? "block" : "hidden"} sm:block`}>
-            <div className="flex flex-col space-y-2 my-2">
-              {/* home link */}
-              <Link
-                to="home"
-                className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
-                  loc[0] === "home"
-                    ? "font-bold bg-blue-100 text-blue-800 rounded"
-                    : "text-gray-800"
-                }`}
-                onClick={() => setIsMobileNavOpen(false)}
-                title="Home"
-              >
-                <AiOutlineHome size={20} />
-                {!collapsedNav && <span>Home</span>}
-              </Link>
-
-              {/* Workspace with Submenu */}
-              <div className="flex flex-col space-y-2">
-                <button
-                  className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
-                    loc[0] === "workspace"
-                      ? "font-bold bg-blue-100 text-blue-800 rounded"
-                      : "text-gray-800"
+              <div className="flex items-center gap-2">
+                {/* Collapse/Expand button (desktop only) */}
+                <div
+                  className={`hidden sm:flex p-2 hover:bg-blue-50 rounded-full cursor-pointer ${
+                    showSidebar ? "" : "pointer-events-none opacity-0"
                   }`}
-                  onClick={() => setIsMobileNavOpen(false)}
-                  // onClick={() => toggleSubmenu("workspace")}
+                  onClick={handleCollapseBar}
+                  title={collapsedNav ? "Expand sidebar" : "Collapse sidebar"}
                 >
-                  <Link to="workspace" title="Workspace">
-                    <div className="flex items-center space-x-2">
-                      <AiOutlineUnorderedList size={20} />
-                      {!collapsedNav && <span>Workspace</span>}
-                    </div>
-                  </Link>
-                </button>
-
-                {loc[1] === "open" && loc[0] === "workspace" && (
-                  <div
-                    className={`${
-                      collapsedNav ? "p-1 border-1 rounded bg-gray-100" : "pl-6"
-                    } mt-2 space-y-2`}
-                    onClick={() => setIsMobileNavOpen(false)}
-                  >
-                    {workspaceSubMenus.map((items, index) => (
-                      <div
-                        key={index}
-                        className={`flex items-center py-1 ${
-                          !collapsedNav && "px-3"
-                        } gap-1  hover:border-blue-500 cursor-pointer ${
-                          onPage(items.link)
-                            ? "border-b-2 border-blue-500 text-black font-bold"
-                            : "text-gray-900 "
-                        }`}
-                        onClick={handleNavigation(items.link, loc[2])}
-                        title={items.label}
-                      >
-                        <span className="text-xl">{items.icon}</span>
-                        {!collapsedNav && (
-                          <p className="text-sm text-nowrap">{items.label}</p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* team link */}
-              <Link
-                to="team"
-                className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
-                  loc[0] === "team"
-                    ? "font-bold bg-blue-100 text-blue-800 rounded"
-                    : "text-gray-800"
-                }`}
-                onClick={() => setIsMobileNavOpen(false)}
-                title="Teams"
-              >
-                <AiOutlineTeam size={20} />
-                {!collapsedNav && <span>Teams</span>}
-              </Link>
-
-              {/* classroom link */}
-              <Link
-                to="classroom"
-                className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
-                  loc[0] === "classroom"
-                    ? "font-bold bg-blue-100 text-blue-800 rounded"
-                    : "text-gray-800"
-                }`}
-                onClick={() => setIsMobileNavOpen(false)}
-                title="Classroom"
-              >
-                <FaChalkboardTeacher size={20} />
-                {!collapsedNav && <span>Classroom</span>}
-              </Link>
-
-              {/* News link */}
-              <Link
-                to="news"
-                className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
-                  loc[0] === "news"
-                    ? "font-bold bg-blue-100 text-blue-800 rounded"
-                    : "text-gray-800"
-                }`}
-                onClick={() => setIsMobileNavOpen(false)}
-                title="News"
-              >
-                <AiOutlineFileText size={20} />
-                {!collapsedNav && <span>News</span>}
-              </Link>
-
-              {/* AskAI link */}
-              <Link
-                to="askAI"
-                className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
-                  loc[0] === "askAI"
-                    ? "font-bold bg-blue-100 text-blue-800 rounded"
-                    : "text-gray-800"
-                }`}
-                onClick={() => setIsMobileNavOpen(false)}
-                title="AskAI"
-              >
-                {/* <AiOutlineRobot size={20} /> */}
-                <FaRobot />
-                {!collapsedNav && <span>AskAI</span>}
-              </Link>
-            </div>
-
-            <hr />
-
-            {/* Profile and Settings */}
-            <div className="flex flex-col space-y-2 my-5">
-              {/* profile link */}
-              <Link
-                to="profile"
-                className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
-                  loc[0] === "profile"
-                    ? "font-bold bg-blue-100 text-blue-800 rounded"
-                    : "text-gray-800"
-                }`}
-                onClick={() => setIsMobileNavOpen(false)}
-                title="Profile"
-              >
-                <AiOutlineUser size={20} />
-                {!collapsedNav && <span>Profile</span>}
-              </Link>
-
-              {/* ai functionlity link */}
-              <Link
-                to="llm-setting"
-                className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
-                  loc[0] === "llm-setting"
-                    ? "font-bold bg-blue-100 text-blue-800 rounded"
-                    : "text-gray-800"
-                }`}
-                onClick={() => setIsMobileNavOpen(false)}
-                title="LLM Setting"
-              >
-                {/* <FaBolt size={20} /> */}
-                <GeminiIcon size={20} />
-                {!collapsedNav && <span>LLM Setting</span>}
-              </Link>
-
-              {/* notification link */}
-              <Link
-                to="notification"
-                className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
-                  loc[0] === "notifications"
-                    ? "font-bold bg-blue-100 text-blue-800 rounded"
-                    : "text-gray-800"
-                }`}
-                onClick={() => setIsMobileNavOpen(false)}
-                title="Notifications"
-              >
-                <div className="relative">
-                  <AiOutlineNotification size={20} />
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                      {unreadCount > 9 ? "9+" : unreadCount}
-                    </span>
-                  )}
+                  {collapsedNav ? <FaChevronRight /> : <FaChevronLeft />}
                 </div>
-                {!collapsedNav && <span>Notifications</span>}
-              </Link>
-
-              <Link
-                to="setting"
-                className={`flex items-center space-x-2 hover:text-blue-500 p-1 ${
-                  loc[0] === "setting"
-                    ? "font-bold bg-blue-100 text-blue-800 rounded"
-                    : "text-gray-800"
-                }`}
-                onClick={() => setIsMobileNavOpen(false)}
-                title="Setting"
-              >
-                <AiOutlineSetting size={20} />
-                {!collapsedNav && <span>Setting</span>}
-              </Link>
-            </div>
-
-            <div className="dropdown dropdown-start min-w-max hover:bg-gray-200 rounded-md">
-              <div
-                tabIndex={0}
-                role="button"
-                className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-200 shadow-sm cursor-pointer"
-              >
-                <img
-                  src={`https://gravatar.com/avatar/${getGravatarHash(
-                    email
-                  )}?s=40`}
-                  className="w-8 h-8 rounded-full border border-gray-300"
-                  alt="User Avatar"
-                />
-                {!collapsedNav && (
-                  <strong className="text-black font-semibold text-sm">
-                    {email.split("@")[0]}
-                  </strong>
-                )}
-              </div>
-              <ul
-                tabIndex={0}
-                className="z-10 dropdown-content menu border rounded-box shadow-md w-fit p-2"
-              >
-                <li>
+                {/* User profile picture */}
+                {/* <div ref={profileRef} className="relative">
                   <button
-                    className="flex items-center gap-2 text-red-500 hover:text-white bg-red-100 hover:bg-red-500 p-2 rounded-md text-sm transition-all duration-300 shadow-md hover:shadow-lg"
-                    onClick={handleLogout}
-                    title="Logout"
+                    className="flex items-center justify-center w-10 h-10 rounded-full border border-gray-300 bg-white hover:ring-2 hover:ring-blue-200 transition"
+                    onClick={() => setProfilePopoverOpen((v) => !v)}
+                    title="User menu"
                   >
-                    <AiOutlinePoweroff size={20} />
-                    <span>Logout</span>
+                    <img
+                      src={`https://gravatar.com/avatar/${getGravatarHash(
+                        email
+                      )}?s=40`}
+                      className="w-9 h-9 rounded-full"
+                      alt="User Avatar"
+                    />
                   </button>
+                  {profilePopoverOpen && (
+                    <div className="absolute right-0 mt-2 w-40 bg-white border border-blue-100 rounded-lg shadow-lg z-50 animate-fade-in">
+                      <button
+                        className="w-full flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 hover:text-red-800 rounded-lg text-sm font-medium transition-all"
+                        onClick={handleLogout}
+                      >
+                        <PiSignOutDuotone size={22} />
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div> */}
+                {/* Mobile close button */}
+                <button
+                  onClick={handleSidebarToggle}
+                  className="sm:hidden focus:outline-none text-gray-600 ml-2"
+                  aria-label="Close sidebar"
+                >
+                  <HiX size={28} />
+                </button>
+              </div>
+            </div>
+            <nav
+              className={`${
+                showSidebar || isMobileNavOpen ? "block" : "hidden"
+              } sm:block`}
+            >
+              {/* Quick Search & AI Overview for mobile (show above nav on mobile) */}
+              <div className="flex sm:hidden gap-2 mb-4">
+                <button
+                  className="flex items-center justify-center gap-2 flex-1 px-2 py-2 rounded-lg bg-blue-50 text-blue-800 font-semibold shadow hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                  onClick={() => setSearchOpened(true)}
+                  title="Quick Search"
+                >
+                  <HiSearch size={22} />
+                  <span className="text-sm">Search</span>
+                </button>
+                <button
+                  className="flex items-center justify-center gap-2 flex-1 px-2 py-2 rounded-lg bg-blue-50 text-blue-800 font-semibold shadow hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                  onClick={() => setAiOverviewOpen(true)}
+                  title="AI Overview"
+                >
+                  <PiRobotDuotone size={22} />
+                  <span className="text-sm">AI</span>
+                </button>
+              </div>
+              <ul className="flex flex-col gap-2">
+                {/* Sidebar nav items with fixed icon size */}
+                <li>
+                  <Link
+                    to="home"
+                    className={`flex items-center ${
+                      collapsedNav && "justify-center"
+                    } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                      loc[0] === "home"
+                        ? "bg-blue-100 text-blue-700"
+                        : "text-gray-700 hover:bg-blue-50"
+                    }`}
+                    onClick={() => setIsMobileNavOpen(false)}
+                    title="Home"
+                  >
+                    <span className="flex items-center justify-center min-w-[40px] min-h-[40px]">
+                      <PiHouseDuotone size={22} />
+                    </span>
+                    {!collapsedNav && <span>Home</span>}
+                  </Link>
+                </li>
+                {/* Repeat for all sidebar icons: wrap icon in flex container with min-w/h and size={22} */}
+                <li>
+                  <Link
+                    to="workspace"
+                    className={`flex items-center ${
+                      collapsedNav && "justify-center"
+                    } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                      loc[0] === "workspace"
+                        ? "bg-blue-100 text-blue-700"
+                        : "text-gray-700 hover:bg-blue-50"
+                    }`}
+                    onClick={() => setIsMobileNavOpen(false)}
+                    title="Workspace"
+                  >
+                    <span className="flex items-center justify-center min-w-[40px] min-h-[40px]">
+                      <PiBooksDuotone size={22} />
+                    </span>
+                    {!collapsedNav && <span>Workspace</span>}
+                  </Link>
+                  {/* Submenu */}
+                  {loc[1] === "open" && loc[0] === "workspace" && (
+                    <ul
+                      className={`$${
+                        collapsedNav ? "p-1 bg-blue-50 rounded" : "pl-7"
+                      } mt-2 flex flex-col gap-1`}
+                    >
+                      {workspaceSubMenusModern.map((item, idx) => (
+                        <li
+                          key={idx}
+                          className={`flex items-center gap-2 px-2 py-1 rounded transition-all cursor-pointer ${
+                            onPage(item.link)
+                              ? "bg-blue-200 text-blue-900 font-semibold"
+                              : "text-gray-600 hover:bg-blue-100"
+                          }`}
+                          onClick={handleNavigation(item.link, loc[2])}
+                          title={item.label}
+                        >
+                          <span className="flex items-center justify-center min-w-[36px] min-h-[36px]">
+                            {React.cloneElement(item.icon, { size: 28 })}
+                            {collapsedNav && (
+                              <span className="sr-only">{item.label}</span>
+                            )}
+                          </span>
+                          {!collapsedNav && (
+                            <span className="text-sm">{item.label}</span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+                {/* Repeat for all other sidebar nav items, wrapping icon in flex container and using size={22} */}
+                <li>
+                  <Link
+                    to="team"
+                    className={`flex items-center ${
+                      collapsedNav && "justify-center"
+                    } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                      loc[0] === "team"
+                        ? "bg-blue-100 text-blue-700"
+                        : "text-gray-700 hover:bg-blue-50"
+                    }`}
+                    onClick={() => setIsMobileNavOpen(false)}
+                    title="Teams"
+                  >
+                    <span className="flex items-center justify-center min-w-[40px] min-h-[40px]">
+                      <PiUsersThreeDuotone size={22} />
+                    </span>
+                    {!collapsedNav && <span>Teams</span>}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="classroom"
+                    className={`flex items-center ${
+                      collapsedNav && "justify-center"
+                    } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                      loc[0] === "classroom"
+                        ? "bg-blue-100 text-blue-700"
+                        : "text-gray-700 hover:bg-blue-50"
+                    }`}
+                    onClick={() => setIsMobileNavOpen(false)}
+                    title="Classroom"
+                  >
+                    <span className="flex items-center justify-center min-w-[40px] min-h-[40px]">
+                      <PiChalkboardTeacherDuotone size={22} />
+                    </span>
+                    {!collapsedNav && <span>Classroom</span>}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="news"
+                    className={`flex items-center ${
+                      collapsedNav && "justify-center"
+                    } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                      loc[0] === "news"
+                        ? "bg-blue-100 text-blue-700"
+                        : "text-gray-700 hover:bg-blue-50"
+                    }`}
+                    onClick={() => setIsMobileNavOpen(false)}
+                    title="News"
+                  >
+                    <span className="flex items-center justify-center min-w-[40px] min-h-[40px]">
+                      <PiNewspaperDuotone size={22} />
+                    </span>
+                    {!collapsedNav && <span>News</span>}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="askAI"
+                    className={`flex items-center ${
+                      collapsedNav && "justify-center"
+                    } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                      loc[0] === "askAI"
+                        ? "bg-blue-100 text-blue-700"
+                        : "text-gray-700 hover:bg-blue-50"
+                    }`}
+                    onClick={() => setIsMobileNavOpen(false)}
+                    title="AskAI"
+                  >
+                    <span className="flex items-center justify-center min-w-[40px] min-h-[40px]">
+                      <PiRobotDuotone size={22} />
+                    </span>
+                    {!collapsedNav && <span>AskAI</span>}
+                  </Link>
                 </li>
               </ul>
-            </div>
-          </div>
-        </div>
-
+              <hr className="my-4 border-blue-100" />
+              <ul className="flex flex-col gap-2">
+                <li>
+                  <Link
+                    to="profile"
+                    className={`flex items-center ${
+                      collapsedNav && "justify-center"
+                    } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                      loc[0] === "profile"
+                        ? "bg-blue-100 text-blue-700"
+                        : "text-gray-700 hover:bg-blue-50"
+                    }`}
+                    onClick={() => setIsMobileNavOpen(false)}
+                    title="Profile"
+                  >
+                    <span className="flex items-center justify-center min-w-[40px] min-h-[40px]">
+                      <PiUserCircleDuotone size={22} />
+                    </span>
+                    {!collapsedNav && <span>Profile</span>}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="llm-setting"
+                    className={`flex items-center ${
+                      collapsedNav && "justify-center"
+                    } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                      loc[0] === "llm-setting"
+                        ? "bg-blue-100 text-blue-700"
+                        : "text-gray-700 hover:bg-blue-50"
+                    }`}
+                    onClick={() => setIsMobileNavOpen(false)}
+                    title="LLM Setting"
+                  >
+                    <span className="flex items-center justify-center min-w-[40px] min-h-[40px]">
+                      <GeminiIcon size={22} />
+                    </span>
+                    {!collapsedNav && <span>LLM Setting</span>}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="notification"
+                    className={`flex items-center ${
+                      collapsedNav && "justify-center"
+                    } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                      loc[0] === "notifications"
+                        ? "bg-blue-100 text-blue-700"
+                        : "text-gray-700 hover:bg-blue-50"
+                    }`}
+                    onClick={() => setIsMobileNavOpen(false)}
+                    title="Notifications"
+                  >
+                    <span className="relative flex items-center justify-center min-w-[40px] min-h-[40px]">
+                      <PiBellRingingDuotone size={22} />
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                          {unreadCount > 9 ? "9+" : unreadCount}
+                        </span>
+                      )}
+                    </span>
+                    {!collapsedNav && <span>Notifications</span>}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="setting"
+                    className={`flex items-center ${
+                      collapsedNav && "justify-center"
+                    } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                      loc[0] === "setting"
+                        ? "bg-blue-100 text-blue-700"
+                        : "text-gray-700 hover:bg-blue-50"
+                    }`}
+                    onClick={() => setIsMobileNavOpen(false)}
+                    title="Setting"
+                  >
+                    <span className="flex items-center justify-center min-w-[40px] min-h-[40px]">
+                      <PiGearDuotone size={22} />
+                    </span>
+                    {!collapsedNav && <span>Setting</span>}
+                  </Link>
+                </li>
+              </ul>
+              {/* Removed user+logout row from bottom */}
+            </nav>
+          </aside>
+        )}
+        {/* Modals for search and AI overview */}
+        <SearchModal
+          open={searchOpened}
+          onClose={() => setSearchOpened(false)}
+        />
+        <AiOverviewModal
+          open={aiOverviewOpen}
+          onClose={() => setAiOverviewOpen(false)}
+        />
         {/* Main Content */}
-        <div className="w-full flex flex-col overflow-x-hidden h-screen overflow-y-auto">
-          <div className="w-full p-2 flex items-center justify-between bg-gradient-to-r from-white via-blue-50 to-green-50 border-b-1 shadow-sm rounded-t-xl px-6 py-4 sticky top-0 z-30">
-            <div className="flex items-center gap-2">
-              <div className="flex space-x-2">
-                <div
-                  className="p-2 hover:bg-blue-100 rounded-full cursor-pointer border border-transparent hover:border-blue-300 transition"
-                  onClick={() => history.back()}
-                >
-                  <AiOutlineArrowLeft />
-                </div>
-              </div>
-
-              <div className="font-bold text-2xl text-blue-900 tracking-tight drop-shadow-sm">
+        <main className="w-full flex flex-col overflow-x-hidden h-screen overflow-y-auto bg-white/80">
+          <header className="w-full px-8 py-4 flex items-center justify-between bg-gradient-to-r from-white via-blue-50 to-green-50 border-b shadow-sm rounded-t-2xl sticky top-0 z-30">
+            <div className="flex items-center gap-3">
+              <button
+                className="p-2 hover:bg-blue-100 rounded-full cursor-pointer border border-transparent hover:border-blue-300 transition"
+                onClick={() => history.back()}
+                title="Back"
+              >
+                <PiHouseDuotone size={22} />
+              </button>
+              <span className="font-bold text-2xl text-blue-900 tracking-tight drop-shadow-sm">
                 {loc[0]
                   ? loc[0].charAt(0).toUpperCase() + loc[0].slice(1)
                   : "Dashboard"}
-              </div>
+              </span>
               {loc[0] === "workspace" &&
               loc[1] === "open" &&
               workspaceTitle &&
               workspaceEmoji ? (
-                <div className="flex border-l-2 border-blue-200 pl-2 w-48 sm:w-80 overflow-x-scroll scrollbar-hide">
-                  <div className="text-lg lg:text-2xl md:text-xl text-blue-700 flex items-center text-nowrap text-clip gap-2">
-                    {workspaceEmoji}
-                    {workspaceTitle}
-                  </div>
-                </div>
+                <span className="flex border-l-2 border-blue-200 pl-3 w-48 sm:w-80 overflow-x-scroll scrollbar-hide text-lg lg:text-2xl md:text-xl text-blue-700 items-center gap-2">
+                  {workspaceEmoji}
+                  {workspaceTitle}
+                </span>
               ) : loc[0] === "team" && loc[1] === "open" && teamTitle ? (
-                <div className="flex border-l-2 border-blue-200 pl-2 w-80 overflow-x-scroll scrollbar-hide">
-                  <div className="text-lg lg:text-2xl md:text-xl text-blue-700 flex items-center gap-2 text-nowrap overflow-hidden">
-                    {teamTitle}
-                  </div>
-                </div>
+                <span className="flex border-l-2 border-blue-200 pl-3 w-80 overflow-x-scroll scrollbar-hide text-lg lg:text-2xl md:text-xl text-blue-700 items-center gap-2">
+                  {teamTitle}
+                </span>
               ) : null}
             </div>
-
-            {/* <div> */}
-            {alarmPlaying && (
-              <div className="fixed bottom-5 right-5 bg-orange-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-bounce transition-all">
-                <span className="font-bold text-lg">🔔 Focus Time is Up!</span>
-                <button
-                  className="bg-white text-orange-600 px-3 py-1 rounded-lg font-bold shadow-md hover:shadow-xl transition-all hover:scale-105"
-                  onClick={() => dispatch(stopAlarm())}
-                >
-                  ✋ Stop Music
-                </button>
-              </div>
-            )}
-
-            {latestNotification && localStorage.getItem("notificationEnabled") !== "false" && (
-              <div className="fixed z-20 bottom-5 right-5 bg-gray-800 text-white px-4 py-3 rounded-md shadow-md flex items-center gap-3">
-                <span
-                  className="text-sm hover:underline cursor-pointer"
-                  onClick={() =>
-                    navigateToWorkspace(latestNotification?.action?.workspace)
-                  }
-                >
-                  {latestNotification.message}
-                </span>
-                <button
-                  onClick={() => setLatestNotification(null)}
-                  className="text-gray-300 hover:text-white text-xs px-2 py-1 border border-gray-500 rounded"
-                >
-                  ✖
-                </button>
-              </div>
-            )}
-
-            {/* </div> */}
-
-            {/* Search */}
-            <button
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold shadow hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
-              onClick={toggleSearchOpened}
-              title="Search"
-              style={{ minWidth: 120 }}
-            >
-              <HiSearch size={22} className="mr-1" />
-              <span className="hidden sm:inline">Quick Search</span>
-            </button>
-
-            {/* AI Overview Button */}
-            <button
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold shadow hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200 ml-2"
-              onClick={() => setAiOverviewOpen(true)}
-              title="AI Overview"
-              style={{ minWidth: 120 }}
-            >
-              <span className="text-xl">🤖</span>
-              <span className="hidden sm:inline">AI Overview</span>
-            </button>
-
-            <SearchModal open={searchOpened} onClose={toggleSearchOpened} />
-            <AiOverviewModal
-              open={aiOverviewOpen}
-              onClose={() => setAiOverviewOpen(false)}
-            />
-
-            {/* Theme changing button - Modern Switch */}
-            <div className="flex items-center gap-3 ml-4">
-              <div className="flex items-center">
-                <span className="text-yellow-400 mr-2">
+            {/* Search & AI Overview */}
+            <div className="flex items-center gap-3">
+              <button
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-blue-800 font-semibold shadow hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                onClick={() => setSearchOpened(true)}
+                title="Search"
+                style={{ minWidth: 120 }}
+              >
+                <HiSearch size={22} className="mr-1" />
+                <span className="hidden sm:inline">Quick Search</span>
+              </button>
+              <button
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-blue-800 font-semibold shadow hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                onClick={() => setAiOverviewOpen(true)}
+                title="AI Overview"
+                style={{ minWidth: 120 }}
+              >
+                <PiRobotDuotone size={22} />
+                <span className="hidden sm:inline">AI Overview</span>
+              </button>
+            </div>
+            {/* Theme Switch and Profile Picture */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 ml-4 border border-gray-300 rounded-full px-3 py-1 bg-white shadow-sm">
+                <span className="text-yellow-400">
                   <AiOutlineSun size={22} />
                 </span>
                 <label className="relative inline-flex items-center cursor-pointer">
@@ -589,24 +676,44 @@ function Dashboard() {
                   <AiOutlineMoon size={22} />
                 </span>
               </div>
-              <AiFillInfoCircle
-                size={30}
-                className="cursor-pointer text-blue-400 hover:text-blue-600 transition"
-              />
+              <div ref={profileRef} className="relative">
+                <button
+                  className="flex items-center justify-center w-10 h-10 rounded-full border border-gray-300 bg-white hover:ring-2 hover:ring-blue-200 transition"
+                  onClick={() => setProfilePopoverOpen((v) => !v)}
+                  title="User menu"
+                >
+                  <img
+                    src={`https://gravatar.com/avatar/${getGravatarHash(
+                      email
+                    )}?s=40`}
+                    className="w-9 h-9 rounded-full"
+                    alt="User Avatar"
+                  />
+                </button>
+                {profilePopoverOpen && (
+                  <div className="absolute right-0 mt-2 w-40 bg-white border border-blue-100 rounded-lg shadow-lg z-50 animate-fade-in">
+                    <button
+                      className="w-full flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 hover:text-red-800 rounded-lg text-sm font-medium transition-all"
+                      onClick={handleLogout}
+                    >
+                      <PiSignOutDuotone size={22} />
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-
+          </header>
           {/* Main Content */}
-          <div className="flex-1 p-3 bg-white">
+          <section className="flex-1 p-6">
             <div className="h-full">
               <Outlet />
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="w-full text-center mt-5 border-t-1">
-        &copy; 2025 Student Productivity Hub
+          </section>
+          <footer className="w-full text-center mt-5 border-t pt-4 text-gray-500 text-sm">
+            &copy; 2025 Student Productivity Hub
+          </footer>
+        </main>
       </div>
     </div>
   );
@@ -614,18 +721,17 @@ function Dashboard() {
 
 export default Dashboard;
 
-const workspaceSubMenus = [
-  { icon: <AiOutlineBlock />, label: "Overview", link: "overview" },
-  // { icon: <AiOutlineBook />, label: "Projects", link: "projects" },
-  { icon: <AiOutlineCheckCircle />, label: "Tasks", link: "tasks" },
+// Modern workspace submenu icons
+const workspaceSubMenusModern = [
+  { icon: <PiListChecksDuotone />, label: "Overview", link: "overview" },
+  { icon: <PiListChecksDuotone />, label: "Tasks", link: "tasks" },
+  { icon: <PiNotePencilDuotone />, label: "TO-DO Lists", link: "todo-lists" },
+  { icon: <PiNotePencilDuotone />, label: "Notes", link: "notes" },
+  { icon: <PiMapTrifoldDuotone />, label: "Roadmaps", link: "roadmaps" },
   {
-    icon: <AiOutlineOrderedList />,
-    label: "TO-DO Lists",
-    link: "todo-lists",
+    icon: <PiCalendarCheckDuotone />,
+    label: "Study Plan",
+    link: "study-plans",
   },
-  { icon: <AiOutlineFileText />, label: "Notes", link: "notes" },
-  // { icon: <AiOutlineTeam />, label: "Teams", link: "teams" },
-  { icon: <AiOutlineHeatMap />, label: "Roadmaps", link: "roadmaps" },
-  { icon: <AiOutlineCalendar />, label: "Study Plan", link: "study-plans" },
-  { icon: <AiOutlineSetting />, label: "Settings", link: "settings" },
+  { icon: <PiSlidersHorizontalDuotone />, label: "Settings", link: "settings" },
 ];
