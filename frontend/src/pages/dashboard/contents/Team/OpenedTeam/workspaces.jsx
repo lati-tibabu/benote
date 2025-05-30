@@ -53,6 +53,31 @@ const TeamWorkspaces = () => {
     navigate(`/app/workspace/open/${workspaceId}`);
   };
 
+  // Function to remove a workspace from the team
+  const handleRemoveFromTeam = async (workspaceId) => {
+    if (!window.confirm("Remove this workspace from the team?")) return;
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `${apiURL}/api/teams/${teamId}/workspace/remove`,
+        {
+          method: "PUT",
+          headers: header,
+          body: JSON.stringify({ workspace_id: workspaceId }),
+        }
+      );
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.message || "Failed to remove workspace from team");
+      }
+      await loadWorkspaces();
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="p-4">
       <div className="mb-2">
@@ -79,12 +104,11 @@ const TeamWorkspaces = () => {
         <div>
           <ul className="flex flex-col gap-2 justify-stretch">
             {workspaces.map((workspace) => (
-              <li>
+              <li key={workspace.workspace_id}>
                 <div
                   title={workspace.workspace.description}
                   className="flex gap-2 items-center cursor-default border-2 border-gray-300 p-3 rounded-box hover:bg-gray-50 hover:cursor-pointer hover:border-blue-500 hover:shadow transition-all duration-150"
                   onClick={() => handleWorkspaceOpen(workspace.workspace_id)}
-                  key={workspace.workspace_id}
                 >
                   {/* icon */}
                   <div className="text-3xl">{workspace.workspace.emoji}</div>
@@ -106,10 +130,26 @@ const TeamWorkspaces = () => {
                         </span>
                       </div>
                     </div>
-
-                    <button className="btn btn-secondary btn-sm text-white bg-blue-600 hover:bg-blue-500  border-none outline-none ">
-                      Open
-                    </button>
+                    <div className="flex gap-2 items-center">
+                      <button
+                        className="btn btn-secondary btn-sm text-white bg-blue-600 hover:bg-blue-500  border-none outline-none "
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleWorkspaceOpen(workspace.workspace_id);
+                        }}
+                      >
+                        Open
+                      </button>
+                      <button
+                        className="btn btn-error btn-sm text-white bg-red-600 hover:bg-red-500 border-none outline-none"
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          await handleRemoveFromTeam(workspace.workspace_id);
+                        }}
+                      >
+                        Remove from Team
+                      </button>
+                    </div>
                   </div>
                 </div>
               </li>

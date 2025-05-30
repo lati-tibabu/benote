@@ -10,6 +10,8 @@ import {
   clearWorkspace,
   setWorkspace,
 } from "../../../../../redux/slices/workspaceSlice";
+import WorkspaceToTeam from "./Settings/workspace_to_team";
+// import WorkspaceToTeam from "../../Setting/content/workspace_to_team";
 
 const Settings = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -130,7 +132,7 @@ const Settings = () => {
   return (
     <div className="max-w-4xl mx-auto p-8 bg-gradient-to-br from-gray-50 to-white shadow-xl rounded-2xl">
       <ToastContainer />
-      <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 mb-8">
+      <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 mb-8 text-center">
         Workspace Settings
       </h2>
       <form className="space-y-8">
@@ -161,7 +163,7 @@ const Settings = () => {
                 description: e.target.value,
               })
             }
-            className="p-3 border rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 bg-transparent text-lg"
+            className="p-3 border rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 bg-transparent text-lg min-h-[80px]"
             placeholder="Enter workspace description"
             required
           />
@@ -223,19 +225,24 @@ const Settings = () => {
           <button
             type="button"
             onClick={handleSave}
-            className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full shadow-md transition text-lg"
+            className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-full shadow-md transition text-lg"
           >
             Save Settings
           </button>
           <button
             type="button"
-            className="px-8 py-3 bg-red-600 text-white font-semibold rounded-full hover:bg-red-700 shadow-md transition text-lg"
+            className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-semibold rounded-full shadow-md transition text-lg"
             onClick={handleDelete}
           >
             Delete Workspace
           </button>
         </div>
       </form>
+      {updatedWorkspace?.privacy === "Private" && (
+        <div className="mt-12">
+          <WorkspaceToTeam workspaceId={workspaceId} />
+        </div>
+      )}
     </div>
   );
 };

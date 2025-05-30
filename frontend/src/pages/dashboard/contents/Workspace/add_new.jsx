@@ -53,13 +53,33 @@ const AddNew = (props) => {
     // console.log(workspaceData);
 
     try {
-      const workspaceResponse = await fetch(`${apiURL}/api/workspaces`, {
+      // Add ?team=1 to the API URL if teamId is present
+      let workspaceApiUrl = `${apiURL}/api/workspaces`;
+      if (teamId) {
+        workspaceApiUrl += "?team=1";
+      }
+      const workspaceResponse = await fetch(workspaceApiUrl, {
         method: "POST",
         body: JSON.stringify(workspaceData),
         headers: header,
       });
 
       const workspaceResult = await workspaceResponse.json();
+
+      // Handle permission error gracefully
+      if (
+        workspaceResponse.status === 403 &&
+        workspaceResult.message &&
+        workspaceResult.message.includes("permission")
+      ) {
+        toast.error(
+          // "You do not have permission to create a workspace for this team. Only team admins can create workspaces."
+          workspaceResult.message ||
+            "You do not have permission to create a workspace for this team. Only team admins can create workspaces."
+        );
+        setWorkspaceLoading(false);
+        return;
+      }
 
       if (!workspaceResponse.ok || !workspaceResult.id) {
         console.error("Workspace creation failed:", workspaceResult);
