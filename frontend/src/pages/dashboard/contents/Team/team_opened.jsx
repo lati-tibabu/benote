@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
-  AiOutlineBlock,
-  AiOutlineMore,
-  AiOutlineCheckCircle,
-  AiOutlineFileText,
-  AiOutlineTeam,
-  AiOutlineSetting,
-  AiOutlineOrderedList,
-} from "react-icons/ai";
-import { FaChevronLeft } from "react-icons/fa";
+  PiSquaresFourBold,
+  PiCheckCircleBold,
+  PiFileTextBold,
+  PiUsersThreeBold,
+  PiGearBold,
+  PiArrowLeftBold,
+  PiDotsThreeOutlineVerticalBold,
+  PiTrashBold,
+  PiPencilSimpleBold,
+} from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
-import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Outlet, useNavigate, useParams, useLocation } from "react-router-dom";
 import { clearTeam, setTeam } from "../../../../redux/slices/teamReducer";
 
 const TeamOpened = () => {
@@ -20,24 +21,24 @@ const TeamOpened = () => {
     authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
-
-  // const location2 = useLocation();
   const dispatch = useDispatch();
   const team = useSelector((state) => state.team.team);
-
   const { teamId } = useParams();
-  // const [team, setTeam] = useState({});
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (teamId) {
       getTeamDetails(teamId);
     }
+    // eslint-disable-next-line
   }, [teamId]);
 
   useEffect(() => {
     if (team) {
       navigate("overview", { state: { team } });
     }
+    // eslint-disable-next-line
   }, []);
 
   const getTeamDetails = async (id) => {
@@ -47,16 +48,12 @@ const TeamOpened = () => {
         headers: header,
       });
       if (!response.ok) throw new Error("Failed to fetch team");
-
       const data = await response.json();
-      // setTeam(data);
       dispatch(setTeam(data));
     } catch (error) {
       console.error("Error fetching the team data", error);
     }
   };
-
-  // console.log("This is amazing:", team);
 
   const handleTeamDelete = (id) => async () => {
     if (window.confirm("Are you sure you want to delete this team?")) {
@@ -82,8 +79,6 @@ const TeamOpened = () => {
     }
   };
 
-  const navigate = useNavigate();
-
   const handleNavigation = (link) => () => {
     navigate(link, {
       state: { team: team },
@@ -94,83 +89,67 @@ const TeamOpened = () => {
     return location.pathname.endsWith(link);
   };
 
-  // console.log(location2.pathname);
-  // useEffect(() => {
-  //   navigate("overview", {
-  //     state: { team: team },
-  //   });
-  // }, []);
-
-  // console.log(team);
-
   return (
-    <div className="h-full flex flex-col justify-between rounded-md shadow-sm">
-      {/* <div className="flex items-center gap-2 justify-between">
+    <div className="h-full flex flex-col rounded-2xl shadow-xl bg-gradient-to-br from-white to-blue-50 border border-gray-200">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white rounded-t-2xl">
+        <button
+          type="button"
+          className="p-2 rounded-full hover:bg-blue-100 transition"
+          onClick={() => navigate("/app/team")}
+        >
+          <PiArrowLeftBold className="text-2xl text-blue-700" />
+        </button>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className="p-3 rounded-full m-2"
-            onClick={() => {
-              navigate("/app/team");
-            }}
-          >
-            <FaChevronLeft />
-          </button>
-      
-        </div>
-        <button>
-          <div className="dropdown">
-            <AiOutlineMore
-              size={30}
-              role="button"
+          <div className="dropdown dropdown-end">
+            <button
               tabIndex={0}
-              className="m-1"
-            />
+              className="p-2 rounded-full hover:bg-gray-100 transition"
+            >
+              <PiDotsThreeOutlineVerticalBold className="text-2xl text-gray-600" />
+            </button>
             <ul
               tabIndex={0}
-              className="dropdown-content menu dark:bg-gray-100 bg-base-100 rounded-md w-fit p-2 shadow-lg text-left right-0"
+              className="dropdown-content menu bg-white rounded-xl shadow-lg w-40 mt-2 border border-gray-100"
             >
-              <li className="p-3 hover:text-blue-500">Edit</li>
+              <li className="flex items-center gap-2 px-4 py-2 hover:bg-blue-50 cursor-pointer">
+                <PiPencilSimpleBold className="text-blue-500" />
+                <span>Edit</span>
+              </li>
               <li
-                className="p-3 hover:text-red-500"
-                onClick={handleTeamDelete(team.id)}
+                className="flex items-center gap-2 px-4 py-2 hover:bg-red-50 text-red-600 cursor-pointer"
+                onClick={handleTeamDelete(team?.id)}
               >
-                Delete
+                <PiTrashBold className="text-red-500" />
+                <span>Delete</span>
               </li>
             </ul>
           </div>
-        </button>
-      </div> */}
-
-      <div className="grow flex flex-col">
-        {/* sub navigation */}
-        <div>
-          <div className="flex items-center gap-4 px-2 pt-2 overflow-scroll scrollbar-hide">
-            {menuItems.map((items, index) => (
-              <div
-                key={index}
-                className={`flex items-center py-1 px-3 gap-1  hover:border-blue-500 cursor-pointer ${
-                  onPage(items.link)
-                    ? "border-b-2 border-blue-500 text-black font-bold"
-                    : "text-gray-500 "
-                }`}
-                onClick={handleNavigation(items.link)}
-              >
-                <span className="text-xl">{items.icon}</span>
-                <p className="text-sm">{items.label}</p>
-              </div>
-            ))}
-            {/* continue with Tasks, TO DO lists, Notes, Teams, Study Plan, and Setting */}
-          </div>
         </div>
-        {/* actions for sub navigated page like sorting, sharing... */}
-        {/* <div className="flex items-center gap-2 p-2 border-y-1 border-gray-300"></div> */}
-        {/* contents */}
-        <div className="grow w-full">
+      </div>
+      <div className="grow flex flex-col">
+        {/* Sub navigation */}
+        <div className="flex items-center gap-2 px-6 pt-4 pb-2 overflow-x-auto scrollbar-hide">
+          {menuItems.map((item, index) => (
+            <div
+              key={index}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full transition cursor-pointer text-base font-medium
+                ${
+                  onPage(item.link)
+                    ? "bg-blue-100 text-blue-700 shadow"
+                    : "text-gray-500 hover:bg-gray-100"
+                }
+              `}
+              onClick={handleNavigation(item.link)}
+            >
+              <span className="text-xl">{item.icon}</span>
+              <span>{item.label}</span>
+            </div>
+          ))}
+        </div>
+        <div className="grow w-full px-6 py-4">
           <Outlet />
         </div>
       </div>
-      {/* <h1>{team.description}</h1> */}
     </div>
   );
 };
@@ -178,14 +157,10 @@ const TeamOpened = () => {
 export default TeamOpened;
 
 const menuItems = [
-  { icon: <AiOutlineBlock />, label: "Overview", link: "overview" },
-  { icon: <AiOutlineCheckCircle />, label: "Workspaces", link: "workspaces" },
-  { icon: <AiOutlineFileText />, label: "Discussions", link: "discussions" },
-  { icon: <AiOutlineTeam />, label: "Resource", link: "resources" },
-  // {
-  //   icon: <AiOutlineOrderedList />,
-  //   label: "TO-DO Lists",
-  //   link: "todo-lists",
-  // },
-  { icon: <AiOutlineSetting />, label: "Settings", link: "settings" },
+  { icon: <PiSquaresFourBold />, label: "Overview", link: "overview" },
+  { icon: <PiCheckCircleBold />, label: "Workspaces", link: "workspaces" },
+  { icon: <PiFileTextBold />, label: "Discussions", link: "discussions" },
+  { icon: <PiUsersThreeBold />, label: "Resource", link: "resources" },
+  // { icon: <PiListChecksBold />, label: "TO-DO Lists", link: "todo-lists" },
+  { icon: <PiGearBold />, label: "Settings", link: "settings" },
 ];
