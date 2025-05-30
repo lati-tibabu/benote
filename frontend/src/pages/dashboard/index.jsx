@@ -43,6 +43,9 @@ import {
   PiCalendarCheckDuotone,
   PiMapTrifoldDuotone,
   PiSlidersHorizontalDuotone,
+  PiPresentationChart,
+  PiChartBarDuotone,
+  PiClipboardDuotone,
 } from "react-icons/pi";
 
 function Dashboard() {
@@ -250,9 +253,9 @@ function Dashboard() {
   }, [profilePopoverOpen]);
 
   return (
-    <div className="bg-white text-black min-h-screen flex flex-col">
+    <div className="bg-white text-black h-screen min-h-screen w-full flex flex-col overflow-hidden">
       {/* Top */}
-      <div className="w-full flex-1 flex flex-col sm:flex-row overflow-x-scroll scrollbar-hide">
+      <div className="w-full flex-1 flex flex-col sm:flex-row overflow-hidden">
         {/* Hamburger for mobile */}
         {!showSidebar && (
           <button
@@ -263,6 +266,14 @@ function Dashboard() {
             <HiMenu size={28} />
           </button>
         )}
+        {/* Mobile sidebar backdrop */}
+        {isMobileNavOpen && (
+          <div
+            className="fixed inset-0 z-30 bg-black bg-opacity-30 sm:hidden"
+            onClick={handleSidebarToggle}
+            aria-label="Close sidebar backdrop"
+          />
+        )}
         {/* Sidebar */}
         {(showSidebar || isMobileNavOpen) && (
           <aside
@@ -270,20 +281,24 @@ function Dashboard() {
               showSidebar || isMobileNavOpen
                 ? "translate-x-0"
                 : "-translate-x-full"
-            } sm:translate-x-0`}
+            } sm:translate-x-0 scrollbar-hide`}
             style={{
-              width: collapsedNav && showSidebar ? 80 : 256,
+              width: collapsedNav && showSidebar ? 90 : 256,
               minWidth: collapsedNav && showSidebar ? 80 : 256,
+              maxHeight: "100vh",
+              overflowY: "auto",
             }}
           >
             {/* Logo, collapse/expand, and profile */}
-            <div className="flex items-center justify-between mb-6 relative">
+            <div className="flex items-center justify-between mb-6 relative ">
               <Link to="/" className="flex gap-2 items-center">
-                <img src="/rect19.png" alt="Logo" className="h-10 w-auto" />
                 {!collapsedNav && showSidebar && (
-                  <span className="font-black text-lg tracking-tight text-blue-700">
-                    SPH
-                  </span>
+                  <>
+                    <img src="/rect19.png" alt="Logo" className="h-10 w-auto" />
+                    <span className="font-black text-lg tracking-tight text-blue-700">
+                      SPH
+                    </span>
+                  </>
                 )}
               </Link>
               <div className="flex items-center gap-2">
@@ -337,7 +352,7 @@ function Dashboard() {
             <nav
               className={`${
                 showSidebar || isMobileNavOpen ? "block" : "hidden"
-              } sm:block`}
+              } sm:block bg-white max-h-screen overflow-auto scrollbar-hide`}
             >
               {/* Quick Search & AI Overview for mobile (show above nav on mobile) */}
               <div className="flex sm:hidden gap-2 mb-4">
@@ -402,13 +417,13 @@ function Dashboard() {
                   {loc[1] === "open" && loc[0] === "workspace" && (
                     <ul
                       className={`$${
-                        collapsedNav ? "p-1 bg-blue-50 rounded" : "pl-7"
+                        collapsedNav ? "p-1 bg-blue-50 rounded" : "pl-7  p-2"
                       } mt-2 flex flex-col gap-1`}
                     >
                       {workspaceSubMenusModern.map((item, idx) => (
                         <li
                           key={idx}
-                          className={`flex items-center gap-2 px-2 py-1 rounded transition-all cursor-pointer ${
+                          className={`flex items-center gap-2 py-1 rounded transition-all cursor-pointer ${
                             onPage(item.link)
                               ? "bg-blue-200 text-blue-900 font-semibold"
                               : "text-gray-600 hover:bg-blue-100"
@@ -606,8 +621,9 @@ function Dashboard() {
           onClose={() => setAiOverviewOpen(false)}
         />
         {/* Main Content */}
-        <main className="w-full flex flex-col overflow-x-hidden h-screen overflow-y-auto bg-white/80">
-          <header className="w-full px-8 py-4 flex items-center justify-between bg-gradient-to-r from-white via-blue-50 to-green-50 border-b shadow-sm rounded-t-2xl sticky top-0 z-30">
+        <main className="w-full flex flex-col h-screen min-h-0 overflow-y-auto scrollbar-hide bg-white/80">
+          {/* <header className="w-full px-8 py-4 flex items-center justify-between bg-gradient-to-r from-white via-blue-50 to-green-50 border-b shadow-sm rounded-t-2xl sticky top-0 z-30"> */}
+          <header className="w-full px-8 py-4 flex items-center justify-between bg-white border-b shadow-sm sticky top-0 z-30">
             <div className="flex items-center gap-3">
               <button
                 className="p-2 hover:bg-blue-100 rounded-full cursor-pointer border border-transparent hover:border-blue-300 transition"
@@ -723,9 +739,13 @@ export default Dashboard;
 
 // Modern workspace submenu icons
 const workspaceSubMenusModern = [
-  { icon: <PiListChecksDuotone />, label: "Overview", link: "overview" },
+  { icon: <PiChartBarDuotone />, label: "Overview", link: "overview" },
   { icon: <PiListChecksDuotone />, label: "Tasks", link: "tasks" },
-  { icon: <PiNotePencilDuotone />, label: "TO-DO Lists", link: "todo-lists" },
+  {
+    icon: <PiClipboardTextDuotone />,
+    label: "TO-DO Lists",
+    link: "todo-lists",
+  },
   { icon: <PiNotePencilDuotone />, label: "Notes", link: "notes" },
   { icon: <PiMapTrifoldDuotone />, label: "Roadmaps", link: "roadmaps" },
   {
