@@ -28,5 +28,7 @@ router.put(
   "/:id/membership/invitation",
   teamController.acceptMembershipInvitation
 );
+router.put("/:id/workspace/remove", teamController.removeWorkspaceFromTeam);
+router.put("/:id/workspace/add", teamController.addWorkspaceToTeam);
 
 module.exports = router;
