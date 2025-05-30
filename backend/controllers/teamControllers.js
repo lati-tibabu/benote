@@ -1,4 +1,12 @@
-const { team, team_membership, user } = require("../models");
+const {
+  team,
+  team_membership,
+  user,
+  team_membership_permission,
+  workspace_membership,
+  workspace,
+} = require("../models");
+
 // const { team, team_membership } = require('../models');
 const { Sequelize, where } = require("sequelize");
 
@@ -22,12 +30,29 @@ const createTeam = async (req, res) => {
     );
 
     // Assign the creator as an admin in the membership table
-    await team_membership.create(
+    const creatorMembership = await team_membership.create(
       {
         team_id: _team.id,
         user_id: userId,
         role: "admin",
         invitation_accepted: true,
+      },
+      { transaction }
+    );
+
+    // Give full permissions to the creator
+    await team_membership_permission.create(
+      {
+        team_membership_id: creatorMembership.id,
+        can_create_workspace: true,
+        can_upload_files: true,
+        can_participate_discussion: true,
+        can_create_task: true,
+        can_create_todo: true,
+        can_create_roadmap: true,
+        can_create_study_plan: true,
+        can_create_notes: true,
+        can_share_notes: true,
       },
       { transaction }
     );
@@ -75,6 +100,13 @@ const giveUserMembership = async (req, res) => {
       team_id: req.params.team_id,
       user_id: req.body.user_id,
       role: "member",
+    });
+
+    // Create default permissions (all false) for this membership
+
+    await team_membership_permission.create({
+      team_membership_id: _membership.id,
+      // All permissions default to false by model definition
     });
 
     // Send notification to the user being added
@@ -129,6 +161,19 @@ const promoteTeamAdmin = async (req, res) => {
         user_id: req.body.user_id,
         role: "admin",
       });
+      // Create permissions with all true for new admin
+      await team_membership_permission.create({
+        team_membership_id: _membership.id,
+        can_create_workspace: true,
+        can_upload_files: true,
+        can_participate_discussion: true,
+        can_create_task: true,
+        can_create_todo: true,
+        can_create_roadmap: true,
+        can_create_study_plan: true,
+        can_create_notes: true,
+        can_share_notes: true,
+      });
       res.status(201).json(_membership);
     } else {
       const _membership = await team_membership.update(
@@ -142,6 +187,47 @@ const promoteTeamAdmin = async (req, res) => {
           },
         }
       );
+      // Check if permission exists for this membership
+      const member = await team_membership.findOne({
+        where: {
+          team_id: teamId,
+          user_id: req.body.user_id,
+        },
+      });
+      let permission = await team_membership_permission.findOne({
+        where: { team_membership_id: member.id },
+      });
+      if (permission) {
+        await team_membership_permission.update(
+          {
+            can_create_workspace: true,
+            can_upload_files: true,
+            can_participate_discussion: true,
+            can_create_task: true,
+            can_create_todo: true,
+            can_create_roadmap: true,
+            can_create_study_plan: true,
+            can_create_notes: true,
+            can_share_notes: true,
+          },
+          {
+            where: { team_membership_id: member.id },
+          }
+        );
+      } else {
+        await team_membership_permission.create({
+          team_membership_id: member.id,
+          can_create_workspace: true,
+          can_upload_files: true,
+          can_participate_discussion: true,
+          can_create_task: true,
+          can_create_todo: true,
+          can_create_roadmap: true,
+          can_create_study_plan: true,
+          can_create_notes: true,
+          can_share_notes: true,
+        });
+      }
       res.status(200).json(_membership);
     }
   } catch (error) {
@@ -203,6 +289,31 @@ const demoteTeamAdmin = async (req, res) => {
           },
         }
       );
+      // Remove all permissions for demoted admin
+      const member = await team_membership.findOne({
+        where: {
+          team_id: req.params.team_id,
+          user_id: req.body.user_id,
+        },
+      });
+      if (member) {
+        await team_membership_permission.update(
+          {
+            can_create_workspace: false,
+            can_upload_files: false,
+            can_participate_discussion: false,
+            can_create_task: false,
+            can_create_todo: false,
+            can_create_roadmap: false,
+            can_create_study_plan: false,
+            can_create_notes: false,
+            can_share_notes: false,
+          },
+          {
+            where: { team_membership_id: member.id },
+          }
+        );
+      }
       res.status(200).json(_membership);
     }
   } catch (error) {
@@ -251,6 +362,7 @@ const acceptMembershipInvitation = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+
 const removeUserMember = async (req, res) => {
   try {
     const teamId = req.params.team_id;
@@ -342,6 +454,21 @@ const readTeam = async (req, res) => {
               attributes: ["id", "name", "email"],
               order: [["name", "ASC"]],
             },
+            {
+              model: team_membership_permission,
+              as: "permission",
+              attributes: [
+                "can_create_workspace",
+                "can_upload_files",
+                "can_participate_discussion",
+                "can_create_task",
+                "can_create_todo",
+                "can_create_roadmap",
+                "can_create_study_plan",
+                "can_create_notes",
+                "can_share_notes",
+              ],
+            },
           ],
         },
       ],
@@ -361,6 +488,7 @@ const readTeam = async (req, res) => {
         name: member.user.name,
         email: member.user.email,
         role: member.role,
+        permissions: member.permission || null,
       })),
     };
 
@@ -505,6 +633,155 @@ const deleteTeam = async (req, res) => {
   }
 };
 
+const removeWorkspaceFromTeam = async (req, res) => {
+  try {
+    const teamId = req.params.id;
+    const workspaceId = req.body.workspace_id;
+
+    const _team = await team.findByPk(teamId);
+
+    if (!_team) {
+      return res.status(404).json({ message: "Team not found" });
+    }
+
+    const isTeamCreatedByUser = await team.findOne({
+      where: {
+        id: teamId,
+        created_by: req.user.id,
+      },
+    });
+
+    isWorkspaceCreatedByUser = await workspace.findOne({
+      where: {
+        id: workspaceId,
+        owned_by: req.user.id,
+      },
+    });
+
+    if (!isTeamCreatedByUser) {
+      if (!isWorkspaceCreatedByUser) {
+        return res.status(401).json({
+          message: "Unauthorized: You are not the creator of this workspace",
+        });
+      }
+    }
+
+    // if (!isTeamCreatedByUser && !isWorkspaceCreatedByUser) {
+    //   return res.status(401).json({
+    //     message: "Unauthorized: You are not the creator of this team",
+    //   });
+    // }
+
+    // Check if the workspace belongs to the team
+    const workspaceBelongsToTeam = await workspace.findOne({
+      where: {
+        id: workspaceId,
+        belongs_to_team: teamId,
+      },
+    });
+
+    if (!workspaceBelongsToTeam) {
+      return res.status(404).json({ message: "Workspace not found in team" });
+    }
+
+    await workspaceBelongsToTeam.update({
+      belongs_to_team: null, // Remove the association with the team
+    });
+    // Check if the workspace membership exists
+
+    const workspaceMembershipExists = await workspace_membership.findOne({
+      where: {
+        team_id: teamId,
+        workspace_id: workspaceId,
+      },
+    });
+
+    if (!workspaceMembershipExists) {
+      return res.status(404).json({ message: "Workspace not found in team" });
+    }
+
+    const workspaceMembership = await workspace_membership.findOne({
+      where: {
+        team_id: teamId,
+        workspace_id: workspaceId,
+      },
+    });
+
+    if (workspaceMembership) {
+      await workspaceMembership.destroy();
+    }
+    // If you have a direct relationship in the team model, you might need to update that as well
+    // For example, if you have a workspaces field in the team model:
+
+    // Assuming you have a method to remove a workspace from a team
+    // This is just a placeholder, implement your logic here
+    // await _team.removeWorkspace(workspaceId);
+
+    return res.status(200).json({ message: "Workspace removed from team" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+const addWorkspaceToTeam = async (req, res) => {
+  try {
+    const teamId = req.params.id;
+    const workspaceId = req.body.workspace_id;
+    const userId = req.user.id;
+
+    // Check if team exists
+    const _team = await team.findByPk(teamId);
+    if (!_team) {
+      return res.status(404).json({ message: "Team not found" });
+    }
+
+    // Check if user is admin or owner
+    const isAdmin = await team_membership.findOne({
+      where: {
+        team_id: teamId,
+        user_id: userId,
+        role: "admin",
+      },
+    });
+    if (!isAdmin || _team.created_by !== userId) {
+      return res.status(401).json({
+        message: "Unauthorized: You are not an admin or owner of this team",
+      });
+    }
+
+    // Check if workspace exists
+    const _workspace = await workspace.findByPk(workspaceId);
+    if (!_workspace) {
+      return res.status(404).json({ message: "Workspace not found" });
+    }
+
+    // Associate workspace with team
+    await _workspace.update({ belongs_to_team: teamId });
+
+    // Add workspace membership if not already present
+    let workspaceMembership = await workspace_membership.findOne({
+      where: {
+        team_id: teamId,
+        workspace_id: workspaceId,
+      },
+    });
+    if (!workspaceMembership) {
+      workspaceMembership = await workspace_membership.create({
+        team_id: teamId,
+        workspace_id: workspaceId,
+      });
+    }
+
+    return res.status(200).json({ message: "Workspace added to team" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
 module.exports = {
   createTeam,
   readTeams,
@@ -516,4 +793,6 @@ module.exports = {
   demoteTeamAdmin,
   removeUserMember,
   acceptMembershipInvitation,
+  removeWorkspaceFromTeam,
+  addWorkspaceToTeam,
 };

@@ -8,12 +8,49 @@ const {
   todo,
   todo_item,
   time_block,
+  team_membership_permission,
 } = require("../models");
 const { team } = require("../models");
 
 // Create
 const createWorkspace = async (req, res) => {
   try {
+    // Check if workspace is being created from team setting
+    if (req.query.team) {
+      // Must have team_id in body
+      const { belongs_to_team, owned_by } = req.body;
+      if (!belongs_to_team) {
+        return res
+          .status(400)
+          .json({ message: "Team ID is required for team workspace creation" });
+      }
+      // Find the user's team membership
+      const membership = await team_membership.findOne({
+        where: {
+          team_id: belongs_to_team,
+          user_id: owned_by,
+          role: "admin",
+        },
+        include: [
+          {
+            model: team_membership_permission,
+            as: "permission",
+          },
+        ],
+      });
+      if (
+        !membership
+        // membership.role != "admin" ||
+        // !membership.permission ||
+        // !membership.permission.can_create_workspace
+      ) {
+        return res.status(403).json({
+          message:
+            membership.role +
+            "You do not have permission to create a workspace for this team.",
+        });
+      }
+    }
     const _workspace = await workspace.create(req.body);
     if (_workspace) {
       await workspace_membership.create({
@@ -126,6 +163,7 @@ const readWorkspaces = async (req, res) => {
     let _workspaces = null;
     let _team_workspaces = null;
     let _teams = null;
+
     const theInclude = {
       model: workspace,
       as: "workspace",
@@ -517,7 +555,6 @@ const updateWorkspace = async (req, res) => {
 };
 
 // Delete
-
 const deleteWorkspace = async (req, res) => {
   try {
     const _workspace = await workspace.findByPk(req.params.id);
