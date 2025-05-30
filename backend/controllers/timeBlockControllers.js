@@ -4,13 +4,22 @@ const { time_block } = require("../models");
 // Create
 const createTimeBlock = async (req, res) => {
   try {
-    // new Date().toISOString
-    const start_time = new Date(req.body.start_time).getTime().toString();
-    const end_time = new Date(req.body.end_time).getTime().toString();
-    const title = start_time + end_time;
-
-    const _timeBlock = await time_block.create({ ...req.body, title: title });
-    res.status(201).json(_timeBlock);
+    let timeBlocks = req.body;
+    // Support both single object and array
+    if (!Array.isArray(timeBlocks)) {
+      timeBlocks = [timeBlocks];
+    }
+    const createdBlocks = [];
+    for (const block of timeBlocks) {
+      const start_time = new Date(block.start_time).getTime().toString();
+      const end_time = new Date(block.end_time).getTime().toString();
+      const title = start_time + end_time;
+      const _timeBlock = await time_block.create({ ...block, title });
+      createdBlocks.push(_timeBlock);
+    }
+    res
+      .status(201)
+      .json(Array.isArray(req.body) ? createdBlocks : createdBlocks[0]);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

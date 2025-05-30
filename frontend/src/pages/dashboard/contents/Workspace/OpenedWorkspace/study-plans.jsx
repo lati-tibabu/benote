@@ -2,6 +2,15 @@ import React, { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import AiGeneratedTask from "./StudyPlan/ai-generated-studyPlan";
+import {
+  PiBookOpenTextBold,
+  PiCalendarCheckBold,
+  PiCalendarXBold,
+  PiTrashBold,
+  PiPlusBold,
+  PiMagicWandBold,
+} from "react-icons/pi";
 
 const StudyPlans = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -12,6 +21,7 @@ const StudyPlans = () => {
   };
   const [studyPlans, setStudyPlans] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [showAiModal, setShowAiModal] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -125,50 +135,66 @@ const StudyPlans = () => {
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-white min-h-screen p-6">
-      <h2 className="text-2xl font-extrabold tracking-tight text-gray-900 mb-6">
+      <h2 className="flex items-center gap-2 text-3xl font-extrabold tracking-tight text-gray-900 mb-8">
+        <PiBookOpenTextBold className="text-purple-700 text-4xl" />
         Study Plans
       </h2>
-      <button
-        className="btn bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full px-6 py-2 shadow-md transition mb-6"
-        onClick={() => setIsOpen(true)}
-      >
-        + New Study Plan
-      </button>
-      <div className="overflow-x-auto rounded-2xl shadow-md bg-white/90 border border-gray-200">
+      <div className="flex gap-3 mb-8">
+        <button
+          className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-full px-6 py-2 shadow-lg transition text-base"
+          onClick={() => setIsOpen(true)}
+        >
+          <PiPlusBold className="text-lg" /> New Study Plan
+        </button>
+        <button
+          className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white font-semibold rounded-full px-6 py-2 shadow-lg transition text-base"
+          onClick={() => setShowAiModal(true)}
+        >
+          <PiMagicWandBold className="text-lg" /> Generate Study Plan
+        </button>
+      </div>
+      <div className="overflow-x-auto rounded-2xl shadow-xl bg-white/95 border border-gray-200">
         {studyPlans.length > 0 ? (
           <table className="table w-full">
-            <thead className="bg-gray-50 text-gray-700 text-base">
+            <thead className="bg-gradient-to-r from-purple-50 to-white text-gray-700 text-base">
               <tr>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Actions</th>
+                <th className="py-4 px-4 text-left font-bold">Title</th>
+                <th className="py-4 px-4 text-left font-bold">Description</th>
+                <th className="py-4 px-4 text-left font-bold">
+                  <PiCalendarCheckBold className="inline mr-1 text-green-600" />{" "}
+                  Start Date
+                </th>
+                <th className="py-4 px-4 text-left font-bold">
+                  <PiCalendarXBold className="inline mr-1 text-red-600" /> End
+                  Date
+                </th>
+                <th className="py-4 px-4 text-left font-bold">Actions</th>
               </tr>
             </thead>
             <tbody>
               {studyPlans.map((plan) => (
-                <tr key={plan.id} className="hover:bg-blue-50 transition">
+                <tr key={plan.id} className="hover:bg-purple-50/60 transition">
                   <td
                     onClick={() => handleOpenPlan(plan.id)}
-                    className="hover:underline cursor-pointer font-semibold text-blue-700"
+                    className="hover:underline cursor-pointer font-semibold text-purple-700 text-base px-4 py-3 rounded-l-xl"
                   >
                     {plan.title}
                   </td>
-                  <td className="text-gray-600">{plan.description}</td>
-                  <td className="text-xs text-gray-500">
+                  <td className="text-gray-600 px-4 py-3">
+                    {plan.description}
+                  </td>
+                  <td className="text-xs text-gray-500 px-4 py-3">
                     {new Date(plan.start_date).toLocaleDateString()}
                   </td>
-                  <td className="text-xs text-gray-500">
+                  <td className="text-xs text-gray-500 px-4 py-3">
                     {new Date(plan.end_date).toLocaleDateString()}
                   </td>
-                  <td>
+                  <td className="px-4 py-3">
                     <button
-                      className="btn btn-sm bg-red-500 hover:bg-red-600 text-white rounded-full flex flex-row items-center gap-2 px-3 py-1 shadow transition"
+                      className="flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white rounded-full px-4 py-2 shadow transition text-sm"
                       onClick={() => handleDeletePlan(plan.id)}
                     >
-                      <FaTrash />
-                      <span>Delete</span>
+                      <PiTrashBold className="text-base" /> Delete
                     </button>
                   </td>
                 </tr>
@@ -176,9 +202,10 @@ const StudyPlans = () => {
             </tbody>
           </table>
         ) : (
-          <p className="text-gray-400 text-center py-8">
-            No study plans found.
-          </p>
+          <div className="flex flex-col items-center justify-center py-16">
+            <PiBookOpenTextBold className="text-6xl text-gray-300 mb-4" />
+            <p className="text-gray-400 text-lg">No study plans found.</p>
+          </div>
         )}
       </div>
       {isOpen && (
@@ -274,6 +301,22 @@ const StudyPlans = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {showAiModal && (
+        <div className="modal modal-open">
+          <div className="modal-box bg-white text-gray-800 rounded-2xl shadow-lg border border-gray-200 max-w-3xl w-full">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-xl font-bold">AI Generated Study Plan</h3>
+              <button
+                className="btn btn-ghost text-gray-700 rounded-full px-4 py-2"
+                onClick={() => setShowAiModal(false)}
+              >
+                Close
+              </button>
+            </div>
+            <AiGeneratedTask />
           </div>
         </div>
       )}

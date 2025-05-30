@@ -14,15 +14,26 @@ const createStudyPlan = async (req, res) => {
 const readStudyPlans = async (req, res) => {
   try {
     const userId = req.user.id;
+    const include = [
+      {
+        model: user,
+        as: "user",
+        attributes: ["id", "name", "email"],
+      },
+    ];
+    // if (req.query.air === "true") {
+    //   include.push({
+    //     model: time_block,
+    //     as: "timeBlocks",
+    //     attributes: ["start_time", "end_time"],
+    //   });
+    // }
     const _studyPlans = await study_plan.findAll({
+      ...(req.query.air === "true" && {
+        attributes: ["title", "start_date", "end_date"],
+      }),
       where: { user_id: userId },
-      include: [
-        {
-          model: user,
-          as: "user",
-          attributes: ["id", "name", "email"],
-        },
-      ],
+      include,
     });
     res.json(_studyPlans);
   } catch (error) {

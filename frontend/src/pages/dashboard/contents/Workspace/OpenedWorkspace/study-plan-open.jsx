@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+// import OpenedAIStudyGenerators from "./opened_ai_generator";
+import OpenedAIStudyGenerators from "./StudyPlan/opened_ai_generator";
 
 const StudyPlanOpened = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -28,6 +30,7 @@ const StudyPlanOpened = () => {
   });
   const [openPlanDetails, setOpenPlanDetails] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState(null);
+  const [showAIGenerator, setShowAIGenerator] = useState(false);
   const userData = useSelector((state) => state.auth.user) || {};
   const tableRef = useRef(null);
 
@@ -47,6 +50,8 @@ const StudyPlanOpened = () => {
       console.error("Error: ", error);
     }
   };
+
+  console.log("Study Plan Data:", plan);
 
   useEffect(() => {
     fetchStudyPlan(plan_id);
@@ -141,6 +146,12 @@ const StudyPlanOpened = () => {
           >
             ← Back
           </button>
+          <button
+            className="ml-4 text-white bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 font-semibold px-4 py-2 rounded-lg shadow transition"
+            onClick={() => setShowAIGenerator(true)}
+          >
+            Generate Plan (AI)
+          </button>
           <h1 className="font-extrabold text-2xl tracking-tight text-gray-900 mb-2">
             Study Plan
           </h1>
@@ -171,30 +182,35 @@ const StudyPlanOpened = () => {
           </div>
         </div>
         {/* Calendar Table */}
-        <div className="overflow-x-auto max-h-[600px] scrollbar-hide bg-white/90 rounded-2xl shadow-md border border-gray-200 p-2">
-          <table className="table border-0 min-w-max">
-            <thead className="sticky top-0 z-10 bg-purple-50">
+        <div className="overflow-x-auto max-h-[600px] scrollbar-hide bg-white/90 rounded-2xl shadow-lg border border-gray-100 p-0 mt-6">
+          <table
+            ref={tableRef}
+            className="table border-0 min-w-max w-full text-sm"
+          >
+            <thead className="sticky top-0 z-10 bg-gradient-to-r from-purple-50 to-white/80">
               <tr className="text-gray-700 text-base">
-                <th className="bg-white/0"></th>
-                {[...Array(days)].map((_, index) => (
+                <th className="bg-white/0 w-20"></th>
+                {[...Array(days)]?.map((_, index) => (
                   <th
                     key={index}
-                    className="bg-purple-50 px-4 py-2 min-w-[160px]"
+                    className="bg-white/0 px-4 py-3 min-w-[120px] border-b border-gray-200"
                   >
-                    <div className="flex flex-col items-center">
-                      <span className="font-bold text-base text-purple-700">
-                        {new Date(
-                          start + index * 86400000
-                        ).toLocaleDateString("en-US", { weekday: "long" })}
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="font-bold text-base text-purple-700 tracking-tight">
+                        {new Date(start + index * 86400000).toLocaleDateString(
+                          "en-US",
+                          { weekday: "short" }
+                        )}
                       </span>
-                      <span className="font-light text-xs text-gray-500">
-                        {new Date(
-                          start + index * 86400000
-                        ).toLocaleDateString("en-US", {
-                          day: "2-digit",
-                          month: "long",
-                          year: "numeric",
-                        })}
+                      <span className="font-light text-xs text-gray-400">
+                        {new Date(start + index * 86400000).toLocaleDateString(
+                          "en-US",
+                          {
+                            day: "2-digit",
+                            month: "short",
+                            year: "2-digit",
+                          }
+                        )}
                       </span>
                     </div>
                   </th>
@@ -204,7 +220,7 @@ const StudyPlanOpened = () => {
             <tbody>
               {[...Array(24)].map((_, i) => (
                 <tr key={i} className="border-0">
-                  <td className="p-2 text-center font-medium bg-gray-100 sticky left-0 z-5 text-gray-700 text-sm">
+                  <td className="p-2 text-center font-semibold bg-gradient-to-r from-gray-50 to-white sticky left-0 z-5 text-gray-600 text-xs border-r border-gray-100">
                     {formatTime(i)}
                   </td>
                   {[...Array(days)].map((_, index) => {
@@ -212,7 +228,7 @@ const StudyPlanOpened = () => {
                       start + index * 86400000 + i * 3600000
                     ).getTime();
 
-                    const timeBlockTimestamps = timeBlocks.map((timeBlock) =>
+                    const timeBlockTimestamps = timeBlocks?.map((timeBlock) =>
                       new Date(timeBlock.start_time).getTime()
                     );
 
@@ -233,7 +249,11 @@ const StudyPlanOpened = () => {
                     return (
                       <td
                         key={index}
-                        className="border border-gray-100 hover:bg-purple-50 transition min-w-[140px] h-12 align-top cursor-pointer relative"
+                        className={`border border-gray-100 min-w-[110px] h-12 align-top cursor-pointer relative transition group ${
+                          job
+                            ? "bg-gradient-to-r from-purple-100/60 to-white/80"
+                            : "hover:bg-purple-50"
+                        }`}
                         title={targetTimestamp}
                         onClick={() => {
                           setCellSelected(true);
@@ -252,16 +272,16 @@ const StudyPlanOpened = () => {
                                   name="job"
                                   value={jobEdit}
                                   onChange={(e) => setJobEdit(e.target.value)}
-                                  className="input bg-gray-50 outline-1 ring-1 ring-purple-500 px-2 py-1 rounded-md text-sm w-24"
+                                  className="input bg-gray-50 outline-1 ring-1 ring-purple-400 px-2 py-1 rounded-md text-xs w-20 focus:ring-2 focus:ring-purple-500"
                                 />
                                 <button
                                   type="submit"
-                                  className="bg-purple-500 text-white px-3 py-1 rounded-md text-sm hover:bg-purple-600 transition"
+                                  className="bg-purple-500 text-white px-2 py-1 rounded-md text-xs hover:bg-purple-600 transition"
                                 >
                                   Save
                                 </button>
                               </form>
-                              <div className="mt-2 flex justify-between">
+                              <div className="mt-1 flex justify-between">
                                 <button className="bg-red-500 text-white px-2 py-1 rounded-md text-xs hover:bg-red-600 transition">
                                   Delete
                                 </button>
@@ -275,7 +295,7 @@ const StudyPlanOpened = () => {
                             </div>
                           ) : (
                             <div
-                              className="bg-gradient-to-r from-purple-400 to-purple-600 text-white px-3 py-1 rounded-md text-sm font-semibold shadow hover:scale-105 transition-transform cursor-pointer h-full"
+                              className="bg-gradient-to-r from-purple-400/90 to-purple-600/80 text-white px-2 py-1 rounded-md text-xs font-semibold shadow hover:scale-105 transition-transform cursor-pointer h-full group-hover:ring-2 group-hover:ring-purple-300"
                               title={description}
                               onClick={() => handleOpenPlanDetail(id, job)}
                             >
@@ -298,7 +318,7 @@ const StudyPlanOpened = () => {
                                       job: e.target.value,
                                     })
                                   }
-                                  className="input bg-gray-50 outline-1 ring-1 ring-purple-500 rounded-md px-2 py-1 text-sm w-24"
+                                  className="input bg-gray-50 outline-1 ring-1 ring-purple-400 rounded-md px-2 py-1 text-xs w-20 focus:ring-2 focus:ring-purple-500"
                                   autoFocus
                                 />
                               </form>
@@ -313,6 +333,27 @@ const StudyPlanOpened = () => {
             </tbody>
           </table>
         </div>
+        {/* Modal for AI Generator */}
+        {showAIGenerator && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-2xl w-full relative animate-fade-in">
+              <button
+                className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl font-bold"
+                onClick={() => setShowAIGenerator(false)}
+                aria-label="Close"
+              >
+                ×
+              </button>
+              <OpenedAIStudyGenerators
+                plan={plan}
+                onSuccess={() => {
+                  setShowAIGenerator(false);
+                  fetchStudyPlan(plan_id);
+                }}
+              />
+            </div>
+          </div>
+        )}
       </div>
     )
   );
