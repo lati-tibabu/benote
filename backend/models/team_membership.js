@@ -9,6 +9,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.hasOne(models.team_membership_permission, {
+        foreignKey: "team_membership_id",
+        as: "permission",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      });
       this.belongsTo(models.user, {
         foreignKey: "user_id",
         as: "user",
