@@ -154,7 +154,7 @@ const dashboardRoutes = {
       element: <ProtectedRoute component={LLMSetting} />,
     },
     {
-      path: "notification",
+      path: "notifications",
       element: <ProtectedRoute component={Notification} />,
     },
     { path: "setting", element: <ProtectedRoute component={Setting} /> },

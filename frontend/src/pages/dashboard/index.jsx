@@ -517,7 +517,7 @@ function Dashboard() {
                 </li>
                 <li>
                   <Link
-                    to="notification"
+                    to="notifications"
                     className={`flex items-center ${
                       collapsedNav && "justify-center"
                     } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
@@ -562,10 +562,7 @@ function Dashboard() {
                 <li>
                   <button
                     className="w-full flex items-center gap-2 px-0 py-2 text-red-600 hover:bg-red-50 hover:text-red-800 rounded-lg font-medium transition-all"
-                    onClick={() => {
-                      handleLogout();
-                      setIsMobileNavOpen(false); // Close mobile nav after logout
-                    }}
+                    onClick={handleLogout}
                     title="Logout"
                   >
                     <span className="flex items-center justify-center min-w-[40px] min-h-[40px]">
@@ -708,6 +705,27 @@ function Dashboard() {
           </footer>
         </main>
       </div>
+      {/* Notification Popover/Banner */}
+      {notificationPopping && latestNotification && (
+        <div className="fixed top-6 right-6 z-50 bg-blue-700 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-4 animate-fade-in">
+          <div className="flex-1">
+            <strong>New Notification:</strong>{" "}
+            {latestNotification.message ||
+              latestNotification.title ||
+              "You have a new notification."}
+          </div>
+          <button
+            className="ml-2 px-2 py-1 rounded bg-blue-900 hover:bg-blue-800 text-xs"
+            onClick={() => {
+              setNotificationPopping(false);
+              setLatestNotification(null);
+            }}
+            aria-label="Dismiss notification"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
     </div>
   );
 }
