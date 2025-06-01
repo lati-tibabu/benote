@@ -66,18 +66,21 @@ const AssignmentList = () => {
     fetchAssignments();
   }, []);
 
+  // Overdue: reddish blue, Upcoming: greenish blue
   const AssignmentCard = ({ assignment, overdue }) => (
     <button
       type="button"
       onClick={() => navigate(`/app/classroom/${assignment.classroom_id}`)}
-      className={`relative flex flex-col gap-2 p-6 rounded-2xl shadow-lg bg-gradient-to-br from-white to-gray-50 border border-gray-200 hover:shadow-xl transition group focus:outline-none focus:ring-4 focus:ring-blue-200 active:scale-[0.98] text-left w-full cursor-pointer ${
-        overdue ? "ring-2 ring-red-400" : "ring-1 ring-green-200"
-      }`}
+      className={`relative flex flex-col gap-2 p-6 rounded-2xl shadow bg-gradient-to-br ${
+        overdue
+          ? 'from-red-50 to-blue-50 border-red-200 ring-2 ring-red-300'
+          : 'from-green-50 to-blue-50 border-green-200 ring-1 ring-green-200'
+      } hover:shadow-xl transition group focus:outline-none focus:ring-2 focus:ring-blue-300 active:scale-[0.98] text-left w-full cursor-pointer`}
       tabIndex={0}
       aria-label={`View classroom for ${assignment.title}`}
     >
       <div className="flex items-center gap-2">
-        <h3 className="font-semibold text-xl text-gray-800 group-hover:text-blue-700 transition">
+        <h3 className="font-semibold text-lg sm:text-xl text-blue-900 group-hover:text-blue-700 transition select-none truncate" style={{maxWidth: '85%'}} title={assignment.title}>
           {assignment.title}
         </h3>
         {overdue && (
@@ -86,13 +89,13 @@ const AssignmentList = () => {
           </span>
         )}
       </div>
-      <p className="text-base text-gray-600 line-clamp-2">
+      <p className="text-sm text-blue-700/80 line-clamp-2 select-none">
         {assignment.description}
       </p>
       <div className="flex items-center justify-between mt-2">
-        <span className="text-xs text-gray-500 font-medium">
+        <span className={`text-xs font-medium flex items-center gap-1 ${overdue ? 'text-red-500' : 'text-green-600'}`}> 
           <svg
-            className="inline w-4 h-4 mr-1 text-blue-400"
+            className="inline w-4 h-4"
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
@@ -108,7 +111,7 @@ const AssignmentList = () => {
         </span>
         <span
           className={`text-xs font-semibold ${
-            overdue ? "text-red-500" : "text-green-600"
+            overdue ? "text-red-600" : "text-green-700"
           }`}
         >
           Due: {assignment.dueDateObj.toLocaleDateString()}
@@ -147,11 +150,11 @@ const AssignmentList = () => {
     );
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-10 space-y-10">
+    <div className="max-w-5xl mx-auto px-4 py-10 space-y-12">
       <section>
-        <div className="flex items-center gap-3 mb-5">
-          <span className="inline-block w-2 h-8 bg-red-500 rounded-full"></span>
-          <h2 className="text-3xl font-bold text-gray-800 tracking-tight">
+        <div className="flex items-center gap-3 mb-6">
+          <span className="inline-block w-1 h-8 bg-gradient-to-b from-blue-400 to-blue-600 rounded-full"></span>
+          <h2 className="text-2xl sm:text-3xl font-bold text-blue-800 tracking-tight select-none">
             Overdue Assignments
           </h2>
         </div>
@@ -166,9 +169,9 @@ const AssignmentList = () => {
             ))}
           </div>
         ) : (
-          <div className="flex items-center gap-2 text-gray-400 bg-gray-50 border border-gray-100 rounded-xl px-4 py-6 text-base font-medium">
+          <div className="flex items-center gap-2 text-blue-300 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-100 rounded-xl px-4 py-8 text-base font-medium shadow-sm">
             <svg
-              className="w-6 h-6 text-green-400"
+              className="w-6 h-6 text-blue-400"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
@@ -186,9 +189,9 @@ const AssignmentList = () => {
       </section>
 
       <section>
-        <div className="flex items-center gap-3 mb-5">
-          <span className="inline-block w-2 h-8 bg-green-500 rounded-full"></span>
-          <h2 className="text-3xl font-bold text-gray-800 tracking-tight">
+        <div className="flex items-center gap-3 mb-6">
+          <span className="inline-block w-1 h-8 bg-gradient-to-b from-blue-300 to-blue-500 rounded-full"></span>
+          <h2 className="text-2xl sm:text-3xl font-bold text-blue-800 tracking-tight select-none">
             Upcoming Assignments
           </h2>
         </div>
@@ -203,9 +206,9 @@ const AssignmentList = () => {
             ))}
           </div>
         ) : (
-          <div className="flex items-center gap-2 text-gray-400 bg-gray-50 border border-gray-100 rounded-xl px-4 py-6 text-base font-medium">
+          <div className="flex items-center gap-2 text-blue-300 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-100 rounded-xl px-4 py-8 text-base font-medium shadow-sm">
             <svg
-              className="w-6 h-6 text-green-400"
+              className="w-6 h-6 text-blue-400"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
