@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineMenu, AiOutlineMore, AiOutlinePlus } from "react-icons/ai";
 import { FaMap } from "react-icons/fa6";
+import { FaRegCalendarAlt, FaUser } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import GeminiIcon from "../../../../../components/geminiIcon";
 import { ToastContainer } from "react-toastify";
@@ -22,6 +23,8 @@ const Roadmaps = () => {
 
   const [roadmaps, setRoadmaps] = useState([]);
   const [refreshList, setRefreshList] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [viewMode, setViewMode] = useState("list");
 
   const useGemini = localStorage.getItem("useGemini") === "true" ? true : false;
 
@@ -53,64 +56,162 @@ const Roadmaps = () => {
     navigate(`${id}`);
   };
 
+  // Filter roadmaps by search term
+  const filteredRoadmaps = roadmaps.filter((roadmap) =>
+    roadmap.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-white min-h-screen p-4">
+    <div className="min-h-screen bg-white p-4">
       <ToastContainer />
       {/* Header */}
-      <div className="flex flex-row items-center justify-between border-b border-gray-200 pb-4 mb-6 bg-white/80 rounded-2xl shadow-sm px-4">
-        <h1 className="font-extrabold text-2xl tracking-tight text-gray-900">
+      <div className="flex flex-row items-center justify-between border-b border-gray-100 pb-3 mb-6 bg-white rounded-xl shadow-sm px-2">
+        <h1 className="font-bold text-xl tracking-tight text-gray-900 flex items-center gap-2">
+          <FaMap className="text-blue-500" size={22} />
           Roadmaps
         </h1>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {useGemini && (
-            <div
-              className="btn transition-all duration-300 shadow-md bg-gradient-to-tr from-pink-100 to-blue-100 hover:from-pink-200 hover:to-blue-200 text-gray-700 border-white btn-soft rounded-full flex items-center gap-2 px-4 py-2"
+            <button
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-tr from-blue-50 to-pink-50 hover:from-blue-100 hover:to-pink-100 text-gray-700 border border-gray-100 shadow-sm transition"
               onClick={() =>
                 document.getElementById("ai-gen-roadmap-form").showModal()
               }
             >
-              <GeminiIcon size={20} />
-              <span className="font-semibold">Generate Roadmaps</span>
-            </div>
+              <GeminiIcon size={18} />
+              <span className="font-medium text-sm">AI Roadmap</span>
+            </button>
           )}
           <button
-            className="btn bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full px-4 py-2 shadow-md transition flex items-center gap-2"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm shadow-sm transition"
             onClick={() =>
               document.getElementById("new-roadmap-form").showModal()
             }
           >
-            <AiOutlinePlus /> Add New
+            <AiOutlinePlus size={18} /> New
           </button>
         </div>
       </div>
-      {/* Roadmaps List */}
-      <div className="mt-4">
-        <ul className="flex flex-col gap-3">
-          {roadmaps?.map((roadmap, index) => (
-            <li
-              className="p-4 flex items-center gap-4 cursor-pointer bg-white/90 shadow-md rounded-2xl hover:bg-blue-50 transition border border-gray-200 group"
-              key={roadmap.id}
-              onClick={() => handleOpenRoadmap(roadmap.id)}
-            >
-              <FaMap className="text-blue-500 text-xl" />
-              <div className="flex items-center justify-between w-full">
-                <span className="font-semibold text-gray-800 group-hover:text-blue-700 transition truncate max-w-[320px]">
-                  {index + 1}. {roadmap.title}
-                </span>
-                <div>
-                  <AiOutlineMore
-                    size={22}
-                    className="text-gray-400 group-hover:text-blue-600 transition"
-                  />
-                </div>
+      {/* Search and View Controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+        <input
+          type="text"
+          placeholder="Search roadmaps..."
+          className="w-full sm:w-64 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-100 text-sm bg-gray-50"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <div className="flex gap-1 items-center justify-end mt-2 sm:mt-0">
+          <button
+            className={`p-2 rounded-lg ${
+              viewMode === "list"
+                ? "bg-blue-100 text-blue-600"
+                : "bg-gray-100 text-gray-400"
+            }`}
+            title="List view"
+            onClick={() => setViewMode("list")}
+          >
+            <AiOutlineMenu size={18} />
+          </button>
+          <button
+            className={`p-2 rounded-lg ${
+              viewMode === "grid"
+                ? "bg-blue-100 text-blue-600"
+                : "bg-gray-100 text-gray-400"
+            }`}
+            title="Grid view"
+            onClick={() => setViewMode("grid")}
+          >
+            <AiOutlineMore size={18} />
+          </button>
+        </div>
+      </div>
+      {/* Roadmaps Table or Grid */}
+      <div className="flex flex-col p-1 gap-2">
+        {viewMode === "list" ? (
+          <div className="flex flex-col overflow-auto scrollbar-hide">
+            {filteredRoadmaps.length === 0 ? (
+              <p className="text-gray-400 text-center py-8">
+                No roadmaps found.
+              </p>
+            ) : (
+              <div className="overflow-x-auto rounded-lg shadow bg-white">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-gray-600 bg-gray-50 border-b border-gray-100">
+                      <th className="w-8"></th>
+                      <th className="text-left font-medium">Title</th>
+                      <th className="text-left font-medium">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredRoadmaps.map((roadmap, index) => (
+                      <tr
+                        key={roadmap.id}
+                        className="hover:bg-blue-50/60 transition group border-b border-gray-50 cursor-pointer"
+                        onClick={() => handleOpenRoadmap(roadmap.id)}
+                      >
+                        <td className="text-gray-300 text-xs pl-2">
+                          {index + 1}
+                        </td>
+                        <td className="flex items-center gap-2 text-blue-700 font-medium hover:underline">
+                          <FaMap size={18} className="text-blue-400" />
+                          <span className="truncate max-w-[180px]">
+                            {roadmap.title}
+                          </span>
+                        </td>
+                        <td className="pr-2 flex gap-2">
+                          <button
+                            className="p-1 rounded hover:bg-gray-100 transition text-gray-500"
+                            title="More"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <AiOutlineMore size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            </li>
-          ))}
-        </ul>
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {filteredRoadmaps.length === 0 ? (
+              <p className="text-gray-400 text-center py-8 col-span-full">
+                No roadmaps found.
+              </p>
+            ) : (
+              filteredRoadmaps.map((roadmap, index) => (
+                <div
+                  key={roadmap.id}
+                  className="bg-white border border-gray-100 rounded-xl shadow-sm p-4 flex flex-col gap-2 hover:shadow-md transition cursor-pointer group"
+                  onClick={() => handleOpenRoadmap(roadmap.id)}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <FaMap size={20} className="text-blue-400" />
+                    <span className="font-semibold text-blue-700 truncate max-w-[120px]">
+                      {roadmap.title}
+                    </span>
+                  </div>
+                  {/* Add more roadmap info here if available */}
+                  <button
+                    className="self-end p-1 rounded hover:bg-gray-100 transition text-gray-500 mt-2"
+                    title="More"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <AiOutlineMore size={15} />
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        )}
       </div>
       {/* AI Roadmap Modal */}
-      <dialog id="ai-gen-roadmap-form" className="modal overflow-x-scroll">
-        <div className="modal-box bg-white p-4 rounded-md shadow-md sm:w-fit lg:w-1/2 mx-auto mt-10">
+      <dialog id="ai-gen-roadmap-form" className="modal">
+        <div className="modal-box bg-white p-4 rounded-md shadow-md w-full max-w-lg mx-auto mt-10">
           <form method="dialog">
             <button
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
@@ -123,8 +224,8 @@ const Roadmaps = () => {
         </div>
       </dialog>
       {/* Add New Roadmap Modal */}
-      <dialog id="new-roadmap-form" className="modal overflow-x-scroll">
-        <div className="modal-box bg-white p-4 rounded-md shadow-md sm:w-fit lg:w-1/2 mx-auto mt-10">
+      <dialog id="new-roadmap-form" className="modal">
+        <div className="modal-box bg-white p-4 rounded-md shadow-md w-full max-w-lg mx-auto mt-10">
           <form method="dialog">
             <button
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"

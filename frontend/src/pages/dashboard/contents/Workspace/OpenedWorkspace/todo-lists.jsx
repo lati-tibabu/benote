@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaBolt, FaPlus } from "react-icons/fa";
+import { FaRegListAlt, FaPlus, FaMagic } from "react-icons/fa";
 import ToDoCard from "../../../../../components/_workspaces/todo_card";
 import TodoMinimizedCard from "../../../../../components/_workspaces/todo_minimized_card";
 import AddNewTodoList from "./Todo/add-todo-list";
@@ -226,44 +226,45 @@ const TodoLists = () => {
     totalTodos > 0 ? Math.ceil((completedTodos / totalTodos) * 100) : 0;
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-white min-h-screen p-4">
+    <div className="min-h-screen bg-white p-4">
       <ToastContainer />
-      {/* top-section : for quick managements like adding to do list*/}
-      <div className="flex gap-4 justify-between items-center p-4 border-b border-gray-200 mb-6 bg-white/80 rounded-2xl shadow-sm">
-        <h1 className="font-extrabold text-2xl tracking-tight text-gray-900">
+      {/* Header */}
+      <div className="flex gap-4 justify-between items-center p-4 border-b border-gray-100 mb-6 bg-white rounded-xl shadow-sm">
+        <h1 className="font-bold text-xl tracking-tight text-gray-900 flex items-center gap-2">
+          <FaRegListAlt className="text-blue-500" size={22} />
           To-Do Lists
         </h1>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {useGemini && (
-            <div
-              className="btn transition-all duration-300 shadow-md bg-gradient-to-tr from-pink-100 to-blue-100 hover:from-pink-200 hover:to-blue-200 text-gray-700 border-white btn-soft rounded-full flex items-center gap-2 px-4 py-2"
+            <button
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-tr from-blue-50 to-pink-50 hover:from-blue-100 hover:to-pink-100 text-gray-700 border border-gray-100 shadow-sm transition"
               onClick={() => document.getElementById("ai_gen_todo").showModal()}
             >
-              <GeminiIcon size={20} />
-              <span className="font-semibold">Generate Todo</span>
-            </div>
+              <FaMagic size={16} />
+              <span className="font-medium text-sm">AI Todo</span>
+            </button>
           )}
-          <div
-            className="btn bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full px-4 py-2 shadow-md transition flex items-center gap-2"
+          <button
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm shadow-sm transition"
             onClick={() => document.getElementById("my_modal_3").showModal()}
           >
-            <FaPlus />
-            <span>Add New To Do</span>
-          </div>
+            <FaPlus size={16} /> New
+          </button>
         </div>
       </div>
-      {/* bottom-section where viewing and real businesses takes place*/}
+      {/* Main Section */}
       <div className="overflow-x-auto scrollbar-hide pt-4">
         <div className="flex gap-6 w-fit sm:w-full">
-          {/* selecting area */}
-          <div className="flex flex-col gap-2 p-3 bg-white/80 border border-gray-200 rounded-2xl shadow-md min-w-[300px] max-h-[80vh] overflow-y-auto">
+          {/* Sidebar */}
+          <div className="flex flex-col gap-2 p-3 bg-white border border-gray-100 rounded-xl shadow-md min-w-[280px] max-h-[80vh] overflow-y-auto">
             {todoList.length > 0 ? (
               todoList.map((item, index) => (
                 <TodoMinimizedCard
+                  key={item.id}
                   className={`hover:bg-blue-50 hover:cursor-pointer w-64 rounded-xl border transition shadow-sm ${
                     openedTodoList.id === item.id
                       ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 bg-white"
+                      : "border-gray-100 bg-white"
                   }`}
                   title={item.title}
                   createdAt={item.createdAt}
@@ -274,12 +275,14 @@ const TodoLists = () => {
                 />
               ))
             ) : (
-              <span className="text-gray-400 text-center py-8">No todo list</span>
+              <span className="text-gray-400 text-center py-8">
+                No todo list
+              </span>
             )}
           </div>
-          {/* viewing area */}
+          {/* Main Content */}
           <div className="flex-1 min-w-[320px] max-w-2xl">
-            {/* todo progress */}
+            {/* Progress Bar */}
             {Object.keys(openedTodoList).length > 0 && (
               <div className="flex items-center gap-3 mb-4">
                 <progress
@@ -299,7 +302,7 @@ const TodoLists = () => {
               todo_title={openedTodoList.title}
               createdAt={openedTodoList.createdAt}
               todo={todo}
-              onChange={(id) => toggleStatus(id)} // lati check this shit out I mean there is a trick in way it works
+              onChange={(id) => toggleStatus(id)}
               addNewTodo={handleAddTodoItem}
               onHandleContentChange={onHandleContentChange}
               todoContent={todoContent}
@@ -307,9 +310,9 @@ const TodoLists = () => {
           </div>
         </div>
       </div>
-      {/* modal for adding new todo list */}
-      <dialog id="my_modal_3" className="modal overflow-x-scroll">
-        <div className="modal-box bg-white p-4 rounded-md shadow-md sm:w-fit lg:w-1/2 mx-auto mt-10">
+      {/* Add New Todo List Modal */}
+      <dialog id="my_modal_3" className="modal">
+        <div className="modal-box bg-white p-4 rounded-md shadow-md w-full max-w-lg mx-auto mt-10">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
@@ -318,9 +321,9 @@ const TodoLists = () => {
           <AddNewTodoList />
         </div>
       </dialog>
-      {/* modal for prompting to create new todo list using LLM */}
-      <dialog id="ai_gen_todo" className="modal overflow-x-scroll">
-        <div className="modal-box bg-white p-4 rounded-md shadow-md sm:w-fit lg:w-1/2 mx-auto mt-10">
+      {/* AI Todo Modal */}
+      <dialog id="ai_gen_todo" className="modal">
+        <div className="modal-box bg-white p-4 rounded-md shadow-md w-full max-w-lg mx-auto mt-10">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕

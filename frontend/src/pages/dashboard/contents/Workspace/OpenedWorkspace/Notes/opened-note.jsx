@@ -1,14 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  FaBookReader,
-  FaCheck,
-  FaCloud,
-  FaListUl,
-  FaRegCopy,
-  FaSave,
-} from "react-icons/fa";
-
-import { AiOutlineDownload, AiOutlineEdit } from "react-icons/ai";
+  PiBookOpenDuotone,
+  PiCheckCircleDuotone,
+  PiCloudDuotone,
+  PiListBulletsDuotone,
+  PiCopyDuotone,
+  PiFloppyDiskDuotone,
+  PiDownloadSimpleDuotone,
+  PiPencilSimpleDuotone,
+  PiEyeDuotone,
+  PiShareFatDuotone,
+  PiSparkleDuotone,
+} from "react-icons/pi";
 import { useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { useSelector } from "react-redux";
@@ -50,6 +53,19 @@ const OpenedNote = () => {
 
   const [loading, setLoading] = useState(false);
   const [autoSaving, setAutoSaving] = useState(false);
+
+  // Font selection for note preview
+  const [noteFont, setNoteFont] = useState("app");
+  const fontOptions = [
+    { label: "App Default", value: "app" },
+    { label: "Sans Serif", value: "sans-serif" },
+    { label: "Serif", value: "serif" },
+    { label: "Times New Roman", value: "'Times New Roman', Times, serif" },
+    { label: "Arial", value: "Arial, Helvetica, sans-serif" },
+    { label: "Georgia", value: "Georgia, serif" },
+    { label: "Courier New", value: "'Courier New', Courier, monospace" },
+    { label: "Monospace", value: "monospace" },
+  ];
 
   // Managing the edit mode and preview mode
   const handleChangeMode = () => {
@@ -235,185 +251,185 @@ const OpenedNote = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-full bg-white rounded-xl shadow-lg border border-blue-100 max-w-5xl mx-auto mt-4 mb-4">
       <ToastContainer />
       {loading ? (
-        <div className="space-y-4">
-          <div className="flex space-x-4">
-            <div className="h-6 bg-gray-300 rounded w-1/2 animate-pulse"></div>
-            <div className="h-6 bg-gray-300 rounded w-1/2 animate-pulse"></div>
-          </div>
-          <div className="flex space-x-4">
-            <div className="h-48 bg-gray-300 rounded w-1/2 animate-pulse"></div>
-            <div className="h-48 bg-gray-300 rounded w-1/2 animate-pulse"></div>
-          </div>
+        <div className="flex flex-col gap-4 p-8 animate-pulse">
+          <div className="h-8 bg-blue-100 rounded w-1/2 mx-auto" />
+          <div className="h-48 bg-blue-50 rounded w-full" />
         </div>
       ) : (
         <>
-          <div className="flex flex-col md:flex-row lg:flex-row justify-between border-b-1">
-            <div className="flex items-center gap-2 justify-between overflow-auto">
-              <div className="flex items-center mb-1 gap-3">
-                {/* <div> */}
-                <FaListUl
-                  className="cursor-pointer"
-                  onClick={() => {
-                    window.history.back();
-                  }}
-                />
-                <span className="border-2 pr-2 flex items-center gap-2 p-2 rounded w-fit">
-                  <input
-                    type="text"
-                    value={noteData?.title || ""}
-                    onChange={handleTitleChange}
-                    className="outline-none w-fit bg-transparent"
-                  />
-                </span>
-                <div className="flex items-center gap-2">
-                  <div className="relative p-1 flex items-center justify-center">
-                    <div>
-                      <FaCloud size={30} />
-                    </div>
-                    {autoSaving ? (
-                      <span className="absolute z-10 loading spinner text-gray-200 text-xs"></span>
-                    ) : (
-                      <span className="absolute z-10 text-gray-200 text-md">
-                        <FaCheck />
-                      </span>
-                    )}
-                  </div>
-                  <button className="btn btn-sm" onClick={handleSaveChanges}>
-                    <FaSave />
-                    Save
-                  </button>
-                  {noteData?.public ? (
-                    <div className="flex items-center p-1 gap-2 border-1 border-gray-400 rounded-full">
-                      <p className="text-sm">Published</p>
-                      <FaRegCopy
-                        className="cursor-pointer"
-                        title="Copy public URL"
-                        onClick={handleCopy}
-                      />
-                      <p ref={textRef} className="hidden ">
-                        {/* {publicUrl} */}
-                        {`${window.location.origin}/public/notes/${noteData.id}`}
-                      </p>
-                    </div>
+          {/* Header: Title, Save, Publish, Cloud, Mode Switch */}
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 border-b border-blue-100 px-6 py-4 bg-white/80">
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              <button
+                className="p-2 rounded-full hover:bg-blue-50 transition"
+                onClick={() => window.history.back()}
+                title="Back to Notes List"
+              >
+                <PiListBulletsDuotone size={22} />
+              </button>
+              <input
+                type="text"
+                value={noteData?.title || ""}
+                onChange={handleTitleChange}
+                className="font-semibold text-lg bg-transparent outline-none px-2 py-1 rounded focus:bg-blue-50 transition w-48 md:w-64"
+                placeholder="Note Title..."
+              />
+              <div className="flex items-center gap-2 ml-2">
+                <span className="relative flex items-center">
+                  <PiCloudDuotone size={22} className="text-blue-400" />
+                  {autoSaving ? (
+                    <span className="absolute -right-2 -top-2 animate-spin text-blue-300">
+                      <PiSparkleDuotone size={14} />
+                    </span>
                   ) : (
-                    <button
-                      className="btn btn-sm"
-                      onClick={() => handlePublishNote(noteData?.id)}
-                    >
-                      Publish
-                    </button>
+                    <span className="absolute -right-2 -top-2 text-green-400">
+                      <PiCheckCircleDuotone size={14} />
+                    </span>
                   )}
-                </div>
+                </span>
+                <button
+                  className="p-2 rounded-full hover:bg-blue-50 transition"
+                  onClick={handleSaveChanges}
+                  title="Save Note"
+                >
+                  <PiFloppyDiskDuotone size={22} />
+                </button>
+                {noteData?.public ? (
+                  <div className="flex items-center gap-1 px-2 py-1 bg-blue-50 rounded-full text-xs text-blue-700 border border-blue-200">
+                    <PiShareFatDuotone size={16} />
+                    <span>Published</span>
+                    <button
+                      className="hover:text-blue-900"
+                      title="Copy public URL"
+                      onClick={handleCopy}
+                    >
+                      <PiCopyDuotone size={16} />
+                    </button>
+                    <span ref={textRef} className="hidden">
+                      {`${window.location.origin}/public/notes/${noteData.id}`}
+                    </span>
+                  </div>
+                ) : (
+                  <button
+                    className="p-2 rounded-full hover:bg-blue-50 transition"
+                    onClick={() => handlePublishNote(noteData?.id)}
+                    title="Publish Note"
+                  >
+                    <PiShareFatDuotone size={22} />
+                  </button>
+                )}
               </div>
             </div>
-
-            {/* viewport manage */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center justify-end gap-2 p-2">
-                <span
-                  className="flex items-center gap-2"
-                  onClick={handleChangeMode}
-                >
-                  {editMode ? (
-                    <FaBookReader
-                      size={24}
-                      className="cursor-pointer"
-                      title="View Mode "
-                    />
-                  ) : (
-                    <AiOutlineEdit
-                      size={24}
-                      className="cursor-pointer"
-                      title="Edit Mode"
-                    />
-                  )}
-                </span>
-                {/* <AiOutlineMore /> */}
-              </div>
+            {/* Mode Switch */}
+            <div className="flex items-center gap-2">
+              <button
+                className="p-2 rounded-full hover:bg-blue-50 transition"
+                onClick={handleChangeMode}
+                title={editMode ? "Switch to View Mode" : "Switch to Edit Mode"}
+              >
+                {editMode ? (
+                  <PiEyeDuotone size={22} />
+                ) : (
+                  <PiPencilSimpleDuotone size={22} />
+                )}
+              </button>
             </div>
           </div>
-          <div className="flex h-full overflow-auto">
-            {/* body section */}
-            <div className="flex-1 flex flex-col md:flex-row p-2 gap-3 min-h-full grow w-full">
-              {/* editing area */}
-              {editMode && (
-                <div className="flex-1 shadow-md p-2 text-wrap border-1 rounded overflow-hidden">
-                  <p className="font-bold text-gray-400 px-2 rounded-t-md border-b-2">
-                    Editing Area
-                  </p>
-                  <textarea
-                    placeholder="Start typing here..."
-                    className="w-full min-h-full outline-none resize-none bg-white p-2 scrollbar-hide"
-                    value={noteInput}
-                    onChange={(e) => setNoteInput(e.target.value)}
-                  ></textarea>
-                </div>
-              )}
-              {/* viewing area */}
-              {previewMode && (
-                <div className="flex-1 shadow-md p-2 text-wrap overflow-auto border-1 rounded sm:max-w-3xl sm:mx-auto">
-                  <div className="flex items-center justify-between border-b-2">
-                    <p className="font-bold text-gray-400 px-2 rounded-t-md">
-                      Viewing Area
-                    </p>
-                    <div
-                      className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-md cursor-pointer"
-                      title="Download note as PDF"
-                      onClick={handleSaveNoteAsPDF}
+          {/* Body: Editor, Preview, AI Assist */}
+          <div className="flex flex-col md:flex-row gap-4 flex-1 p-6 bg-white/90">
+            {/* Editing Area */}
+            {editMode && (
+              <div className="flex-1 flex flex-col bg-white border border-blue-100 rounded-lg shadow-sm p-4 min-h-[300px]">
+                <div className="font-semibold text-blue-700 mb-2 text-sm flex items-center gap-4">
+                  <span>Editing</span>
+                  {/* Font selection dropdown */}
+                  <label className="flex items-center gap-1 text-xs text-gray-500">
+                    Font:
+                    <select
+                      className="ml-1 px-2 py-1 rounded border border-blue-100 bg-white text-xs focus:outline-none focus:ring-1 focus:ring-blue-200"
+                      value={noteFont}
+                      onChange={(e) => setNoteFont(e.target.value)}
                     >
-                      <AiOutlineDownload size={20} /> Save PDF
-                    </div>
-                  </div>
-                  <div ref={noteRef}>
-                    <MarkdownRenderer content={noteInput} />
-                    {/* <EditableMarkdown /> */}
-                  </div>
+                      {fontOptions.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
                 </div>
-              )}
-
-              {/* AI Assist area */}
-              {useGemini && (
-                <div
-                  className={`${
-                    aiAssistMode
-                      ? "flex-1 shadow-md p-2 text-wrap border-1 rounded overflow-hidden"
-                      : "absolute right-0"
-                  } `}
-                >
-                  <div
-                    className={`flex items-center justify-between ${
-                      aiAssistMode
-                        ? "border-b-2"
-                        : "rounded-full border-2 bg-white"
-                    }`}
+                <textarea
+                  placeholder="Start typing here..."
+                  className="w-full flex-1 min-h-[200px] outline-none resize-none bg-transparent p-2 text-base text-gray-800 rounded"
+                  value={noteInput}
+                  onChange={(e) => setNoteInput(e.target.value)}
+                />
+              </div>
+            )}
+            {/* Viewing Area */}
+            {previewMode && (
+              <div className="flex-1 flex flex-col bg-white border border-blue-100 rounded-lg shadow-sm p-4 min-h-[300px] max-w-2xl mx-auto">
+                <div className="font-semibold text-blue-700 mb-2 text-sm flex items-center justify-between">
+                  <span>Preview</span>
+                  {/* Font selection dropdown (duplicate for preview) */}
+                  <label className="flex items-center gap-1 text-xs text-gray-500">
+                    Font:
+                    <select
+                      className="ml-1 px-2 py-1 rounded border border-blue-100 bg-white text-xs focus:outline-none focus:ring-1 focus:ring-blue-200"
+                      value={noteFont}
+                      onChange={(e) => setNoteFont(e.target.value)}
+                    >
+                      {fontOptions.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <button
+                    className="flex items-center gap-1 px-2 py-1 rounded hover:bg-blue-50 text-blue-700 text-xs"
+                    title="Download as PDF"
+                    onClick={handleSaveNoteAsPDF}
                   >
-                    <div
-                      className={`flex items-center gap-2 ${
-                        aiAssistMode && "hover:bg-gray-100"
-                      } p-2 rounded-md cursor-pointer`}
-                      onClick={geminiAssistHandle}
-                      title={
-                        aiAssistMode
-                          ? "Gemini AI Assist; Click to shrink"
-                          : "Gemini AI Assist; Click to expand"
-                      }
-                    >
-                      <GeminiIcon width={30} />
-                    </div>
-
-                    {aiAssistMode && (
-                      <p className="font-bold text-gray-400 px-2 rounded-t-md">
-                        Ask Gemini
-                      </p>
-                    )}
-                  </div>
-                  {aiAssistMode && <NoteChat noteContext={noteInput} />}
+                    <PiDownloadSimpleDuotone size={16} /> PDF
+                  </button>
                 </div>
-              )}
-            </div>
+                <div
+                  ref={noteRef}
+                  className="prose max-w-full text-gray-900"
+                  style={noteFont !== "app" ? { fontFamily: noteFont } : {}}
+                >
+                  <MarkdownRenderer content={noteInput} />
+                </div>
+              </div>
+            )}
+            {/* AI Assist Area */}
+            {useGemini && (
+              <div
+                className={`flex flex-col ${
+                  aiAssistMode ? "flex-1" : "w-12"
+                } transition-all duration-300 bg-white border border-blue-100 rounded-lg shadow-sm p-2 relative min-h-[300px]`}
+              >
+                <button
+                  className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-blue-50 transition mx-auto mb-2"
+                  onClick={geminiAssistHandle}
+                  title={aiAssistMode ? "Hide Gemini AI" : "Show Gemini AI"}
+                >
+                  <GeminiIcon width={28} />
+                </button>
+                {aiAssistMode && (
+                  <div className="flex-1">
+                    <div className="font-semibold text-blue-700 mb-2 text-sm text-center">
+                      Ask Gemini
+                    </div>
+                    <NoteChat noteContext={noteInput} />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </>
       )}

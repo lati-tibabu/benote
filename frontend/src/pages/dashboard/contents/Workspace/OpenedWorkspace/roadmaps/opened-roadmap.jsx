@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import AddNewRoadmapItem from "./add-new-item";
-import { AiOutlinePlus } from "react-icons/ai";
+import { FaMap, FaArrowLeft } from "react-icons/fa6";
+import { AiOutlineMore, AiOutlinePlus } from "react-icons/ai";
+import { FaChevronDown, FaChevronRight } from "react-icons/fa";
 import MarkdownRenderer from "../../../../../../components/markdown-renderer";
-// import { Plus } from "lucide-react";
 
 const OpenedRoadmap = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -12,6 +13,7 @@ const OpenedRoadmap = () => {
 
   const userData = useSelector((state) => state.auth.user) || {};
   const { roadmap_id } = useParams();
+  const navigate = useNavigate();
 
   const [roadmap, setRoadmap] = useState({});
   const [refreshList, setRefreshList] = useState(false);
@@ -76,13 +78,23 @@ const OpenedRoadmap = () => {
     setExpandedItems((prev) => ({ ...prev, [itemId]: !prev[itemId] }));
 
   return (
-    <section className="p-6 space-y-6">
+    <section className="p-6 space-y-6 min-h-screen bg-white">
       {/* Header */}
-      <div className="bg-blue-50 p-6 rounded-xl shadow-sm">
-        <h1 className="text-2xl font-bold text-blue-800">
-          {roadmap?.title || "Untitled Roadmap"}
-        </h1>
-        <p className="text-gray-600 mt-2">
+      <div className="bg-blue-50 p-6 rounded-xl shadow-sm flex flex-col gap-2">
+        <div className="flex items-center gap-2 mb-2">
+          <button
+            className="p-2 rounded-full hover:bg-blue-100 transition text-blue-600"
+            onClick={() => navigate(-1)}
+            title="Back"
+          >
+            <FaArrowLeft size={18} />
+          </button>
+          <FaMap className="text-blue-500" size={22} />
+          <h1 className="text-xl font-bold text-blue-800">
+            {roadmap?.title || "Untitled Roadmap"}
+          </h1>
+        </div>
+        <p className="text-gray-600 text-sm">
           {roadmap?.description || "No description provided."}
         </p>
       </div>
@@ -94,46 +106,47 @@ const OpenedRoadmap = () => {
         style={{ cursor: isDragging ? "grabbing" : "grab" }}
         className="flex gap-4 overflow-x-auto py-4 px-1 rounded-lg border bg-white shadow-inner"
       >
-        {roadmap?.roadmap_items?.map((item, index) => (
-          <div
-            key={item.id}
-            className="min-w-[280px] max-w-[280px] bg-white border border-gray-200 p-4 rounded-xl shadow hover:shadow-md transition"
-          >
-            <h2 className="font-semibold text-lg text-gray-800">
-              {item.title}
-            </h2>
-            <MarkdownRenderer
-              content={item.description}
-              className={`text-sm text-gray-600 mt-2 ${
-                expandedItems[item.id] ? "" : "line-clamp-3"
+        {roadmap?.roadmap_items?.map((item, index) => {
+          const expanded = !!expandedItems[item.id];
+          return (
+            <div
+              key={item.id}
+              className={`min-w-[280px] max-w-[280px] bg-white border border-gray-100 p-4 rounded-xl shadow-sm hover:shadow-md transition flex flex-col justify-between ${
+                expanded ? "" : "overflow-hidden"
               }`}
-              style={{
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                display: expandedItems[item.id] ? "block" : "-webkit-box",
-                WebkitLineClamp: expandedItems[item.id] ? "none" : 3,
-                WebkitBoxOrient: "vertical",
-              }}
-            />
-            {item.description?.length > 100 && (
-              <button
-                className="text-blue-500 text-xs mt-2 underline"
+            >
+              <div
+                className="flex items-center gap-2 mb-1 cursor-pointer select-none"
                 onClick={() => toggleExpand(item.id)}
               >
-                {expandedItems[item.id] ? "Show Less" : "Show More"}
-              </button>
-            )}
-          </div>
-        ))}
+                {expanded ? (
+                  <FaChevronDown className="text-blue-400" size={16} />
+                ) : (
+                  <FaChevronRight className="text-gray-300" size={16} />
+                )}
+                <h2 className="font-semibold text-lg text-gray-800 truncate max-w-[200px]">
+                  {item.title}
+                </h2>
+              </div>
+              {expanded && (
+                <>
+                  <MarkdownRenderer
+                    content={item.description}
+                    className="text-sm text-gray-600 mt-2"
+                  />
+                </>
+              )}
+            </div>
+          );
+        })}
 
         {/* Add New */}
         <button
           onClick={() =>
             document.getElementById("new-roadmap-item-form").showModal()
           }
-          className="min-w-[280px] max-w-[280px] max-h-[100px] flex flex-col items-center justify-center gap-2 bg-blue-100 hover:bg-blue-200 text-blue-700 border border-dashed border-blue-400 rounded-xl p-4 transition"
+          className="min-w-[280px] max-w-[280px] max-h-[100px] flex flex-col items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-dashed border-blue-400 rounded-xl p-4 transition"
         >
-          {/* <Plus className="w-6 h-6" /> */}
           <AiOutlinePlus className="w-6 h-6" />
           <span className="font-medium">Add New Item</span>
         </button>

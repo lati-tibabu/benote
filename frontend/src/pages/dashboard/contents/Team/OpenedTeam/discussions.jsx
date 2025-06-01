@@ -6,8 +6,11 @@ import {
 } from "react-icons/ai";
 import { FaReply } from "react-icons/fa";
 import { FaPaperPlane, FaXmark } from "react-icons/fa6";
+import { FaRegComments, FaUserCircle } from "react-icons/fa";
+import { BsSendFill } from "react-icons/bs";
 import { useParams } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify"; // Added toast import
+import "react-toastify/dist/ReactToastify.css"; // Added toast CSS
 import useSocket from "../../../../../hooks/useSocket";
 import MarkdownRenderer from "../../../../../components/markdown-renderer";
 
@@ -40,7 +43,9 @@ const Discussions = () => {
   const bottomRef = useRef(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   }, [discussions]);
 
   useEffect(() => {
@@ -60,7 +65,7 @@ const Discussions = () => {
     };
 
     const onConnectError = (error) => {
-      console.error("Connection Error");
+      console.error("Connection Error:", error.message);
       setIsConnected(false);
     };
 
@@ -74,7 +79,6 @@ const Discussions = () => {
       socket.off("connect_error", onConnectError);
     };
   }, [socket]);
-  // console.log("Socket", socket?.connected);
 
   const fetchDiscussions = async () => {
     try {
@@ -87,7 +91,6 @@ const Discussions = () => {
       );
 
       if (!response.ok) {
-        // console.log(response);
         throw new Error("Failed to fetch discussions");
       }
 
@@ -95,6 +98,7 @@ const Discussions = () => {
       setDiscussions(data);
     } catch (error) {
       console.error(error);
+      toast.error("Failed to load discussions."); // Added toast notification
     }
   };
 
@@ -109,6 +113,12 @@ const Discussions = () => {
     try {
       socket.emit("teamDiscussionRegister", teamId);
 
+      const messageListener = (data) => {
+        console.log("New message received", data);
+        fetchDiscussions();
+      };
+
+      socket.on("message", messageListener);
       socket.on("connect_error", (err) => {
         console.error("Socket connection error:", err.message);
       });
@@ -117,36 +127,11 @@ const Discussions = () => {
       });
 
       return () => {
+        socket.off("message", messageListener);
         socket.off("disconnect");
         socket.off("connect_error");
         socket.off("error");
         socket.off("teamDiscussionRegister");
-      };
-    } catch (error) {
-      console.error("Socket error:", error.message);
-    }
-  }, [socket, teamId]);
-
-  useEffect(() => {
-    if (!socket) {
-      console.warn(
-        "Socket not initialized yet, backend may not support socket connections."
-      );
-      return;
-    }
-
-    try {
-      const messageListener = (data) => {
-        console.log("New message received", data);
-        fetchDiscussions();
-      };
-
-      socket.on("message", messageListener);
-
-      return () => {
-        if (socket) {
-          socket.off("message", messageListener);
-        }
       };
     } catch (error) {
       console.error("Socket error:", error.message);
@@ -163,7 +148,7 @@ const Discussions = () => {
       team_id: teamId,
       discussion_id: replyData.replyingTo,
     });
-  }, [replyData.replyingTo]);
+  }, [replyData.replyingTo, teamId]); // Added teamId to dependency array
 
   const formatPostDate = (createdAt) => {
     const dateFormat = {
@@ -176,7 +161,6 @@ const Discussions = () => {
 
     const postDate = new Date(createdAt).getTime();
 
-    // Check if the post was created within the last 7 days
     if (Date.now() - postDate > 7 * 86400000) {
       return new Date(createdAt).toLocaleDateString("en-US", dateFormat);
     } else {
@@ -200,7 +184,7 @@ const Discussions = () => {
         }
       );
       if (!response.ok) {
-        toast.error("Unable to delete, are you the owner of the post");
+        toast.error("Unable to delete. Are you the owner of the post?");
         throw new Error("Failed to delete discussion");
       }
       if (socket && socket.connected) {
@@ -210,63 +194,87 @@ const Discussions = () => {
       }
 
       fetchDiscussions();
+      toast.success("Discussion deleted successfully!"); // Added toast notification
     } catch (error) {
       console.error(error);
-      alert("Failed to delete discussion");
+      toast.error("Failed to delete discussion."); // Added toast notification
     }
   };
 
+  // --- Telegram-like Chat Bubble Thread ---
   const DiscussionThread = ({ discussion }) => {
+    const isOwn =
+      discussion["user.email"] === (localStorage.getItem("userEmail") || "");
     return (
-      <div className="ml-6 pl-2 mt-3 bg-white hover:bg-gray-50 p-4 rounded-lg shadow-md border border-gray-200 transition-all">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-500 flex items-center justify-center rounded-full text-white font-semibold text-lg">
-              {discussion["user.name"][0]}
+      <div
+        className={`flex ${
+          isOwn ? "justify-end" : "justify-start"
+        } w-full mb-2`}
+      >
+        <div
+          className={`max-w-[70%] flex flex-col ${
+            isOwn ? "items-end" : "items-start"
+          }`}
+        >
+          <div
+            className={`flex items-center gap-2 ${
+              isOwn ? "flex-row-reverse" : ""
+            }`}
+          >
+            <div className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-100 text-blue-600">
+              <FaUserCircle size={22} />
             </div>
-            <div className="font-semibold text-gray-800 text-sm">
+            <span className="text-xs font-semibold text-gray-600">
               {discussion["user.name"]}
-            </div>
+            </span>
           </div>
           <div
-            onClick={() => handleDeleteDiscussion(discussion.id)}
-            className="cursor-pointer hover:text-red-500 text-gray-600 text-lg transition-colors"
+            className={`mt-1 px-4 py-2 rounded-2xl shadow-sm border ${
+              isOwn
+                ? "bg-blue-100 border-blue-200 text-blue-900"
+                : "bg-white border-gray-200 text-gray-800"
+            }`}
           >
-            <AiOutlineDelete />
-          </div>
-        </div>
-
-        <div className="mt-3 border border-gray-200 rounded-lg p-3 bg-gray-50">
-          <div className="text-gray-700" title={discussion["user.email"]}>
             <MarkdownRenderer content={discussion.content} />
+            <div className="flex items-center justify-between mt-1">
+              <span className="text-[10px] text-gray-400">
+                {formatPostDate(discussion.createdAt)}
+              </span>
+              <button
+                className="ml-2 text-xs text-blue-500 hover:text-blue-700 flex items-center gap-1"
+                onClick={() => {
+                  setReplyData({
+                    replying: true,
+                    replyingTo: discussion.id,
+                    content: discussion.content,
+                  });
+                }}
+              >
+                <FaReply className="text-blue-400" /> Reply
+                {discussion.replies?.length > 0 && (
+                  <span className="ml-1 text-gray-400">
+                    ({discussion.replies.length})
+                  </span>
+                )}
+              </button>
+              {isOwn && (
+                <button
+                  className="ml-2 text-xs text-red-400 hover:text-red-600"
+                  onClick={() => handleDeleteDiscussion(discussion.id)}
+                  title="Delete"
+                >
+                  <AiOutlineDelete />
+                </button>
+              )}
+            </div>
           </div>
-          <div className="mt-2 text-xs text-gray-500">
-            {formatPostDate(discussion.createdAt)}
+          {/* Replies */}
+          <div className="pl-6 mt-1 w-full">
+            {discussion.replies?.length > 0 &&
+              discussion.replies.map((reply) => (
+                <DiscussionThread key={reply.id} discussion={reply} />
+              ))}
           </div>
-          <div className="flex items-center mt-3 gap-3">
-            <button
-              className="flex items-center gap-2 text-sm text-blue-500 hover:text-blue-700 transition"
-              onClick={() => {
-                setReplyData({
-                  replying: true,
-                  replyingTo: discussion.id,
-                  content: discussion.content,
-                });
-              }}
-            >
-              <FaReply className="text-blue-400" />
-              Reply{" "}
-              {discussion.replies?.length > 0 &&
-                `(${discussion.replies.length})`}
-            </button>
-          </div>
-        </div>
-
-        <div className="ml-6 mt-2">
-          {discussion.replies?.length > 0 &&
-            discussion.replies.map((reply) => (
-              <DiscussionThread key={reply.id} discussion={reply} />
-            ))}
         </div>
       </div>
     );
@@ -274,8 +282,8 @@ const Discussions = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!discussionData.content) {
-      alert("Discussion content cannot be empty");
+    if (!discussionData.content.trim()) {
+      toast.warn("Discussion content cannot be empty.");
       return;
     }
     try {
@@ -287,7 +295,6 @@ const Discussions = () => {
       if (!response.ok) {
         throw new Error("Failed to submit discussion");
       }
-      // const data = await response.json();
 
       if (socket && socket.connected) {
         socket.emit("discussionMessage", "update", teamId);
@@ -298,11 +305,11 @@ const Discussions = () => {
       setDiscussionData({ content: "", team_id: teamId, discussion_id: null });
       setReplyData({ replying: false, replyingTo: null, content: "" });
       fetchDiscussions();
+      toast.success("Discussion submitted!"); // Added toast notification
     } catch (error) {
       console.error(error);
-      alert("Failed to submit discussion");
+      toast.error("Failed to submit discussion."); // Added toast notification
     }
-    // console.log(discussionData);
   };
 
   const handleInputChange = (e) => {
@@ -311,27 +318,39 @@ const Discussions = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white p-0 sm:p-6 flex flex-col">
       <ToastContainer />
-      <div className="text-sm font-bold mb-4">
-        {isConnected ? (
-          <span className="text-green-600 flex items-center gap-2">
-            Connected <AiOutlineWifi />
-          </span>
-        ) : (
-          <span className="text-red-500 flex items-center gap-2">
-            Disconnected
-            <AiOutlineDisconnect />
-          </span>
-        )}
+      {/* Header */}
+      <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100 bg-white/80 shadow-sm">
+        <FaRegComments className="text-blue-500" size={22} />
+        <h1 className="font-bold text-lg text-gray-900">Team Discussions</h1>
+        <span
+          className={`ml-auto text-xs font-bold flex items-center gap-1 ${
+            isConnected ? "text-green-600" : "text-red-500"
+          }`}
+        >
+          {isConnected ? (
+            <>
+              Connected <AiOutlineWifi />
+            </>
+          ) : (
+            <>
+              Disconnected <AiOutlineDisconnect />
+            </>
+          )}
+        </span>
       </div>
-
-      <div className="rounded-lg p-4 bg-white shadow-md">
-        <div className="flex flex-col h-96 max-w-4xl mx-auto overflow-auto gap-4 scrollbar-hide">
-          {discussions ? (
+      {/* Chat Area */}
+      <div className="flex-1 flex flex-col justify-end max-w-3xl mx-auto w-full">
+        <div className="flex flex-col gap-2 px-2 py-4 overflow-y-auto scrollbar-hide">
+          {discussions && discussions.length > 0 ? (
             discussions.map((discussion) => (
               <DiscussionThread key={discussion.id} discussion={discussion} />
             ))
+          ) : discussions && discussions.length === 0 ? (
+            <div className="flex justify-center items-center h-full text-gray-500">
+              No discussions yet. Start one!
+            </div>
           ) : (
             <div className="flex justify-center items-center h-full">
               <span className="loading loading-spinner text-blue-500"></span>
@@ -340,47 +359,43 @@ const Discussions = () => {
           <div ref={bottomRef} />
         </div>
       </div>
-
-      <div className="mt-6">
-        {replyData.replying && (
-          <div className="flex flex-col border-t-2 border-blue-400 mt-2 p-4 bg-white rounded-lg shadow-md max-w-xl mx-auto">
-            <div className="text-sm flex items-center gap-2 text-gray-500">
-              <FaReply />
-              Replying To
-              <FaXmark
-                color="red"
-                className="cursor-pointer ml-auto"
-                onClick={() => {
-                  setReplyData({
-                    replying: false,
-                    replyingTo: null,
-                    content: "",
-                  });
-                }}
-              />
-            </div>
-            <div className="mt-2 text-gray-700 text-sm">
-              {(replyData.content || "No content").slice(0, 50) + "..."}
-            </div>
-          </div>
-        )}
-
-        <form
-          className="flex items-center gap-4 mt-4 p-4 bg-white rounded-lg shadow-md max-w-3xl mx-auto"
-          onSubmit={handleSubmit}
+      {/* Reply Preview */}
+      {replyData.replying && (
+        <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 border-t border-blue-200">
+          <FaReply className="text-blue-400" />
+          <span className="text-xs text-gray-700">Replying to:</span>
+          <span className="text-xs text-gray-500 truncate max-w-xs">
+            {(replyData.content || "No content").slice(0, 50) + "..."}
+          </span>
+          <FaXmark
+            className="ml-auto text-red-400 cursor-pointer hover:text-red-600"
+            size={18}
+            onClick={() =>
+              setReplyData({ replying: false, replyingTo: null, content: "" })
+            }
+          />
+        </div>
+      )}
+      {/* Input Area */}
+      <form
+        className="flex items-center gap-2 px-4 py-3 bg-white border-t border-gray-100 shadow-sm max-w-3xl mx-auto w-full"
+        onSubmit={handleSubmit}
+      >
+        <textarea
+          name="content"
+          onChange={handleInputChange}
+          value={discussionData.content}
+          placeholder="Type a message..."
+          className="w-full h-12 p-2 text-sm rounded-lg resize-none bg-gray-100 focus:ring-2 focus:ring-blue-400 focus:outline-none border border-gray-200 transition-all"
+        ></textarea>
+        <button
+          className="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3 shadow-md transition"
+          type="submit"
+          title="Send"
         >
-          <textarea
-            name="content"
-            onChange={handleInputChange}
-            value={discussionData.content}
-            placeholder="Ask a question or start a discussion..."
-            className="w-full h-16 p-3 text-sm rounded-lg resize-none bg-gray-100 focus:ring-2 focus:ring-blue-400 focus:outline-none border border-gray-300 transition-all"
-          ></textarea>
-          <button className="flex items-center gap-2 text-sm text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg shadow-md">
-            <FaPaperPlane /> Send
-          </button>
-        </form>
-      </div>
+          <BsSendFill size={18} />
+        </button>
+      </form>
     </div>
   );
 };

@@ -46,6 +46,7 @@ import {
   PiPresentationChart,
   PiChartBarDuotone,
   PiClipboardDuotone,
+  PiClipboardTextDuotone,
 } from "react-icons/pi";
 
 function Dashboard() {

@@ -22,6 +22,15 @@ const Notes = () => {
   const notes = useSelector((state) => state.notes.notes) || [];
   const [loading, setLoading] = useState(false);
   const userData = useSelector((state) => state.auth.user) || {};
+  const [searchTerm, setSearchTerm] = useState("");
+  const [viewMode, setViewMode] = useState("list"); // 'list' or 'grid'
+
+  // Filter notes by search term
+  const filteredNotes = notes.filter(
+    (note) =>
+      note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (note.user?.name || "").toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // adding new note
   const handleAddNewNote = async () => {
@@ -115,96 +124,140 @@ const Notes = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-white min-h-screen p-4">
+    <div className="min-h-screen bg-white p-4">
       <ToastContainer />
       {/* Header */}
-      <div className="flex flex-row items-center justify-between border-b border-gray-200 pb-4 mb-6 bg-white/80 rounded-2xl shadow-sm px-4">
-        <h1 className="font-extrabold text-2xl tracking-tight text-gray-900">
+      <div className="flex flex-row items-center justify-between border-b border-gray-100 pb-3 mb-6 bg-white rounded-xl shadow-sm px-2">
+        <h1 className="font-bold text-xl tracking-tight text-gray-900 flex items-center gap-2">
+          <AiOutlineFile className="text-blue-500" size={22} />
           Notes
         </h1>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {useGemini && (
-            <div
-              className="btn transition-all duration-300 shadow-md bg-gradient-to-tr from-pink-100 to-blue-100 hover:from-pink-200 hover:to-blue-200 text-gray-700 border-white btn-soft rounded-full flex items-center gap-2 px-4 py-2"
+            <button
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-tr from-blue-50 to-pink-50 hover:from-blue-100 hover:to-pink-100 text-gray-700 border border-gray-100 shadow-sm transition"
               onClick={() => document.getElementById("ai_gen_note").showModal()}
             >
-              <GeminiIcon size={20} />
-              <span className="font-semibold">Generate Note</span>
-            </div>
+              <GeminiIcon size={18} />
+              <span className="font-medium text-sm">AI Note</span>
+            </button>
           )}
           <button
-            className="btn bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full px-4 py-2 shadow-md transition flex items-center gap-2"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm shadow-sm transition"
             onClick={handleAddNewNote}
           >
-            <AiOutlinePlus /> Add new
+            <AiOutlinePlus size={18} /> New
           </button>
         </div>
       </div>
-      {/* Notes Table */}
-      <div className="flex flex-col p-2 gap-2">
+      {/* Search and View Controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+        <input
+          type="text"
+          placeholder="Search notes..."
+          className="w-full sm:w-64 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-100 text-sm bg-gray-50"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <div className="flex gap-1 items-center justify-end mt-2 sm:mt-0">
+          <button
+            className={`p-2 rounded-lg ${
+              viewMode === "list"
+                ? "bg-blue-100 text-blue-600"
+                : "bg-gray-100 text-gray-400"
+            }`}
+            title="List view"
+            onClick={() => setViewMode("list")}
+          >
+            <AiOutlineFile size={18} />
+          </button>
+          <button
+            className={`p-2 rounded-lg ${
+              viewMode === "grid"
+                ? "bg-blue-100 text-blue-600"
+                : "bg-gray-100 text-gray-400"
+            }`}
+            title="Grid view"
+            onClick={() => setViewMode("grid")}
+          >
+            <AiOutlineMore size={18} />
+          </button>
+        </div>
+      </div>
+      {/* Notes Table or Grid */}
+      <div className="flex flex-col p-1 gap-2">
         {loading ? (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {[...Array(5)].map((_, index) => (
-              <div key={index} className="animate-pulse flex items-center space-x-4">
-                <div className="h-6 w-6 bg-gray-300 rounded"></div>
-                <div className="h-6 w-1/3 bg-gray-300 rounded"></div>
-                <div className="h-6 w-1/4 bg-gray-300 rounded"></div>
-                <div className="h-6 w-1/5 bg-gray-300 rounded"></div>
+              <div
+                key={index}
+                className="animate-pulse flex items-center space-x-3"
+              >
+                <div className="h-5 w-5 bg-gray-200 rounded"></div>
+                <div className="h-5 w-1/4 bg-gray-200 rounded"></div>
+                <div className="h-5 w-1/6 bg-gray-200 rounded"></div>
+                <div className="h-5 w-1/6 bg-gray-200 rounded"></div>
               </div>
             ))}
           </div>
-        ) : (
-          <div className="list-none flex flex-col overflow-auto scrollbar-hide">
-            {Array.isArray(notes) ? (
-              notes.length === 0 ? (
-                <p className="text-gray-400 text-center py-8">No notes found.</p>
+        ) : viewMode === "list" ? (
+          <div className="flex flex-col overflow-auto scrollbar-hide">
+            {Array.isArray(filteredNotes) ? (
+              filteredNotes.length === 0 ? (
+                <p className="text-gray-400 text-center py-8">
+                  No notes found.
+                </p>
               ) : (
-                <div className="overflow-x-auto rounded-xl shadow-md bg-white/90">
-                  <table className="table w-full">
+                <div className="overflow-x-auto rounded-lg shadow bg-white">
+                  <table className="w-full text-sm">
                     <thead>
-                      <tr className="text-gray-700 text-sm bg-gray-50">
-                        <th></th>
-                        <th>Title</th>
-                        <th>Created At</th>
-                        <th>Updated At</th>
-                        <th>Owner</th>
-                        <th></th>
+                      <tr className="text-gray-600 bg-gray-50 border-b border-gray-100">
+                        <th className="w-8"></th>
+                        <th className="text-left font-medium">Title</th>
+                        <th className="text-left font-medium">Created</th>
+                        <th className="text-left font-medium">Updated</th>
+                        <th className="text-left font-medium">Owner</th>
+                        <th className="w-8"></th>
                       </tr>
                     </thead>
                     <tbody>
-                      {notes.map((note, index) => (
-                        <tr key={note.id} className="hover:bg-blue-50 transition">
-                          <td className="text-gray-400 font-semibold">{index + 1}</td>
+                      {filteredNotes.map((note, index) => (
+                        <tr
+                          key={note.id}
+                          className="hover:bg-blue-50/60 transition group border-b border-gray-50"
+                        >
+                          <td className="text-gray-300 text-xs pl-2">
+                            {index + 1}
+                          </td>
                           <td
-                            className="flex items-center gap-2 hover:underline cursor-pointer text-blue-700 font-medium"
+                            className="flex items-center gap-2 cursor-pointer text-blue-700 font-medium hover:underline"
                             onClick={() => selectNote(note.id)}
                           >
-                            <AiOutlineFile size={20} />
-                            <span className="truncate max-w-[180px]">{note.title}</span>
+                            <AiOutlineFile
+                              size={18}
+                              className="text-blue-400"
+                            />
+                            <span className="truncate max-w-[140px]">
+                              {note.title}
+                            </span>
                           </td>
-                          <td className="text-xs text-gray-500">{new Date(note.createdAt).toDateString()}</td>
-                          <td className="text-xs text-gray-500">{new Date(note.updatedAt).toDateString()}</td>
-                          <td className="text-xs text-gray-600">{note.user.name}</td>
-                          <td>
-                            <div className="dropdown flex justify-end cursor-pointer">
-                              <div role="button" tabIndex={0}>
-                                <AiOutlineMore size={22} className="text-gray-400 hover:text-blue-600 transition" />
-                              </div>
-                              <ul
-                                tabIndex={0}
-                                className="dropdown-content menu bg-white border border-gray-200 rounded-xl w-36 p-2 shadow-xl text-left absolute right-0 mt-2 z-20"
-                              >
-                                <li>
-                                  <button
-                                    className="flex items-center gap-2 p-2 text-red-600 hover:text-red-700 rounded-md hover:bg-red-50 transition w-full"
-                                    onClick={() => handleDeleteNote(note.id)}
-                                  >
-                                    <FaTrash />
-                                    Delete
-                                  </button>
-                                </li>
-                              </ul>
-                            </div>
+                          <td className="text-xs text-gray-500">
+                            {new Date(note.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="text-xs text-gray-500">
+                            {new Date(note.updatedAt).toLocaleDateString()}
+                          </td>
+                          <td className="text-xs text-gray-600">
+                            {note.user.name}
+                          </td>
+                          <td className="pr-2">
+                            <button
+                              className="p-1 rounded hover:bg-red-50 transition text-red-500"
+                              title="Delete"
+                              onClick={() => handleDeleteNote(note.id)}
+                            >
+                              <FaTrash size={16} />
+                            </button>
                           </td>
                         </tr>
                       ))}
@@ -213,31 +266,80 @@ const Notes = () => {
                 </div>
               )
             ) : (
-              <p className="bg-red-100 text-red-500 p-5">Notes is not an array.</p>
+              <p className="bg-red-100 text-red-500 p-5">
+                Notes is not an array.
+              </p>
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {filteredNotes.length === 0 ? (
+              <p className="text-gray-400 text-center py-8 col-span-full">
+                No notes found.
+              </p>
+            ) : (
+              filteredNotes.map((note, index) => (
+                <div
+                  key={note.id}
+                  className="bg-white border border-gray-100 rounded-xl shadow-sm p-4 flex flex-col gap-2 hover:shadow-md transition cursor-pointer group"
+                  onClick={() => selectNote(note.id)}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <AiOutlineFile size={20} className="text-blue-400" />
+                    <span className="font-semibold text-blue-700 truncate max-w-[120px]">
+                      {note.title}
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-1 text-xs text-gray-500">
+                    <span>
+                      Created: {new Date(note.createdAt).toLocaleDateString()}
+                    </span>
+                    <span>
+                      Updated: {new Date(note.updatedAt).toLocaleDateString()}
+                    </span>
+                    <span>
+                      Owner:{" "}
+                      <span className="text-gray-700">{note.user.name}</span>
+                    </span>
+                  </div>
+                  <button
+                    className="self-end p-1 rounded hover:bg-red-50 transition text-red-500 mt-2"
+                    title="Delete"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteNote(note.id);
+                    }}
+                  >
+                    <FaTrash size={15} />
+                  </button>
+                </div>
+              ))
             )}
           </div>
         )}
       </div>
       {/* File Upload Section */}
-      <div className="mt-8 p-6 border rounded-2xl bg-white/90 shadow-md">
-        <h3 className="text-xl font-semibold text-gray-800 mb-2 flex items-center gap-2">
-          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
+      <div className="mt-8 p-5 border rounded-xl bg-gray-50 shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-800 mb-1 flex items-center gap-2">
+          <AiOutlinePlus className="text-blue-500" size={18} />
           Upload File to Create Note
         </h3>
-        <p className="text-sm text-gray-600 mb-4">
-          Supported formats: <span className="font-medium text-gray-700">.doc</span>, <span className="font-medium text-gray-700">.docx</span>, <span className="font-medium text-gray-700">.txt</span>
+        <p className="text-xs text-gray-500 mb-3">
+          Supported: <span className="font-medium text-gray-700">.doc</span>,{" "}
+          <span className="font-medium text-gray-700">.docx</span>,{" "}
+          <span className="font-medium text-gray-700">.txt</span>
         </p>
-        <div className="bg-gray-50 border border-dashed border-gray-300 rounded-lg p-4">
+        <div className="bg-white border border-dashed border-gray-200 rounded-lg p-3">
           <FileToNoteUploader />
         </div>
       </div>
       {/* AI Note Modal */}
-      <dialog id="ai_gen_note" className="modal overflow-x-scroll">
-        <div className="modal-box bg-white p-4 rounded-md shadow-md sm:w-fit lg:w-1/2 mx-auto mt-10">
+      <dialog id="ai_gen_note" className="modal">
+        <div className="modal-box bg-white p-4 rounded-md shadow-md w-full max-w-lg mx-auto mt-10">
           <form method="dialog">
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+              ✕
+            </button>
           </form>
           <AiGeneratedNote />
         </div>

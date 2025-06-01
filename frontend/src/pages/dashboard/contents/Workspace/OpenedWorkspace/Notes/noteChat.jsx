@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import MarkdownRenderer from "../../../../../../components/markdown-renderer";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { toast, ToastContainer } from "react-toastify";
-import { AiFillCopy } from "react-icons/ai";
+import { toast } from "react-toastify";
+import { AiOutlineCopy, AiOutlineCheck } from "react-icons/ai";
 import {
-  FaMarkdown,
-  FaClipboardList,
-  FaCompressAlt,
-  FaSpellCheck,
-  FaExpand,
-  FaPage4,
-} from "react-icons/fa";
+  MdOutlineQuiz,
+  MdOutlineSummarize,
+  MdOutlineSpellcheck,
+  MdOutlineExpand,
+  MdOutlineNoteAlt,
+  MdOutlineFormatListBulleted,
+} from "react-icons/md";
 
 const NoteChat = ({ noteContext = "There is no note provided" }) => {
   const apiKey = localStorage.getItem("geminiApiKey");
@@ -19,7 +19,7 @@ const NoteChat = ({ noteContext = "There is no note provided" }) => {
     model: "gemini-1.5-flash",
   });
 
-  const [askAI, setAskAI] = useState(null);
+  const [askAI, setAskAI] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [aiResponse, setAiResponse] = useState(null);
@@ -34,12 +34,8 @@ const NoteChat = ({ noteContext = "There is no note provided" }) => {
     responseSchema: {
       type: "object",
       properties: {
-        title: {
-          type: "string",
-        },
-        content: {
-          type: "string",
-        },
+        title: { type: "string" },
+        content: { type: "string" },
       },
       required: ["title", "content"],
     },
@@ -53,15 +49,10 @@ const NoteChat = ({ noteContext = "There is no note provided" }) => {
         history: [
           {
             role: "user",
-            parts: [
-              {
-                text: noteChatPrompt(noteContext),
-              },
-            ],
+            parts: [{ text: noteChatPrompt(noteContext) }],
           },
         ],
       });
-
       const result = await chatSession.sendMessage(prompt);
       setAiResponse(JSON.parse(result.response.text()));
     } catch (error) {
@@ -73,7 +64,7 @@ const NoteChat = ({ noteContext = "There is no note provided" }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (apiKey.length > 0) {
+    if (apiKey && apiKey.length > 0) {
       setError(null);
       setAiResponse(null);
       setCopied(false);
@@ -82,114 +73,147 @@ const NoteChat = ({ noteContext = "There is no note provided" }) => {
       toast.error("API Key is invalid!");
     }
   };
+
   const noteMakingPrompt =
     "You are a note-making assistant AI. The provided content is lengthy, unstructured, and may include irrelevant details. Analyze the content and generate a comprehensive, well-structured, and exam-focused note. Include all important points necessary for understanding and retention. Use bullet points for listing key information. Use tables for comparisons. Explain any code blocks clearly and emphasize their purpose with relevant examples. Ensure the final note is complete, logically organized, and easy to review. Do not include any explanatory or concluding text outside the note itself. Output only the refined note.";
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100 p-4">
-      {/* <ToastContainer /> */}
-      {/* Input Section at the top */}
-      <div className="mb-4">
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Ask AI from the note..."
-            className="input w-full text-black border bg-transparent border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onChange={(e) => setAskAI(e.target.value)}
-            value={askAI}
-          />
-        </form>
-      </div>
-      {/* Buttons for AI actions */}
-      <div className="flex gap-2 justify-around mb-4 overflow-auto hide-scrollbar">
+    <div className="flex flex-col h-screen bg-white p-0 md:p-6 transition-all duration-200">
+      {/* Input Section */}
+      <form
+        onSubmit={handleSubmit}
+        className="w-full flex items-center gap-2 border-b border-gray-200 px-4 py-3 bg-white sticky top-0 z-10"
+      >
+        <input
+          type="text"
+          placeholder="Ask AI about this note..."
+          className="flex-1 bg-transparent text-gray-900 placeholder-gray-400 focus:outline-none text-base px-2 py-1"
+          onChange={(e) => setAskAI(e.target.value)}
+          value={askAI}
+          autoFocus
+        />
         <button
-          className="flex items-center gap-2 btn btn-sm bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-800"
+          type="submit"
+          className="text-gray-500 hover:text-blue-600 transition-colors"
+          title="Ask"
+        >
+          <MdOutlineNoteAlt size={22} />
+        </button>
+      </form>
+
+      {/* Minimalistic Action Buttons */}
+      <div className="flex flex-wrap gap-2 justify-center items-center py-3 px-2 border-b border-gray-100 bg-white">
+        <button
+          className="group flex items-center gap-1 px-3 py-1 rounded-md text-gray-600 hover:bg-gray-100 hover:text-blue-600 transition-colors text-sm font-medium"
           onClick={() =>
             requestAi("Convert the entire content to markdown rich")
           }
+          title="Markdown"
         >
-          <FaMarkdown /> Markdown
+          <MdOutlineFormatListBulleted
+            size={18}
+            className="group-hover:text-blue-600"
+          />{" "}
+          Markdown
         </button>
-
         <button
-          className="flex items-center gap-2 btn btn-sm bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700"
+          className="group flex items-center gap-1 px-3 py-1 rounded-md text-gray-600 hover:bg-gray-100 hover:text-teal-600 transition-colors text-sm font-medium"
           onClick={() =>
             requestAi(
               "Quiz from the content make sure it is comprehensive and review"
             )
           }
+          title="Quiz"
         >
-          <FaClipboardList /> Quiz
+          <MdOutlineQuiz size={18} className="group-hover:text-teal-600" /> Quiz
         </button>
-
         <button
-          className="flex items-center gap-2 btn btn-sm bg-slate-600 text-white px-4 py-2 rounded-md hover:bg-slate-700"
+          className="group flex items-center gap-1 px-3 py-1 rounded-md text-gray-600 hover:bg-gray-100 hover:text-purple-600 transition-colors text-sm font-medium"
           onClick={() => requestAi("Summarize the content")}
+          title="Summarize"
         >
-          <FaCompressAlt /> Summarize
+          <MdOutlineSummarize
+            size={18}
+            className="group-hover:text-purple-600"
+          />{" "}
+          Summarize
         </button>
-
         <button
-          className="flex items-center gap-2 btn btn-sm bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+          className="group flex items-center gap-1 px-3 py-1 rounded-md text-gray-600 hover:bg-gray-100 hover:text-indigo-600 transition-colors text-sm font-medium"
           onClick={() => requestAi("Grammar correct and replace the original")}
+          title="Grammar"
         >
-          <FaSpellCheck /> Grammar
+          <MdOutlineSpellcheck
+            size={18}
+            className="group-hover:text-indigo-600"
+          />{" "}
+          Grammar
         </button>
-
         <button
-          className="flex items-center gap-2 btn btn-sm bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+          className="group flex items-center gap-1 px-3 py-1 rounded-md text-gray-600 hover:bg-gray-100 hover:text-pink-600 transition-colors text-sm font-medium"
           onClick={() =>
             requestAi("Expand the note to make it more comprehensive")
           }
+          title="Expand"
         >
-          <FaExpand /> Expand
+          <MdOutlineExpand size={18} className="group-hover:text-pink-600" />{" "}
+          Expand
         </button>
-
         <button
-          className="flex items-center gap-2 btn btn-sm bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+          className="group flex items-center gap-1 px-3 py-1 rounded-md text-gray-600 hover:bg-gray-100 hover:text-green-600 transition-colors text-sm font-medium"
           onClick={() => requestAi(noteMakingPrompt)}
+          title="Notefy"
         >
-          <FaPage4 /> Notefy
+          <MdOutlineNoteAlt size={18} className="group-hover:text-green-600" />{" "}
+          Notefy
         </button>
       </div>
+
       {/* Chat Area (Bot's response) */}
-      <div className="flex-1 overflow-y-auto p-4 bg-white rounded-lg shadow-lg space-y-4">
-        {/* AI's answer */}
-        {loading ? (
-          <span className="loading loading-dots loading-lg"></span>
-        ) : (
-          <div className="flex items-start space-x-3">
-            {aiResponse ? (
-              <div>
-                <div className="flex items-center justify-end">
-                  <div
-                    className="flex items-center gap-2 bg-gray-200 w-fit p-2 rounded-md mb-2 cursor-pointer hover:bg-gray-300"
+      <div className="flex-1 overflow-y-auto px-2 md:px-8 py-6 bg-white">
+        <div className="max-w-2xl mx-auto">
+          {loading ? (
+            <div className="flex justify-center items-center h-40">
+              <span className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></span>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {aiResponse ? (
+                <div className="relative group bg-gray-50 border border-gray-100 rounded-lg p-4 shadow-sm w-full h-full min-h-[200px] flex flex-col">
+                  <button
+                    className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 rounded text-xs text-gray-400 hover:text-blue-600 hover:bg-gray-100 transition-colors"
                     onClick={() => {
                       navigator.clipboard.writeText(aiResponse.content);
                       toast.success("Copied to clipboard!");
                       setCopied(true);
+                      setTimeout(() => setCopied(false), 1200);
                     }}
+                    title="Copy"
                   >
                     {copied ? (
-                      <div className="flex items-center gap-2">
-                        <AiFillCopy className="text-green-500" />
-                        Copied
-                      </div>
+                      <AiOutlineCheck className="text-green-500" />
                     ) : (
-                      <AiFillCopy className="text-gray-500" />
+                      <AiOutlineCopy />
                     )}
+                    {copied && <span>Copied</span>}
+                  </button>
+                  <div className="flex-1 w-full h-full overflow-x-auto">
+                    <MarkdownRenderer content={aiResponse?.content} />
                   </div>
                 </div>
-                <MarkdownRenderer content={aiResponse?.content} />
-              </div>
-            ) : (
-              <p>Hello! How can I help you with your notes?</p>
-            )}
-            {error && (
-              <div className="text-red-500 text-sm mt-2">{error.message}</div>
-            )}
-          </div>
-        )}
+              ) : (
+                <div className="text-gray-400 text-center py-12 text-base select-none">
+                  Ask a question or use an action above to get started.
+                </div>
+              )}
+              {error && (
+                <div className="text-red-500 text-sm mt-2 text-center">
+                  {error.message}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
