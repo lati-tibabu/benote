@@ -21,8 +21,8 @@ const WorkspaceSection = ({
   workspaceLoading,
   handleWorkspaceOpen,
 }) => (
-  <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
-    <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+  <div className="w-full max-w-3xl bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-2xl shadow-lg p-5 sm:p-7 mx-auto">
+    <h2 className="text-xl sm:text-2xl font-bold mb-5 pb-2 border-b border-blue-200 text-blue-800 flex items-center gap-2">
       <AiOutlineClockCircle className="text-blue-500 text-2xl" />
       Recent Workspaces
     </h2>
@@ -31,11 +31,11 @@ const WorkspaceSection = ({
         {[...Array(3)].map((_, index) => (
           <div
             key={index}
-            className="bg-gray-100 rounded-lg p-4 h-28 flex flex-col justify-between"
+            className="bg-blue-100 rounded-xl p-4 h-28 flex flex-col justify-between"
           >
-            <div className="h-5 bg-gray-300 rounded w-3/4 mb-2"></div>
-            <div className="h-4 bg-gray-300 rounded w-1/2"></div>
-            <div className="h-4 bg-gray-300 rounded w-full"></div>
+            <div className="h-5 bg-blue-200 rounded w-3/4 mb-2"></div>
+            <div className="h-4 bg-blue-200 rounded w-1/2"></div>
+            <div className="h-4 bg-blue-200 rounded w-full"></div>
           </div>
         ))}
       </div>
@@ -45,23 +45,19 @@ const WorkspaceSection = ({
           workspaces.map((workspace) => (
             <li key={workspace.workspace.id}>
               <div
-                title={
-                  workspace.workspace.description || workspace.workspace.name
-                }
-                className="flex flex-col p-4 rounded-lg shadow-sm border border-gray-200 \
-                           hover:bg-blue-50 hover:border-blue-400 transition-all duration-200 cursor-pointer h-full"
+                title={workspace.workspace.description || workspace.workspace.name}
+                className="flex flex-col p-4 rounded-xl shadow-sm border border-blue-100 bg-white/80 hover:bg-blue-50 hover:border-blue-400 transition-all duration-200 cursor-pointer h-full group"
                 onClick={handleWorkspaceOpen(workspace.workspace.id)}
               >
-                <div className="text-4xl mb-3">{workspace.workspace.emoji}</div>
-                <div className="font-medium text-lg text-gray-800 truncate mb-1">
+                <div className="text-4xl mb-3 select-none">
+                  {workspace.workspace.emoji}
+                </div>
+                <div className="font-semibold text-lg text-blue-900 group-hover:text-blue-700 truncate mb-1">
                   {workspace.workspace.name}
                 </div>
-                <div className="text-sm text-gray-500 mt-auto">
-                  Accessed:{" "}
-                  {(() => {
-                    const accessedAt = new Date(
-                      workspace.workspace.last_accessed_at
-                    );
+                <div className="text-xs text-blue-500 mt-auto">
+                  Accessed: {(() => {
+                    const accessedAt = new Date(workspace.workspace.last_accessed_at);
                     const now = new Date();
                     const options = {
                       month: "short",
@@ -71,7 +67,6 @@ const WorkspaceSection = ({
                       minute: "numeric",
                       hour12: true,
                     };
-
                     if (
                       accessedAt.getDate() === now.getDate() &&
                       accessedAt.getMonth() === now.getMonth() &&
@@ -83,10 +78,8 @@ const WorkspaceSection = ({
                         hour12: true,
                       });
                     }
-
                     const oneWeekAgo = new Date();
                     oneWeekAgo.setDate(now.getDate() - 7);
-
                     if (accessedAt > oneWeekAgo) {
                       return accessedAt.toLocaleDateString("en-US", {
                         weekday: "short",
@@ -95,7 +88,6 @@ const WorkspaceSection = ({
                         hour12: true,
                       });
                     }
-
                     return accessedAt.toLocaleDateString("en-US", options);
                   })()}
                 </div>
@@ -103,9 +95,9 @@ const WorkspaceSection = ({
             </li>
           ))
         ) : (
-          <p className="text-gray-500 text-center col-span-full py-8">
+          <div className="text-blue-400 text-center col-span-full py-8">
             No recent workspaces to display.
-          </p>
+          </div>
         )}
       </ul>
     )}
@@ -113,92 +105,84 @@ const WorkspaceSection = ({
 );
 
 // LatestTasks component
-const LatestTasks = ({ tasks, taskLoading }) => (
-  <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200 overflow-auto">
-    <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-      <FaClock className="text-green-500 text-2xl" />
-      Latest Tasks
-    </h2>
-    {taskLoading ? (
-      <div className="grid grid-cols-1 gap-4 animate-pulse">
-        {[...Array(3)].map((_, index) => (
-          <div
-            key={index}
-            className="bg-gray-100 rounded-lg p-4 h-24 flex flex-col justify-between"
-          >
-            <div className="h-5 bg-gray-300 rounded w-full mb-2"></div>
-            <div className="flex justify-between">
-              <div className="h-4 bg-gray-300 rounded w-1/4"></div>
-              <div className="h-4 bg-gray-300 rounded w-1/6"></div>
-            </div>
-          </div>
-        ))}
-      </div>
-    ) : (
-      <ul className="grid grid-cols-1 gap-4">
-        {tasks.length ? (
-          tasks.map((task) => (
-            <li
-              key={task.id}
-              title={task.description}
-              className="flex items-center bg-white shadow-sm border border-gray-200 p-4 rounded-lg \
-                         hover:bg-gray-50 transition-all duration-200 w-fit"
-            >
-              {/* Task Status Icon */}
-              <div
-                className={`text-3xl mr-4 ${
-                  task.status === "done" ? "text-green-500" : "text-yellow-500"
-                }`}
+const LatestTasks = ({ tasks, taskLoading }) => {
+  return (
+    <div className="w-full max-w-md bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-2xl shadow-lg p-5 sm:p-7 mx-auto">
+      <h2 className="text-xl sm:text-2xl font-bold mb-5 pb-2 border-b border-blue-200 text-blue-800 flex items-center gap-2">
+        <FaClock className="text-blue-500 text-2xl" />
+        Latest Tasks
+      </h2>
+      {taskLoading ? (
+        <div className="flex flex-col gap-3 animate-pulse">
+          {[...Array(3)].map((_, index) => (
+            <div key={index} className="bg-blue-100 rounded-xl h-16 w-full" />
+          ))}
+        </div>
+      ) : (
+        <ul className="flex flex-col gap-4">
+          {tasks.length ? (
+            tasks.map((task) => (
+              <li
+                key={task.id}
+                title={task.description}
+                className="flex items-center bg-white/80 border border-blue-100 p-4 rounded-xl shadow-sm hover:bg-blue-50 transition-all duration-200 group"
               >
-                {task.status === "done" ? <FaCheckCircle /> : <FaClock />}
-              </div>
-
-              {/* Main Content */}
-              <div className="flex-1">
-                {/* Task Title */}
-                <div className="text-lg font-semibold text-gray-800 mb-1 truncate">
-                  {task.title}
-                </div>
-
-                {/* Task Metadata */}
-                <div className="flex justify-between items-center text-sm text-gray-500">
-                  {/* Due Date */}
-                  <span className="flex items-center gap-1">
-                    📅 {new Date(task.due_date).toLocaleDateString()}
-                  </span>
-
-                  {/* Workspace Name */}
-                  {task.workspace?.name && (
-                    <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs font-medium">
-                      {task.workspace.name}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Task Status */}
-              <div className="ml-4">
-                <span
-                  className={`text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wide ${
-                    task.status === "done"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-yellow-100 text-yellow-700"
+                {/* Task Status Icon */}
+                <div
+                  className={`text-2xl sm:text-3xl mr-4 ${
+                    task.status === "done" ? "text-green-500" : "text-blue-400"
                   }`}
                 >
-                  {task.status === "done" ? "Completed" : "Pending"}
-                </span>
-              </div>
-            </li>
-          ))
-        ) : (
-          <p className="text-gray-500 text-center py-8">
-            No recent tasks to display.
-          </p>
-        )}
-      </ul>
-    )}
-  </div>
-);
+                  {task.status === "done" ? <FaCheckCircle /> : <FaClock />}
+                </div>
+
+                {/* Main Content */}
+                <div className="flex-1 min-w-0">
+                  {/* Task Title */}
+                  <div className="text-base sm:text-lg font-semibold text-blue-900 group-hover:text-blue-700 mb-1 truncate">
+                    {task.title}
+                  </div>
+
+                  {/* Task Metadata */}
+                  <div className="flex flex-wrap gap-2 items-center text-xs sm:text-sm text-blue-500">
+                    {/* Due Date */}
+                    <span className="flex items-center gap-1">
+                      📅 {new Date(task.due_date).toLocaleDateString()}
+                    </span>
+
+                    {/* Workspace Name */}
+                    {task.workspace?.name && (
+                      <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                        {task.workspace.name}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Task Status */}
+                <div className="ml-4">
+                  <span
+                    className={`text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wide ${
+                      task.status === "done"
+                        ? "bg-green-100 text-green-700 border border-green-200"
+                        : "bg-blue-100 text-blue-700 border border-blue-200"
+                    }`}
+                  >
+                    {task.status === "done" ? "Completed" : "Pending"}
+                  </span>
+                </div>
+              </li>
+            ))
+          ) : (
+            <div className="text-blue-400 text-center w-full py-8">
+              No recent tasks to display.
+            </div>
+          )}
+        </ul>
+      )}
+    </div>
+  );
+};
 
 const Home = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -433,16 +417,16 @@ const Home = () => {
         ) : (
           // Tabbed view should take full width
           <div className="md:col-span-3 bg-white/90 rounded-2xl shadow-xl border border-blue-100">
-            <div className="flex border-b border-blue-100 flex-wrap overflow-x-auto scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-blue-50">
+            <div className="flex border-b border-blue-100 overflow-x-auto whitespace-nowrap scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-blue-50 scrollbar-hide">
               {tabConfig.map((tab) => (
                 <button
                   key={tab.key}
-                  className={`flex items-center gap-2 px-6 py-4 text-center font-semibold transition-all duration-150 text-base \
-              ${
-                activeTab === tab.key
-                  ? "border-b-4 border-blue-600 text-blue-700 bg-blue-50 shadow-inner"
-                  : "text-gray-600 hover:bg-blue-50 border-b-4 border-transparent"
-              }`}
+                  className={`flex-shrink-0 flex items-center gap-2 px-6 py-4 text-center font-semibold transition-all duration-150 text-base \
+                  ${
+                    activeTab === tab.key
+                      ? "border-b-4 border-blue-600 text-blue-700 bg-blue-50 shadow-inner"
+                      : "text-gray-600 hover:bg-blue-50 border-b-4 border-transparent"
+                  }`}
                   onClick={() => setActiveTab(tab.key)}
                   aria-label={tab.label}
                 >

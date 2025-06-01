@@ -82,43 +82,54 @@ const TaskRecommendation = () => {
   };
 
   return (
-    <div className="h-fit max-w-96 bg-white text-black p-6">
-      <h2 className="text-2xl font-semibold mb-6 border-b border-black pb-2">
+    <div className="h-fit w-full max-w-md bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-2xl shadow-lg p-5 sm:p-7 mx-auto">
+      <h2 className="text-xl sm:text-2xl font-bold mb-5 pb-2 border-b border-blue-200 text-blue-800 flex items-center gap-2">
+        <span className="inline-block w-2 h-6 bg-blue-400 rounded-full mr-2"></span>
         Recommended Tasks
       </h2>
 
       {loading ? (
-        <p className="text-gray-600">Loading tasks...</p>
+        <div className="flex flex-col gap-2 animate-pulse">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="h-16 bg-blue-100 rounded-xl" />
+          ))}
+        </div>
       ) : error ? (
-        <p className="text-red-600">Error: {error}</p>
+        <p className="text-red-600 text-center">Error: {error}</p>
       ) : recommendedTasks.length === 0 ? (
-        <p className="text-gray-600">No recommendations available.</p>
+        <p className="text-blue-500 text-center">
+          No recommendations available.
+        </p>
       ) : (
-        <div className="space-y-4">
+        <ul className="space-y-4">
           {recommendedTasks.map((task) => (
-            <div
+            <li
               key={task.id}
               onClick={() => handleTaskClick(task.workspace_id)}
-              className="cursor-pointer border border-black p-4 rounded-lg hover:bg-black hover:text-white transition duration-300"
+              className="cursor-pointer group border border-blue-200 bg-white/80 hover:bg-blue-600 hover:text-white transition-all duration-200 p-4 rounded-xl shadow-sm flex flex-col gap-1"
             >
               <div className="flex justify-between items-center mb-1">
-                <h3 className="text-xl font-medium">{task.title}</h3>
+                <h3 className="text-base sm:text-lg font-semibold truncate group-hover:text-white text-blue-900">
+                  {task.title}
+                </h3>
                 <span
-                  className={`text-sm px-2 py-1 rounded border ${getPriorityStyle(
+                  className={`text-xs px-2 py-0.5 rounded-full border font-bold uppercase tracking-wide bg-white/60 group-hover:bg-blue-500 group-hover:text-white ${getPriorityStyle(
                     task.priority
                   )}`}
                 >
                   {task.priority}
                 </span>
               </div>
-              <p className="text-sm italic text-gray-600 mb-1">
-                Workspace:{" "}
-                <span className="font-semibold">{task.workspace}</span>
+              <div className="flex items-center gap-2 text-xs text-blue-500 group-hover:text-blue-100">
+                <span className="font-medium">Workspace:</span>
+                <span className="truncate">{task.workspace}</span>
+              </div>
+              <p className="text-xs text-blue-700 group-hover:text-blue-100 opacity-80 truncate">
+                {task.description}
               </p>
-              <p className="text-sm text-gray-700">{task.description}</p>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );
