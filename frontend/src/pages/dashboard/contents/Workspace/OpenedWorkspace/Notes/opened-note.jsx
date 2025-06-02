@@ -423,7 +423,7 @@ const OpenedNote = () => {
                 {aiAssistMode && (
                   <div className="flex-1">
                     <div className="font-semibold text-blue-700 mb-2 text-sm text-center">
-                      Ask Gemini
+                      Ask About This Note
                     </div>
                     <NoteChat noteContext={noteInput} />
                   </div>
