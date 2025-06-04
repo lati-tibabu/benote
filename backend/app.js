@@ -21,8 +21,9 @@ app.get("/", (req, res) => {
 });
 
 app.get("/database", (req, res) => {
+  const reset = req.query.reset;
   sequelize
-    .sync({ alter: true })
+    .sync(reset ? { force: true } : { alter: true })
     .then(() => {
       res.status(201).send("Database synced");
     })
