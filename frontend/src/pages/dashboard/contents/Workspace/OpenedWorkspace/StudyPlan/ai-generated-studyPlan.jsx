@@ -169,7 +169,8 @@ const AiGeneratedTask = () => {
                    - If it's impossible to generate a non-overlapping plan based on the current date and existing plans, state that directly in a user-friendly error message within the JSON's description field and provide guidance to the user, for example, "Cannot generate a plan as it would overlap with existing plans. Please try again later or adjust your request." (Though for a JSON schema, it's better to just adhere to the schema and let client-side validation handle this if the AI doesn't. We'll add client-side validation.)
                 6. Only use information from the user's prompt. Do not invent or add extra tasks, topics, or subjects that were not explicitly requested by the user.
                 7. The current UTC date and time to base your plan's start date is: ${new Date().toISOString()}. Ensure all generated dates/times are in the future relative to this timestamp and in ISO 8601 format with 'Z' for UTC.
-                `,
+                8. Strictly follow the responseSchema:
+                9. Today is ${new Date().toISOString()}`,
               },
             ],
           },
@@ -200,32 +201,32 @@ const AiGeneratedTask = () => {
         return;
       }
 
-      if (
-        checkOverlap(
-          parsedResponse.start_date,
-          parsedResponse.end_date,
-          studyPlans
-        )
-      ) {
-        const overlapError =
-          "The generated study plan overlaps with an existing study plan. Please adjust your prompt or accept existing plans first.";
-        setError(overlapError);
-        toast.error(overlapError);
-        setAiResponse(null);
-        setLoading(false);
-        return;
-      }
+      // if (
+      //   checkOverlap(
+      //     parsedResponse.start_date,
+      //     parsedResponse.end_date,
+      //     studyPlans
+      //   )
+      // ) {
+      //   const overlapError =
+      //     "The generated study plan overlaps with an existing study plan. Please adjust your prompt or accept existing plans first.";
+      //   setError(overlapError);
+      //   toast.error(overlapError);
+      //   setAiResponse(null);
+      //   setLoading(false);
+      //   return;
+      // }
 
       const now = new Date();
-      if (new Date(parsedResponse.start_date) < now) {
-        const pastDateError =
-          "The generated study plan starts in the past. Please try generating again.";
-        setError(pastDateError);
-        toast.error(pastDateError);
-        setAiResponse(null);
-        setLoading(false);
-        return;
-      }
+      // if (new Date(parsedResponse.start_date) < now) {
+      //   const pastDateError =
+      //     "The generated study plan starts in the past. Please try generating again.";
+      //   setError(pastDateError);
+      //   toast.error(pastDateError);
+      //   setAiResponse(null);
+      //   setLoading(false);
+      //   return;
+      // }
       for (const block of parsedResponse.timeBlocks) {
         if (
           new Date(block.start_time) < now ||

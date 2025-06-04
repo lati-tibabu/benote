@@ -346,7 +346,7 @@ const OpenedAIStudyGenerators = ({ plan, onSuccess }) => {
         study_plan_id: plan?.id,
       }));
 
-      const res = await fetch(`${apiURL}/api/timeBlocks/bulk`, {
+      const res = await fetch(`${apiURL}/api/timeBlocks`, {
         // Assuming a bulk endpoint
         method: "POST",
         headers: header,
