@@ -9,6 +9,7 @@ import {
   PiDotsThreeOutlineVerticalBold,
   PiTrashBold,
   PiPencilSimpleBold,
+  PiBookBold,
 } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate, useParams, useLocation } from "react-router-dom";
@@ -160,7 +161,7 @@ const menuItems = [
   { icon: <PiSquaresFourBold />, label: "Overview", link: "overview" },
   { icon: <PiCheckCircleBold />, label: "Workspaces", link: "workspaces" },
   { icon: <PiFileTextBold />, label: "Discussions", link: "discussions" },
-  { icon: <PiUsersThreeBold />, label: "Resource", link: "resources" },
+  { icon: <PiBookBold />, label: "Resource", link: "resources" },
   // { icon: <PiListChecksBold />, label: "TO-DO Lists", link: "todo-lists" },
   { icon: <PiGearBold />, label: "Settings", link: "settings" },
 ];

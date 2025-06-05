@@ -8,7 +8,11 @@ import {
   FaList,
   FaUpload,
   FaFileAlt,
-} from "react-icons/fa"; // Removed FaFolder
+  FaTimes,
+  FaSearchPlus,
+  FaSearchMinus,
+} from "react-icons/fa";
+import { PiBookBold, PiDownloadDuotone, PiTrashDuotone } from "react-icons/pi";
 
 const Resources = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -29,6 +33,10 @@ const Resources = () => {
   const [isDragging, setIsDragging] = useState(false); // For drag and drop
   const [isUploading, setIsUploading] = useState(false); // For upload overlay
 
+  const [fileViewOpen, setFileViewOpen] = useState(false);
+  const [selectedFileUrl, setSelectedFileUrl] = useState(null); // Stores the full URL for viewing
+  const [selectedFileName, setSelectedFileName] = useState(""); // Stores the file name for viewing/downloading
+
   const fetchResources = async () => {
     setLoading(true);
     try {
@@ -37,7 +45,6 @@ const Resources = () => {
       });
       const data = await res.json();
       setResources(Array.isArray(data) ? data : []);
-      console.log(resources);
     } catch (err) {
       console.error("Fetch error:", err);
       setResources([]);
@@ -62,7 +69,9 @@ const Resources = () => {
     try {
       const res = await fetch(`${apiURL}/api/resources`, {
         method: "POST",
-        headers: header,
+        headers: {
+          Authorization: `Bearer ${token}`, // FormData typically doesn't need Content-Type, browser sets it
+        },
         body: formData,
       });
       const data = await res.json();
@@ -103,7 +112,6 @@ const Resources = () => {
 
   const handleDownload = async (fileUrl, fileName) => {
     try {
-      // Assuming fileUrl from backend is already fully qualified or needs a base path
       const fullFileUrl = fileUrl.startsWith("http")
         ? fileUrl
         : `${apiURL}/${fileUrl}`;
@@ -124,7 +132,7 @@ const Resources = () => {
       document.body.appendChild(link);
       link.click();
       link.remove();
-      window.URL.revokeObjectURL(url);
+      window.URL.revokeObjectURL(url); // Clean up the object URL
     } catch (err) {
       console.error("Download failed:", err);
       alert("Failed to download the file. Please try again.");
@@ -199,6 +207,7 @@ const Resources = () => {
       case "jpeg":
       case "png":
       case "gif":
+      case "webp": // Added webp for completeness
         return (
           <img
             src="https://img.icons8.com/color/48/000000/image.png"
@@ -224,13 +233,150 @@ const Resources = () => {
     fetchResources();
   }, [teamId]); // Added teamId to dependency array for re-fetch on team change
 
+  const handleViewResource = (filePath, fileName) => {
+    const fullFileUrl = filePath.startsWith("http")
+      ? filePath
+      : `${apiURL}/${filePath}`;
+    setSelectedFileUrl(fullFileUrl);
+    setSelectedFileName(fileName);
+    setFileViewOpen(true);
+  };
+
+  const closeFileView = () => {
+    setFileViewOpen(false);
+    setSelectedFileUrl(null);
+    setSelectedFileName("");
+  };
+
+  const FileViewModal = () => {
+    const [zoom, setZoom] = useState(1);
+
+    if (!fileViewOpen || !selectedFileUrl) return null;
+
+    const fileExt = selectedFileName.split(".").pop().toLowerCase();
+
+    const isImage = ["jpg", "jpeg", "png", "gif", "webp"].includes(fileExt);
+    const isPDF = fileExt === "pdf";
+
+    const renderViewer = () => {
+      if (isImage) {
+        return (
+          <div className="flex flex-col items-center">
+            <img
+              src={selectedFileUrl}
+              alt="preview"
+              style={{
+                transform: `scale(${zoom})`,
+                transition: "transform 0.2s",
+              }}
+              className="max-h-[70vh] object-contain"
+            />
+            <div className="mt-4 flex gap-4">
+              <button
+                onClick={() => setZoom((z) => z + 0.1)}
+                className="bg-gray-200 text-gray-700 hover:bg-gray-300 p-2 rounded-md"
+              >
+                <FaSearchPlus />
+              </button>
+              <button
+                onClick={() => setZoom((z) => Math.max(0.1, z - 0.1))}
+                className="bg-gray-200 text-gray-700 hover:bg-gray-300 p-2 rounded-md"
+              >
+                <FaSearchMinus />
+              </button>
+            </div>
+          </div>
+        );
+      } else if (isPDF) {
+        return (
+          <iframe
+            src={selectedFileUrl}
+            className="w-full h-[70vh] border rounded"
+            title="PDF Viewer"
+          ></iframe>
+        );
+      } else {
+        return (
+          <div className="flex flex-col items-center justify-center h-[70vh] text-gray-600">
+            <FaFileAlt className="text-6xl mb-4" />
+            <p className="text-lg">
+              No direct preview available for this file type.
+            </p>
+            <p className="text-sm">Please download the file to view it.</p>
+            <button
+              onClick={() => handleDownload(selectedFileUrl, selectedFileName)}
+              className="mt-4 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+            >
+              <FaDownload className="inline-block mr-2" /> Download File
+            </button>
+          </div>
+        );
+      }
+    };
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center px-4">
+        <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl relative overflow-hidden">
+          {/* Header */}
+          <div className="flex justify-between items-center p-4 border-b">
+            <h2 className="text-lg font-semibold text-gray-800">
+              File Viewer: {selectedFileName}
+            </h2>
+            <div className="flex gap-3 items-center">
+              <button
+                onClick={() =>
+                  handleDownload(selectedFileUrl, selectedFileName)
+                }
+                className="text-blue-500 hover:text-blue-700 text-sm"
+                title="Download file"
+              >
+                <FaDownload className="w-5 h-5" />
+              </button>
+              <button
+                onClick={closeFileView}
+                className="text-gray-500 hover:text-red-600"
+              >
+                <FaTimes className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Viewer */}
+          <div className="p-4 bg-gray-50">{renderViewer()}</div>
+        </div>
+      </div>
+    );
+  };
+
+  // Main component return
+  if (!teamId) {
+    return (
+      <div className="flex items-center justify-center min-h-screen text-gray-600">
+        <p>Please select a team to view resources.</p>
+      </div>
+    );
+  }
+  if (!userData || !userData.id) {
+    return (
+      <div className="flex items-center justify-center min-h-screen text-gray-600">
+        <p>Please log in to access resources.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen bg-gray-100 max-w-[1000px] mx-auto">
+      {/* File View Modal */}
+      {fileViewOpen && <FileViewModal />}
+
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col p-8 w-full">
         {/* Header Section */}
         <div className="bg-white shadow-md rounded-lg p-6 mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Documents</h1>
+          <h1 className="flex gap-2 items-center text-3xl font-bold text-gray-800">
+            <PiBookBold />
+            Resources
+          </h1>
           <p className="text-gray-600 mt-2">
             Manage all your team's shared resources here.
           </p>
@@ -288,14 +434,14 @@ const Resources = () => {
               placeholder="Enter description for the file (optional)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-white text-black w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button
               type="submit"
               className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              disabled={!file} // Disable if no file is selected
+              disabled={!file || isUploading} // Disable during upload
             >
-              Upload Resource
+              {isUploading ? "Uploading..." : "Upload Resource"}
             </button>
           </form>
         </div>
@@ -351,7 +497,12 @@ const Resources = () => {
                 >
                   <div className="flex items-center mb-3">
                     {getFileIcon(res.name)}
-                    <h3 className="ml-3 text-lg font-semibold text-gray-800 truncate flex-1">
+                    <h3
+                      className="ml-3 text-lg font-semibold text-gray-800 truncate flex-1"
+                      title="Click to view in details"
+                      onClick={() => handleViewResource(res.path, res.name)}
+                      style={{ cursor: "pointer" }}
+                    >
                       {res.name}
                     </h3>
                   </div>
@@ -363,16 +514,18 @@ const Resources = () => {
                   </div>
                   <div className="flex gap-2">
                     <button
-                      className="flex-1 btn btn-sm bg-blue-500 text-white hover:bg-blue-600 border-none rounded-md flex items-center justify-center py-2 px-3"
+                      className="flex-1 btn btn-sm bg-blue-50 text-blue-600 hover:bg-blue-200 border-none rounded-md flex items-center justify-center py-2 px-3"
                       onClick={() => handleDownload(res.path, res.name)}
+                      title="Download Resource"
                     >
-                      <FaDownload className="mr-1" /> Download
+                      <PiDownloadDuotone className="mr-1" />
                     </button>
                     <button
-                      className="flex-1 btn btn-sm bg-red-500 text-white hover:bg-red-600 border-none rounded-md flex items-center justify-center py-2 px-3"
+                      className="flex-1 btn btn-sm bg-red-50 text-red-600 hover:bg-red-200 border-none rounded-md flex items-center justify-center py-2 px-3"
                       onClick={() => handleDelete(res.id)}
+                      title="Delete Resource"
                     >
-                      <FaTrash className="mr-1" /> Delete
+                      <PiTrashDuotone className="mr-1" />
                     </button>
                   </div>
                 </div>
@@ -400,7 +553,14 @@ const Resources = () => {
                       <td className="py-3 px-6 text-left whitespace-nowrap">
                         <div className="flex items-center">
                           {getFileIcon(res.name)}
-                          <span className="ml-3 font-medium">{res.name}</span>
+                          <span
+                            className="ml-3 font-medium cursor-pointer"
+                            onClick={() =>
+                              handleViewResource(res.path, res.name)
+                            }
+                          >
+                            {res.name}
+                          </span>
                         </div>
                       </td>
                       <td className="py-3 px-6 text-left">
