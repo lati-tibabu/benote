@@ -335,8 +335,8 @@ const Notes = () => {
       </div>
       {/* AI Note Modal */}
       <dialog id="ai_gen_note" className="modal">
-        <div className="modal-box bg-white p-4 rounded-md shadow-md w-full max-w-lg mx-auto mt-10">
-          <form method="dialog">
+        <div className="modal-box bg-transparent p-0 rounded-lg shadow-xl w-11/12 max-w-none h-[95vh] overflow-hidden">
+          <form method="dialog" className="absolute top-4 right-4 z-10">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
