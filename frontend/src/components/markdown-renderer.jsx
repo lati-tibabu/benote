@@ -10,7 +10,8 @@ import "katex/dist/katex.min.css"; // Import KaTeX styles
 const MarkdownRenderer = ({ content, className }) => {
   return (
     <div
-      className={`flex flex-col gap-4 hover:[&>*]:bg-gray-100 hover:[&>*]:cursor-pointer ${className}`}
+      // className={`flex flex-col gap-4 hover:[&>*]:bg-gray-100 hover:[&>*]:cursor-pointer ${className}`}
+      className={`flex flex-col gap-4 ${className}`}
     >
       <MarkDown
         // className="border-2 overflow-hidden"
