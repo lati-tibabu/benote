@@ -4,6 +4,7 @@ const {
   team_membership,
   user,
 } = require("../models");
+const { Op } = require("sequelize"); // Import Op for Sequelize operators
 
 // Create
 const createNote = async (req, res) => {
@@ -128,6 +129,95 @@ const readNote = async (req, res) => {
   }
 };
 
+const searchPublicNotes = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page, 10) || 1;
+    const pageSize = parseInt(req.query.pageSize, 10) || 10;
+    const offset = (page - 1) * pageSize;
+    const searchTerm = req.query.search || ""; // Get the search term from query parameters
+
+    let whereCondition = {
+      public: true, // Only retrieve public notes
+    };
+
+    // Add search condition if searchTerm is provided
+    if (searchTerm) {
+      whereCondition = {
+        ...whereCondition, // Keep the public: true condition
+        [Op.or]: [
+          // Use OR operator to search in title or content
+          { title: { [Op.iLike]: `%${searchTerm}%` } }, // Case-insensitive search for title
+          { content: { [Op.iLike]: `%${searchTerm}%` } }, // Case-insensitive search for content
+        ],
+      };
+    }
+
+    const { count, rows: _notes } = await note.findAndCountAll({
+      where: whereCondition, // Apply the constructed where condition
+      attributes: ["id", "title", "content", "createdAt"],
+      include: [
+        {
+          model: user,
+          as: "user",
+          attributes: ["id", "name", "email"],
+        },
+      ],
+      limit: pageSize,
+      offset: offset,
+      order: [["updatedAt", "DESC"]], // Order by last updated
+    });
+
+    res.json({
+      totalItems: count,
+      totalPages: Math.ceil(count / pageSize),
+      currentPage: page,
+      pageSize: pageSize,
+      notes: _notes,
+    });
+  } catch (error) {
+    console.error("Error searching public notes:", error); // Log the error for debugging
+    res.status(500).json({
+      message: "Failed to search public notes.",
+      error: error.message,
+    });
+  }
+};
+
+const readPublicNotes = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page, 10) || 1;
+    const pageSize = parseInt(req.query.pageSize, 10) || 10;
+    const offset = (page - 1) * pageSize;
+
+    const { count, rows: _notes } = await note.findAndCountAll({
+      where: {
+        public: true,
+      },
+      attributes: ["id", "title", "content", "createdAt"],
+      include: [
+        {
+          model: user,
+          as: "user",
+          attributes: ["id", "name", "email"],
+        },
+      ],
+      limit: pageSize,
+      offset: offset,
+      order: [["updatedAt", "DESC"]],
+    });
+
+    res.json({
+      totalItems: count,
+      totalPages: Math.ceil(count / pageSize),
+      currentPage: page,
+      pageSize: pageSize,
+      notes: _notes,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // read published public notes
 const readPublicNote = async (req, res) => {
   try {
@@ -239,5 +329,7 @@ module.exports = {
   updateNote,
   deleteNote,
   publishNote,
+  readPublicNotes,
   readPublicNote,
+  searchPublicNotes,
 };
