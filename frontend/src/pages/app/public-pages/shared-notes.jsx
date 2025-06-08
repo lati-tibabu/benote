@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom"; // Import Link
 import { FiFileText, FiAlertTriangle } from "react-icons/fi";
 import { AiOutlineUser } from "react-icons/ai";
 import {
@@ -19,7 +19,7 @@ const fontOptions = [
   {
     label: "Default System UI",
     value:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'",
+      "-apple-system, BlinkMacMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'",
   },
   // Popular sans-serif fonts
   { label: "Montserrat (sans-serif)", value: "'Montserrat', sans-serif" },
@@ -74,10 +74,63 @@ const fontOptions = [
 
 // Color themes for the note background and text
 const colorThemes = [
-  { label: "Default", bg: "bg-white", text: "text-blue-900" },
-  { label: "Night", bg: "bg-gray-900", text: "text-gray-100" },
-  { label: "Sepia", bg: "bg-yellow-50", text: "text-yellow-900" },
+  {
+    label: "Default",
+    bg: "bg-white",
+    text: "text-gray-800",
+    prefBg: "bg-gray-50",
+    prefBorder: "border-gray-200",
+  },
+  {
+    label: "Night",
+    bg: "bg-gray-800",
+    text: "text-gray-200",
+    prefBg: "bg-gray-700",
+    prefBorder: "border-gray-600",
+  },
+  {
+    label: "Sepia",
+    bg: "bg-yellow-50",
+    text: "text-yellow-900",
+    prefBg: "bg-yellow-100",
+    prefBorder: "border-yellow-200",
+  },
+  {
+    label: "Solarized Light",
+    bg: "bg-gray-100",
+    text: "text-gray-700",
+    prefBg: "bg-gray-200",
+    prefBorder: "border-gray-300",
+  },
+  {
+    label: "Solarized Dark",
+    bg: "bg-gray-900",
+    text: "text-gray-100",
+    prefBg: "bg-gray-800",
+    prefBorder: "border-gray-700",
+  },
+  {
+    label: "Nord",
+    bg: "bg-nord-bg",
+    text: "text-nord-text",
+    prefBg: "bg-nord-dark",
+    prefBorder: "border-nord-border",
+  },
 ];
+
+// Extend Tailwind CSS configuration if you use Nord theme custom colors
+// In tailwind.config.js:
+// theme: {
+//   extend: {
+//     colors: {
+//       'nord-bg': '#2E3440',
+//       'nord-dark': '#3B4252',
+//       'nord-text': '#D8DEE9',
+//       'nord-border': '#4C566A',
+//       'nord-accent': '#88C0D0', // Example accent for Nord
+//     },
+//   },
+// },
 
 // Font sizes for readability customization
 const fontSizes = [14, 16, 18, 20, 22];
@@ -140,6 +193,24 @@ const accentColors = [
     user: "text-orange-700",
     date: "text-orange-400",
     prose: "prose-orange",
+  },
+  {
+    label: "White",
+    value: "white",
+    border: "border-gray-200", // A subtle border for white accent
+    icon: "text-gray-500", // A contrasting icon color for white
+    user: "text-gray-600",
+    date: "text-gray-400",
+    prose: "prose-gray", // Use a sensible default prose color for white
+  },
+  {
+    label: "Black",
+    value: "black",
+    border: "border-gray-700", // A subtle border for black accent
+    icon: "text-gray-900", // A contrasting icon color for black
+    user: "text-gray-900",
+    date: "text-gray-600",
+    prose: "prose-black", // Tailwind's prose-black will ensure black text
   },
 ];
 
@@ -214,48 +285,47 @@ const SharedNotes = () => {
     }
   };
 
-  // Get current accent color details
+  // Get current accent color details and theme details
   const currentAccent = accentColors[accentIdx];
+  const currentTheme = colorThemes[themeIdx];
 
   return (
     <div
-      className={`min-h-screen w-full flex flex-col items-center justify-start py-10 px-2 transition-colors duration-200 ${colorThemes[themeIdx].bg}`}
+      className={`min-h-screen w-full flex flex-col items-center justify-start py-12 px-4 transition-colors duration-200 ${currentTheme.bg}`}
       style={{ fontFamily: font, fontSize: `${fontSize}px`, lineHeight }}
     >
       {/* Top Bar for Navigation and Settings Toggle */}
-      <div className="w-full max-w-2xl flex justify-between items-center mb-6 px-4 sm:px-0">
-        <button
-          onClick={() => navigate("/public/notes")}
-          className={`px-4 py-2 text-white rounded-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-${currentAccent.value}-400 transition-colors flex items-center gap-2 text-sm bg-${currentAccent.value}-500 hover:bg-${currentAccent.value}-600`}
+      <div className="w-full max-w-3xl flex justify-between items-center mb-8">
+        <Link // Changed to Link component
+          to="/public/notes"
+          className={`text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center gap-2 text-base font-medium`}
         >
-          <PiFile /> Public Notes
-        </button>
+          <PiFile className="text-lg" /> Public Notes
+        </Link>
         <button
           onClick={() => setShowPreferences(!showPreferences)}
-          className={`p-2 rounded-full bg-${currentAccent.value}-50/60 hover:bg-${currentAccent.value}-100 focus:outline-none focus:ring-2 focus:ring-${currentAccent.value}-400 transition-colors shadow-sm`}
+          className={`p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors shadow-sm`}
           title="Toggle Note Settings"
         >
           <PiGearSixFill className={`text-2xl ${currentAccent.icon}`} />
         </button>
       </div>
 
-      <div className="w-full max-w-2xl mx-auto">
+      <div className="w-full max-w-3xl mx-auto">
         {/* Preferences Bar - Conditionally rendered with smooth transition */}
         <div
-          className={`flex flex-wrap items-center gap-4 mb-6 p-3 rounded-xl bg-${
-            currentAccent.value
-          }-50/60 border ${
-            currentAccent.border
-          } shadow-sm transition-all duration-300 ease-in-out ${
+          className={`flex flex-wrap items-center gap-4 mb-8 p-5 rounded-xl shadow-md transition-all duration-300 ease-in-out ${
+            currentTheme.prefBg
+          } ${currentTheme.prefBorder} ${
             showPreferences
-              ? "max-h-96 opacity-100"
-              : "max-h-0 opacity-0 overflow-hidden"
+              ? "max-h-96 opacity-100 translate-y-0"
+              : "max-h-0 opacity-0 overflow-hidden -translate-y-2"
           }`}
         >
           <span
-            className={`flex items-center gap-2 ${colorThemes[themeIdx].text} font-medium text-sm`}
+            className={`flex items-center gap-2 ${currentTheme.text} font-medium text-sm py-2 px-3 rounded-md bg-white/70 border border-gray-100`}
           >
-            <PiPaintBrushBold /> Theme
+            <PiPaintBrushBold className="text-lg" /> Theme
             <select
               className="ml-1 bg-transparent border-none focus:ring-0 text-sm"
               value={themeIdx}
@@ -269,9 +339,9 @@ const SharedNotes = () => {
             </select>
           </span>
           <span
-            className={`flex items-center gap-2 ${colorThemes[themeIdx].text} font-medium text-sm`}
+            className={`flex items-center gap-2 ${currentTheme.text} font-medium text-sm py-2 px-3 rounded-md bg-white/70 border border-gray-100`}
           >
-            <PiTextAaBold /> Font
+            <PiTextAaBold className="text-lg" /> Font
             <select
               className="ml-1 bg-transparent border-none focus:ring-0 text-sm"
               value={font}
@@ -285,9 +355,9 @@ const SharedNotes = () => {
             </select>
           </span>
           <span
-            className={`flex items-center gap-2 ${colorThemes[themeIdx].text} font-medium text-sm`}
+            className={`flex items-center gap-2 ${currentTheme.text} font-medium text-sm py-2 px-3 rounded-md bg-white/70 border border-gray-100`}
           >
-            <PiTextHOneBold /> Size
+            <PiTextHOneBold className="text-lg" /> Size
             <select
               className="ml-1 bg-transparent border-none focus:ring-0 text-sm"
               value={fontSize}
@@ -301,9 +371,9 @@ const SharedNotes = () => {
             </select>
           </span>
           <span
-            className={`flex items-center gap-2 ${colorThemes[themeIdx].text} font-medium text-sm`}
+            className={`flex items-center gap-2 ${currentTheme.text} font-medium text-sm py-2 px-3 rounded-md bg-white/70 border border-gray-100`}
           >
-            <PiTextAlignLeftBold /> Line
+            <PiTextAlignLeftBold className="text-lg" /> Line
             <select
               className="ml-1 bg-transparent border-none focus:ring-0 text-sm"
               value={lineHeight}
@@ -317,7 +387,7 @@ const SharedNotes = () => {
             </select>
           </span>
           <span
-            className={`flex items-center gap-2 ${colorThemes[themeIdx].text} font-medium text-sm`}
+            className={`flex items-center gap-2 ${currentTheme.text} font-medium text-sm py-2 px-3 rounded-md bg-white/70 border border-gray-100`}
           >
             <svg
               className="w-5 h-5"
@@ -342,7 +412,7 @@ const SharedNotes = () => {
             </select>
           </span>
           <button
-            className="flex items-center gap-1 px-3 py-1 rounded bg-white/80 border border-gray-200 shadow hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400 transition text-sm"
+            className="flex items-center gap-1 px-4 py-2 rounded-lg bg-white border border-gray-200 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400 transition text-sm text-gray-700"
             onClick={handlePrint}
             title="Print note"
             type="button"
@@ -352,24 +422,26 @@ const SharedNotes = () => {
         </div>
         <div
           ref={noteCardRef}
-          className={`rounded-2xl shadow-lg border ${currentAccent.border} px-8 py-8 transition-all duration-200 ${colorThemes[themeIdx].bg} ${colorThemes[themeIdx].text}`}
+          className={`rounded-2xl shadow-xl border ${currentAccent.border} px-10 py-10 transition-all duration-200 ${currentTheme.bg} ${currentTheme.text}`}
         >
           {error ? (
-            <div className="flex items-center gap-2 text-red-600 bg-red-50 p-4 rounded-lg border border-red-200">
-              <FiAlertTriangle className="text-2xl" />
+            <div className="flex items-center gap-3 text-red-700 bg-red-50 p-4 rounded-lg border border-red-200 shadow-sm">
+              <FiAlertTriangle className="text-2xl text-red-500" />
               <p className="font-medium">Error: {error}</p>
             </div>
           ) : note ? (
             <div className="flex flex-col gap-6">
               <div className={`border-b ${currentAccent.border} pb-4 mb-2`}>
-                <h2 className="text-3xl font-bold flex items-center gap-2 mb-1 tracking-tight">
+                <h2 className="text-3xl font-bold tracking-tight mb-2">
                   {note.title}
                 </h2>
                 <div className="flex flex-row gap-2 items-center justify-between mt-1">
                   <p
-                    className={`font-medium ${currentAccent.user} flex items-center gap-2`}
+                    className={`font-medium ${currentAccent.user} flex items-center gap-2 text-lg`}
                   >
-                    <AiOutlineUser className={currentAccent.date} />
+                    <AiOutlineUser
+                      className={`text-xl ${currentAccent.date}`}
+                    />
                     {note.user.name}
                   </p>
                   <p className={`text-sm ${currentAccent.date} font-mono`}>
@@ -382,35 +454,23 @@ const SharedNotes = () => {
                 </div>
               </div>
               <div
-                className={`${currentAccent.prose} prose max-w-none`}
+                className={`${currentAccent.prose} prose prose-lg max-w-none`}
                 style={{ color: "inherit" }}
               >
-                <MarkdownRenderer content={note.content} />
+                <MarkdownRenderer
+                  className={`${currentAccent.user}`}
+                  content={note.content}
+                />
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center text-blue-400 py-10">
-              <svg
-                className="animate-spin h-6 w-6 mr-2 text-blue-400"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v8z"
-                />
-              </svg>
-              <span className="text-base">Loading note...</span>
+            <div className="flex flex-col items-center justify-center text-gray-400 py-16 animate-pulse">
+              <FiFileText className="text-6xl mb-4" />
+              <div className="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/4 mb-8"></div>
+              <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
+              <div className="h-3 bg-gray-200 rounded w-5/6 mb-2"></div>
+              <div className="h-3 bg-gray-200 rounded w-3/4"></div>
             </div>
           )}
         </div>
