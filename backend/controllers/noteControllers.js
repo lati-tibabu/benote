@@ -51,7 +51,11 @@ const readNotes = async (req, res) => {
     if (!directMembership && !teamMembership) {
       res.status(403).json("You are not a member of this workspace");
     } else {
-      const _notes = await note.findAll({
+      const page = parseInt(req.query.page, 10) || 1;
+      const pageSize = parseInt(req.query.pageSize, 10) || 10;
+      const offset = (page - 1) * pageSize;
+
+      const { count, rows: _notes } = await note.findAndCountAll({
         where: {
           workspace_id: workspaceId,
         },
@@ -64,14 +68,22 @@ const readNotes = async (req, res) => {
           },
         ],
         order: [["updatedAt", "DESC"]],
+        limit: pageSize,
+        offset: offset,
       });
-      res.json(_notes);
+
+      res.json({
+        totalItems: count,
+        totalPages: Math.ceil(count / pageSize),
+        currentPage: page,
+        pageSize: pageSize,
+        notes: _notes,
+      });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 // Read one
 const readNote = async (req, res) => {
   const userId = req.user ? req.user.id : null;
