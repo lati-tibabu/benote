@@ -4,40 +4,40 @@
 
 A comprehensive productivity platform designed to enhance academic performance for students through intelligent task management, AI-powered note-taking, team collaboration, and personalized study planning.
 
-## 🌟 Key Features
+## Key Features
 
-### 📝 AI-Powered Note Management
+### AI-Powered Note Management
 
 - **Smart Note Creation**: AI-generated notes with structured formatting [1](#0-0)
 - **Interactive Note Chat**: AI assistant for note enhancement and Q&A [2](#0-1)
 - **Markdown Support**: Rich text editing with math expressions and code highlighting [3](#0-2)
 - **PDF Export**: Professional document export with customizable formatting [4](#0-3)
 
-### ✅ Task Management
+### Task Management
 
 - **Kanban Boards**: Visual task organization with drag-and-drop functionality
 - **Smart Deadlines**: Automated deadline tracking with AI recommendations
 - **Status Workflows**: Todo → Doing → Done progression with visual indicators
 
-### 👥 Team Collaboration
+### Team Collaboration
 
 - **Shared Workspaces**: Collaborative project management with role-based permissions
 - **Real-time Communication**: Socket.IO powered team discussions and notifications
 - **Resource Sharing**: File upload and sharing within teams [5](#0-4)
 
-### 📅 Study Planning
+### Study Planning
 
 - **Interactive Calendar**: Time-block based study scheduling
 - **AI Study Plans**: Personalized study recommendations
 - **Progress Tracking**: Visual progress monitoring and analytics
 
-### 🔔 Smart Notifications
+### Smart Notifications
 
 - **Real-time Alerts**: Instant notifications for deadlines and team activities [6](#0-5)
 - **Background Jobs**: Automated deadline monitoring and study reminders
 - **Browser Notifications**: Native desktop alerts for important updates
 
-## 🏗️ Architecture
+## Architecture
 
 ### Backend
 
@@ -59,7 +59,7 @@ A comprehensive productivity platform designed to enhance academic performance f
 - **Structured Responses**: JSON schema enforcement for consistent AI outputs
 - **Context-Aware**: AI responses tailored to user content and workspace context
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -94,19 +94,49 @@ A comprehensive productivity platform designed to enhance academic performance f
 
 ### Environment Configuration
 
-Create `.env` files in both backend and frontend directories with the required configuration variables for database, API keys, and service endpoints.
+Create `.env` files in both backend and frontend directories with the required configuration variables.
 
-## 📱 Core Functionality
+#### Frontend (.env in frontend/)
+
+- `VITE_GOOGLE_CLIENT_ID`: Google OAuth client ID
+- `VITE_NEWS_API_KEY`: API key for news services
+- `VITE_API_URL`: Base URL for the backend API
+
+#### Backend (.env in backend/)
+
+- `EMAIL_USER`: Email service username
+- `EMAIL_PASS`: Email service password
+- `FRONTEND_URL`: Frontend application URL
+- `SUPABASE_URL`: Supabase project URL
+- `SUPABASE_PUBLIC_KEY`: Supabase public API key
+- `SUPABASE_SERVICE_ROLE_KEY`: Supabase service role key
+- `DEV_CLIENT_URL`: Development client URL
+- `PROD_CLIENT_URL`: Production client URL
+- `PROD_GOOGLE_CALLBACK_URL`: Production Google OAuth callback URL
+- `GOOGLE_CALLBACK_URL`: Google OAuth callback URL
+- `GOOGLE_CLIENT_SECRET`: Google OAuth client secret
+- `GOOGLE_CLIENT_ID`: Google OAuth client ID
+- `NODE_ENV`: Node.js environment (e.g., development, production)
+- `REMOTE_PORT`: Remote database port
+- `REMOTE_USER`: Remote database username
+- `REMOTE_PASSWORD`: Remote database password
+- `REMOTE_DATABASE`: Remote database name
+- `REMOTE_HOST`: Remote database host
+- `REMOTE_DIALECT`: Remote database dialect (e.g., postgres)
+- `JWT_SECRET_KEY`: Secret key for JWT token generation
+- `PORT`: Port for the backend server
+
+## Core Functionality
 
 The platform is organized around **Workspaces** - central hubs that contain all project-related content including notes, tasks, study plans, and team collaboration tools. [9](#0-8)
 
 Users can create both individual and team workspaces, with comprehensive permission management and real-time collaboration features.
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please feel free to submit issues, feature requests, or pull requests to help improve the Student Productivity Hub.
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License.
 
