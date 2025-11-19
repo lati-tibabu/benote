@@ -92,7 +92,39 @@ A comprehensive productivity platform designed to enhance academic performance f
    npm run dev
    ```
 
+### Available Scripts
+
+The project includes several npm scripts to help with development and setup:
+
+#### Root Level Scripts
+
+- **`npm run generate-envs`**: Generates `.env` placeholder files in both `frontend/` and `backend/` directories
+  - Creates files with placeholder values that need to be replaced with actual credentials
+  - Use `--force` flag to overwrite existing `.env` files: `npm run generate-envs -- --force`
+
+#### Backend Scripts (`cd backend` first)
+
+- **`npm start`**: Starts the backend server with nodemon for development
+- **`npm test`**: Runs tests using Jest
+
+#### Frontend Scripts (`cd frontend` first)
+
+- **`npm run dev`**: Starts the development server with hot reload
+- **`npm run build`**: Builds the application for production
+- **`npm run preview`**: Previews the production build locally
+- **`npm run lint`**: Runs ESLint for code quality checks
+
 ### Environment Configuration
+
+Create `.env` files in both backend and frontend directories with the required configuration variables.
+
+**Quick Setup**: Use the provided script to generate placeholder `.env` files:
+
+```bash
+npm run generate-envs
+```
+
+Then edit the generated files with your actual values.
 
 Create `.env` files in both backend and frontend directories with the required configuration variables.
 
