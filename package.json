@@ -1,4 +1,16 @@
 {
+  "name": "student-productivity-hub",
+  "description": "A productivity hub for students to manage tasks, schedules, and study materials.",
+  "author": {
+    "name": "Lati Tibabu",
+    "email": "latitibabu2018@gmail.com",
+    "url": "https://github.com/lati-tibabu"
+  },
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "generate-envs": "node scripts/generate-envs.js"
+  },
   "dependencies": {
     "react-grid-layout": "^1.5.1",
     "react-resizable": "^3.0.5"
