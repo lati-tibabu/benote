@@ -98,8 +98,9 @@ The project includes several npm scripts to help with development and setup:
 
 #### Root Level Scripts
 
-- **`npm run generate-envs`**: Generates `.env` placeholder files in both `frontend/` and `backend/` directories
-  - Creates files with placeholder values that need to be replaced with actual credentials
+- **`npm run generate-envs`**: Generates comprehensive `.env` placeholder files in both `frontend/` and `backend/` directories
+  - Creates files with detailed comments, sections, and setup instructions for each variable
+  - Includes links to service dashboards and configuration guides
   - Use `--force` flag to overwrite existing `.env` files: `npm run generate-envs -- --force`
 
 #### Backend Scripts (`cd backend` first)
@@ -116,17 +117,20 @@ The project includes several npm scripts to help with development and setup:
 
 ### Environment Configuration
 
-Create `.env` files in both backend and frontend directories with the required configuration variables.
-
-**Quick Setup**: Use the provided script to generate placeholder `.env` files:
+**Quick Setup**: Use the provided script to generate comprehensive `.env` files with detailed comments and setup instructions:
 
 ```bash
 npm run generate-envs
 ```
 
-Then edit the generated files with your actual values.
+The script creates `.env` files with:
 
-Create `.env` files in both backend and frontend directories with the required configuration variables.
+- Detailed comments explaining each variable's purpose
+- Links to service dashboards for obtaining credentials
+- Security best practices and configuration tips
+- Organized sections for different types of configuration
+
+Then edit the generated files with your actual values.
 
 #### Frontend (.env in frontend/)
 

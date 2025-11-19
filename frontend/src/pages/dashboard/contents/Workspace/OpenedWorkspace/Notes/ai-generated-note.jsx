@@ -40,7 +40,7 @@ const AiGeneratedNote = () => {
   const apiKey = localStorage.getItem("geminiApiKey");
   const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
   const model = genAI
-    ? genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+    ? genAI.getGenerativeModel({ model: "gemini-flash-latest" })
     : null;
 
   const navigate = useNavigate();

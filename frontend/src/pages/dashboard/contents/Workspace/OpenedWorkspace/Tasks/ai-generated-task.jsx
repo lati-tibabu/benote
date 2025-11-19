@@ -24,7 +24,7 @@ const AiGeneratedTask = () => {
   const apiKey = localStorage.getItem("geminiApiKey");
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
+    model: "gemini-flash-latest",
   });
 
   // storing the authenticated user data in the userData

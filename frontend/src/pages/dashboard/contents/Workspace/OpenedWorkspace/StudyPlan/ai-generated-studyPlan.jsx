@@ -29,7 +29,7 @@ const AiGeneratedTask = () => {
   const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
   const model = genAI
     ? genAI.getGenerativeModel({
-        model: "gemini-1.5-flash",
+        model: "gemini-flash-latest",
       })
     : null;
 

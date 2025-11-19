@@ -12,7 +12,7 @@ passport.use(
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL:
-        process.env.NODE_ENV === "prod"
+        process.env.NODE_ENV === "prod" || process.env.NODE_ENV === "production"
           ? process.env.PROD_GOOGLE_CALLBACK_URL
           : process.env.GOOGLE_CALLBACK_URL,
       passReqToCallback: false,

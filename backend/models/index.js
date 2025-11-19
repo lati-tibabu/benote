@@ -37,7 +37,7 @@ function createSequelizeInstance(config) {
 
 // Database configuration based on environment
 let sequelize;
-if (environment === "dev") {
+if (environment === "dev" || environment === "development" || environment === "staging" || environment === "test") {
   sequelize = createSequelizeInstance({
     database: process.env.DB_DATABASE,
     username: process.env.DB_USER,
