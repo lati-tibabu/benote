@@ -19,6 +19,7 @@ function Chatbot() {
 
   const apiKey = localStorage.getItem("geminiApiKey");
   const token = localStorage.getItem("jwt");
+  const selectedModel = localStorage.getItem("geminiModel") || import.meta.env.VITE_DEFAULT_GEMINI_MODEL || "gemini-2.5-flash";
 
   const header = {
     authorization: `Bearer ${token}`,
@@ -83,7 +84,7 @@ function Chatbot() {
       }
 
       try {
-        const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+        const model = genAI.getGenerativeModel({ model: selectedModel });
         const chatSession = model.startChat({
           generationConfig,
           history: [

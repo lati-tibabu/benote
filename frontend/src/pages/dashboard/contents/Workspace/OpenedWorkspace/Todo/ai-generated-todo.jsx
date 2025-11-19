@@ -32,9 +32,10 @@ const AiGeneratedTodo = () => {
   };
 
   const apiKey = localStorage.getItem("geminiApiKey");
+  const selectedModel = localStorage.getItem("selectedGeminiModel") || import.meta.env.VITE_DEFAULT_GEMINI_MODEL || "gemini-flash-latest";
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
-    model: "gemini-flash-latest",
+    model: selectedModel,
   });
 
   const navigate = useNavigate();

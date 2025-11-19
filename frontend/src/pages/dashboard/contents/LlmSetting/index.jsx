@@ -10,6 +10,17 @@ const Index = () => {
   const [inputValue, setInputValue] = useState(
     localStorage.getItem("geminiApiKey") || ""
   );
+  const [selectedModel, setSelectedModel] = useState(
+    localStorage.getItem("geminiModel") || import.meta.env.VITE_DEFAULT_GEMINI_MODEL || "gemini-2.5-flash"
+  );
+
+  const geminiModels = [
+    { value: "gemini-3-pro-preview", label: "Gemini 3.0 Pro Preview" },
+    { value: "gemini-2.5-pro", label: "Gemini 2.5 Pro" },
+    { value: "gemini-2.5-flash", label: "Gemini 2.5 Flash" },
+    { value: "gemini-2.5-flash-lite", label: "Gemini 2.5 Flash Lite" },
+    { value: "gemini-2.0-flash-001", label: "Gemini 2.0 Flash" }
+  ];
 
   useEffect(() => {
     localStorage.setItem("useGemini", useGemini.toString());
@@ -21,10 +32,16 @@ const Index = () => {
         "geminiApiKey",
         inputValue.length > 0 ? inputValue : ""
       );
-      toast.success("Gemini API Key Succesfully saved");
+      toast.success("Gemini API Key Successfully saved");
     } catch (error) {
       toast.error(error);
     }
+  };
+
+  const handleModelChange = (model) => {
+    setSelectedModel(model);
+    localStorage.setItem("geminiModel", model);
+    toast.success(`Model changed to ${geminiModels.find(m => m.value === model)?.label || model}`);
   };
 
   return (
@@ -89,6 +106,29 @@ const Index = () => {
             >
               Get your API key here.
             </a>
+          </p>
+        </div>
+      )}
+
+      {/* Model Selection */}
+      {useGemini && (
+        <div className="mt-4">
+          <p className="text-gray-700 font-medium mb-1">Gemini Model Selection</p>
+          <div className="border-2 w-full p-3 rounded-lg bg-white shadow-md focus-within:border-purple-500">
+            <select
+              value={selectedModel}
+              onChange={(e) => handleModelChange(e.target.value)}
+              className="w-full bg-transparent outline-none text-gray-800"
+            >
+              {geminiModels.map((model) => (
+                <option key={model.value} value={model.value}>
+                  {model.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <p className="text-sm text-gray-600 mt-2">
+            Select the Gemini model to use for AI features. Different models offer varying levels of performance and capabilities.
           </p>
         </div>
       )}

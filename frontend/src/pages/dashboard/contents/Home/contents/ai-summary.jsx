@@ -10,6 +10,7 @@ const AiSummary = () => {
   const apiURL = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("jwt");
   const apiKey = localStorage.getItem("geminiApiKey");
+  const selectedModel = localStorage.getItem("geminiModel") || import.meta.env.VITE_DEFAULT_GEMINI_MODEL || "gemini-2.5-flash";
 
   const [userActivityData, setUserActivityData] = useState(null);
   const [processing, setProcessing] = useState(false);
@@ -83,7 +84,7 @@ const AiSummary = () => {
     if (!genAI) return;
     setProcessing(true);
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+      const model = genAI.getGenerativeModel({ model: selectedModel });
       const chatSession = model.startChat({
         generationConfig,
         history: [

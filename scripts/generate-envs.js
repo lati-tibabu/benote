@@ -33,6 +33,12 @@ VITE_NEWS_API_KEY=your_news_api_key
 # ========================
 # URL where the backend API server is running
 VITE_API_URL=http://localhost:3000
+
+# AI Model Configuration
+# =====================
+# Default Gemini model to use for AI features
+# Options: gemini-3-pro-preview, gemini-2.5-pro, gemini-2.5-flash, gemini-2.5-flash-lite, gemini-2.0-flash-001
+VITE_DEFAULT_GEMINI_MODEL=gemini-2.5-flash
 `
   },
   {

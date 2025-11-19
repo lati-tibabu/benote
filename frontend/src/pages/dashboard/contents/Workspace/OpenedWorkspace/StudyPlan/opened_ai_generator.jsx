@@ -23,9 +23,10 @@ const OpenedAIStudyGenerators = ({ plan, onSuccess }) => {
   };
 
   const apiKey = localStorage.getItem("geminiApiKey");
+  const selectedModel = localStorage.getItem("selectedGeminiModel") || import.meta.env.VITE_DEFAULT_GEMINI_MODEL || "gemini-flash-latest";
   const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
   const model = genAI
-    ? genAI.getGenerativeModel({ model: "gemini-flash-latest" })
+    ? genAI.getGenerativeModel({ model: selectedModel })
     : null;
 
   // Helper function to check for time block overlaps

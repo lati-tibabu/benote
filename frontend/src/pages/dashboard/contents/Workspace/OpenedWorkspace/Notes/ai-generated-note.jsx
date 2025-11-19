@@ -38,9 +38,10 @@ const AiGeneratedNote = () => {
   };
 
   const apiKey = localStorage.getItem("geminiApiKey");
+  const selectedModel = localStorage.getItem("geminiModel") || import.meta.env.VITE_DEFAULT_GEMINI_MODEL || "gemini-2.5-flash";
   const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
   const model = genAI
-    ? genAI.getGenerativeModel({ model: "gemini-flash-latest" })
+    ? genAI.getGenerativeModel({ model: selectedModel })
     : null;
 
   const navigate = useNavigate();

@@ -137,6 +137,7 @@ Then edit the generated files with your actual values.
 - `VITE_GOOGLE_CLIENT_ID`: Google OAuth client ID
 - `VITE_NEWS_API_KEY`: API key for news services
 - `VITE_API_URL`: Base URL for the backend API
+- `VITE_DEFAULT_GEMINI_MODEL`: Default Gemini model for AI features (gemini-2.5-flash, gemini-2.5-pro, etc.)
 
 #### Backend (.env in backend/)
 

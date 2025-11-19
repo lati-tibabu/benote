@@ -27,8 +27,9 @@ const Overview = () => {
   const [loading, setLoading] = useState(false);
 
   const apiKey = localStorage.getItem("geminiApiKey");
+  const selectedModel = localStorage.getItem("geminiModel") || import.meta.env.VITE_DEFAULT_GEMINI_MODEL || "gemini-2.5-flash";
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+  const model = genAI.getGenerativeModel({ model: selectedModel });
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
