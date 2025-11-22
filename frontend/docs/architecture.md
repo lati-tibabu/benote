@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Student Productivity Hub frontend is a single-page application (SPA) built with React 18, utilizing modern web development practices for optimal performance and maintainability.
+The Benote frontend is a single-page application (SPA) built with React 18, utilizing modern web development practices for optimal performance and maintainability.
 
 ## Technology Stack
 

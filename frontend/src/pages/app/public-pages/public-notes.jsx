@@ -240,7 +240,7 @@ const PublicNotesPage = () => {
         <div className="flex items-center mb-4">
           <PiGlobeSimpleFill className="text-blue-600 text-5xl mr-4" />
           <h1 className="text-5xl font-extrabold text-gray-900 leading-tight">
-            SPH Public Notes
+            Benote Public Notes
           </h1>
         </div>
         {/* Search Input Field and Button */}
@@ -418,7 +418,7 @@ const PublicNotesPage = () => {
 
       {/* Footer */}
       <footer className="py-8 text-center text-gray-600 text-sm border-t border-gray-200 mt-16">
-        &copy; {new Date().getFullYear()} Student Productivity Hub. All rights
+        &copy; {new Date().getFullYear()} Benote. All rights
         reserved.
       </footer>
     </div>

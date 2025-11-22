@@ -272,7 +272,7 @@ function Dashboard() {
                   <>
                     <img src="/rect19.png" alt="Logo" className="h-10 w-auto" />
                     <span className="font-black text-lg tracking-tight text-blue-700">
-                      SPH
+                      Benote
                     </span>
                   </>
                 )}
@@ -701,7 +701,7 @@ function Dashboard() {
             </div>
           </section>
           <footer className="w-full text-center mt-5 border-t pt-4 text-gray-500 text-xs sm:text-sm px-4">
-            &copy; 2025 Student Productivity Hub
+            &copy; 2025 Benote
           </footer>
         </main>
       </div>

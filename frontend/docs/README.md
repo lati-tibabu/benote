@@ -1,6 +1,6 @@
 # Frontend Technical Documentation
 
-This directory contains technical documentation for the Student Productivity Hub frontend application.
+This directory contains technical documentation for the Benote frontend application.
 
 ## Overview
 

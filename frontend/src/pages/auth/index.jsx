@@ -13,7 +13,7 @@ function AuthPages() {
             <img src="/rect19.png" alt="Logo" className="cursor-pointer w-12" />
           </Link>
           <h1 className="text-lg font-bold text-gray-800 hidden md:block">
-            Student Productivity Hub
+            Benote
           </h1>
         </div>
         {/* <Link to="/info" className="hidden md:block">

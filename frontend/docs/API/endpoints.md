@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the REST API endpoints available for the Student Productivity Hub frontend. All endpoints require authentication unless otherwise specified.
+This document outlines the REST API endpoints available for the Benote frontend. All endpoints require authentication unless otherwise specified.
 
 ## Base URL
 

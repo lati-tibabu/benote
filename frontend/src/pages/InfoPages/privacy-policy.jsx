@@ -14,7 +14,7 @@ function PrivacyPolicy() {
           size={40}
         />
       </div>
-      <img src={`/rect19.png`} alt="SPH Logo" className="w-36 h-auto mb-6" />
+      <img src={`/rect19.png`} alt="Benote Logo" className="w-36 h-auto mb-6" />
       <div className="max-w-3xl prose prose-lg dark:prose-invert">
         <h1 className="text-3xl font-bold mb-4">Privacy Policy</h1>
         <p className="text-gray-600 mb-4">Last updated: December 13, 2024</p>
@@ -69,7 +69,7 @@ function PrivacyPolicy() {
           </li>
           <li>
             <p>
-              <strong>Application</strong> refers to Student Productivity Hub,
+              <strong>Application</strong> refers to Benote,
               the software program provided by the Company.
             </p>
           </li>
@@ -131,15 +131,15 @@ function PrivacyPolicy() {
           </li>
           <li>
             <p>
-              <strong>Website</strong> refers to Student Productivity Hub,
+              <strong>Website</strong> refers to Benote,
               accessible from{" "}
               <a
-                href="https://sph.com.et"
+                href="https://benote.com.et"
                 rel="external nofollow noopener"
                 target="_blank"
                 className="underline text-blue-500 hover:text-blue-700"
               >
-                https://sph.com.et
+                https://benote.com.et
               </a>
             </p>
           </li>

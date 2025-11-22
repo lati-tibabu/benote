@@ -80,7 +80,7 @@ function Sidebar({
                 <>
                   <img src="/rect19.png" alt="Logo" className="h-10 w-auto" />
                   <span className="font-black text-lg tracking-tight text-blue-700">
-                    SPH
+                    Benote
                   </span>
                 </>
               )}

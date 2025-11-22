@@ -1,6 +1,6 @@
 # Backend Documentation
 
-This directory contains comprehensive technical documentation for the Student Productivity Hub backend.
+This directory contains comprehensive technical documentation for the Benote backend.
 
 ## Table of Contents
 

@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 :root {
-  font-family: "Nunito", sans-serif, "Times New Roman";
+  font-family: "Stack Sans Text","Nunito", sans-serif, "Times New Roman";
 }
 
 /* Hide scrollbar for Chrome, Safari, and Edge */

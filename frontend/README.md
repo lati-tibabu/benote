@@ -1,6 +1,6 @@
-# Student Productivity Hub - Frontend
+# Benote - Frontend
 
-The frontend component of the Student Productivity Hub, built with React and modern web technologies. This responsive web application provides an intuitive interface for task management, AI-powered note-taking, team collaboration, and study planning.
+The frontend component of the Benote, built with React and modern web technologies. This responsive web application provides an intuitive interface for task management, AI-powered note-taking, team collaboration, and study planning.
 
 ## Features
 

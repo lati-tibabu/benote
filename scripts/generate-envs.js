@@ -13,7 +13,7 @@ const files = [
     name: '.env',
     content: `# Frontend Environment Variables Configuration
 # ============================================
-# This file contains environment variables for the Student Productivity Hub frontend.
+# This file contains environment variables for the Benote frontend.
 # Replace all placeholder values with your actual credentials and configuration.
 # NEVER commit this file to version control - it contains sensitive information.
 
@@ -46,7 +46,7 @@ VITE_DEFAULT_GEMINI_MODEL=gemini-2.5-flash
     name: '.env',
     content: `# Backend Environment Variables Configuration
 # ===========================================
-# This file contains all environment variables needed for the Student Productivity Hub backend.
+# This file contains all environment variables needed for the Benote backend.
 # Replace all placeholder values with your actual credentials and configuration.
 # NEVER commit this file to version control - it contains sensitive information.
 

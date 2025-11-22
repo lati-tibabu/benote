@@ -1,6 +1,6 @@
-# Student Productivity Hub
+# Benote
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/lati-tibabu/student_productivity_hub)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/lati-tibabu/benote)
 
 A comprehensive productivity platform designed to enhance academic performance for students through intelligent task management, AI-powered note-taking, team collaboration, and personalized study planning.
 
@@ -72,8 +72,8 @@ A comprehensive productivity platform designed to enhance academic performance f
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/lati-tibabu/student_productivity_hub.git
-   cd student_productivity_hub
+   git clone https://github.com/lati-tibabu/benote.git
+   cd benote
    ```
 
 2. **Backend Setup**
@@ -171,10 +171,10 @@ Users can create both individual and team workspaces, with comprehensive permiss
 
 ## Contributing
 
-We welcome contributions! Please feel free to submit issues, feature requests, or pull requests to help improve the Student Productivity Hub.
+We welcome contributions! Please feel free to submit issues, feature requests, or pull requests to help improve the Benote.
 
 ## License
 
 This project is licensed under the MIT License.
 
-**Notes**: The Student Productivity Hub integrates multiple productivity systems into a cohesive platform, with particular emphasis on AI-enhanced learning and collaborative study environments. The modular architecture supports both individual productivity workflows and team-based academic projects.
+**Notes**: The Benote integrates multiple productivity systems into a cohesive platform, with particular emphasis on AI-enhanced learning and collaborative study environments. The modular architecture supports both individual productivity workflows and team-based academic projects.

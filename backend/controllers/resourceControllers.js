@@ -102,7 +102,7 @@ const generateSignedUrl = async (req, res) => {
   try {
     const { fileName } = req.params;
     const { data, error } = await supabase.storage
-      .from("sph-team-resource")
+      .from("benote-team-resource")
       .createSignedUrl(fileName, 60 * 60); // URL valid for 1 hour
 
     if (error) throw error;

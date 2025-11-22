@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Student Productivity Hub backend is built using Node.js and Express.js, providing a RESTful API for the frontend application. The architecture follows a modular structure with clear separation of concerns.
+The Benote backend is built using Node.js and Express.js, providing a RESTful API for the frontend application. The architecture follows a modular structure with clear separation of concerns.
 
 ## Technology Stack
 

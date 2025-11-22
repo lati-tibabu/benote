@@ -16,19 +16,19 @@ function AppInfo() {
           cursor={"pointer"}
         />
       </div>
-      <img src={`/rect19.png`} alt="SPH Logo" className="w-36 h-auto mb-6" />
+      <img src={`/rect19.png`} alt="Benote Logo" className="w-36 h-auto mb-6" />
       <p className="text-lg text-black max-w-2xl">
-        <strong>Student Productivity Hub (SPH)</strong> is an all-in-one
+        <strong>Benote (Benote)</strong> is an all-in-one
         productivity tool designed to help students and teachers manage tasks,
         collaborate efficiently, and stay organized. It offers features like
         task scheduling, real-time collaboration, mind mapping, Pomodoro timers,
         note-taking, and project tracking. With a user-friendly interface,
         multilingual support (Amharic and Afaan Oromo), and AI-powered features
-        like task prioritization and recommendations, SPH aims to tackle
+        like task prioritization and recommendations, Benote aims to tackle
         procrastination and improve productivity. The app also includes
         gamification elements like leaderboards and rewards, fostering
         motivation and engagement. Whether for individual planning or team
-        collaboration, SPH empowers users to achieve their academic goals
+        collaboration, Benote empowers users to achieve their academic goals
         effectively.
       </p>
     </div>

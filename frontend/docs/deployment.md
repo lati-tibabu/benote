@@ -167,8 +167,8 @@ VitePWA({
   registerType: 'autoUpdate',
   includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
   manifest: {
-    name: 'Student Productivity Hub',
-    short_name: 'SPH',
+    name: 'Benote',
+    short_name: 'Benote',
     description: 'A comprehensive productivity tool for students',
     theme_color: '#3b82f6',
     icons: [
@@ -208,8 +208,8 @@ VitePWA({
 ```json
 // public/site.webmanifest
 {
-  "name": "Student Productivity Hub",
-  "short_name": "SPH",
+  "name": "Benote",
+  "short_name": "Benote",
   "description": "A comprehensive productivity tool for students",
   "start_url": "/",
   "display": "standalone",

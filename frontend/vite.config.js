@@ -9,8 +9,8 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate", // Auto-update service worker when a new version is available
       manifest: {
-        name: "Student Productivity Hub",
-        short_name: "SPH",
+        name: "Benote",
+        short_name: "Benote",
         description:
           "A productivity app for students to manage tasks, schedules, and projects.",
         theme_color: "#ffffff",

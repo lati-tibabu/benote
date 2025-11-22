@@ -1,6 +1,6 @@
-# Student Productivity Hub - Backend
+# Benote - Backend
 
-The backend component of the Student Productivity Hub, built with Node.js and Express.js. This API server provides comprehensive endpoints for task management, AI-powered note-taking, team collaboration, study planning, and more.
+The backend component of the Benote, built with Node.js and Express.js. This API server provides comprehensive endpoints for task management, AI-powered note-taking, team collaboration, study planning, and more.
 
 ## Features
 

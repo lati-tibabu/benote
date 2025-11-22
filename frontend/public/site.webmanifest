@@ -1,6 +1,6 @@
 {
-  "name": "Student Productivity Hub",
-  "short_name": "SPH",
+  "name": "Benote",
+  "short_name": "Benote",
   "description": "A productivity hub for students to manage tasks and collaborate.",
   "start_url": "/",
   "display": "standalone",
