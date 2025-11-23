@@ -12,6 +12,26 @@ import { setWorkspace } from "../../../../../redux/slices/workspaceSlice";
 import { FaBolt } from "react-icons/fa6";
 import AiGeneratedTask from "./Tasks/ai-generated-task";
 import GeminiIcon from "../../../../../components/geminiIcon";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+
+// StrictModeDroppable workaround for React 18
+const StrictModeDroppable = ({ children, ...props }) => {
+  const [enabled, setEnabled] = useState(false);
+
+  useEffect(() => {
+    const animation = requestAnimationFrame(() => setEnabled(true));
+    return () => {
+      cancelAnimationFrame(animation);
+      setEnabled(false);
+    };
+  }, []);
+
+  if (!enabled) {
+    return null;
+  }
+
+  return <Droppable {...props}>{children}</Droppable>;
+};
 
 const Tasks = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -130,7 +150,7 @@ const Tasks = () => {
       }
 
       setStatusUpdate((prev) => !prev);
-      toast.success("Status changed successfully");
+      // toast.success("Status changed successfully");
       // await getWorkspaceDetails(workspaceId);
     } catch (error) {
       console.error(error);
@@ -158,7 +178,7 @@ const Tasks = () => {
         return;
       }
 
-      toast.success("Task archived");
+      // toast.success("Task archived");
       setStatusUpdate((prev) => !prev);
       // await getWorkspaceDetails(workspaceId);
     } catch (error) {
@@ -181,7 +201,7 @@ const Tasks = () => {
         return;
       }
 
-      toast.success("Task unarchived");
+      // toast.success("Task unarchived");
       // await getWorkspaceDetails(workspaceId);
       setStatusUpdate((prev) => !prev);
     } catch (error) {
@@ -199,7 +219,7 @@ const Tasks = () => {
         });
         if (!response.ok) return toast.error("Error deleting task");
 
-        toast.success("Task deleted successfully");
+        // toast.success("Task deleted successfully");
         // await getWorkspaceDetails(workspaceId);
         setStatusUpdate((prev) => !prev);
       } catch (error) {
@@ -235,6 +255,38 @@ const Tasks = () => {
       console.error("Error fetching workspace:", error);
     }
   };
+
+  const onDragEnd = (result) => {
+    const { destination, source, draggableId } = result;
+
+    if (!destination) return;
+
+    if (
+      destination.droppableId === source.droppableId
+    ) {
+      return;
+    }
+
+    const newStatus = destination.droppableId;
+
+    // Optimistic update
+    const newTasks = tasks.map((t) => {
+      if (t.id === draggableId) {
+        return { ...t, status: newStatus };
+      }
+      return t;
+    });
+    setTasks(newTasks);
+
+    // Call API
+    handleStatusChange(draggableId, newStatus);
+  };
+
+  const columns = [
+    { id: "todo", title: "To-do", color: "text-gray-700", bg: "bg-gray-100" },
+    { id: "doing", title: "In progress", color: "text-yellow-700", bg: "bg-yellow-100" },
+    { id: "done", title: "Done", color: "text-green-700", bg: "bg-green-100" },
+  ];
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-white min-h-screen p-4">
@@ -284,269 +336,189 @@ const Tasks = () => {
           <div className="rounded-sm h-full p-3 flex-1 grow bg-gray-200 animate-pulse duration-200"></div>
         </div>
       ) : (
-        <div className="flex gap-6 justify-between overflow-x-auto scrollbar-hide pb-4">
-          {/* to do */}
-          <div className="flex-1 flex flex-col gap-3 p-4 bg-white/80 border border-gray-200 rounded-sm shadow-sm min-w-[320px] transition hover:shadow-sm">
-            <div className="flex justify-between items-center border-b pb-2 mb-2">
-              <div className="flex gap-2 items-center">
-                <h1 className="font-bold text-lg text-gray-700">To-do</h1>
-                <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-sm font-semibold">
-                  {tasks.filter((task) => task.status === "todo").length}
-                </span>
-              </div>
-              <div className="flex gap-2 items-center">
-                <button className="text-gray-400 hover:text-gray-500 transition">
-                  <AiOutlineMore />
-                </button>
-              </div>
-            </div>
-            {tasks?.map(
-              (task) =>
-                task?.status == "todo" && (
-                  <TaskCard
-                    onStatusChange={handleStatusChange}
-                    onTaskEdit={handleTaskEdit}
-                    onTaskArchive={handleTaskArchive}
-                    onTaskDelete={handleTaskDelete}
-                    taskId={task.id}
-                    status={task.status}
-                    taskName={task.title}
-                    taskDescription={task.description}
-                    taskAssignedTo={task.user.name}
-                    dueDate={new Date(task.due_date).toLocaleString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                      hour: "numeric",
-                      minute: "numeric",
-                      hour12: true,
-                    })}
-                    createdAt={new Date(task.createdAt)
-                      .toUTCString()
-                      .slice(0, 16)}
-                    daysLeft={(() => {
-                      const timeDiff =
-                        new Date(task.due_date).getTime() - Date.now();
-                      const daysLeft = Math.floor(
-                        timeDiff / (60 * 60 * 24 * 1000)
-                      );
-                      const hoursLeft = Math.floor(
-                        (timeDiff % (60 * 60 * 24 * 1000)) / (60 * 60 * 1000)
-                      );
-
-                      if (timeDiff < 0) {
-                        return "Overdue";
-                      } else if (daysLeft > 0) {
-                        return `${daysLeft} day(s) ${hoursLeft} hour(s) left`;
-                      } else if (hoursLeft > 0) {
-                        return `${hoursLeft} hour(s) left`;
-                      } else {
-                        return "Less than an hour left";
-                      }
-                    })()}
-                  />
-                )
-            )}
-          </div>
-          {/* doing */}
-          <div className="flex-1 flex flex-col gap-3 p-4 bg-white/80 border border-gray-200 rounded-sm shadow-sm min-w-[320px] transition hover:shadow-sm">
-            <div className="flex justify-between items-center border-b pb-2 mb-2">
-              <div className="flex gap-2 items-center">
-                <h1 className="font-bold text-lg text-yellow-700">In progress</h1>
-                <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-sm font-semibold">
-                  {tasks.filter((task) => task.status === "doing").length}
-                </span>
-              </div>
-              <button className="text-gray-400 hover:text-yellow-500 transition">
-                <AiOutlineMore />
-              </button>
-            </div>
-            {tasks.map(
-              (task) =>
-                task.status == "doing" && (
-                  <TaskCard
-                    onStatusChange={handleStatusChange}
-                    onTaskEdit={handleTaskEdit}
-                    onTaskArchive={handleTaskArchive}
-                    onTaskDelete={handleTaskDelete}
-                    taskId={task.id}
-                    status={task.status}
-                    taskName={task.title}
-                    taskDescription={task.description}
-                    taskAssignedTo={task.user.name}
-                    dueDate={new Date(task.due_date).toLocaleString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                      hour: "numeric",
-                      minute: "numeric",
-                      hour12: true,
-                    })}
-                    createdAt={new Date(task.createdAt)
-                      .toUTCString()
-                      .slice(0, 16)}
-                    daysLeft={(() => {
-                      const timeDiff =
-                        new Date(task.due_date).getTime() - Date.now();
-                      const daysLeft = Math.floor(
-                        timeDiff / (60 * 60 * 24 * 1000)
-                      );
-                      const hoursLeft = Math.floor(
-                        (timeDiff % (60 * 60 * 24 * 1000)) / (60 * 60 * 1000)
-                      );
-
-                      if (timeDiff < 0) {
-                        return "Overdue";
-                      } else if (daysLeft > 0) {
-                        return `${daysLeft} day(s) ${hoursLeft} hour(s) left`;
-                      } else if (hoursLeft > 0) {
-                        return `${hoursLeft} hour(s) left`;
-                      } else {
-                        return "Less than an hour left";
-                      }
-                    })()}
-                  />
-                )
-            )}
-          </div>
-          {/* done */}
-          <div className="flex-1 flex flex-col gap-3 p-4 bg-white/80 border border-gray-200 rounded-sm shadow-sm min-w-[320px] transition hover:shadow-sm">
-            <div className="flex justify-between items-center border-b pb-2 mb-2">
-              <div className="flex gap-2 items-center">
-                <h1 className="font-bold text-lg text-gray-700">Done</h1>
-                <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-sm font-semibold">
-                  {tasks.filter((task) => task.status === "done").length}
-                </span>
-              </div>
-              <button className="text-gray-400 hover:text-gray-500 transition">
-                <AiOutlineMore />
-              </button>
-            </div>
-            {tasks.map(
-              (task) =>
-                task.status == "done" && (
-                  <TaskCard
-                    onStatusChange={handleStatusChange}
-                    onTaskEdit={handleTaskEdit}
-                    onTaskArchive={handleTaskArchive}
-                    onTaskDelete={handleTaskDelete}
-                    taskId={task.id}
-                    status={task.status}
-                    taskName={task.title}
-                    taskDescription={task.description}
-                    taskAssignedTo={task.user.name}
-                    dueDate={new Date(task.due_date).toLocaleString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                      hour: "numeric",
-                      minute: "numeric",
-                      hour12: true,
-                    })}
-                    createdAt={new Date(task.createdAt)
-                      .toUTCString()
-                      .slice(0, 16)}
-                    daysLeft={(() => {
-                      const timeDiff =
-                        new Date(task.due_date).getTime() - Date.now();
-                      const daysLeft = Math.floor(
-                        timeDiff / (60 * 60 * 24 * 1000)
-                      );
-                      const hoursLeft = Math.floor(
-                        (timeDiff % (60 * 60 * 24 * 1000)) / (60 * 60 * 1000)
-                      );
-
-                      if (timeDiff < 0) {
-                        return "Overdue";
-                      } else if (daysLeft > 0) {
-                        return `${daysLeft} day(s) ${hoursLeft} hour(s) left`;
-                      } else if (hoursLeft > 0) {
-                        return `${hoursLeft} hour(s) left`;
-                      } else {
-                        return "Less than an hour left";
-                      }
-                    })()}
-                  />
-                )
-            )}
-          </div>
-          {/* archived */}
-          <div className="flex-1 min-w-[320px]">
-            <div className="flex flex-col gap-3 p-4 bg-gray-50 border border-gray-200 rounded-sm shadow-sm h-full transition hover:shadow-sm">
-              <div className="flex justify-between items-center border-b pb-2 mb-2 gap-4">
-                <div className="flex gap-2 items-center">
-                  <h1 className="font-bold text-lg text-gray-700">Archived</h1>
-                  <span className="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded-sm font-semibold">
-                    {archivedTasks.length}
-                  </span>
+        <DragDropContext onDragEnd={onDragEnd}>
+          <div className="flex gap-6 justify-between overflow-x-auto scrollbar-hide pb-4 h-full items-start">
+            {columns.map((column) => (
+              <div
+                key={column.id}
+                className="flex-1 flex flex-col gap-3 p-4 bg-white/80 border border-gray-200 rounded-sm shadow-sm min-w-[320px] transition hover:shadow-sm"
+              >
+                <div className="flex justify-between items-center border-b pb-2 mb-2">
+                  <div className="flex gap-2 items-center">
+                    <h1 className={`font-bold text-lg ${column.color}`}>
+                      {column.title}
+                    </h1>
+                    <span
+                      className={`px-2 py-1 ${column.bg} ${column.color} text-xs rounded-sm font-semibold`}
+                    >
+                      {tasks.filter((task) => task.status === column.id).length}
+                    </span>
+                  </div>
+                  <button className="text-gray-400 hover:text-gray-500 transition">
+                    <AiOutlineMore />
+                  </button>
                 </div>
-                <div>
-                  {!archivedWindow ? (
-                    <FaWindowMaximize
-                      className="text-gray-400 hover:text-gray-700 cursor-pointer transition"
-                      onClick={() => {
-                        setArchivedWindow(true);
-                      }}
-                    />
-                  ) : (
-                    <FaWindowMinimize
-                      className="text-gray-400 hover:text-gray-700 cursor-pointer transition"
-                      onClick={() => {
-                        setArchivedWindow(false);
-                      }}
-                    />
+                <StrictModeDroppable droppableId={column.id}>
+                  {(provided) => (
+                    <div
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                      className="flex flex-col gap-3 min-h-[200px]"
+                    >
+                      {tasks
+                        .filter((task) => task.status === column.id)
+                        .map((task, index) => (
+                          <Draggable
+                            key={task.id}
+                            draggableId={task.id}
+                            index={index}
+                          >
+                            {(provided) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                <TaskCard
+                                  onStatusChange={handleStatusChange}
+                                  onTaskEdit={handleTaskEdit}
+                                  onTaskArchive={handleTaskArchive}
+                                  onTaskDelete={handleTaskDelete}
+                                  taskId={task.id}
+                                  status={task.status}
+                                  taskName={task.title}
+                                  taskDescription={task.description}
+                                  taskAssignedTo={task.user.name}
+                                  rawDueDate={task.due_date}
+                                  dueDate={new Date(task.due_date).toLocaleString(
+                                    "en-US",
+                                    {
+                                      year: "numeric",
+                                      month: "long",
+                                      day: "numeric",
+                                      hour: "numeric",
+                                      minute: "numeric",
+                                      hour12: true,
+                                    }
+                                  )}
+                                  createdAt={new Date(task.createdAt)
+                                    .toUTCString()
+                                    .slice(0, 16)}
+                                  daysLeft={(() => {
+                                    const timeDiff =
+                                      new Date(task.due_date).getTime() -
+                                      Date.now();
+                                    const daysLeft = Math.floor(
+                                      timeDiff / (60 * 60 * 24 * 1000)
+                                    );
+                                    const hoursLeft = Math.floor(
+                                      (timeDiff % (60 * 60 * 24 * 1000)) /
+                                        (60 * 60 * 1000)
+                                    );
+
+                                    if (timeDiff < 0) {
+                                      return "Overdue";
+                                    } else if (daysLeft > 0) {
+                                      return `${daysLeft} day(s) ${hoursLeft} hour(s) left`;
+                                    } else if (hoursLeft > 0) {
+                                      return `${hoursLeft} hour(s) left`;
+                                    } else {
+                                      return "Less than an hour left";
+                                    }
+                                  })()}
+                                  isOverdue={new Date(task.due_date).getTime() < Date.now() && task.status !== 'done'}
+                                />
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                      {provided.placeholder}
+                    </div>
                   )}
-                </div>
+                </StrictModeDroppable>
               </div>
-              {archivedWindow &&
-                archivedTasks.map((task) => (
-                  <TaskCard
-                    isArchived={true}
-                    onStatusChange={handleStatusChange}
-                    onTaskEdit={handleTaskEdit}
-                    onTaskUnarchive={handleTaskUnarchive}
-                    onTaskDelete={handleTaskDelete}
-                    taskId={task.id}
-                    status={task.status}
-                    taskName={task.title}
-                    taskDescription={task.description}
-                    taskAssignedTo={task.user.name}
-                    dueDate={new Date(task.due_date).toLocaleString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                      hour: "numeric",
-                      minute: "numeric",
-                      hour12: true,
-                    })}
-                    createdAt={new Date(task.createdAt)
-                      .toUTCString()
-                      .slice(0, 16)}
-                    daysLeft={(() => {
-                      const timeDiff =
-                        new Date(task.due_date).getTime() - Date.now();
-                      const daysLeft = Math.floor(
-                        timeDiff / (60 * 60 * 24 * 1000)
-                      );
-                      const hoursLeft = Math.floor(
-                        (timeDiff % (60 * 60 * 24 * 1000)) / (60 * 60 * 1000)
-                      );
+            ))}
 
-                      if (timeDiff < 0) {
-                        return "Overdue";
-                      } else if (daysLeft > 0) {
-                        return `${daysLeft} day(s) ${hoursLeft} hour(s) left`;
-                      } else if (hoursLeft > 0) {
-                        return `${hoursLeft} hour(s) left`;
-                      } else {
-                        return "Less than an hour left";
-                      }
-                    })()}
-                  />
-                ))}
+            {/* archived */}
+            <div className="flex-1 min-w-[320px]">
+              <div className="flex flex-col gap-3 p-4 bg-gray-50 border border-gray-200 rounded-sm shadow-sm h-full transition hover:shadow-sm">
+                <div className="flex justify-between items-center border-b pb-2 mb-2 gap-4">
+                  <div className="flex gap-2 items-center">
+                    <h1 className="font-bold text-lg text-gray-700">Archived</h1>
+                    <span className="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded-sm font-semibold">
+                      {archivedTasks.length}
+                    </span>
+                  </div>
+                  <div>
+                    {!archivedWindow ? (
+                      <FaWindowMaximize
+                        className="text-gray-400 hover:text-gray-700 cursor-pointer transition"
+                        onClick={() => {
+                          setArchivedWindow(true);
+                        }}
+                      />
+                    ) : (
+                      <FaWindowMinimize
+                        className="text-gray-400 hover:text-gray-700 cursor-pointer transition"
+                        onClick={() => {
+                          setArchivedWindow(false);
+                        }}
+                      />
+                    )}
+                  </div>
+                </div>
+                {archivedWindow &&
+                  archivedTasks.map((task) => (
+                    <TaskCard
+                      key={task.id}
+                      isArchived={true}
+                      onStatusChange={handleStatusChange}
+                      onTaskEdit={handleTaskEdit}
+                      onTaskUnarchive={handleTaskUnarchive}
+                      onTaskDelete={handleTaskDelete}
+                      taskId={task.id}
+                      status={task.status}
+                      taskName={task.title}
+                      taskDescription={task.description}
+                      taskAssignedTo={task.user.name}
+                      rawDueDate={task.due_date}
+                      dueDate={new Date(task.due_date).toLocaleString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                        hour12: true,
+                      })}
+                      createdAt={new Date(task.createdAt)
+                        .toUTCString()
+                        .slice(0, 16)}
+                      daysLeft={(() => {
+                        const timeDiff =
+                          new Date(task.due_date).getTime() - Date.now();
+                        const daysLeft = Math.floor(
+                          timeDiff / (60 * 60 * 24 * 1000)
+                        );
+                        const hoursLeft = Math.floor(
+                          (timeDiff % (60 * 60 * 24 * 1000)) / (60 * 60 * 1000)
+                        );
+
+                        if (timeDiff < 0) {
+                          return "Overdue";
+                        } else if (daysLeft > 0) {
+                          return `${daysLeft} day(s) ${hoursLeft} hour(s) left`;
+                        } else if (hoursLeft > 0) {
+                          return `${hoursLeft} hour(s) left`;
+                        } else {
+                          return "Less than an hour left";
+                        }
+                      })()}
+                    />
+                  ))}
+              </div>
             </div>
           </div>
-        </div>
+        </DragDropContext>
       )}
       <dialog id="add_task" className="modal">
         <div className="modal-box bg-white p-4 rounded-sm shadow-sm w-fit lg:w-1/2 mx-auto mt-10 overflow-auto scrollbar-hide">
@@ -604,3 +576,4 @@ const Tasks = () => {
 };
 
 export default Tasks;
+
