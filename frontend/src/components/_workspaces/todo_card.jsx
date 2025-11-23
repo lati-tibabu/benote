@@ -3,7 +3,7 @@ import { FaPlus } from "react-icons/fa6";
 
 const ToDoCard = (props) => {
   return (
-    <div className="rounded-box bg-white p-4 shadow-lg">
+    <div className="rounded-sm bg-white p-4 shadow-sm">
       {/* todo title */}
       <h1 className="font-bold text-lg">{props.todo_title}</h1>
       <h1 className="text-sm text-gray-500">
@@ -17,12 +17,12 @@ const ToDoCard = (props) => {
           {props.todo.map((item) => (
             <li
               key={item.id}
-              className="flex items-center gap-2 p-2 rounded-md border-2 border-gray-100 bg-gray-100 hover:border-gray-200 cursor-pointer"
+              className="flex items-center gap-2 p-2 rounded-sm border-2 border-gray-100 bg-gray-100 hover:border-gray-200 cursor-pointer"
             >
-              <div className="w-5 h-5 border-2 border-gray-600 rounded-full flex items-center justify-center">
+              <div className="w-5 h-5 border-2 border-gray-600 rounded-sm flex items-center justify-center">
                 <input
                   type="checkbox"
-                  className="h-5 w-5 rounded-3xl checkbox border-black border-2"
+                  className="h-5 w-5 rounded-sm checkbox border-black border-2"
                   checked={item.status === "done"}
                   // onChange={() => toggleStatus(item.id)}
                   onChange={() => props.onChange(item.id)}
@@ -38,7 +38,7 @@ const ToDoCard = (props) => {
         </ul>
         <hr className="p-2" />
         <form
-          className="p-2 flex flex-col gap-1 border-2 rounded-box"
+          className="p-2 flex flex-col gap-1 border-2 rounded-sm"
           onSubmit={(e) => {
             e.preventDefault();
             props.addNewTodo();
@@ -47,7 +47,7 @@ const ToDoCard = (props) => {
           <div className="flex">
             <input
               type="text"
-              className="grow bg-transparent ring-blue-200 outline-none border-none text-lg"
+              className="grow bg-transparent ring-gray-200 outline-none border-none text-lg"
               placeholder="Add new todo"
               onChange={(e) => props.onHandleContentChange(e)}
               value={props.todoContent}
@@ -55,7 +55,7 @@ const ToDoCard = (props) => {
 
             <button
               type="submit"
-              className="p-3 rounded-box bg-gray-200 shadow-md"
+              className="p-3 rounded-sm bg-gray-200 shadow-sm"
             >
               <FaPlus />
             </button>

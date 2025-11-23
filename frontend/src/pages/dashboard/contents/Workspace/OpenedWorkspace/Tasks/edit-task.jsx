@@ -109,7 +109,7 @@ const EditTask = (props) => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg">
+    <div className="max-w-2xl mx-auto p-6 bg-white rounded-sm">
       {/* <ToastContainer /> */}
       <h1 className="text-2xl font-bold mb-4 flex items-center gap-2">
         📝 Edit Task
@@ -127,7 +127,7 @@ const EditTask = (props) => {
               setTaskData({ ...taskData, title: e.target.value })
             }
             placeholder="e.g. Complete the report"
-            className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 text-gray-800 bg-white"
+            className="w-full p-2 border rounded-sm focus:outline-none focus:ring focus:ring-gray-300 text-gray-800 bg-white"
             required
           />
         </div>
@@ -139,7 +139,7 @@ const EditTask = (props) => {
               setTaskData({ ...taskData, description: e.target.value })
             }
             placeholder="e.g. Complete the task by the due date"
-            className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 text-gray-800 bg-white"
+            className="w-full p-2 border rounded-sm focus:outline-none focus:ring focus:ring-gray-300 text-gray-800 bg-white"
           ></textarea>
         </div>
         <div>
@@ -149,7 +149,7 @@ const EditTask = (props) => {
             onChange={(e) =>
               setTaskData({ ...taskData, status: e.target.value })
             }
-            className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 text-gray-800 bg-white"
+            className="w-full p-2 border rounded-sm focus:outline-none focus:ring focus:ring-gray-300 text-gray-800 bg-white"
           >
             <option value="todo">To Do</option>
             <option value="doing">In Progress</option>
@@ -164,7 +164,7 @@ const EditTask = (props) => {
             onChange={(e) =>
               setTaskData({ ...taskData, due_date: e.target.value })
             }
-            className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 text-gray-800 bg-white"
+            className="w-full p-2 border rounded-sm focus:outline-none focus:ring focus:ring-gray-300 text-gray-800 bg-white"
           />
         </div>
         {workspace?.belongs_to_team && (
@@ -175,7 +175,7 @@ const EditTask = (props) => {
               onChange={(e) =>
                 setTaskData({ ...taskData, assigned_to: e.target.value })
               }
-              className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 text-gray-800 bg-white"
+              className="w-full p-2 border rounded-sm focus:outline-none focus:ring focus:ring-gray-300 text-gray-800 bg-white"
             >
               <option disabled value="">
                 Pick a user
@@ -190,7 +190,7 @@ const EditTask = (props) => {
         )}
         <button
           type="submit"
-          className="btn btn-md border-none w-full text-white py-2 rounded-lg bg-gray-600 hover:bg-gray-700"
+          className="btn btn-md border-none w-full text-white py-2 rounded-sm bg-gray-600 hover:bg-gray-700"
         >
           Update Task
         </button>

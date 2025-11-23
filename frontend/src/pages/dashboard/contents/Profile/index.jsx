@@ -239,7 +239,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50">
       <ToastContainer />
       <main className="p-8 max-w-4xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
@@ -250,7 +250,7 @@ const Profile = () => {
             <div className="flex gap-2">
               <button
                 onClick={saveProfile}
-                className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold shadow hover:from-green-600 hover:to-blue-600 transition disabled:opacity-60"
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-sm bg-gradient-to-r from-green-500 to-gray-500 text-white font-semibold shadow hover:from-green-600 hover:to-gray-600 transition disabled:opacity-60"
                 disabled={isSaving}
               >
                 {isSaving ? (
@@ -266,7 +266,7 @@ const Profile = () => {
                   setEditMode(false);
                   setFormData(profile);
                 }}
-                className="inline-flex items-center px-5 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-100 transition"
+                className="inline-flex items-center px-5 py-2 rounded-sm border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-100 transition"
               >
                 Cancel
               </button>
@@ -274,21 +274,21 @@ const Profile = () => {
           ) : (
             <button
               onClick={() => setEditMode(true)}
-              className="inline-flex items-center px-6 py-2 rounded-lg bg-gray-900 text-white font-semibold shadow hover:bg-gray-700 transition"
+              className="inline-flex items-center px-6 py-2 rounded-sm bg-gray-900 text-white font-semibold shadow hover:bg-gray-700 transition"
             >
               Edit Info
             </button>
           )}
         </div>
 
-        <section className="border border-gray-200 bg-white p-8 rounded-2xl shadow-lg mb-8">
+        <section className="border border-gray-200 bg-white p-8 rounded-sm shadow-sm mb-8">
           <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center gap-2 text-blue-700">
+            <div className="flex items-center gap-2 text-gray-700">
               <FaGripLines />
               <h3 className="text-xl font-semibold">Profile Information</h3>
             </div>
             <button
-              className="p-2 bg-gray-200 hover:bg-gray-300 rounded-full transition"
+              className="p-2 bg-gray-200 hover:bg-gray-300 rounded-sm transition"
               onClick={() => setProfileExpanded(!profileExpanded)}
               aria-label="Expand profile section"
             >
@@ -315,14 +315,14 @@ const Profile = () => {
                 ].map(([label, key]) => (
                   <fieldset
                     key={key}
-                    className="space-y-2 border border-gray-100 p-3 rounded-lg bg-gray-50"
+                    className="space-y-2 border border-gray-100 p-3 rounded-sm bg-gray-50"
                   >
                     <legend className="text-gray-700 font-medium text-sm mb-1">
                       {label}
                     </legend>
                     {key === "gender" ? (
                       <select
-                        className="bg-white text-gray-900 select select-bordered w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-200"
+                        className="bg-white text-gray-900 select select-bordered w-full rounded-sm border-gray-300 focus:ring-2 focus:ring-gray-200"
                         disabled={!editMode}
                         value={formData[key] || ""}
                         onChange={(e) => handleChange(key, e.target.value)}
@@ -333,7 +333,7 @@ const Profile = () => {
                     ) : (
                       <input
                         type="text"
-                        className="bg-white text-gray-900 input input-bordered w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-200"
+                        className="bg-white text-gray-900 input input-bordered w-full rounded-sm border-gray-300 focus:ring-2 focus:ring-gray-200"
                         value={formData[key] || ""}
                         readOnly={!editMode}
                         onChange={(e) => handleChange(key, e.target.value)}
@@ -347,7 +347,7 @@ const Profile = () => {
                   Bio
                 </label>
                 <textarea
-                  className="bg-white text-gray-900 textarea textarea-bordered w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-200"
+                  className="bg-white text-gray-900 textarea textarea-bordered w-full rounded-sm border-gray-300 focus:ring-2 focus:ring-gray-200"
                   rows={3}
                   value={formData.bio || ""}
                   readOnly={!editMode}
@@ -364,8 +364,8 @@ const Profile = () => {
           <h3 className="text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
             <FaHandFist className="text-primary-600" /> Preferences
           </h3>
-          <div className="bg-white p-6 rounded-2xl shadow border border-gray-200 flex items-center gap-4">
-            <label className="flex items-center space-x-4 cursor-pointer py-2 px-3 rounded-lg hover:bg-gray-50 transition">
+          <div className="bg-white p-6 rounded-sm shadow border border-gray-200 flex items-center gap-4">
+            <label className="flex items-center space-x-4 cursor-pointer py-2 px-3 rounded-sm hover:bg-gray-50 transition">
               <input
                 type="checkbox"
                 className="toggle toggle-primary"
@@ -383,15 +383,15 @@ const Profile = () => {
           <h3 className="text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
             <FaUser className="text-red-500" /> User Information
           </h3>
-          <div className="bg-white p-8 rounded-2xl shadow border border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="bg-white p-8 rounded-sm shadow border border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <fieldset className="space-y-2 border border-gray-100 p-3 rounded-lg bg-gray-50 mb-4">
+              <fieldset className="space-y-2 border border-gray-100 p-3 rounded-sm bg-gray-50 mb-4">
                 <legend className="text-gray-700 font-medium text-sm mb-1">
                   User Name
                 </legend>
                 <input
                   type="text"
-                  className="bg-white text-gray-900 input input-bordered w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-200"
+                  className="bg-white text-gray-900 input input-bordered w-full rounded-sm border-gray-300 focus:ring-2 focus:ring-gray-200"
                   value={profile?.user?.name || ""}
                   onChange={(e) => {
                     setProfile({
@@ -404,13 +404,13 @@ const Profile = () => {
                   }}
                 />
               </fieldset>
-              <fieldset className="space-y-2 border border-gray-100 p-3 rounded-lg bg-gray-50">
+              <fieldset className="space-y-2 border border-gray-100 p-3 rounded-sm bg-gray-50">
                 <legend className="text-gray-700 font-medium text-sm mb-1">
                   Email
                 </legend>
                 <input
                   type="text"
-                  className="bg-white text-gray-900 input input-bordered w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-200"
+                  className="bg-white text-gray-900 input input-bordered w-full rounded-sm border-gray-300 focus:ring-2 focus:ring-gray-200"
                   value={profile?.user?.email || ""}
                   onChange={(e) => {
                     setProfile({
@@ -424,7 +424,7 @@ const Profile = () => {
                 />
               </fieldset>
               <button
-                className="mt-4 inline-flex items-center px-6 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-green-500 text-white font-semibold shadow hover:from-blue-600 hover:to-green-600 transition"
+                className="mt-4 inline-flex items-center px-6 py-2 rounded-sm bg-gradient-to-r from-gray-500 to-green-500 text-white font-semibold shadow hover:from-gray-600 hover:to-green-600 transition"
                 onClick={() => handleChangeUserInfo()}
               >
                 Update User Info
@@ -438,13 +438,13 @@ const Profile = () => {
                 You can change your password here.
               </p>
               <div className="flex flex-col space-y-3">
-                <fieldset className="space-y-2 border border-gray-100 p-3 rounded-lg bg-gray-50">
+                <fieldset className="space-y-2 border border-gray-100 p-3 rounded-sm bg-gray-50">
                   <legend className="text-gray-700 font-medium text-sm mb-1">
                     Current Password
                   </legend>
                   <input
                     type="password"
-                    className="bg-white text-gray-900 input input-bordered w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-200"
+                    className="bg-white text-gray-900 input input-bordered w-full rounded-sm border-gray-300 focus:ring-2 focus:ring-gray-200"
                     value={passwordData.currentPassword}
                     onChange={(e) =>
                       setPasswordData({
@@ -454,13 +454,13 @@ const Profile = () => {
                     }
                   />
                 </fieldset>
-                <fieldset className="space-y-2 border border-gray-100 p-3 rounded-lg bg-gray-50">
+                <fieldset className="space-y-2 border border-gray-100 p-3 rounded-sm bg-gray-50">
                   <legend className="text-gray-700 font-medium text-sm mb-1">
                     New Password
                   </legend>
                   <input
                     type="password"
-                    className="bg-white text-gray-900 input input-bordered w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-200"
+                    className="bg-white text-gray-900 input input-bordered w-full rounded-sm border-gray-300 focus:ring-2 focus:ring-gray-200"
                     value={passwordData.newPassword}
                     onChange={(e) =>
                       setPasswordData({
@@ -471,7 +471,7 @@ const Profile = () => {
                   />
                 </fieldset>
                 <fieldset
-                  className={`space-y-2 border border-gray-100 p-3 rounded-lg bg-gray-50 ${
+                  className={`space-y-2 border border-gray-100 p-3 rounded-sm bg-gray-50 ${
                     passwordMismatched ? "border-red-500" : ""
                   }`}
                 >
@@ -480,7 +480,7 @@ const Profile = () => {
                   </legend>
                   <input
                     type="password"
-                    className="bg-white text-gray-900 input input-bordered w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-200"
+                    className="bg-white text-gray-900 input input-bordered w-full rounded-sm border-gray-300 focus:ring-2 focus:ring-gray-200"
                     value={passwordData.confirmPassword}
                     onChange={(e) =>
                       setPasswordData({
@@ -495,7 +495,7 @@ const Profile = () => {
                 )}
               </div>
               <button
-                className="mt-4 inline-flex items-center px-6 py-2 rounded-lg bg-gradient-to-r from-gray-900 to-blue-900 text-white font-semibold shadow hover:from-gray-800 hover:to-blue-800 transition"
+                className="mt-4 inline-flex items-center px-6 py-2 rounded-sm bg-gradient-to-r from-gray-900 to-gray-900 text-white font-semibold shadow hover:from-gray-800 hover:to-gray-800 transition"
                 onClick={() => handleChangePassword()}
               >
                 Change Password
@@ -504,12 +504,12 @@ const Profile = () => {
           </div>
         </section>
 
-        <section className="bg-gradient-to-r from-red-100 to-pink-100 p-8 rounded-2xl shadow-lg mt-8 border border-red-200">
+        <section className="bg-gradient-to-r from-red-100 to-gray-100 p-8 rounded-sm shadow-sm mt-8 border border-red-200">
           <h3 className="text-xl font-semibold text-red-600 mb-4 flex items-center gap-2">
             <FaHandFist className="text-red-500" /> Danger Zone
           </h3>
           <button
-            className="btn btn-error text-white px-6 py-2 rounded-lg font-semibold shadow hover:bg-red-600 transition"
+            className="btn btn-error text-white px-6 py-2 rounded-sm font-semibold shadow hover:bg-red-600 transition"
             onClick={() => handleUserDelete()}
           >
             Delete Account

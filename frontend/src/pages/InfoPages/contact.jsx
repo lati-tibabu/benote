@@ -39,7 +39,7 @@ function Contact() {
         <div className="flex items-center space-x-4">
           <a
             href="https://www.linkedin.com"
-            className="text-black hover:text-blue-700"
+            className="text-black hover:text-gray-700"
           >
             <FaLinkedin size={24} />
           </a>
@@ -47,7 +47,7 @@ function Contact() {
         <div className="flex items-center space-x-4">
           <a
             href="https://www.facebook.com"
-            className="text-black hover:text-blue-600"
+            className="text-black hover:text-gray-600"
           >
             <FaFacebook size={24} />
           </a>
@@ -63,7 +63,7 @@ function Contact() {
         <div className="flex items-center space-x-4">
           <a
             href="https://www.instagram.com"
-            className="text-black hover:text-pink-600"
+            className="text-black hover:text-gray-600"
           >
             <FaInstagram size={24} />
           </a>
@@ -71,7 +71,7 @@ function Contact() {
         <div className="flex items-center space-x-4">
           <a
             href="https://twitter.com"
-            className="text-black hover:text-blue-400"
+            className="text-black hover:text-gray-400"
           >
             <FaTwitter size={24} />
           </a>

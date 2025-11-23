@@ -61,39 +61,39 @@ const WorkspaceOpened = () => {
     }
   };
 
-  const generateWorkspaceSummary = async (activityData) => {
-    setLoading(true);
-    try {
-      const chatSession = model.startChat({
-        generationConfig: {
-          temperature: 0.3,
-          topP: 0.95,
-          topK: 40,
-          maxOutputTokens: 8192,
-        },
-        history: [
-          {
-            role: "user",
-            parts: [
-              {
-                text: JSON.stringify(activityData),
-              },
-            ],
-          },
-        ],
-      });
+  // const generateWorkspaceSummary = async (activityData) => {
+  //   setLoading(true);
+  //   try {
+  //     const chatSession = model.startChat({
+  //       generationConfig: {
+  //         temperature: 0.3,
+  //         topP: 0.95,
+  //         topK: 40,
+  //         maxOutputTokens: 8192,
+  //       },
+  //       history: [
+  //         {
+  //           role: "user",
+  //           parts: [
+  //             {
+  //               text: JSON.stringify(activityData),
+  //             },
+  //           ],
+  //         },
+  //       ],
+  //     });
 
-      const result = await chatSession.sendMessage(
-        "Generate a workspace summary."
-      );
-      setAiSummary(result.response.text());
-    } catch (error) {
-      console.error("Error generating AI summary:", error);
-      toast.error("Failed to generate workspace summary.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     const result = await chatSession.sendMessage(
+  //       "Generate a workspace summary."
+  //     );
+  //     setAiSummary(result.response.text());
+  //   } catch (error) {
+  //     console.error("Error generating AI summary:", error);
+  //     toast.error("Failed to generate workspace summary.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
     if (workspaceId) getWorkspaceDetails(workspaceId);
@@ -118,7 +118,7 @@ const WorkspaceOpened = () => {
   // }, [userActivityData]);
 
   return (
-    <div className="h-full flex flex-col justify-between rounded-md shadow-sm">
+    <div className="h-full flex flex-col justify-between rounded-sm shadow-sm">
       <div className="grow flex flex-col">
         <div className="grow w-full">
           <Outlet />
@@ -129,7 +129,7 @@ const WorkspaceOpened = () => {
           </div>
         ) : (
           aiSummary && (
-            <div className="p-4 bg-gray-100 rounded-md shadow-md mt-4">
+            <div className="p-4 bg-gray-100 rounded-sm shadow-sm mt-4">
               <h2 className="text-lg font-bold mb-2">Workspace Summary</h2>
               <MarkdownRenderer content={aiSummary} />
             </div>

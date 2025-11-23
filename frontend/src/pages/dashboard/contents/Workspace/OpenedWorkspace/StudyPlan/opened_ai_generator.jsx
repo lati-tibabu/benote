@@ -437,11 +437,11 @@ const OpenedAIStudyGenerators = ({ plan, onSuccess }) => {
   }, [apiKey, plan?.id]);
 
   return (
-    <div className="bg-white p-6 rounded-xl overflow-auto shadow-lg max-w-2xl mx-auto max-h-[70vh] my-8 font-sans text-gray-800">
+    <div className="bg-white p-6 rounded-sm overflow-auto shadow-sm max-w-2xl mx-auto max-h-[70vh] my-8 font-sans text-gray-800">
       <h2 className="text-2xl font-bold text-gray-900 mb-4 pb-3 border-b border-gray-100">
         AI Time Block Generator
       </h2>
-      <div className="text-lg font-semibold text-blue-700 mb-5">
+      <div className="text-lg font-semibold text-gray-700 mb-5">
         For Plan:{" "}
         <span className="text-gray-800">
           {plan?.title || "No Plan Selected"}
@@ -449,7 +449,7 @@ const OpenedAIStudyGenerators = ({ plan, onSuccess }) => {
       </div>
 
       {/* Input Form Section */}
-      <section className="bg-gray-50 border border-gray-200 rounded-xl shadow-sm p-6 mb-8 transition-all duration-300 hover:shadow-md">
+      <section className="bg-gray-50 border border-gray-200 rounded-sm shadow-sm p-6 mb-8 transition-all duration-300 hover:shadow-sm">
         <form onSubmit={handleUserPrompt} className="flex flex-col space-y-4">
           {/* Suggested Prompts Section */}
           {(loadingSuggestions || suggestedPrompts.length > 0) && (
@@ -463,7 +463,7 @@ const OpenedAIStudyGenerators = ({ plan, onSuccess }) => {
                   <button
                     key={idx}
                     type="button"
-                    className="px-3 py-2 bg-blue-100 text-blue-800 rounded-lg text-sm hover:bg-blue-200 transition border border-blue-200"
+                    className="px-3 py-2 bg-gray-100 text-gray-800 rounded-sm text-sm hover:bg-gray-200 transition border border-gray-200"
                     onClick={() => {
                       setUserPrompt(prompt);
                       setError(null);
@@ -480,7 +480,7 @@ const OpenedAIStudyGenerators = ({ plan, onSuccess }) => {
           )}
 
           <textarea
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 min-h-[100px] text-gray-900 placeholder-gray-500 resize-none"
+            className="w-full p-3 border border-gray-300 rounded-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent transition duration-200 min-h-[100px] text-gray-900 placeholder-gray-500 resize-none"
             placeholder="Describe what study blocks you need, e.g., 'Generate 3 hours of Math exercises for tomorrow morning', 'Add 2 hours of history reading on Wednesday afternoon'."
             value={userPrompt}
             onChange={(e) => setUserPrompt(e.target.value)}
@@ -488,11 +488,11 @@ const OpenedAIStudyGenerators = ({ plan, onSuccess }) => {
           ></textarea>
           <button
             type="submit"
-            className="flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 disabled:bg-blue-300 disabled:cursor-not-allowed"
+            className="flex items-center justify-center px-6 py-3 bg-gray-600 text-white font-semibold rounded-sm shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed"
             disabled={loading}
           >
             {loading ? (
-              <span className="animate-spin h-5 w-5 border-b-2 border-white rounded-full mr-2"></span>
+              <span className="animate-spin h-5 w-5 border-b-2 border-white rounded-sm mr-2"></span>
             ) : (
               <AiOutlineSend className="text-xl mr-2" />
             )}
@@ -502,7 +502,7 @@ const OpenedAIStudyGenerators = ({ plan, onSuccess }) => {
       </section>
 
       {/* Generated Blocks / Status Section */}
-      <section className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+      <section className="bg-white border border-gray-200 rounded-sm shadow-sm p-6">
         <div className="flex justify-between items-center pb-4 mb-4 border-b border-gray-200">
           <h3 className="text-xl font-semibold text-gray-900">
             Review Generated Blocks
@@ -511,7 +511,7 @@ const OpenedAIStudyGenerators = ({ plan, onSuccess }) => {
             <button
               onClick={handleAcceptAiResponse}
               disabled={loading}
-              className="px-5 py-2 bg-green-600 text-white font-medium rounded-lg shadow hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200 disabled:bg-green-300 disabled:cursor-not-allowed"
+              className="px-5 py-2 bg-green-600 text-white font-medium rounded-sm shadow hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200 disabled:bg-green-300 disabled:cursor-not-allowed"
             >
               {loading ? "Saving..." : "Save to Plan"}
             </button>
@@ -519,7 +519,7 @@ const OpenedAIStudyGenerators = ({ plan, onSuccess }) => {
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start gap-3 mb-4 text-sm">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-sm flex items-start gap-3 mb-4 text-sm">
             <FaExclamationCircle className="text-red-500 text-xl mt-0.5" />{" "}
             {/* Softer icon */}
             <p className="font-medium">{error}</p>
@@ -528,7 +528,7 @@ const OpenedAIStudyGenerators = ({ plan, onSuccess }) => {
 
         {loading && !error ? (
           <div className="flex flex-col items-center justify-center py-8 text-gray-600">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mb-3"></div>
+            <div className="animate-spin rounded-sm h-8 w-8 border-b-2 border-gray-900 mb-3"></div>
             <p>Generating...</p>
           </div>
         ) : (
@@ -538,7 +538,7 @@ const OpenedAIStudyGenerators = ({ plan, onSuccess }) => {
                 {generatedBlocks.map((block, idx) => (
                   <div
                     key={idx}
-                    className="bg-gray-50 border border-gray-200 rounded-md p-4 shadow-sm hover:shadow-md transition-shadow duration-200"
+                    className="bg-gray-50 border border-gray-200 rounded-sm p-4 shadow-sm hover:shadow-sm transition-shadow duration-200"
                   >
                     <p className="font-bold text-gray-900 text-base mb-1">
                       {block.job}

@@ -150,13 +150,13 @@ const accentColors = [
     prose: "prose-gray",
   },
   {
-    label: "Blue",
-    value: "blue",
-    border: "border-blue-100",
-    icon: "text-blue-700",
-    user: "text-blue-700",
-    date: "text-blue-400",
-    prose: "prose-blue",
+    label: "gray",
+    value: "gray",
+    border: "border-gray-100",
+    icon: "text-gray-700",
+    user: "text-gray-700",
+    date: "text-gray-400",
+    prose: "prose-gray",
   },
   {
     label: "Green",
@@ -168,22 +168,22 @@ const accentColors = [
     prose: "prose-green",
   },
   {
-    label: "Purple",
-    value: "purple",
-    border: "border-purple-100",
-    icon: "text-purple-700",
-    user: "text-purple-700",
-    date: "text-purple-400",
-    prose: "prose-purple",
+    label: "gray",
+    value: "gray",
+    border: "border-gray-100",
+    icon: "text-gray-700",
+    user: "text-gray-700",
+    date: "text-gray-400",
+    prose: "prose-gray",
   },
   {
-    label: "Pink",
-    value: "pink",
-    border: "border-pink-100",
-    icon: "text-pink-700",
-    user: "text-pink-700",
-    date: "text-pink-400",
-    prose: "prose-pink",
+    label: "gray",
+    value: "gray",
+    border: "border-gray-100",
+    icon: "text-gray-700",
+    user: "text-gray-700",
+    date: "text-gray-400",
+    prose: "prose-gray",
   },
   {
     label: "Orange",
@@ -298,13 +298,13 @@ const SharedNotes = () => {
       <div className="w-full max-w-3xl flex justify-between items-center mb-8">
         <Link // Changed to Link component
           to="/public/notes"
-          className={`text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center gap-2 text-base font-medium`}
+          className={`text-gray-600 hover:text-gray-800 transition-colors duration-200 flex items-center gap-2 text-base font-medium`}
         >
           <PiFile className="text-lg" /> Public Notes
         </Link>
         <button
           onClick={() => setShowPreferences(!showPreferences)}
-          className={`p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors shadow-sm`}
+          className={`p-2.5 rounded-sm bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors shadow-sm`}
           title="Toggle Note Settings"
         >
           <PiGearSixFill className={`text-2xl ${currentAccent.icon}`} />
@@ -314,7 +314,7 @@ const SharedNotes = () => {
       <div className="w-full max-w-3xl mx-auto">
         {/* Preferences Bar - Conditionally rendered with smooth transition */}
         <div
-          className={`flex flex-wrap items-center gap-4 mb-8 p-5 rounded-xl shadow-md transition-all duration-300 ease-in-out ${
+          className={`flex flex-wrap items-center gap-4 mb-8 p-5 rounded-sm shadow-sm transition-all duration-300 ease-in-out ${
             currentTheme.prefBg
           } ${currentTheme.prefBorder} ${
             showPreferences
@@ -323,7 +323,7 @@ const SharedNotes = () => {
           }`}
         >
           <span
-            className={`flex items-center gap-2 ${currentTheme.text} font-medium text-sm py-2 px-3 rounded-md bg-white/70 border border-gray-100`}
+            className={`flex items-center gap-2 ${currentTheme.text} font-medium text-sm py-2 px-3 rounded-sm bg-white/70 border border-gray-100`}
           >
             <PiPaintBrushBold className="text-lg" /> Theme
             <select
@@ -339,7 +339,7 @@ const SharedNotes = () => {
             </select>
           </span>
           <span
-            className={`flex items-center gap-2 ${currentTheme.text} font-medium text-sm py-2 px-3 rounded-md bg-white/70 border border-gray-100`}
+            className={`flex items-center gap-2 ${currentTheme.text} font-medium text-sm py-2 px-3 rounded-sm bg-white/70 border border-gray-100`}
           >
             <PiTextAaBold className="text-lg" /> Font
             <select
@@ -355,7 +355,7 @@ const SharedNotes = () => {
             </select>
           </span>
           <span
-            className={`flex items-center gap-2 ${currentTheme.text} font-medium text-sm py-2 px-3 rounded-md bg-white/70 border border-gray-100`}
+            className={`flex items-center gap-2 ${currentTheme.text} font-medium text-sm py-2 px-3 rounded-sm bg-white/70 border border-gray-100`}
           >
             <PiTextHOneBold className="text-lg" /> Size
             <select
@@ -371,7 +371,7 @@ const SharedNotes = () => {
             </select>
           </span>
           <span
-            className={`flex items-center gap-2 ${currentTheme.text} font-medium text-sm py-2 px-3 rounded-md bg-white/70 border border-gray-100`}
+            className={`flex items-center gap-2 ${currentTheme.text} font-medium text-sm py-2 px-3 rounded-sm bg-white/70 border border-gray-100`}
           >
             <PiTextAlignLeftBold className="text-lg" /> Line
             <select
@@ -387,7 +387,7 @@ const SharedNotes = () => {
             </select>
           </span>
           <span
-            className={`flex items-center gap-2 ${currentTheme.text} font-medium text-sm py-2 px-3 rounded-md bg-white/70 border border-gray-100`}
+            className={`flex items-center gap-2 ${currentTheme.text} font-medium text-sm py-2 px-3 rounded-sm bg-white/70 border border-gray-100`}
           >
             <svg
               className="w-5 h-5"
@@ -412,7 +412,7 @@ const SharedNotes = () => {
             </select>
           </span>
           <button
-            className="flex items-center gap-1 px-4 py-2 rounded-lg bg-white border border-gray-200 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400 transition text-sm text-gray-700"
+            className="flex items-center gap-1 px-4 py-2 rounded-sm bg-white border border-gray-200 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400 transition text-sm text-gray-700"
             onClick={handlePrint}
             title="Print note"
             type="button"
@@ -422,10 +422,10 @@ const SharedNotes = () => {
         </div>
         <div
           ref={noteCardRef}
-          className={`rounded-2xl shadow-xl border ${currentAccent.border} px-10 py-10 transition-all duration-200 ${currentTheme.bg} ${currentTheme.text}`}
+          className={`rounded-sm shadow-sm border ${currentAccent.border} px-10 py-10 transition-all duration-200 ${currentTheme.bg} ${currentTheme.text}`}
         >
           {error ? (
-            <div className="flex items-center gap-3 text-red-700 bg-red-50 p-4 rounded-lg border border-red-200 shadow-sm">
+            <div className="flex items-center gap-3 text-red-700 bg-red-50 p-4 rounded-sm border border-red-200 shadow-sm">
               <FiAlertTriangle className="text-2xl text-red-500" />
               <p className="font-medium">Error: {error}</p>
             </div>

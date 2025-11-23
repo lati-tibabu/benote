@@ -112,10 +112,10 @@ const MySubmission = ({ assignmentId, isTeacher }) => {
   if (!assignmentId) return null;
 
   return (
-    <div className="max-w-2xl mx-auto mb-12 p-10 bg-white/90 rounded-3xl shadow-2xl border border-blue-100 flex flex-col gap-8">
+    <div className="max-w-2xl mx-auto mb-12 p-10 bg-white/90 rounded-sm shadow-sm border border-gray-100 flex flex-col gap-8">
       <div>
         <h3 className="text-3xl font-extrabold text-gray-900 mb-2 tracking-tight flex items-center gap-3">
-          <span className="inline-block w-2 h-7 bg-blue-500 rounded-full"></span>
+          <span className="inline-block w-2 h-7 bg-gray-500 rounded-sm"></span>
           My Submissions
         </h3>
         <p className="mb-6 text-gray-600 text-base leading-relaxed">
@@ -137,7 +137,7 @@ const MySubmission = ({ assignmentId, isTeacher }) => {
       ) : (
         <ul className="space-y-7">
           {mySubmissions.length === 0 && (
-            <li className="flex flex-col items-center justify-center text-gray-400 text-center py-12 text-lg font-medium bg-white/80 rounded-2xl border border-gray-100 shadow-inner min-h-[120px]">
+            <li className="flex flex-col items-center justify-center text-gray-400 text-center py-12 text-lg font-medium bg-white/80 rounded-sm border border-gray-100 shadow-inner min-h-[120px]">
               <svg
                 className="w-12 h-12 mb-2 text-gray-200"
                 fill="none"
@@ -162,10 +162,10 @@ const MySubmission = ({ assignmentId, isTeacher }) => {
           {mySubmissions.map((submission) => (
             <li
               key={submission.id}
-              className={`relative bg-white rounded-2xl border border-gray-100 shadow-md p-7 group transition flex flex-col gap-3 ${
+              className={`relative bg-white rounded-sm border border-gray-100 shadow-sm p-7 group transition flex flex-col gap-3 ${
                 editId === submission.id
-                  ? "ring-2 ring-blue-400"
-                  : "hover:shadow-lg hover:border-blue-200"
+                  ? "ring-2 ring-gray-400"
+                  : "hover:shadow-sm hover:border-gray-200"
               }`}
             >
               {editId === submission.id ? (
@@ -178,7 +178,7 @@ const MySubmission = ({ assignmentId, isTeacher }) => {
                   </label>
                   <textarea
                     id="edit-content"
-                    className="w-full min-h-[100px] rounded-xl border border-blue-200 bg-blue-50/60 p-4 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition shadow-sm resize-vertical mb-4"
+                    className="w-full min-h-[100px] rounded-sm border border-gray-200 bg-gray-50/60 p-4 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-400 transition shadow-sm resize-vertical mb-4"
                     rows={6}
                     value={editContent}
                     onChange={(e) => setEditContent(e.target.value)}
@@ -186,13 +186,13 @@ const MySubmission = ({ assignmentId, isTeacher }) => {
                   />
                   <div className="flex gap-3 justify-end mt-2">
                     <button
-                      className="px-7 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition"
+                      className="px-7 py-2 rounded-sm bg-gray-600 text-white font-semibold shadow hover:bg-gray-700 transition"
                       onClick={handleSave}
                     >
                       Save
                     </button>
                     <button
-                      className="px-7 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold shadow hover:bg-gray-300 transition"
+                      className="px-7 py-2 rounded-sm bg-gray-200 text-gray-700 font-semibold shadow hover:bg-gray-300 transition"
                       onClick={() => setEditId(null)}
                     >
                       Cancel
@@ -201,7 +201,7 @@ const MySubmission = ({ assignmentId, isTeacher }) => {
                 </>
               ) : (
                 <>
-                  <div className="prose max-w-none text-gray-800 bg-gray-50 p-5 rounded-xl border border-gray-100 shadow-inner mb-2">
+                  <div className="prose max-w-none text-gray-800 bg-gray-50 p-5 rounded-sm border border-gray-100 shadow-inner mb-2">
                     <MarkdownRenderer
                       content={submission.description || submission.content}
                     />
@@ -211,7 +211,7 @@ const MySubmission = ({ assignmentId, isTeacher }) => {
                       Submitted:{" "}
                       {new Date(submission.submitted_at).toLocaleString()}
                       {submission.updatedAt !== submission.submitted_at && (
-                        <span className="ml-2 text-blue-500">
+                        <span className="ml-2 text-gray-500">
                           · Updated:{" "}
                           {new Date(submission.updatedAt).toLocaleString()}
                         </span>
@@ -219,13 +219,13 @@ const MySubmission = ({ assignmentId, isTeacher }) => {
                     </div>
                     <div className="flex gap-2">
                       <button
-                        className="px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition"
+                        className="px-6 py-2 rounded-sm bg-gray-600 text-white font-semibold shadow hover:bg-gray-700 transition"
                         onClick={() => handleEdit(submission)}
                       >
                         Edit
                       </button>
                       <button
-                        className="px-6 py-2 rounded-lg bg-red-600 text-white font-semibold shadow hover:bg-red-700 transition"
+                        className="px-6 py-2 rounded-sm bg-red-600 text-white font-semibold shadow hover:bg-red-700 transition"
                         onClick={() => handleDelete(submission.id)}
                       >
                         Delete

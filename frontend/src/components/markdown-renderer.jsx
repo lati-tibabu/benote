@@ -54,13 +54,13 @@ const MarkdownRenderer = ({ content, className }) => {
           },
           /**
            * Custom component for rendering links (`<a>` tags).
-           * Applies Tailwind CSS classes for consistent blue link color, underline, and hover effects.
+           * Applies Tailwind CSS classes for consistent gray link color, underline, and hover effects.
            *
            * @param {object} props - Props passed by react-markdown for an anchor element.
            */
           a: ({ node, ...props }) => (
             <a
-              className="text-blue-600 hover:text-blue-800 underline transition-colors duration-200"
+              className="text-gray-600 hover:text-gray-800 underline transition-colors duration-200"
               {...props}
             />
           ),
@@ -83,7 +83,7 @@ const MarkdownRenderer = ({ content, className }) => {
               <p
                 className={`${
                   startsWithHash
-                    ? "font-bold bg-blue-100  w-fit p-1 rounded-md text-blue-700  text-sm" // Styling for tag-like paragraphs
+                    ? "font-bold bg-gray-100  w-fit p-1 rounded-sm text-gray-700  text-sm" // Styling for tag-like paragraphs
                     : ""
                 }`}
                 {...props}
@@ -128,7 +128,7 @@ const MarkdownRenderer = ({ content, className }) => {
               return (
                 <input
                   type="checkbox"
-                  className="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer"
+                  className="form-checkbox h-4 w-4 text-gray-600 rounded border-gray-300 focus:ring-gray-500 cursor-pointer"
                   disabled={true} // Checkboxes in markdown are generally non-interactive
                   {...props}
                 />
@@ -188,7 +188,7 @@ const MarkdownRenderer = ({ content, className }) => {
            * @param {object} props - Props passed by react-markdown for a table element.
            */
           table: ({ node, ...props }) => (
-            <div className="overflow-x-auto my-4 rounded-lg border border-gray-200 ">
+            <div className="overflow-x-auto my-4 rounded-sm border border-gray-200 ">
               <table
                 className="min-w-full divide-y divide-gray-200 "
                 {...props}
@@ -238,7 +238,7 @@ const MarkdownRenderer = ({ content, className }) => {
            */
           blockquote: ({ node, ...props }) => (
             <blockquote
-              className="border-l-4 border-blue-400 pl-4 py-1 italic text-gray-700  bg-blue-50/50 /20 rounded-r-md"
+              className="border-l-4 border-gray-400 pl-4 py-1 italic text-gray-700  bg-gray-50/50 /20 rounded-r-md"
               {...props}
             />
           ),
@@ -252,7 +252,7 @@ const MarkdownRenderer = ({ content, className }) => {
           img: ({ node, ...props }) => (
             <img
               {...props}
-              className="max-w-full h-auto rounded-lg shadow-md my-4 mx-auto block"
+              className="max-w-full h-auto rounded-sm shadow-sm my-4 mx-auto block"
             />
           ),
           /**
@@ -344,7 +344,7 @@ export default MarkdownRenderer;
 //             return <CodeHighlighter {...props} value={String(children)} />;
 //           },
 //           a: ({ node, ...props }) => (
-//             <a className="text-blue-500 underline" {...props} />
+//             <a className="text-gray-500 underline" {...props} />
 //           ),
 //           p: ({ node, ...props }) => {
 //             const firstChar = props.children?.[0]
@@ -353,7 +353,7 @@ export default MarkdownRenderer;
 //               ?.charAt(0);
 //             const highlightClass =
 //               firstChar === "#"
-//                 ? "font-bold bg-blue-200 w-fit p-1 rounded text-blue-700"
+//                 ? "font-bold bg-gray-200 w-fit p-1 rounded text-gray-700"
 //                 : "";
 //             return <p className={highlightClass} {...props} />;
 //           },
@@ -398,7 +398,7 @@ export default MarkdownRenderer;
 //             />
 //           ),
 //           img: (props) => (
-//             <img {...props} className="max-w-full rounded-lg mx-auto p-2" />
+//             <img {...props} className="max-w-full rounded-sm mx-auto p-2" />
 //           ),
 //         }}
 //       >

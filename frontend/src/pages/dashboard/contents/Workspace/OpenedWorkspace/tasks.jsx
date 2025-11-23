@@ -245,11 +245,11 @@ const Tasks = () => {
             Tasks
           </h1>
           {workspace?.belongs_to_team && (
-            <label className="fieldset-label text-sm flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full border border-gray-200">
+            <label className="fieldset-label text-sm flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-sm border border-gray-200">
               <input
                 type="checkbox"
                 checked={allMemberTasks ? true : false}
-                className="checkbox accent-blue-500"
+                className="checkbox accent-gray-500"
                 onChange={(e) =>
                   setAllMemberTasks(e.target.checked ? true : false)
                 }
@@ -261,7 +261,7 @@ const Tasks = () => {
         <div className="flex items-center gap-3">
           {useGemini && (
             <div
-              className="btn transition-all duration-300 shadow-md bg-gradient-to-tr from-pink-100 to-blue-100 hover:from-pink-200 hover:to-blue-200 text-gray-700 border-white btn-soft rounded-full flex items-center gap-2 px-4 py-2"
+              className="btn transition-all duration-300 shadow-sm bg-gradient-to-tr from-gray-100 to-gray-100 hover:from-gray-200 hover:to-gray-200 text-gray-700 border-white btn-soft rounded-sm flex items-center gap-2 px-4 py-2"
               onClick={() => document.getElementById("ai_gen_task").showModal()}
             >
               <GeminiIcon size={20} />
@@ -269,7 +269,7 @@ const Tasks = () => {
             </div>
           )}
           <button
-            className="btn btn-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full px-4 py-2 shadow-md transition"
+            className="btn btn-sm bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-sm px-4 py-2 shadow-sm transition"
             onClick={() => document.getElementById("add_task").showModal()}
           >
             + Add new task
@@ -278,24 +278,24 @@ const Tasks = () => {
       </div>
       {loading ? (
         <div className="p-3 h-screen/2 w-full flex gap-3 items-stretch">
-          <div className="rounded-xl h-full p-3 flex-1 grow bg-gray-200 animate-pulse duration-200"></div>
-          <div className="rounded-xl h-full p-3 flex-1 grow bg-gray-200 animate-pulse duration-200"></div>
-          <div className="rounded-xl h-full p-3 flex-1 grow bg-gray-200 animate-pulse duration-200"></div>
-          <div className="rounded-xl h-full p-3 flex-1 grow bg-gray-200 animate-pulse duration-200"></div>
+          <div className="rounded-sm h-full p-3 flex-1 grow bg-gray-200 animate-pulse duration-200"></div>
+          <div className="rounded-sm h-full p-3 flex-1 grow bg-gray-200 animate-pulse duration-200"></div>
+          <div className="rounded-sm h-full p-3 flex-1 grow bg-gray-200 animate-pulse duration-200"></div>
+          <div className="rounded-sm h-full p-3 flex-1 grow bg-gray-200 animate-pulse duration-200"></div>
         </div>
       ) : (
         <div className="flex gap-6 justify-between overflow-x-auto scrollbar-hide pb-4">
           {/* to do */}
-          <div className="flex-1 flex flex-col gap-3 p-4 bg-white/80 border border-gray-200 rounded-2xl shadow-md min-w-[320px] transition hover:shadow-lg">
+          <div className="flex-1 flex flex-col gap-3 p-4 bg-white/80 border border-gray-200 rounded-sm shadow-sm min-w-[320px] transition hover:shadow-sm">
             <div className="flex justify-between items-center border-b pb-2 mb-2">
               <div className="flex gap-2 items-center">
-                <h1 className="font-bold text-lg text-blue-700">To-do</h1>
-                <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-semibold">
+                <h1 className="font-bold text-lg text-gray-700">To-do</h1>
+                <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-sm font-semibold">
                   {tasks.filter((task) => task.status === "todo").length}
                 </span>
               </div>
               <div className="flex gap-2 items-center">
-                <button className="text-gray-400 hover:text-blue-500 transition">
+                <button className="text-gray-400 hover:text-gray-500 transition">
                   <AiOutlineMore />
                 </button>
               </div>
@@ -349,11 +349,11 @@ const Tasks = () => {
             )}
           </div>
           {/* doing */}
-          <div className="flex-1 flex flex-col gap-3 p-4 bg-white/80 border border-gray-200 rounded-2xl shadow-md min-w-[320px] transition hover:shadow-lg">
+          <div className="flex-1 flex flex-col gap-3 p-4 bg-white/80 border border-gray-200 rounded-sm shadow-sm min-w-[320px] transition hover:shadow-sm">
             <div className="flex justify-between items-center border-b pb-2 mb-2">
               <div className="flex gap-2 items-center">
                 <h1 className="font-bold text-lg text-yellow-700">In progress</h1>
-                <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full font-semibold">
+                <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-sm font-semibold">
                   {tasks.filter((task) => task.status === "doing").length}
                 </span>
               </div>
@@ -410,11 +410,11 @@ const Tasks = () => {
             )}
           </div>
           {/* done */}
-          <div className="flex-1 flex flex-col gap-3 p-4 bg-white/80 border border-gray-200 rounded-2xl shadow-md min-w-[320px] transition hover:shadow-lg">
+          <div className="flex-1 flex flex-col gap-3 p-4 bg-white/80 border border-gray-200 rounded-sm shadow-sm min-w-[320px] transition hover:shadow-sm">
             <div className="flex justify-between items-center border-b pb-2 mb-2">
               <div className="flex gap-2 items-center">
                 <h1 className="font-bold text-lg text-green-700">Done</h1>
-                <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-semibold">
+                <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-sm font-semibold">
                   {tasks.filter((task) => task.status === "done").length}
                 </span>
               </div>
@@ -472,11 +472,11 @@ const Tasks = () => {
           </div>
           {/* archived */}
           <div className="flex-1 min-w-[320px]">
-            <div className="flex flex-col gap-3 p-4 bg-gray-50 border border-gray-200 rounded-2xl shadow-md h-full transition hover:shadow-lg">
+            <div className="flex flex-col gap-3 p-4 bg-gray-50 border border-gray-200 rounded-sm shadow-sm h-full transition hover:shadow-sm">
               <div className="flex justify-between items-center border-b pb-2 mb-2 gap-4">
                 <div className="flex gap-2 items-center">
                   <h1 className="font-bold text-lg text-gray-700">Archived</h1>
-                  <span className="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded-full font-semibold">
+                  <span className="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded-sm font-semibold">
                     {archivedTasks.length}
                   </span>
                 </div>
@@ -549,7 +549,7 @@ const Tasks = () => {
         </div>
       )}
       <dialog id="add_task" className="modal">
-        <div className="modal-box bg-white p-4 rounded-md shadow-md w-fit lg:w-1/2 mx-auto mt-10 overflow-auto scrollbar-hide">
+        <div className="modal-box bg-white p-4 rounded-sm shadow-sm w-fit lg:w-1/2 mx-auto mt-10 overflow-auto scrollbar-hide">
           <form method="dialog">
             <button
               className="absolute btn btn-sm btn-circle btn-ghost right-2 top-2"
@@ -566,8 +566,8 @@ const Tasks = () => {
 
       {/* edit task */}
       <dialog id="my_modal_4" className="modal">
-        {/* <div className="modal-box bg-white p-4 rounded-md shadow-md w-fit lg:w-1/2 mx-auto mt-10"> */}
-        <div className="modal-box bg-white p-4 rounded-md shadow-md w-fit lg:w-1/2 mx-auto mt-10 overflow-auto scrollbar-hide">
+        {/* <div className="modal-box bg-white p-4 rounded-sm shadow-sm w-fit lg:w-1/2 mx-auto mt-10"> */}
+        <div className="modal-box bg-white p-4 rounded-sm shadow-sm w-fit lg:w-1/2 mx-auto mt-10 overflow-auto scrollbar-hide">
           <form method="dialog">
             {/* if there is a button in form, it will close the modal */}
             <button
@@ -584,7 +584,7 @@ const Tasks = () => {
         </div>
       </dialog>
       <dialog id="ai_gen_task" className="modal overflow-x-scroll">
-        <div className="modal-box bg-white p-4 rounded-md shadow-md sm:w-fit lg:w-1/2 mx-auto mt-10">
+        <div className="modal-box bg-white p-4 rounded-sm shadow-sm sm:w-fit lg:w-1/2 mx-auto mt-10">
           <form method="dialog">
             {/* if there is a button in form, it will close the modal */}
             <button

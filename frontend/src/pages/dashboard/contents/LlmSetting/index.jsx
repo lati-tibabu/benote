@@ -45,14 +45,14 @@ const Index = () => {
   };
 
   return (
-    <div className="bg-gray-100 p-4 border-2 rounded-lg shadow-lg">
+    <div className="bg-gray-100 p-4 border-2 rounded-sm shadow-sm">
       <ToastContainer />
       <p className="text-2xl text-gray-800 font-semibold">
         AI Functionality Settings
       </p>
 
       {/* Toggle Gemini Feature */}
-      <fieldset className="p-4 border rounded-lg flex items-center gap-3 bg-white shadow-md mt-3">
+      <fieldset className="p-4 border rounded-sm flex items-center gap-3 bg-white shadow-sm mt-3">
         <input
           type="checkbox"
           checked={useGemini}
@@ -69,8 +69,8 @@ const Index = () => {
         <div className="mt-4">
           <p className="text-gray-700 font-medium mb-1">Gemini API Key</p>
 
-          <div className="border-2 w-full p-3 flex items-center rounded-lg bg-white shadow-md focus-within:border-purple-500">
-            <FaKey className="mr-3 text-blue-600" size={20} />
+          <div className="border-2 w-full p-3 flex items-center rounded-sm bg-white shadow-sm focus-within:border-gray-500">
+            <FaKey className="mr-3 text-gray-600" size={20} />
             <input
               type={isVisible ? "text" : "password"}
               placeholder="Enter Your Gemini API Key"
@@ -83,12 +83,12 @@ const Index = () => {
             <button
               type="button"
               onClick={() => setIsVisible(!isVisible)}
-              className="text-blue-600 hover:text-purple-600 transition"
+              className="text-gray-600 hover:text-gray-600 transition"
             >
               {isVisible ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
             </button>
             <button
-              className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-purple-600 transition"
+              className="ml-4 px-4 py-2 bg-gray-600 text-white rounded-sm hover:bg-gray-600 transition"
               onClick={handleSaveApiKey}
             >
               Save
@@ -102,7 +102,7 @@ const Index = () => {
               href="https://aistudio.google.com/apikey"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
+              className="text-gray-600 hover:underline"
             >
               Get your API key here.
             </a>
@@ -114,7 +114,7 @@ const Index = () => {
       {useGemini && (
         <div className="mt-4">
           <p className="text-gray-700 font-medium mb-1">Gemini Model Selection</p>
-          <div className="border-2 w-full p-3 rounded-lg bg-white shadow-md focus-within:border-purple-500">
+          <div className="border-2 w-full p-3 rounded-sm bg-white shadow-sm focus-within:border-gray-500">
             <select
               value={selectedModel}
               onChange={(e) => handleModelChange(e.target.value)}

@@ -265,7 +265,7 @@ class ApiErrorBoundary extends React.Component {
 
 ```jsx
 // components/LoadingSpinner.jsx
-const LoadingSpinner = ({ size = 'md', color = 'blue' }) => {
+const LoadingSpinner = ({ size = 'md', color = 'gray' }) => {
   const sizeClasses = {
     sm: 'w-4 h-4',
     md: 'w-8 h-8',
@@ -273,13 +273,13 @@ const LoadingSpinner = ({ size = 'md', color = 'blue' }) => {
   };
 
   const colorClasses = {
-    blue: 'border-blue-500',
+    gray: 'border-gray-500',
     gray: 'border-gray-500',
     green: 'border-green-500',
   };
 
   return (
-    <div className={`animate-spin rounded-full border-2 border-t-transparent ${sizeClasses[size]} ${colorClasses[color]}`} />
+    <div className={`animate-spin rounded-sm border-2 border-t-transparent ${sizeClasses[size]} ${colorClasses[color]}`} />
   );
 };
 ```

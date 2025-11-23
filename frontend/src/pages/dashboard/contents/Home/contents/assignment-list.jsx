@@ -66,30 +66,30 @@ const AssignmentList = () => {
     fetchAssignments();
   }, []);
 
-  // Overdue: reddish blue, Upcoming: greenish blue
+  // Overdue: reddish gray, Upcoming: greenish gray
   const AssignmentCard = ({ assignment, overdue }) => (
     <button
       type="button"
       onClick={() => navigate(`/app/classroom/${assignment.classroom_id}`)}
-      className={`relative flex flex-col gap-2 p-6 rounded-2xl shadow bg-gradient-to-br ${
+      className={`relative flex flex-col gap-2 p-6 rounded-sm shadow bg-gradient-to-br ${
         overdue
-          ? 'from-red-50 to-blue-50 border-red-200 ring-2 ring-red-300'
-          : 'from-green-50 to-blue-50 border-green-200 ring-1 ring-green-200'
-      } hover:shadow-xl transition group focus:outline-none focus:ring-2 focus:ring-blue-300 active:scale-[0.98] text-left w-full cursor-pointer`}
+          ? 'from-red-50 to-gray-50 border-red-200 ring-2 ring-red-300'
+          : 'from-green-50 to-gray-50 border-green-200 ring-1 ring-green-200'
+      } hover:shadow-sm transition group focus:outline-none focus:ring-2 focus:ring-gray-300 active:scale-[0.98] text-left w-full cursor-pointer`}
       tabIndex={0}
       aria-label={`View classroom for ${assignment.title}`}
     >
       <div className="flex items-center gap-2">
-        <h3 className="font-semibold text-lg sm:text-xl text-blue-900 group-hover:text-blue-700 transition select-none truncate" style={{maxWidth: '85%'}} title={assignment.title}>
+        <h3 className="font-semibold text-lg sm:text-xl text-gray-900 group-hover:text-gray-700 transition select-none truncate" style={{maxWidth: '85%'}} title={assignment.title}>
           {assignment.title}
         </h3>
         {overdue && (
-          <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-red-100 text-red-600 font-medium animate-pulse">
+          <span className="ml-2 px-2 py-0.5 text-xs rounded-sm bg-red-100 text-red-600 font-medium animate-pulse">
             Overdue
           </span>
         )}
       </div>
-      <p className="text-sm text-blue-700/80 line-clamp-2 select-none">
+      <p className="text-sm text-gray-700/80 line-clamp-2 select-none">
         {assignment.description}
       </p>
       <div className="flex items-center justify-between mt-2">
@@ -124,7 +124,7 @@ const AssignmentList = () => {
     return (
       <div className="flex flex-col items-center justify-center py-16">
         <svg
-          className="animate-spin h-8 w-8 text-blue-500 mb-4"
+          className="animate-spin h-8 w-8 text-gray-500 mb-4"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -153,8 +153,8 @@ const AssignmentList = () => {
     <div className="max-w-5xl mx-auto px-4 py-10 space-y-12">
       <section>
         <div className="flex items-center gap-3 mb-6">
-          <span className="inline-block w-1 h-8 bg-gradient-to-b from-blue-400 to-blue-600 rounded-full"></span>
-          <h2 className="text-2xl sm:text-3xl font-bold text-blue-800 tracking-tight select-none">
+          <span className="inline-block w-1 h-8 bg-gradient-to-b from-gray-400 to-gray-600 rounded-sm"></span>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 tracking-tight select-none">
             Overdue Assignments
           </h2>
         </div>
@@ -169,9 +169,9 @@ const AssignmentList = () => {
             ))}
           </div>
         ) : (
-          <div className="flex items-center gap-2 text-blue-300 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-100 rounded-xl px-4 py-8 text-base font-medium shadow-sm">
+          <div className="flex items-center gap-2 text-gray-300 bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-100 rounded-sm px-4 py-8 text-base font-medium shadow-sm">
             <svg
-              className="w-6 h-6 text-blue-400"
+              className="w-6 h-6 text-gray-400"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
@@ -190,8 +190,8 @@ const AssignmentList = () => {
 
       <section>
         <div className="flex items-center gap-3 mb-6">
-          <span className="inline-block w-1 h-8 bg-gradient-to-b from-blue-300 to-blue-500 rounded-full"></span>
-          <h2 className="text-2xl sm:text-3xl font-bold text-blue-800 tracking-tight select-none">
+          <span className="inline-block w-1 h-8 bg-gradient-to-b from-gray-300 to-gray-500 rounded-sm"></span>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 tracking-tight select-none">
             Upcoming Assignments
           </h2>
         </div>
@@ -206,9 +206,9 @@ const AssignmentList = () => {
             ))}
           </div>
         ) : (
-          <div className="flex items-center gap-2 text-blue-300 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-100 rounded-xl px-4 py-8 text-base font-medium shadow-sm">
+          <div className="flex items-center gap-2 text-gray-300 bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-100 rounded-sm px-4 py-8 text-base font-medium shadow-sm">
             <svg
-              className="w-6 h-6 text-blue-400"
+              className="w-6 h-6 text-gray-400"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"

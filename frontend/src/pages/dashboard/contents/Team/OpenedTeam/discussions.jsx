@@ -221,7 +221,7 @@ const Discussions = () => {
               isOwn ? "flex-row-reverse" : ""
             }`}
           >
-            <div className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-100 text-blue-600">
+            <div className="w-8 h-8 flex items-center justify-center rounded-sm bg-gray-100 text-gray-600">
               <FaUserCircle size={22} />
             </div>
             <span className="text-xs font-semibold text-gray-600">
@@ -229,9 +229,9 @@ const Discussions = () => {
             </span>
           </div>
           <div
-            className={`mt-1 px-4 py-2 rounded-2xl shadow-sm border ${
+            className={`mt-1 px-4 py-2 rounded-sm shadow-sm border ${
               isOwn
-                ? "bg-blue-100 border-blue-200 text-blue-900"
+                ? "bg-gray-100 border-gray-200 text-gray-900"
                 : "bg-white border-gray-200 text-gray-800"
             }`}
           >
@@ -241,7 +241,7 @@ const Discussions = () => {
                 {formatPostDate(discussion.createdAt)}
               </span>
               <button
-                className="ml-2 text-xs text-blue-500 hover:text-blue-700 flex items-center gap-1"
+                className="ml-2 text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1"
                 onClick={() => {
                   setReplyData({
                     replying: true,
@@ -250,7 +250,7 @@ const Discussions = () => {
                   });
                 }}
               >
-                <FaReply className="text-blue-400" /> Reply
+                <FaReply className="text-gray-400" /> Reply
                 {discussion.replies?.length > 0 && (
                   <span className="ml-1 text-gray-400">
                     ({discussion.replies.length})
@@ -322,7 +322,7 @@ const Discussions = () => {
       <ToastContainer />
       {/* Header */}
       <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100 bg-white/80 shadow-sm">
-        <FaRegComments className="text-blue-500" size={22} />
+        <FaRegComments className="text-gray-500" size={22} />
         <h1 className="font-bold text-lg text-gray-900">Team Discussions</h1>
         <span
           className={`ml-auto text-xs font-bold flex items-center gap-1 ${
@@ -353,7 +353,7 @@ const Discussions = () => {
             </div>
           ) : (
             <div className="flex justify-center items-center h-full">
-              <span className="loading loading-spinner text-blue-500"></span>
+              <span className="loading loading-spinner text-gray-500"></span>
             </div>
           )}
           <div ref={bottomRef} />
@@ -361,8 +361,8 @@ const Discussions = () => {
       </div>
       {/* Reply Preview */}
       {replyData.replying && (
-        <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 border-t border-blue-200">
-          <FaReply className="text-blue-400" />
+        <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 border-t border-gray-200">
+          <FaReply className="text-gray-400" />
           <span className="text-xs text-gray-700">Replying to:</span>
           <span className="text-xs text-gray-500 truncate max-w-xs">
             {(replyData.content || "No content").slice(0, 50) + "..."}
@@ -386,10 +386,10 @@ const Discussions = () => {
           onChange={handleInputChange}
           value={discussionData.content}
           placeholder="Type a message..."
-          className="w-full h-12 p-2 text-sm rounded-lg resize-none bg-gray-100 focus:ring-2 focus:ring-blue-400 focus:outline-none border border-gray-200 transition-all"
+          className="w-full h-12 p-2 text-sm rounded-sm resize-none bg-gray-100 focus:ring-2 focus:ring-gray-400 focus:outline-none border border-gray-200 transition-all"
         ></textarea>
         <button
-          className="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3 shadow-md transition"
+          className="flex items-center justify-center bg-gray-600 hover:bg-gray-700 text-white rounded-sm p-3 shadow-sm transition"
           type="submit"
           title="Send"
         >

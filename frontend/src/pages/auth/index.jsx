@@ -17,7 +17,7 @@ function AuthPages() {
           </h1>
         </div>
         {/* <Link to="/info" className="hidden md:block">
-          <div className="bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700 transition">
+          <div className="bg-gray-800 text-white p-2 rounded-sm hover:bg-gray-700 transition">
             <AiOutlineInfo size={24} />
           </div>
         </Link> */}
@@ -25,7 +25,7 @@ function AuthPages() {
 
       {/* Main Content */}
       <main className="flex-grow flex items-center justify-center py-10">
-        <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg p-6">
+        <div className="w-full max-w-4xl bg-white shadow-sm rounded-sm p-6">
           <Outlet />
         </div>
       </main>

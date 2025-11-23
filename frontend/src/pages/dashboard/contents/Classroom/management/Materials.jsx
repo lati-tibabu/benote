@@ -101,7 +101,7 @@ const Materials = ({ isTeacher }) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl border border-gray-200">
+    <div className="max-w-4xl mx-auto p-6 bg-gradient-to-br from-white to-gray-50 rounded-sm shadow-sm border border-gray-200">
       <h2 className="text-3xl font-bold text-gray-800 mb-8 tracking-tight">
         Materials
       </h2>
@@ -109,14 +109,14 @@ const Materials = ({ isTeacher }) => {
       {isTeacher && (
         <form
           onSubmit={handleUpload}
-          className="mb-10 bg-white/80 rounded-xl shadow p-6 flex flex-col gap-4 border border-gray-100"
+          className="mb-10 bg-white/80 rounded-sm shadow p-6 flex flex-col gap-4 border border-gray-100"
         >
           <div className="flex flex-col gap-2">
             <label className="font-medium text-gray-700">File</label>
             <input
               type="file"
               onChange={(e) => setFile(e.target.files[0])}
-              className="file-input bg-white text-black file-input-bordered w-full focus:ring-2 focus:ring-blue-400 transition"
+              className="file-input bg-white text-black file-input-bordered w-full focus:ring-2 focus:ring-gray-400 transition"
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -125,13 +125,13 @@ const Materials = ({ isTeacher }) => {
               placeholder="Enter file description (optional)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="textarea bg-white text-black textarea-bordered w-full min-h-[60px] focus:ring-2 focus:ring-blue-400 transition"
+              className="textarea bg-white text-black textarea-bordered w-full min-h-[60px] focus:ring-2 focus:ring-gray-400 transition"
             />
           </div>
           <div className="flex justify-end">
             <button
               type="submit"
-              className="px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition"
+              className="px-6 py-2 rounded-sm bg-gray-600 text-white font-semibold shadow hover:bg-gray-700 transition"
             >
               Upload
             </button>
@@ -145,7 +145,7 @@ const Materials = ({ isTeacher }) => {
         </h3>
         <button
           onClick={() => setIsGridView(!isGridView)}
-          className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-lg hover:bg-blue-100 transition"
+          className="text-sm font-medium text-gray-600 bg-gray-50 px-3 py-1 rounded-sm hover:bg-gray-100 transition"
         >
           Switch to {isGridView ? "List" : "Grid"} View
         </button>
@@ -168,10 +168,10 @@ const Materials = ({ isTeacher }) => {
           {materials.map((material) => (
             <div
               key={material.id}
-              className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex flex-col justify-between group hover:shadow-md hover:border-blue-200 transition"
+              className="bg-white rounded-sm border border-gray-100 shadow-sm p-5 flex flex-col justify-between group hover:shadow-sm hover:border-gray-200 transition"
             >
               <div>
-                <h4 className="text-lg font-semibold text-gray-800 group-hover:text-blue-700 break-words mb-1 truncate">
+                <h4 className="text-lg font-semibold text-gray-800 group-hover:text-gray-700 break-words mb-1 truncate">
                   {material.name}
                 </h4>
                 <p className="text-sm text-gray-500 mb-1 line-clamp-2">
@@ -186,14 +186,14 @@ const Materials = ({ isTeacher }) => {
                   href={material.path}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-lg hover:bg-blue-100 transition"
+                  className="text-sm font-medium text-gray-600 bg-gray-50 px-3 py-1 rounded-sm hover:bg-gray-100 transition"
                 >
                   Download
                 </a>
                 {userData?.id === material.uploader_id && (
                   <button
                     onClick={() => handleDelete(material.id)}
-                    className="text-sm font-medium text-red-600 bg-red-50 px-3 py-1 rounded-lg hover:bg-red-100 transition"
+                    className="text-sm font-medium text-red-600 bg-red-50 px-3 py-1 rounded-sm hover:bg-red-100 transition"
                   >
                     Delete
                   </button>

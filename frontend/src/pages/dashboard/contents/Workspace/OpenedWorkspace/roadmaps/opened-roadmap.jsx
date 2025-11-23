@@ -80,17 +80,17 @@ const OpenedRoadmap = () => {
   return (
     <section className="p-6 space-y-6 min-h-screen bg-white">
       {/* Header */}
-      <div className="bg-blue-50 p-6 rounded-xl shadow-sm flex flex-col gap-2">
+      <div className="bg-gray-50 p-6 rounded-sm shadow-sm flex flex-col gap-2">
         <div className="flex items-center gap-2 mb-2">
           <button
-            className="p-2 rounded-full hover:bg-blue-100 transition text-blue-600"
+            className="p-2 rounded-sm hover:bg-gray-100 transition text-gray-600"
             onClick={() => navigate(-1)}
             title="Back"
           >
             <FaArrowLeft size={18} />
           </button>
-          <FaMap className="text-blue-500" size={22} />
-          <h1 className="text-xl font-bold text-blue-800">
+          <FaMap className="text-gray-500" size={22} />
+          <h1 className="text-xl font-bold text-gray-800">
             {roadmap?.title || "Untitled Roadmap"}
           </h1>
         </div>
@@ -104,14 +104,14 @@ const OpenedRoadmap = () => {
         ref={roadmapItemsRef}
         onMouseDown={handleMouseDown}
         style={{ cursor: isDragging ? "grabbing" : "grab" }}
-        className="flex gap-4 overflow-x-auto py-4 px-1 rounded-lg border bg-white shadow-inner"
+        className="flex gap-4 overflow-x-auto py-4 px-1 rounded-sm border bg-white shadow-inner"
       >
         {roadmap?.roadmap_items?.map((item, index) => {
           const expanded = !!expandedItems[item.id];
           return (
             <div
               key={item.id}
-              className={`min-w-[280px] max-w-[280px] bg-white border border-gray-100 p-4 rounded-xl shadow-sm hover:shadow-md transition flex flex-col justify-between ${
+              className={`min-w-[280px] max-w-[280px] bg-white border border-gray-100 p-4 rounded-sm shadow-sm hover:shadow-sm transition flex flex-col justify-between ${
                 expanded ? "" : "overflow-hidden"
               }`}
             >
@@ -120,7 +120,7 @@ const OpenedRoadmap = () => {
                 onClick={() => toggleExpand(item.id)}
               >
                 {expanded ? (
-                  <FaChevronDown className="text-blue-400" size={16} />
+                  <FaChevronDown className="text-gray-400" size={16} />
                 ) : (
                   <FaChevronRight className="text-gray-300" size={16} />
                 )}
@@ -145,7 +145,7 @@ const OpenedRoadmap = () => {
           onClick={() =>
             document.getElementById("new-roadmap-item-form").showModal()
           }
-          className="min-w-[280px] max-w-[280px] max-h-[100px] flex flex-col items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-dashed border-blue-400 rounded-xl p-4 transition"
+          className="min-w-[280px] max-w-[280px] max-h-[100px] flex flex-col items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 text-gray-700 border border-dashed border-gray-400 rounded-sm p-4 transition"
         >
           <AiOutlinePlus className="w-6 h-6" />
           <span className="font-medium">Add New Item</span>
@@ -154,7 +154,7 @@ const OpenedRoadmap = () => {
 
       {/* Modal */}
       <dialog id="new-roadmap-item-form" className="modal">
-        <div className="modal-box bg-white p-5 rounded-lg max-w-md">
+        <div className="modal-box bg-white p-5 rounded-sm max-w-md">
           <form method="dialog">
             <button
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"

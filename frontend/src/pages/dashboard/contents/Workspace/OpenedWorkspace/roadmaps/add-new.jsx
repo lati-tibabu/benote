@@ -48,23 +48,23 @@ const AddNewRoadmap = () => {
       <form
       // onSubmit={() => handleSubmit}
       >
-        <fieldset className="flex flex-col relative border-2 p-4 rounded-lg">
+        <fieldset className="flex flex-col relative border-2 p-4 rounded-sm">
           <legend className="text-lg font-medium text-gray-600 mb-2">
             Title
           </legend>
           <input
-            className="p-3 border rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 bg-transparent"
+            className="p-3 border rounded-sm border-gray-300 focus:ring-2 focus:ring-gray-500 bg-transparent"
             type="text"
             name="title"
             onChange={(e) => setRoadmap({ ...roadmap, title: e.target.value })}
           />
         </fieldset>
-        <fieldset className="flex flex-col relative border-2 p-4 rounded-lg">
+        <fieldset className="flex flex-col relative border-2 p-4 rounded-sm">
           <legend className="text-lg font-medium text-gray-600 mb-2">
             Description
           </legend>
           <textarea
-            className="p-3 border rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 bg-transparent"
+            className="p-3 border rounded-sm border-gray-300 focus:ring-2 focus:ring-gray-500 bg-transparent"
             onChange={(e) =>
               setRoadmap({ ...roadmap, description: e.target.value })
             }
@@ -73,7 +73,7 @@ const AddNewRoadmap = () => {
 
         <button
           type="button"
-          className="btn w-full bg-blue-500 text-white hover:bg-blue-600 mt-2"
+          className="btn w-full bg-gray-500 text-white hover:bg-gray-600 mt-2"
           onClick={handleAddRoadmap}
         >
           Create

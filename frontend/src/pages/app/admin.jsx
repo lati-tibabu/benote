@@ -17,13 +17,13 @@ const Admin = () => {
         <div>
           <ul className="flex flex-row gap-2">
             <Link to={"users"}>
-              <li className="cursor-pointer hover:text-blue-800 flex items-center gap-1 p-2 hover:bg-blue-200 rounded-sm">
+              <li className="cursor-pointer hover:text-gray-800 flex items-center gap-1 p-2 hover:bg-gray-200 rounded-sm">
                 <FaUser />
                 Users
               </li>
             </Link>
             <Link to={"public-teams"}>
-              <li className="cursor-pointer hover:text-blue-800 flex items-center gap-1 p-2 hover:bg-blue-200 rounded-sm">
+              <li className="cursor-pointer hover:text-gray-800 flex items-center gap-1 p-2 hover:bg-gray-200 rounded-sm">
                 <FaTelegram />
                 Public Teams
               </li>

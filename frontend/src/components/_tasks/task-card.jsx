@@ -4,7 +4,7 @@ import { FaArchive, FaGripLines, FaTrash, FaUndo } from "react-icons/fa";
 import MarkdownRenderer from "../markdown-renderer";
 
 const statusColors = {
-  todo: "bg-blue-100 text-blue-700 border-blue-300",
+  todo: "bg-gray-100 text-gray-700 border-gray-300",
   doing: "bg-yellow-100 text-yellow-700 border-yellow-300",
   done: "bg-green-100 text-green-700 border-green-300",
 };
@@ -34,7 +34,7 @@ const TaskCard = (props) => {
 
   return (
     <div
-      className="flex flex-col border border-gray-200 rounded-2xl p-4 min-w-72 shadow-sm bg-white transition-shadow hover:shadow-xl duration-200 group relative overflow-hidden"
+      className="flex flex-col border border-gray-200 rounded-sm p-4 min-w-72 shadow-sm bg-white transition-shadow hover:shadow-sm duration-200 group relative overflow-hidden"
       style={{ minHeight: 260 }}
     >
       {/* Drag Handle */}
@@ -52,12 +52,12 @@ const TaskCard = (props) => {
           />
           <ul
             tabIndex={0}
-            className="dropdown-content menu bg-white border border-gray-200 rounded-xl w-44 p-2 shadow-xl text-left absolute right-0 mt-2"
+            className="dropdown-content menu bg-white border border-gray-200 rounded-sm w-44 p-2 shadow-sm text-left absolute right-0 mt-2"
           >
             {!isArchived && props.status === "todo" && (
               <li>
                 <button
-                  className="flex items-center gap-2 p-2 text-gray-700 hover:text-blue-600 rounded-md hover:bg-blue-50 transition"
+                  className="flex items-center gap-2 p-2 text-gray-700 hover:text-gray-600 rounded-sm hover:bg-gray-50 transition"
                   onClick={handleEditButton}
                 >
                   <AiFillEdit />
@@ -68,7 +68,7 @@ const TaskCard = (props) => {
             <li>
               {!isArchived ? (
                 <button
-                  className="flex items-center gap-2 p-2 text-gray-700 hover:text-purple-600 rounded-md hover:bg-purple-50 transition"
+                  className="flex items-center gap-2 p-2 text-gray-700 hover:text-gray-600 rounded-sm hover:bg-gray-50 transition"
                   onClick={handleArchiveButton}
                 >
                   <FaArchive />
@@ -76,7 +76,7 @@ const TaskCard = (props) => {
                 </button>
               ) : (
                 <button
-                  className="flex items-center gap-2 p-2 text-gray-700 hover:text-green-600 rounded-md hover:bg-green-50 transition"
+                  className="flex items-center gap-2 p-2 text-gray-700 hover:text-green-600 rounded-sm hover:bg-green-50 transition"
                   onClick={handleUnarchiveButton}
                 >
                   <FaUndo />
@@ -86,7 +86,7 @@ const TaskCard = (props) => {
             </li>
             <li>
               <button
-                className="flex items-center gap-2 p-2 text-red-600 hover:text-red-700 rounded-md hover:bg-red-50 transition"
+                className="flex items-center gap-2 p-2 text-red-600 hover:text-red-700 rounded-sm hover:bg-red-50 transition"
                 onClick={handleDeleteButton}
               >
                 <FaTrash />
@@ -98,7 +98,7 @@ const TaskCard = (props) => {
       </div>
       {/* Status Badge */}
       {/* <div
-        className={` left-3 top-12 px-3 py-1 rounded-full border text-xs font-semibold ${
+        className={` left-3 top-12 px-3 py-1 rounded-sm border text-xs font-semibold ${
           statusColors[props.status] ||
           "bg-gray-100 text-gray-500 border-gray-200"
         }`}
@@ -116,23 +116,23 @@ const TaskCard = (props) => {
           <MarkdownRenderer content={props.taskDescription} />
         </div>
         <div className="flex flex-wrap gap-2 text-xs text-gray-500 mt-1">
-          <span className="bg-gray-100 px-2 py-1 rounded-full">
+          <span className="bg-gray-100 px-2 py-1 rounded-sm">
             <strong>Assigned:</strong>{" "}
-            <span className="hover:underline cursor-pointer hover:text-blue-700">
+            <span className="hover:underline cursor-pointer hover:text-gray-700">
               {props.taskAssignedTo}
             </span>
           </span>
-          <span className="bg-gray-100 px-2 py-1 rounded-full">
+          <span className="bg-gray-100 px-2 py-1 rounded-sm">
             <strong>Due:</strong>{" "}
             <span className="text-red-500">{props.dueDate}</span>
           </span>
-          <span className="bg-gray-100 px-2 py-1 rounded-full">
+          <span className="bg-gray-100 px-2 py-1 rounded-sm">
             <strong>Created:</strong> <span>{props.createdAt}</span>
           </span>
         </div>
         {/* Days Elapsed */}
         <div className="flex items-center gap-2 mt-2">
-          <span className="inline-block px-3 py-1 rounded-full bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 font-medium text-xs border border-blue-200">
+          <span className="inline-block px-3 py-1 rounded-sm bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 font-medium text-xs border border-gray-200">
             {props.daysLeft}
           </span>
         </div>
@@ -146,7 +146,7 @@ const TaskCard = (props) => {
               {props.status !== "todo" && (
                 <button
                   onClick={() => handleStatusChange("todo")}
-                  className="px-4 py-2 text-xs font-medium text-white bg-blue-500 rounded-lg shadow hover:bg-blue-600 transition"
+                  className="px-4 py-2 text-xs font-medium text-white bg-gray-500 rounded-sm shadow hover:bg-gray-600 transition"
                 >
                   To Do
                 </button>
@@ -154,7 +154,7 @@ const TaskCard = (props) => {
               {props.status !== "doing" && (
                 <button
                   onClick={() => handleStatusChange("doing")}
-                  className="px-4 py-2 text-xs font-medium text-white bg-yellow-500 rounded-lg shadow hover:bg-yellow-600 transition"
+                  className="px-4 py-2 text-xs font-medium text-white bg-yellow-500 rounded-sm shadow hover:bg-yellow-600 transition"
                 >
                   In Progress
                 </button>
@@ -162,7 +162,7 @@ const TaskCard = (props) => {
               {props.status !== "done" && (
                 <button
                   onClick={() => handleStatusChange("done")}
-                  className="px-4 py-2 text-xs font-medium text-white bg-green-500 rounded-lg shadow hover:bg-green-600 transition"
+                  className="px-4 py-2 text-xs font-medium text-white bg-green-500 rounded-sm shadow hover:bg-green-600 transition"
                 >
                   Completed
                 </button>

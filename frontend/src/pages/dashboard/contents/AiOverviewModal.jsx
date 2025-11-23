@@ -33,7 +33,7 @@ const AiOverviewModal = ({ open, onClose }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800/40 animate-fade-in">
       <div
         ref={modalRef}
-        className="relative bg-white rounded-xl shadow-2xl w-full max-w-3xl mx-4 p-0 animate-slide-down overflow-hidden"
+        className="relative bg-white rounded-sm shadow-sm w-full max-w-3xl mx-4 p-0 animate-slide-down overflow-hidden"
         style={{ minHeight: 400, maxHeight: "90vh" }}
       >
         <button
@@ -43,11 +43,11 @@ const AiOverviewModal = ({ open, onClose }) => {
         >
           <HiX />
         </button>
-        <div className="pt-8 pb-2 px-8 border-b flex items-center gap-2 bg-gradient-to-r from-blue-50 to-green-50">
+        <div className="pt-8 pb-2 px-8 border-b flex items-center gap-2 bg-gradient-to-r from-gray-50 to-green-50">
           <span role="img" aria-label="AI" className="text-2xl">
             🤖
           </span>
-          <h2 className="text-2xl font-bold text-blue-700">AI Overview</h2>
+          <h2 className="text-2xl font-bold text-gray-700">AI Overview</h2>
         </div>
         <div className="p-0 m-0 overflow-y-auto" style={{ maxHeight: "80vh" }}>
           {showContent && <AiSummary />}

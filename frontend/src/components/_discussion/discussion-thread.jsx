@@ -3,10 +3,10 @@ import { AiOutlineDelete } from "react-icons/ai";
 
 const DiscussionThread = ({ discussion }) => {
   return (
-    <div className="ml-4 pl-1 mt-2 min-w-80 bg-white hover:bg-gray-50 p-2 rounded-lg">
+    <div className="ml-4 pl-1 mt-2 min-w-80 bg-white hover:bg-gray-50 p-2 rounded-sm">
       <div className="flex items-center gap-1 px-4 py-1 justify-between">
         <div className="flex items-center gap-1 py-1">
-          <div className="p-4 w-5 h-5 bg-orange-600 flex items-center justify-center rounded-full text-white font-bold">
+          <div className="p-4 w-5 h-5 bg-orange-600 flex items-center justify-center rounded-sm text-white font-bold">
             {discussion["user.name"][0]}
           </div>
           <div className="font-bold text-sm">{discussion["user.name"]}</div>
@@ -18,7 +18,7 @@ const DiscussionThread = ({ discussion }) => {
           <AiOutlineDelete />
         </div>
       </div>
-      <div className="rounded-lg border-2 border-gray-100 p-2">
+      <div className="rounded-sm border-2 border-gray-100 p-2">
         <div className="p-2" title={discussion["user.email"]}>
           {/* {discussion.content} */}
           <MarkdownRenderer content={discussion.content} />
@@ -28,7 +28,7 @@ const DiscussionThread = ({ discussion }) => {
             {formatPostDate(discussion.createdAt)}
           </div>
           <div className="flex items-center mt-2 gap-2">
-            {/* <button className="flex items-center gap-1 text-sm text-blue-500 hover:text-blue-700">
+            {/* <button className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
               <FaThumbsUp />
               Like
               {discussion?.likes}

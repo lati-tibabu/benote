@@ -107,7 +107,7 @@ const TeamWorkspaces = () => {
               <li key={workspace.workspace_id}>
                 <div
                   title={workspace.workspace.description}
-                  className="flex gap-2 items-center cursor-default border-2 border-gray-300 p-3 rounded-box hover:bg-gray-50 hover:cursor-pointer hover:border-blue-500 hover:shadow transition-all duration-150"
+                  className="flex gap-2 items-center cursor-default border-2 border-gray-300 p-3 rounded-sm hover:bg-gray-50 hover:cursor-pointer hover:border-gray-500 hover:shadow transition-all duration-150"
                   onClick={() => handleWorkspaceOpen(workspace.workspace_id)}
                 >
                   {/* icon */}
@@ -132,7 +132,7 @@ const TeamWorkspaces = () => {
                     </div>
                     <div className="flex gap-2 items-center">
                       <button
-                        className="btn btn-secondary btn-sm text-white bg-blue-600 hover:bg-blue-500  border-none outline-none "
+                        className="btn btn-secondary btn-sm text-white bg-gray-600 hover:bg-gray-500  border-none outline-none "
                         onClick={(e) => {
                           e.stopPropagation();
                           handleWorkspaceOpen(workspace.workspace_id);
@@ -159,7 +159,7 @@ const TeamWorkspaces = () => {
       )}
 
       <dialog id="my_modal_3" className="modal overflow-x-scroll">
-        <div className="modal-box bg-white p-4 rounded-md shadow-md sm:w-fit lg:w-1/2 mx-auto mt-10 scrollbar-hide">
+        <div className="modal-box bg-white p-4 rounded-sm shadow-sm sm:w-fit lg:w-1/2 mx-auto mt-10 scrollbar-hide">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕

@@ -37,7 +37,7 @@ const News = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8 bg-white shadow-lg rounded-3xl">
+    <div className="max-w-6xl mx-auto px-6 py-8 bg-white shadow-sm rounded-sm">
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-2">
           📰 Explore News
@@ -52,9 +52,9 @@ const News = () => {
           <button
             key={category}
             onClick={() => setSelectedCategory(category)}
-            className={`capitalize px-4 py-2 rounded-full transition font-medium text-sm shadow-sm ${
+            className={`capitalize px-4 py-2 rounded-sm transition font-medium text-sm shadow-sm ${
               selectedCategory === category
-                ? "bg-blue-600 text-white"
+                ? "bg-gray-600 text-white"
                 : "bg-gray-100 text-gray-800 hover:bg-gray-200"
             }`}
           >
@@ -72,11 +72,11 @@ const News = () => {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search for specific news..."
-          className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+          className="flex-grow px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-gray-600"
         />
         <button
           type="submit"
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold"
+          className="px-6 py-2 bg-gray-600 text-white rounded-sm hover:bg-gray-700 transition font-semibold"
         >
           Search
         </button>
@@ -97,7 +97,7 @@ const News = () => {
             {Array.from({ length: 6 }).map((_, idx) => (
               <div
                 key={idx}
-                className="p-4 bg-gray-100 rounded-xl animate-pulse space-y-3"
+                className="p-4 bg-gray-100 rounded-sm animate-pulse space-y-3"
               >
                 <div className="h-5 w-3/4 bg-gray-300 rounded"></div>
                 <div className="h-4 w-full bg-gray-300 rounded"></div>
@@ -111,20 +111,20 @@ const News = () => {
               newsArticles.map((article, idx) => (
                 <article
                   key={idx}
-                  className="bg-gray-50 rounded-xl shadow-md hover:shadow-xl transition p-4 flex flex-col justify-between"
+                  className="bg-gray-50 rounded-sm shadow-sm hover:shadow-sm transition p-4 flex flex-col justify-between"
                 >
                   {article.urlToImage && (
                     <img
                       src={article.urlToImage}
                       alt={article.title}
-                      className="rounded-lg mb-3 object-cover h-40 w-full"
+                      className="rounded-sm mb-3 object-cover h-40 w-full"
                     />
                   )}
                   <a
                     href={article.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-lg font-semibold text-blue-700 hover:underline"
+                    className="text-lg font-semibold text-gray-700 hover:underline"
                   >
                     {article.title}
                   </a>

@@ -354,16 +354,16 @@ const AiGeneratedNote = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-full p-4 bg-gray-50 rounded-md overflow-hidden">
+    <div className="flex flex-col lg:flex-row h-full p-4 bg-gray-50 rounded-sm overflow-hidden">
       {/* Left Panel */}
-      <div className="w-full lg:w-2/5 p-4 bg-white rounded-md lg:mr-4 flex flex-col h-full overflow-y-auto border border-gray-200">
+      <div className="w-full lg:w-2/5 p-4 bg-white rounded-sm lg:mr-4 flex flex-col h-full overflow-y-auto border border-gray-200">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold text-gray-800 leading-tight">
             AI Note Assistant
           </h2>
           <button
             onClick={() => setShowSettings(!showSettings)}
-            className="p-2 rounded-md bg-gray-100 text-gray-600 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-all duration-200 ease-in-out"
+            className="p-2 rounded-sm bg-gray-100 text-gray-600 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-1 transition-all duration-200 ease-in-out"
             title={showSettings ? "Hide Settings" : "Show Settings"}
           >
             <FiSettings className="text-xl" />
@@ -382,7 +382,7 @@ const AiGeneratedNote = () => {
           }}
         >
           {showSettings && (
-            <div className="p-4 bg-white border border-gray-200 rounded-md">
+            <div className="p-4 bg-white border border-gray-200 rounded-sm">
               <h3 className="text-xl font-semibold text-gray-800 mb-4">
                 Generation Settings
               </h3>
@@ -398,7 +398,7 @@ const AiGeneratedNote = () => {
                   <div className="relative">
                     <select
                       id="noteLength"
-                      className="block text-gray-800 bg-white w-full py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none transition-all duration-200 ease-in-out"
+                      className="block text-gray-800 bg-white w-full py-2 px-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 appearance-none transition-all duration-200 ease-in-out"
                       value={noteLength}
                       onChange={(e) => setNoteLength(e.target.value)}
                     >
@@ -430,7 +430,7 @@ const AiGeneratedNote = () => {
                   <div className="relative">
                     <select
                       id="noteTone"
-                      className="block text-gray-800 bg-white w-full py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none transition-all duration-200 ease-in-out"
+                      className="block text-gray-800 bg-white w-full py-2 px-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 appearance-none transition-all duration-200 ease-in-out"
                       value={noteTone}
                       onChange={(e) => setNoteTone(e.target.value)}
                     >
@@ -464,7 +464,7 @@ const AiGeneratedNote = () => {
                   <div className="relative">
                     <select
                       id="noteType"
-                      className="block text-black bg-white w-full py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none transition-all duration-200 ease-in-out"
+                      className="block text-black bg-white w-full py-2 px-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 appearance-none transition-all duration-200 ease-in-out"
                       value={noteType}
                       onChange={(e) => setNoteType(e.target.value)}
                     >
@@ -493,13 +493,13 @@ const AiGeneratedNote = () => {
                     <input
                       id="includeEmojis"
                       type="checkbox"
-                      className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer transition-colors duration-200"
+                      className="h-5 w-5 text-gray-600 focus:ring-gray-500 border-gray-300 rounded cursor-pointer transition-colors duration-200"
                       checked={includeEmojis}
                       onChange={(e) => setIncludeEmojis(e.target.checked)}
                     />
                     <label
                       htmlFor="includeEmojis"
-                      className="ml-2 block text-base font-medium text-gray-800 select-none cursor-pointer group-hover:text-blue-700 transition-colors duration-200"
+                      className="ml-2 block text-base font-medium text-gray-800 select-none cursor-pointer group-hover:text-gray-700 transition-colors duration-200"
                     >
                       Emojis
                     </label>
@@ -510,13 +510,13 @@ const AiGeneratedNote = () => {
                     <input
                       id="includeLatex"
                       type="checkbox"
-                      className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer transition-colors duration-200"
+                      className="h-5 w-5 text-gray-600 focus:ring-gray-500 border-gray-300 rounded cursor-pointer transition-colors duration-200"
                       checked={includeLatex}
                       onChange={(e) => setIncludeLatex(e.target.checked)}
                     />
                     <label
                       htmlFor="includeLatex"
-                      className="ml-2 block text-base font-medium text-gray-800 select-none cursor-pointer group-hover:text-blue-700 transition-colors duration-200"
+                      className="ml-2 block text-base font-medium text-gray-800 select-none cursor-pointer group-hover:text-gray-700 transition-colors duration-200"
                     >
                       LaTeX
                     </label>
@@ -527,7 +527,7 @@ const AiGeneratedNote = () => {
                     <input
                       id="includeTableOfContents"
                       type="checkbox"
-                      className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer transition-colors duration-200"
+                      className="h-5 w-5 text-gray-600 focus:ring-gray-500 border-gray-300 rounded cursor-pointer transition-colors duration-200"
                       checked={includeTableOfContents}
                       onChange={(e) =>
                         setIncludeTableOfContents(e.target.checked)
@@ -535,7 +535,7 @@ const AiGeneratedNote = () => {
                     />
                     <label
                       htmlFor="includeTableOfContents"
-                      className="ml-2 block text-base font-medium text-gray-800 select-none cursor-pointer group-hover:text-blue-700 transition-colors duration-200"
+                      className="ml-2 block text-base font-medium text-gray-800 select-none cursor-pointer group-hover:text-gray-700 transition-colors duration-200"
                     >
                       Table of Contents
                     </label>
@@ -554,7 +554,7 @@ const AiGeneratedNote = () => {
             </h3>
             <button
               onClick={() => setShowChatHistory(!showChatHistory)}
-              className="p-1.5 rounded-md bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all duration-200 ease-in-out"
+              className="p-1.5 rounded-sm bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-500 transition-all duration-200 ease-in-out"
               title={
                 showChatHistory ? "Hide Chat History" : "Show Chat History"
               }
@@ -577,9 +577,9 @@ const AiGeneratedNote = () => {
                   {chatHistory.map((message, index) => (
                     <div
                       key={index}
-                      className={`p-2 rounded-md ${
+                      className={`p-2 rounded-sm ${
                         message.role === "user"
-                          ? "bg-blue-50 text-blue-900 self-end ml-auto"
+                          ? "bg-gray-50 text-gray-900 self-end ml-auto"
                           : "bg-gray-100 text-gray-800 self-start mr-auto"
                       }`}
                     >
@@ -613,8 +613,8 @@ const AiGeneratedNote = () => {
 
         {/* Follow-up Suggestions */}
         {followUpSuggestions.length > 0 && (
-          <div className="mb-4 p-3 bg-indigo-50 rounded-md border border-indigo-200">
-            <h3 className="text-md font-semibold text-indigo-800 mb-2">
+          <div className="mb-4 p-3 bg-gray-50 rounded-sm border border-gray-200">
+            <h3 className="text-md font-semibold text-gray-800 mb-2">
               Quick Follow-ups:
             </h3>
             <div className="flex flex-wrap gap-2">
@@ -622,7 +622,7 @@ const AiGeneratedNote = () => {
                 <button
                   key={index}
                   onClick={() => handleFollowUpClick(suggestion)}
-                  className="px-3 py-1 bg-indigo-600 text-white text-sm rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 transition-all duration-200 ease-in-out"
+                  className="px-3 py-1 bg-gray-600 text-white text-sm rounded-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-1 transition-all duration-200 ease-in-out"
                 >
                   {suggestion}
                 </button>
@@ -633,7 +633,7 @@ const AiGeneratedNote = () => {
 
         {/* User Prompt Input */}
         <form
-          className="mt-auto p-3 flex items-center rounded-md focus-within:ring-2 focus-within:ring-blue-300 transition-all duration-200 ease-in-out bg-white border border-gray-200"
+          className="mt-auto p-3 flex items-center rounded-sm focus-within:ring-2 focus-within:ring-gray-300 transition-all duration-200 ease-in-out bg-white border border-gray-200"
           onSubmit={handleUserPrompt}
         >
           <textarea
@@ -649,7 +649,7 @@ const AiGeneratedNote = () => {
           ></textarea>
           <button
             type="submit"
-            className="ml-3 p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 transition-transform transform hover:scale-105 active:scale-95 duration-200 flex-shrink-0"
+            className="ml-3 p-2 bg-gray-600 text-white rounded-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-1 transition-transform transform hover:scale-105 active:scale-95 duration-200 flex-shrink-0"
             title="Send to AI"
             disabled={loading}
           >
@@ -684,7 +684,7 @@ const AiGeneratedNote = () => {
         <div className="mt-4 text-center">
           <button
             onClick={handleReset}
-            className="px-4 py-1 border border-gray-300 text-gray-700 font-medium rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-1 transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95"
+            className="px-4 py-1 border border-gray-300 text-gray-700 font-medium rounded-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-1 transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95"
           >
             Reset All
           </button>
@@ -692,7 +692,7 @@ const AiGeneratedNote = () => {
       </div>
 
       {/* Right Panel: AI Response Display */}
-      <div className="w-full lg:w-3/5 p-4 bg-white rounded-md lg:ml-4 flex flex-col h-full overflow-y-auto border border-gray-200 mt-4 lg:mt-0">
+      <div className="w-full lg:w-3/5 p-4 bg-white rounded-sm lg:ml-4 flex flex-col h-full overflow-y-auto border border-gray-200 mt-4 lg:mt-0">
         <div className="flex justify-between items-center border-b border-gray-200 pb-3 mb-4">
           {loading && !currentNoteTitle ? (
             <div className="h-6 bg-gray-200 rounded w-3/4 animate-pulse"></div>
@@ -708,7 +708,7 @@ const AiGeneratedNote = () => {
 
           {(currentNoteTitle || currentNoteContent) && !loading && (
             <button
-              className="ml-3 px-4 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-1 transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 flex-shrink-0"
+              className="ml-3 px-4 py-2 bg-green-600 text-white font-medium rounded-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-1 transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 flex-shrink-0"
               onClick={handleAcceptAiResponse}
               disabled={loading}
             >
@@ -717,7 +717,7 @@ const AiGeneratedNote = () => {
           )}
         </div>
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-md mb-4 flex items-center">
+          <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-sm mb-4 flex items-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5 mr-2 text-red-500"
@@ -755,7 +755,7 @@ const AiGeneratedNote = () => {
             <div className="prose max-w-none mt-2 py-1 text-gray-800">
               <MarkdownRenderer content={currentNoteContent} />
               {!currentNoteContent && !loading && !error && (
-                <div className="text-center text-gray-500 text-lg py-8 border border-dashed border-gray-300 rounded-md bg-gray-50">
+                <div className="text-center text-gray-500 text-lg py-8 border border-dashed border-gray-300 rounded-sm bg-gray-50">
                   <p className="mb-1">
                     Your AI-generated note will appear here.
                   </p>

@@ -104,7 +104,7 @@ function VerifyUser() {
           />
           <button
             type="submit"
-            className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+            className="bg-gray-600 text-white py-2 rounded hover:bg-gray-700"
             disabled={loading}
           >
             {loading ? "Verifying..." : "Verify"}

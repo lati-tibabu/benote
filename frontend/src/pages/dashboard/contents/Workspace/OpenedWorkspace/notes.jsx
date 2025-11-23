@@ -153,15 +153,15 @@ const Notes = () => {
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
 
       {/* Header and Actions */}
-      <div className="flex flex-col sm:flex-row items-center justify-between pb-4 mb-8 bg-white rounded-xl shadow-sm px-6 py-4 border border-gray-100">
+      <div className="flex flex-col sm:flex-row items-center justify-between pb-4 mb-8 bg-white rounded-sm shadow-sm px-6 py-4 border border-gray-100">
         <h1 className="font-semibold text-2xl text-gray-800 flex items-center gap-3 mb-4 sm:mb-0">
-          <AiOutlineFile className="text-blue-500" size={24} />
+          <AiOutlineFile className="text-gray-500" size={24} />
           Notes
         </h1>
         <div className="flex items-center gap-3">
           {useGemini && (
             <button
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-700 text-white font-medium text-sm shadow-md hover:from-purple-700 hover:to-indigo-800 transition transform hover:-translate-y-0.5"
+              className="flex items-center gap-2 px-4 py-2 rounded-sm bg-gradient-to-r from-gray-600 to-gray-700 text-white font-medium text-sm shadow-sm hover:from-gray-700 hover:to-gray-800 transition transform hover:-translate-y-0.5"
               onClick={() => document.getElementById("ai_gen_note").showModal()}
             >
               <GeminiIcon size={18} />
@@ -169,7 +169,7 @@ const Notes = () => {
             </button>
           )}
           <button
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-green-600 border border-green-200 font-medium text-sm shadow-sm hover:bg-green-50 hover:border-green-300 transition transform hover:-translate-y-0.5"
+            className="flex items-center gap-2 px-4 py-2 rounded-sm bg-white text-green-600 border border-green-200 font-medium text-sm shadow-sm hover:bg-green-50 hover:border-green-300 transition transform hover:-translate-y-0.5"
             onClick={() =>
               document.getElementById("upload_note_modal").showModal()
             }
@@ -177,7 +177,7 @@ const Notes = () => {
             <PiUploadSimple size={18} /> Upload
           </button>
           <button
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white font-medium text-sm shadow-md hover:bg-blue-700 transition transform hover:-translate-y-0.5"
+            className="flex items-center gap-2 px-4 py-2 rounded-sm bg-gray-600 text-white font-medium text-sm shadow-sm hover:bg-gray-700 transition transform hover:-translate-y-0.5"
             onClick={handleAddNewNote}
           >
             <AiOutlinePlus size={18} /> New Note
@@ -187,11 +187,11 @@ const Notes = () => {
 
       {/* View Controls */}
       <div className="flex justify-end mb-6">
-        <div className="flex gap-2 p-1 bg-gray-100 rounded-lg">
+        <div className="flex gap-2 p-1 bg-gray-100 rounded-sm">
           <button
-            className={`p-2 rounded-md transition ${
+            className={`p-2 rounded-sm transition ${
               viewMode === "list"
-                ? "bg-white text-blue-600 shadow-sm"
+                ? "bg-white text-gray-600 shadow-sm"
                 : "text-gray-500 hover:bg-gray-200"
             }`}
             title="List view"
@@ -200,9 +200,9 @@ const Notes = () => {
             <PiList size={20} />
           </button>
           <button
-            className={`p-2 rounded-md transition ${
+            className={`p-2 rounded-sm transition ${
               viewMode === "grid"
-                ? "bg-white text-blue-600 shadow-sm"
+                ? "bg-white text-gray-600 shadow-sm"
                 : "text-gray-500 hover:bg-gray-200"
             }`}
             title="Grid view"
@@ -219,7 +219,7 @@ const Notes = () => {
           {[...Array(pageSize)].map((_, index) => (
             <div
               key={index}
-              className="bg-white rounded-xl shadow-sm p-5 h-32 flex flex-col justify-between animate-pulse"
+              className="bg-white rounded-sm shadow-sm p-5 h-32 flex flex-col justify-between animate-pulse"
             >
               <div className="h-6 bg-gray-200 rounded w-3/4 mb-3"></div>
               <div className="space-y-2">
@@ -230,7 +230,7 @@ const Notes = () => {
           ))}
         </div>
       ) : notes.length === 0 ? (
-        <div className="flex flex-col items-center justify-center bg-white rounded-xl shadow-sm py-16 px-6 text-gray-500">
+        <div className="flex flex-col items-center justify-center bg-white rounded-sm shadow-sm py-16 px-6 text-gray-500">
           <AiOutlineFile size={48} className="text-gray-300 mb-4" />
           <p className="text-lg font-medium">No notes found.</p>
           <p className="text-sm mt-2 text-center max-w-sm">
@@ -239,13 +239,13 @@ const Notes = () => {
           </p>
           <button
             onClick={handleAddNewNote}
-            className="mt-6 flex items-center gap-2 px-6 py-3 rounded-lg bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-700 transition transform hover:-translate-y-1"
+            className="mt-6 flex items-center gap-2 px-6 py-3 rounded-sm bg-gray-600 text-white font-semibold shadow-sm hover:bg-gray-700 transition transform hover:-translate-y-1"
           >
             <AiOutlinePlus size={20} /> Create Your First Note
           </button>
         </div>
       ) : viewMode === "list" ? (
-        <div className="overflow-x-auto rounded-xl shadow-lg bg-white border border-gray-100">
+        <div className="overflow-x-auto rounded-sm shadow-sm bg-white border border-gray-100">
           <table className="min-w-full text-md text-left text-gray-700">
             <caption className="p-4 text-sm text-gray-500 text-right">
               <span className="font-semibold">Total Notes:</span> {totalItems}
@@ -272,16 +272,16 @@ const Notes = () => {
               {notes.map((note, index) => (
                 <tr
                   key={note.id}
-                  className="border-b border-gray-50 hover:bg-blue-50 transition even:bg-white odd:bg-gray-50/50"
+                  className="border-b border-gray-50 hover:bg-gray-50 transition even:bg-white odd:bg-gray-50/50"
                 >
                   <td className="py-3 px-6 text-gray-400">
                     {(currentPage - 1) * pageSize + index + 1}
                   </td>
                   <td
-                    className="py-3 px-6 flex items-center gap-2 cursor-pointer text-blue-700 font-medium hover:underline"
+                    className="py-3 px-6 flex items-center gap-2 cursor-pointer text-gray-700 font-medium hover:underline"
                     onClick={() => selectNote(note.id)}
                   >
-                    <AiOutlineFile size={18} className="text-blue-400" />
+                    <AiOutlineFile size={18} className="text-gray-400" />
                     <span className="truncate max-w-[200px]">{note.title}</span>
                   </td>
                   <td className="py-3 px-6 text-sm text-gray-600 whitespace-nowrap">
@@ -303,7 +303,7 @@ const Notes = () => {
                   </td>
                   <td className="py-3 px-6 text-right">
                     <button
-                      className="p-2 rounded-full text-red-500 hover:bg-red-100 transition"
+                      className="p-2 rounded-sm text-red-500 hover:bg-red-100 transition"
                       title="Delete"
                       onClick={() => handleDeleteNote(note.id)}
                     >
@@ -320,11 +320,11 @@ const Notes = () => {
           {notes.map((note) => (
             <div
               key={note.id}
-              className="bg-white border border-gray-100 rounded-xl shadow-md p-5 flex flex-col gap-3 hover:shadow-lg transition cursor-pointer group relative"
+              className="bg-white border border-gray-100 rounded-sm shadow-sm p-5 flex flex-col gap-3 hover:shadow-sm transition cursor-pointer group relative"
               onClick={() => selectNote(note.id)}
             >
               <div className="flex items-center gap-3 mb-2">
-                <AiOutlineFile size={22} className="text-blue-500" />
+                <AiOutlineFile size={22} className="text-gray-500" />
                 <span className="font-semibold text-lg text-gray-800 truncate">
                   {note.title}
                 </span>
@@ -352,7 +352,7 @@ const Notes = () => {
                 </span>
               </div>
               <button
-                className="absolute top-4 right-4 p-2 rounded-full text-red-500 opacity-0 group-hover:opacity-100 bg-white shadow-sm hover:bg-red-100 transition"
+                className="absolute top-4 right-4 p-2 rounded-sm text-red-500 opacity-0 group-hover:opacity-100 bg-white shadow-sm hover:bg-red-100 transition"
                 title="Delete"
                 onClick={(e) => {
                   e.stopPropagation(); // Prevent card click when deleting
@@ -368,11 +368,11 @@ const Notes = () => {
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-4 mt-8 py-3 bg-white rounded-xl shadow-sm border border-gray-100">
+        <div className="flex justify-center items-center gap-4 mt-8 py-3 bg-white rounded-sm shadow-sm border border-gray-100">
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className="p-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            className="p-2 rounded-sm bg-gray-600 text-white hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
           >
             <PiCaretLeftBold size={18} />
           </button>
@@ -382,7 +382,7 @@ const Notes = () => {
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="p-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            className="p-2 rounded-sm bg-gray-600 text-white hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
           >
             <PiCaretRightBold size={18} />
           </button>
@@ -391,7 +391,7 @@ const Notes = () => {
 
       {/* Upload Note Modal */}
       <dialog id="upload_note_modal" className="modal backdrop:bg-gray-900/50">
-        <div className="modal-box bg-white p-8 rounded-xl shadow-2xl w-11/12 max-w-lg relative">
+        <div className="modal-box bg-white p-8 rounded-sm shadow-sm w-11/12 max-w-lg relative">
           <form method="dialog" className="absolute top-4 right-4">
             <button className="btn btn-sm btn-circle btn-ghost text-gray-500 hover:bg-gray-100">
               ✕
@@ -412,7 +412,7 @@ const Notes = () => {
 
       {/* AI Note Modal */}
       <dialog id="ai_gen_note" className="modal backdrop:bg-gray-900/50">
-        <div className="modal-box bg-transparent p-0 rounded-xl shadow-2xl w-11/12 max-w-none h-[90vh] overflow-hidden">
+        <div className="modal-box bg-transparent p-0 rounded-sm shadow-sm w-11/12 max-w-none h-[90vh] overflow-hidden">
           <form method="dialog" className="absolute top-4 right-4 z-10">
             <button className="btn btn-sm btn-circle btn-ghost text-white bg-black/30 hover:bg-black/50">
               ✕

@@ -54,11 +54,11 @@ const ClassroomList = ({ requestType }) => {
             <div
               key={classroom.id}
               title={classroom.description}
-              className="bg-white shadow-md rounded-xl p-5 flex flex-col items-center justify-center border border-gray-200 hover:bg-gray-100 cursor-pointer transition duration-300"
+              className="bg-white shadow-sm rounded-sm p-5 flex flex-col items-center justify-center border border-gray-200 hover:bg-gray-100 cursor-pointer transition duration-300"
               onClick={() => handleOpenClassroom(classroom.id)}
             >
-              <div className="bg-blue-100 p-3 rounded-full">
-                <MdClass className="text-blue-600 text-3xl" />
+              <div className="bg-gray-100 p-3 rounded-sm">
+                <MdClass className="text-gray-600 text-3xl" />
               </div>
               <h2 className="text-lg font-semibold mt-3">{classroom.name}</h2>
               <p className="text-sm text-gray-600 text-center mt-2">

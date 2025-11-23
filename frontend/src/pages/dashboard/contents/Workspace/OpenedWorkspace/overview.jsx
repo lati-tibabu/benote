@@ -134,21 +134,21 @@ const Overview = () => {
   ) : (
     <div className="sm:flex gap-2">
       {/* right side */}
-      <div className="flex-1 p-6 bg-white rounded-lg border-2 border-gray-100">
+      <div className="flex-1 p-6 bg-white rounded-sm border-2 border-gray-100">
         {/* summary */}
-        {/* <div className="border-1 border-black p-2 rounded-md"> */}
+        {/* <div className="border-1 border-black p-2 rounded-sm"> */}
         <div>
           <h1 className="font-bold text-2xl text-gray-800 mb-4">
             Workspace Summary
           </h1>
-          <div className="flex flex-col gap-3 text-gray-600 rounded-md">
+          <div className="flex flex-col gap-3 text-gray-600 rounded-sm">
             <div className="flex items-start gap-2">
               {/* <h3 className="text-sm font-medium text-gray-700">Name:</h3> */}
               <p className="font-bold">{workspace.name}</p>
             </div>
             {workspace.description && (
-              <div className="flex items-start gap-2 text-sm bg-blue-100 rounded-l overflow-hidden">
-                <p className="border-l-4 border-blue-300 pl-3 py-2">
+              <div className="flex items-start gap-2 text-sm bg-gray-100 rounded-l overflow-hidden">
+                <p className="border-l-4 border-gray-300 pl-3 py-2">
                   {workspace.description}
                 </p>
               </div>
@@ -173,7 +173,7 @@ const Overview = () => {
           {/* buttons */}
           <div className="flex flex-col gap-2">
             <button
-              className="p-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg shadow-lg hover:from-blue-700 hover:to-indigo-700 transition font-semibold text-lg flex items-center justify-center gap-2"
+              className="p-3 bg-gradient-to-r from-gray-600 to-gray-600 text-white rounded-sm shadow-sm hover:from-gray-700 hover:to-gray-700 transition font-semibold text-lg flex items-center justify-center gap-2"
               onClick={() => handleCreateNewTask(workspace.id)}
             >
               <FaTasks className="text-xl" /> <span>Create New Task</span>
@@ -184,7 +184,7 @@ const Overview = () => {
         <div className="mt-8">
           <h1 className="font-semibold text-2xl text-gray-800 mb-4 flex items-center gap-2">
             <FaBell className="text-yellow-500" /> Notifications
-            <span className="text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full font-semibold">
+            <span className="text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded-sm font-semibold">
               Coming Soon
             </span>
           </h1>
@@ -195,32 +195,32 @@ const Overview = () => {
         </div>
       </div>
       {/* left side */}
-      <div className="flex-2 p-6 bg-white rounded-lg border-2 border-gray-100">
+      <div className="flex-2 p-6 bg-white rounded-sm border-2 border-gray-100">
         <div className="mb-6">
           <div className="flex items-center gap-2">
-            <FaTasks className="text-blue-500" />
+            <FaTasks className="text-gray-500" />
             <strong className="text-lg text-gray-700">Total Tasks</strong>
-            <span className="ml-2 text-2xl font-bold text-blue-700">
+            <span className="ml-2 text-2xl font-bold text-gray-700">
               {workspace?.tasks.length}
             </span>
           </div>
         </div>
         <div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-2">
-            <div className="flex flex-col items-center justify-between p-6 bg-blue-50 rounded-xl shadow hover:shadow-lg transition w-full">
+            <div className="flex flex-col items-center justify-between p-6 bg-gray-50 rounded-sm shadow hover:shadow-sm transition w-full">
               <div className="flex flex-col items-center">
-                <FaRocket className="text-3xl text-blue-400 mb-1" />{" "}
+                <FaRocket className="text-3xl text-gray-400 mb-1" />{" "}
                 {/* <span className="text-2xl">🚀</span> */}
-                <h1 className="font-bold text-lg text-blue-700 text-center">
+                <h1 className="font-bold text-lg text-gray-700 text-center">
                   Active Tasks
                 </h1>
               </div>
-              <span className="text-3xl font-bold text-blue-800 mt-2">
+              <span className="text-3xl font-bold text-gray-800 mt-2">
                 {workspace?.tasks?.filter((task) => task.status === "doing")
                   ?.length || 0}
               </span>
             </div>
-            <div className="flex flex-col items-center justify-between p-6 bg-red-50 rounded-xl shadow hover:shadow-lg transition w-full">
+            <div className="flex flex-col items-center justify-between p-6 bg-red-50 rounded-sm shadow hover:shadow-sm transition w-full">
               <div className="flex flex-col items-center">
                 <FaHourglassHalf className="text-3xl text-red-400 mb-1" />{" "}
                 {/* <span className="text-2xl">⏳</span> */}
@@ -238,7 +238,7 @@ const Overview = () => {
                 }
               </span>
             </div>
-            <div className="flex flex-col items-center justify-between p-6 bg-green-50 rounded-xl shadow hover:shadow-lg transition w-full">
+            <div className="flex flex-col items-center justify-between p-6 bg-green-50 rounded-sm shadow hover:shadow-sm transition w-full">
               <div className="flex flex-col items-center">
                 <FaCheckCircle className="text-3xl text-green-400 mb-1" />{" "}
                 {/* <span className="text-2xl">✅</span> */}
@@ -253,15 +253,15 @@ const Overview = () => {
             </div>
           </div>
           {/* Recent Activities */}
-          <div className="mt-8 p-8 bg-gradient-to-r from-gray-100 to-blue-50 rounded-xl shadow-md flex flex-col items-center justify-center min-h-32">
+          <div className="mt-8 p-8 bg-gradient-to-r from-gray-100 to-gray-50 rounded-sm shadow-sm flex flex-col items-center justify-center min-h-32">
             <h1 className="font-semibold text-2xl text-gray-800 mb-4 flex items-center gap-2">
-              <FaHistory className="text-blue-400" /> Recent Activities
-              <span className="text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full font-semibold">
+              <FaHistory className="text-gray-400" /> Recent Activities
+              <span className="text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded-sm font-semibold">
                 Coming Soon
               </span>
             </h1>
             <div className="flex flex-col items-center text-gray-400 italic">
-              <FaHistory className="text-4xl mb-2 text-blue-300" />
+              <FaHistory className="text-4xl mb-2 text-gray-300" />
               <span>🕒 Activity feed will be available soon.</span>
             </div>
           </div>

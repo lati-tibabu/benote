@@ -141,7 +141,7 @@ const MyComponent = React.memo(({ data }) => {
 Components use Tailwind CSS classes for styling:
 
 ```jsx
-<div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-md">
+<div className="flex items-center justify-between p-4 bg-white rounded-sm shadow-sm">
   <h2 className="text-xl font-semibold">Title</h2>
   <button className="btn btn-primary">Action</button>
 </div>

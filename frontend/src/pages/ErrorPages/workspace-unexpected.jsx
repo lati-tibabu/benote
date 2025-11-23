@@ -23,7 +23,7 @@ const WorkspaceNotFound = () => {
         </div>
         <button
           onClick={handleGoBack}
-          className="btn text-white bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg"
+          className="btn text-white bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded-sm"
         >
           Go to Home
         </button>

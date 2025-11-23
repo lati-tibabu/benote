@@ -56,7 +56,7 @@ const AddNewTodoList = (props) => {
 
   return (
     <div className="w-full flex">
-      <div className="bg-transparent p-4 rounded-md shadow-md lg:w-1/2 w-full mt-10 grow">
+      <div className="bg-transparent p-4 rounded-sm shadow-sm lg:w-1/2 w-full mt-10 grow">
         <div className="flex items-center gap-2 font-bold text-lg">
           <p className="text-2xl">📝</p>
           <h1>Add New Todo List</h1>
@@ -75,7 +75,7 @@ const AddNewTodoList = (props) => {
                 setTodoData({ ...todoData, title: e.target.value });
               }}
               placeholder="e.g. Complete the report"
-              className="p-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-950"
+              className="p-2 border border-gray-300 rounded-sm bg-transparent focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-950"
               required
             />
           </fieldset>
@@ -92,7 +92,7 @@ const AddNewTodoList = (props) => {
                   description: e.target.value,
                 });
               }}
-              className="p-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-950"
+              className="p-2 border border-gray-300 rounded-sm bg-transparent focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-950"
               placeholder="e.g. Complete the task by the due date"
             ></textarea>
             <span className="text-right text-sm w-full">
@@ -137,7 +137,7 @@ const AddNewTodoList = (props) => {
                   due_date: e.target.value,
                 });
               }}
-              className="p-2 border text-white border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="p-2 border text-white border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-gray-500"
             />
           </fieldset> */}
 

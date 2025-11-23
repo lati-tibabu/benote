@@ -20,14 +20,14 @@ const EditableMarkdown = ({ initialContent }) => {
       contentEditable
       suppressContentEditableWarning
       onInput={handleInput}
-      className="border p-3 rounded-md bg-gray-100 min-h-[100px] cursor-text focus:outline-none"
+      className="border p-3 rounded-sm bg-gray-100 min-h-[100px] cursor-text focus:outline-none"
     >
       <MarkDown
         remarkPlugins={[remarkGfm]}
         components={{
           code: CodeHighlighter,
           a: ({ node, ...props }) => (
-            <a className="text-blue-500 underline" {...props} />
+            <a className="text-gray-500 underline" {...props} />
           ),
           ul: ({ node, ...props }) => (
             <ul className="list-disc pl-5 space-y-2" {...props} />

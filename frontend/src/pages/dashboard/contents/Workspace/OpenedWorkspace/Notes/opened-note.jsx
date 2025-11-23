@@ -251,20 +251,20 @@ const OpenedNote = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-xl shadow-lg border border-blue-100 max-w-5xl mx-auto mt-4 mb-4">
+    <div className="flex flex-col h-full bg-white rounded-sm shadow-sm border border-gray-100 max-w-5xl mx-auto mt-4 mb-4">
       <ToastContainer />
       {loading ? (
         <div className="flex flex-col gap-4 p-8 animate-pulse">
-          <div className="h-8 bg-blue-100 rounded w-1/2 mx-auto" />
-          <div className="h-48 bg-blue-50 rounded w-full" />
+          <div className="h-8 bg-gray-100 rounded w-1/2 mx-auto" />
+          <div className="h-48 bg-gray-50 rounded w-full" />
         </div>
       ) : (
         <>
           {/* Header: Title, Save, Publish, Cloud, Mode Switch */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 border-b border-blue-100 px-6 py-4 bg-white/80">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 border-b border-gray-100 px-6 py-4 bg-white/80">
             <div className="flex items-center gap-3 w-full md:w-auto">
               <button
-                className="p-2 rounded-full hover:bg-blue-50 transition"
+                className="p-2 rounded-sm hover:bg-gray-50 transition"
                 onClick={() => window.history.back()}
                 title="Back to Notes List"
               >
@@ -274,14 +274,14 @@ const OpenedNote = () => {
                 type="text"
                 value={noteData?.title || ""}
                 onChange={handleTitleChange}
-                className="font-semibold text-lg bg-transparent outline-none px-2 py-1 rounded focus:bg-blue-50 transition w-48 md:w-64"
+                className="font-semibold text-lg bg-transparent outline-none px-2 py-1 rounded focus:bg-gray-50 transition w-48 md:w-64"
                 placeholder="Note Title..."
               />
               <div className="flex items-center gap-2 ml-2">
                 <span className="relative flex items-center">
-                  <PiCloudDuotone size={22} className="text-blue-400" />
+                  <PiCloudDuotone size={22} className="text-gray-400" />
                   {autoSaving ? (
-                    <span className="absolute -right-2 -top-2 animate-spin text-blue-300">
+                    <span className="absolute -right-2 -top-2 animate-spin text-gray-300">
                       <PiSparkleDuotone size={14} />
                     </span>
                   ) : (
@@ -291,18 +291,18 @@ const OpenedNote = () => {
                   )}
                 </span>
                 <button
-                  className="p-2 rounded-full hover:bg-blue-50 transition"
+                  className="p-2 rounded-sm hover:bg-gray-50 transition"
                   onClick={handleSaveChanges}
                   title="Save Note"
                 >
                   <PiFloppyDiskDuotone size={22} />
                 </button>
                 {noteData?.public ? (
-                  <div className="flex items-center gap-1 px-2 py-1 bg-blue-50 rounded-full text-xs text-blue-700 border border-blue-200">
+                  <div className="flex items-center gap-1 px-2 py-1 bg-gray-50 rounded-sm text-xs text-gray-700 border border-gray-200">
                     <PiShareFatDuotone size={16} />
                     <span>Published</span>
                     <button
-                      className="hover:text-blue-900"
+                      className="hover:text-gray-900"
                       title="Copy public URL"
                       onClick={handleCopy}
                     >
@@ -314,7 +314,7 @@ const OpenedNote = () => {
                   </div>
                 ) : (
                   <button
-                    className="p-2 rounded-full hover:bg-blue-50 transition"
+                    className="p-2 rounded-sm hover:bg-gray-50 transition"
                     onClick={() => handlePublishNote(noteData?.id)}
                     title="Publish Note"
                   >
@@ -326,7 +326,7 @@ const OpenedNote = () => {
             {/* Mode Switch */}
             <div className="flex items-center gap-2">
               <button
-                className="p-2 rounded-full hover:bg-blue-50 transition"
+                className="p-2 rounded-sm hover:bg-gray-50 transition"
                 onClick={handleChangeMode}
                 title={editMode ? "Switch to View Mode" : "Switch to Edit Mode"}
               >
@@ -342,14 +342,14 @@ const OpenedNote = () => {
           <div className="flex flex-col md:flex-row gap-4 flex-1 p-6 bg-white/90">
             {/* Editing Area */}
             {editMode && (
-              <div className="flex-1 flex flex-col bg-white border border-blue-100 rounded-lg shadow-sm p-4 min-h-[300px]">
-                <div className="font-semibold text-blue-700 mb-2 text-sm flex items-center gap-4">
+              <div className="flex-1 flex flex-col bg-white border border-gray-100 rounded-sm shadow-sm p-4 min-h-[300px]">
+                <div className="font-semibold text-gray-700 mb-2 text-sm flex items-center gap-4">
                   <span>Editing</span>
                   {/* Font selection dropdown */}
                   <label className="flex items-center gap-1 text-xs text-gray-500">
                     Font:
                     <select
-                      className="ml-1 px-2 py-1 rounded border border-blue-100 bg-white text-xs focus:outline-none focus:ring-1 focus:ring-blue-200"
+                      className="ml-1 px-2 py-1 rounded border border-gray-100 bg-white text-xs focus:outline-none focus:ring-1 focus:ring-gray-200"
                       value={noteFont}
                       onChange={(e) => setNoteFont(e.target.value)}
                     >
@@ -371,14 +371,14 @@ const OpenedNote = () => {
             )}
             {/* Viewing Area */}
             {previewMode && (
-              <div className="flex-1 flex flex-col bg-white border border-blue-100 rounded-lg shadow-sm p-4 min-h-[300px] max-w-2xl mx-auto">
-                <div className="font-semibold text-blue-700 mb-2 text-sm flex items-center justify-between">
+              <div className="flex-1 flex flex-col bg-white border border-gray-100 rounded-sm shadow-sm p-4 min-h-[300px] max-w-2xl mx-auto">
+                <div className="font-semibold text-gray-700 mb-2 text-sm flex items-center justify-between">
                   <span>Preview</span>
                   {/* Font selection dropdown (duplicate for preview) */}
                   <label className="flex items-center gap-1 text-xs text-gray-500">
                     Font:
                     <select
-                      className="ml-1 px-2 py-1 rounded border border-blue-100 bg-white text-xs focus:outline-none focus:ring-1 focus:ring-blue-200"
+                      className="ml-1 px-2 py-1 rounded border border-gray-100 bg-white text-xs focus:outline-none focus:ring-1 focus:ring-gray-200"
                       value={noteFont}
                       onChange={(e) => setNoteFont(e.target.value)}
                     >
@@ -390,7 +390,7 @@ const OpenedNote = () => {
                     </select>
                   </label>
                   <button
-                    className="flex items-center gap-1 px-2 py-1 rounded hover:bg-blue-50 text-blue-700 text-xs"
+                    className="flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-50 text-gray-700 text-xs"
                     title="Download as PDF"
                     onClick={handleSaveNoteAsPDF}
                   >
@@ -411,10 +411,10 @@ const OpenedNote = () => {
               <div
                 className={`flex flex-col ${
                   aiAssistMode ? "flex-1" : "w-12"
-                } transition-all duration-300 bg-white border border-blue-100 rounded-lg shadow-sm p-2 relative min-h-[300px]`}
+                } transition-all duration-300 bg-white border border-gray-100 rounded-sm shadow-sm p-2 relative min-h-[300px]`}
               >
                 <button
-                  className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-blue-50 transition mx-auto mb-2"
+                  className="flex items-center justify-center w-10 h-10 rounded-sm hover:bg-gray-50 transition mx-auto mb-2"
                   onClick={geminiAssistHandle}
                   title={aiAssistMode ? "Hide Gemini AI" : "Show Gemini AI"}
                 >
@@ -422,7 +422,7 @@ const OpenedNote = () => {
                 </button>
                 {aiAssistMode && (
                   <div className="flex-1">
-                    <div className="font-semibold text-blue-700 mb-2 text-sm text-center">
+                    <div className="font-semibold text-gray-700 mb-2 text-sm text-center">
                       Ask About This Note
                     </div>
                     <NoteChat noteContext={noteInput} />
@@ -475,19 +475,19 @@ const styles = `
       .font-bold {
         font-weight: bold;
       }
-      .bg-blue-200 {
+      .bg-gray-200 {
         background-color: #d6eaff;
       }
       .bg-gray-200 {
         background-color: #eaeaea;
       }
-      .text-blue-500 {
+      .text-gray-500 {
         color: #3498db;
       }
-      .text-blue-700 {
+      .text-gray-700 {
         color: #2980b9;
       }
-      .rounded-full {
+      .rounded-sm {
         border-radius: 9999px;
       }
       .w-fit {
@@ -532,7 +532,7 @@ const styles = `
       .max-w-full {
         max-width: 100%;
       }
-      .rounded-box {
+      .rounded-sm {
         border-radius: 0.375rem;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       }
@@ -553,7 +553,7 @@ const styles = `
         padding: 0.25rem 0.5rem;
         font-size: 0.875rem;
       }
-      .shadow-md {
+      .shadow-sm {
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       }
       .hover\:bg-gray-100:hover {

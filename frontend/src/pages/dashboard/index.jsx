@@ -234,7 +234,7 @@ function Dashboard() {
         {/* Hamburger for mobile */}
         {!showSidebar && !isMobileNavOpen && (
           <button
-            className="fixed top-4 left-4 z-50 p-2 rounded-full bg-blue-600 text-white shadow-lg sm:hidden"
+            className="fixed top-4 left-4 z-50 p-2 rounded-sm bg-gray-600 text-white shadow-sm sm:hidden"
             onClick={toggleMobileNav}
             aria-label="Open sidebar"
           >
@@ -252,7 +252,7 @@ function Dashboard() {
         {/* Sidebar */}
         {(showSidebar || isMobileNavOpen) && (
           <aside
-            className={`fixed sm:static top-0 left-0 z-40 h-full bg-white/90 border-r border-blue-100 shadow-lg sm:shadow-none p-6 transition-transform duration-300 transform ${
+            className={`fixed sm:static top-0 left-0 z-40 h-full bg-white/90 border-r border-gray-100 shadow-sm sm:shadow-none p-6 transition-transform duration-300 transform ${
               isMobileNavOpen ? "translate-x-0" : "-translate-x-full"
             } ${
               showSidebar ? "sm:translate-x-0" : "sm:-translate-x-full"
@@ -271,7 +271,7 @@ function Dashboard() {
                 {(!collapsedNav || !showSidebar) && (
                   <>
                     <img src="/rect19.png" alt="Logo" className="h-10 w-auto" />
-                    <span className="font-black text-lg tracking-tight text-blue-700">
+                    <span className="font-black text-lg tracking-tight text-gray-700">
                       Benote
                     </span>
                   </>
@@ -280,7 +280,7 @@ function Dashboard() {
               <div className="flex items-center gap-2">
                 {/* Collapse/Expand button (desktop only) */}
                 <div
-                  className={`hidden sm:flex p-2 hover:bg-blue-50 rounded-full cursor-pointer ${
+                  className={`hidden sm:flex p-2 hover:bg-gray-50 rounded-sm cursor-pointer ${
                     showSidebar ? "" : "pointer-events-none opacity-0"
                   }`}
                   onClick={handleCollapseBar}
@@ -302,7 +302,7 @@ function Dashboard() {
               {/* Quick Search & AI Overview for mobile (show above nav on mobile) */}
               <div className="flex sm:hidden gap-2 mb-4">
                 <button
-                  className="flex items-center justify-center gap-2 flex-1 px-2 py-2 rounded-lg bg-blue-50 text-blue-800 font-semibold shadow hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                  className="flex items-center justify-center gap-2 flex-1 px-2 py-2 rounded-sm bg-gray-50 text-gray-800 font-semibold shadow hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200"
                   onClick={() => {
                     setSearchOpened(true);
                     setIsMobileNavOpen(false); // Close mobile nav when opening modal
@@ -313,7 +313,7 @@ function Dashboard() {
                   <span className="text-sm">Search</span>
                 </button>
                 <button
-                  className="flex items-center justify-center gap-2 flex-1 px-2 py-2 rounded-lg bg-blue-50 text-blue-800 font-semibold shadow hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                  className="flex items-center justify-center gap-2 flex-1 px-2 py-2 rounded-sm bg-gray-50 text-gray-800 font-semibold shadow hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200"
                   onClick={() => {
                     setAiOverviewOpen(true);
                     setIsMobileNavOpen(false); // Close mobile nav when opening modal
@@ -331,10 +331,10 @@ function Dashboard() {
                     to="home"
                     className={`flex items-center ${
                       collapsedNav && "justify-center"
-                    } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                    } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${
                       loc[0] === "home"
-                        ? "bg-blue-100 text-blue-700"
-                        : "text-gray-700 hover:bg-blue-50"
+                        ? "bg-gray-100 text-gray-700"
+                        : "text-gray-700 hover:bg-gray-50"
                     }`}
                     onClick={() => setIsMobileNavOpen(false)}
                     title="Home"
@@ -350,10 +350,10 @@ function Dashboard() {
                     to="workspace"
                     className={`flex items-center ${
                       collapsedNav && "justify-center"
-                    } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                    } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${
                       loc[0] === "workspace"
-                        ? "bg-blue-100 text-blue-700"
-                        : "text-gray-700 hover:bg-blue-50"
+                        ? "bg-gray-100 text-gray-700"
+                        : "text-gray-700 hover:bg-gray-50"
                     }`}
                     onClick={() => setIsMobileNavOpen(false)}
                     title="Workspace"
@@ -367,7 +367,7 @@ function Dashboard() {
                   {loc[1] === "open" && loc[0] === "workspace" && (
                     <ul
                       className={`${
-                        collapsedNav ? "p-1 bg-blue-50 rounded" : "pl-7 p-2"
+                        collapsedNav ? "p-1 bg-gray-50 rounded" : "pl-7 p-2"
                       } mt-2 flex flex-col gap-1`}
                     >
                       {workspaceSubMenusModern.map((item, idx) => (
@@ -375,8 +375,8 @@ function Dashboard() {
                           key={idx}
                           className={`flex items-center gap-2 py-1 rounded transition-all cursor-pointer ${
                             onPage(item.link)
-                              ? "bg-blue-200 text-blue-900 font-semibold"
-                              : "text-gray-600 hover:bg-blue-100"
+                              ? "bg-gray-200 text-gray-900 font-semibold"
+                              : "text-gray-600 hover:bg-gray-100"
                           }`}
                           onClick={() => {
                             handleNavigation(item.link, loc[2])();
@@ -403,10 +403,10 @@ function Dashboard() {
                     to="team"
                     className={`flex items-center ${
                       collapsedNav && "justify-center"
-                    } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                    } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${
                       loc[0] === "team"
-                        ? "bg-blue-100 text-blue-700"
-                        : "text-gray-700 hover:bg-blue-50"
+                        ? "bg-gray-100 text-gray-700"
+                        : "text-gray-700 hover:bg-gray-50"
                     }`}
                     onClick={() => setIsMobileNavOpen(false)}
                     title="Teams"
@@ -422,10 +422,10 @@ function Dashboard() {
                     to="classroom"
                     className={`flex items-center ${
                       collapsedNav && "justify-center"
-                    } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                    } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${
                       loc[0] === "classroom"
-                        ? "bg-blue-100 text-blue-700"
-                        : "text-gray-700 hover:bg-blue-50"
+                        ? "bg-gray-100 text-gray-700"
+                        : "text-gray-700 hover:bg-gray-50"
                     }`}
                     onClick={() => setIsMobileNavOpen(false)}
                     title="Classroom"
@@ -441,10 +441,10 @@ function Dashboard() {
                     to="news"
                     className={`flex items-center ${
                       collapsedNav && "justify-center"
-                    } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                    } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${
                       loc[0] === "news"
-                        ? "bg-blue-100 text-blue-700"
-                        : "text-gray-700 hover:bg-blue-50"
+                        ? "bg-gray-100 text-gray-700"
+                        : "text-gray-700 hover:bg-gray-50"
                     }`}
                     onClick={() => setIsMobileNavOpen(false)}
                     title="News"
@@ -460,10 +460,10 @@ function Dashboard() {
                     to="askAI"
                     className={`flex items-center ${
                       collapsedNav && "justify-center"
-                    } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                    } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${
                       loc[0] === "askAI"
-                        ? "bg-blue-100 text-blue-700"
-                        : "text-gray-700 hover:bg-blue-50"
+                        ? "bg-gray-100 text-gray-700"
+                        : "text-gray-700 hover:bg-gray-50"
                     }`}
                     onClick={() => setIsMobileNavOpen(false)}
                     title="AskAI"
@@ -475,17 +475,17 @@ function Dashboard() {
                   </Link>
                 </li>
               </ul>
-              <hr className="my-4 border-blue-100" />
+              <hr className="my-4 border-gray-100" />
               <ul className="flex flex-col gap-2">
                 <li>
                   <Link
                     to="profile"
                     className={`flex items-center ${
                       collapsedNav && "justify-center"
-                    } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                    } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${
                       loc[0] === "profile"
-                        ? "bg-blue-100 text-blue-700"
-                        : "text-gray-700 hover:bg-blue-50"
+                        ? "bg-gray-100 text-gray-700"
+                        : "text-gray-700 hover:bg-gray-50"
                     }`}
                     onClick={() => setIsMobileNavOpen(false)}
                     title="Profile"
@@ -501,10 +501,10 @@ function Dashboard() {
                     to="llm-setting"
                     className={`flex items-center ${
                       collapsedNav && "justify-center"
-                    } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                    } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${
                       loc[0] === "llm-setting"
-                        ? "bg-blue-100 text-blue-700"
-                        : "text-gray-700 hover:bg-blue-50"
+                        ? "bg-gray-100 text-gray-700"
+                        : "text-gray-700 hover:bg-gray-50"
                     }`}
                     onClick={() => setIsMobileNavOpen(false)}
                     title="LLM Setting"
@@ -520,10 +520,10 @@ function Dashboard() {
                     to="notifications"
                     className={`flex items-center ${
                       collapsedNav && "justify-center"
-                    } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                    } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${
                       loc[0] === "notifications"
-                        ? "bg-blue-100 text-blue-700"
-                        : "text-gray-700 hover:bg-blue-50"
+                        ? "bg-gray-100 text-gray-700"
+                        : "text-gray-700 hover:bg-gray-50"
                     }`}
                     onClick={() => setIsMobileNavOpen(false)}
                     title="Notifications"
@@ -531,7 +531,7 @@ function Dashboard() {
                     <span className="relative flex items-center justify-center min-w-[40px] min-h-[40px]">
                       <PiBellRingingDuotone size={22} />
                       {unreadCount > 0 && (
-                        <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                        <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-sm w-5 h-5 flex items-center justify-center">
                           {unreadCount > 9 ? "9+" : unreadCount}
                         </span>
                       )}
@@ -544,10 +544,10 @@ function Dashboard() {
                     to="setting"
                     className={`flex items-center ${
                       collapsedNav && "justify-center"
-                    } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                    } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${
                       loc[0] === "setting"
-                        ? "bg-blue-100 text-blue-700"
-                        : "text-gray-700 hover:bg-blue-50"
+                        ? "bg-gray-100 text-gray-700"
+                        : "text-gray-700 hover:bg-gray-50"
                     }`}
                     onClick={() => setIsMobileNavOpen(false)}
                     title="Setting"
@@ -561,7 +561,7 @@ function Dashboard() {
                 {/* Logout Button (Moved to bottom of sidebar for better mobile access) */}
                 <li>
                   <button
-                    className="w-full flex items-center gap-2 px-0 py-2 text-red-600 hover:bg-red-50 hover:text-red-800 rounded-lg font-medium transition-all"
+                    className="w-full flex items-center gap-2 px-0 py-2 text-red-600 hover:bg-red-50 hover:text-red-800 rounded-sm font-medium transition-all"
                     onClick={handleLogout}
                     title="Logout"
                   >
@@ -591,7 +591,7 @@ function Dashboard() {
               {/* Hamburger for mobile in header for consistency */}
               {!showSidebar && (
                 <button
-                  className="p-2 hover:bg-blue-100 rounded-full cursor-pointer border border-transparent hover:border-blue-300 transition sm:hidden"
+                  className="p-2 hover:bg-gray-100 rounded-sm cursor-pointer border border-transparent hover:border-gray-300 transition sm:hidden"
                   onClick={toggleMobileNav}
                   title="Open sidebar"
                   aria-label="Open sidebar"
@@ -600,13 +600,13 @@ function Dashboard() {
                 </button>
               )}
               <button
-                className="p-2 hover:bg-blue-100 rounded-full cursor-pointer border border-transparent hover:border-blue-300 transition"
+                className="p-2 hover:bg-gray-100 rounded-sm cursor-pointer border border-transparent hover:border-gray-300 transition"
                 onClick={() => history.back()}
                 title="Back"
               >
                 <PiHouseDuotone size={22} />
               </button>
-              <span className="font-bold text-lg sm:text-2xl text-blue-900 tracking-tight drop-shadow-sm truncate">
+              <span className="font-bold text-lg sm:text-2xl text-gray-900 tracking-tight drop-shadow-sm truncate">
                 {loc[0]
                   ? loc[0].charAt(0).toUpperCase() + loc[0].slice(1)
                   : "Dashboard"}
@@ -615,12 +615,12 @@ function Dashboard() {
               loc[1] === "open" &&
               workspaceTitle &&
               workspaceEmoji ? (
-                <span className="hidden sm:flex border-l-2 border-blue-200 pl-3 max-w-[200px] sm:max-w-xs truncate text-md lg:text-xl md:text-lg text-blue-700 items-center gap-2">
+                <span className="hidden sm:flex border-l-2 border-gray-200 pl-3 max-w-[200px] sm:max-w-xs truncate text-md lg:text-xl md:text-lg text-gray-700 items-center gap-2">
                   {workspaceEmoji}
                   {workspaceTitle}
                 </span>
               ) : loc[0] === "team" && loc[1] === "open" && teamTitle ? (
-                <span className="hidden sm:flex border-l-2 border-blue-200 pl-3 max-w-[200px] sm:max-w-xs truncate text-md lg:text-xl md:text-lg text-blue-700 items-center gap-2">
+                <span className="hidden sm:flex border-l-2 border-gray-200 pl-3 max-w-[200px] sm:max-w-xs truncate text-md lg:text-xl md:text-lg text-gray-700 items-center gap-2">
                   {teamTitle}
                 </span>
               ) : null}
@@ -628,7 +628,7 @@ function Dashboard() {
             {/* Search & AI Overview (Desktop only in header, mobile versions are in sidebar) */}
             <div className="hidden sm:flex items-center gap-3">
               <button
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-blue-800 font-semibold shadow hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                className="flex items-center gap-2 px-4 py-2 rounded-sm bg-gray-50 text-gray-800 font-semibold shadow hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200"
                 onClick={() => setSearchOpened(true)}
                 title="Search"
                 style={{ minWidth: 120 }}
@@ -637,7 +637,7 @@ function Dashboard() {
                 <span className="hidden sm:inline">Quick Search</span>
               </button>
               <button
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-blue-800 font-semibold shadow hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                className="flex items-center gap-2 px-4 py-2 rounded-sm bg-gray-50 text-gray-800 font-semibold shadow hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200"
                 onClick={() => setAiOverviewOpen(true)}
                 title="AI Overview"
                 style={{ minWidth: 120 }}
@@ -648,7 +648,7 @@ function Dashboard() {
             </div>
             {/* Theme Switch and Profile Picture */}
             <div className="flex items-center gap-2 sm:gap-4">
-              <div className="flex items-center gap-1 sm:gap-3 ml-0 sm:ml-4 border border-gray-300 rounded-full px-2 py-1 sm:px-3 sm:py-1 bg-white shadow-sm">
+              <div className="flex items-center gap-1 sm:gap-3 ml-0 sm:ml-4 border border-gray-300 rounded-sm px-2 py-1 sm:px-3 sm:py-1 bg-white shadow-sm">
                 <span className="text-yellow-400">
                   <AiOutlineSun size={20} />
                 </span>
@@ -659,16 +659,16 @@ function Dashboard() {
                     onChange={() => dispatch(toggleTheme())}
                     className="sr-only peer"
                   />
-                  <div className="w-9 h-5 sm:w-11 sm:h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-400 rounded-full peer dark:bg-gray-700 peer-checked:bg-gradient-to-r peer-checked:from-blue-500 peer-checked:to-indigo-600 transition-all duration-300"></div>
-                  <div className="absolute left-1 top-1 w-3 h-3 sm:w-4 sm:h-4 bg-white border border-gray-300 rounded-full shadow-md transition-all duration-300 peer-checked:translate-x-4 sm:peer-checked:translate-x-5"></div>
+                  <div className="w-9 h-5 sm:w-11 sm:h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-400 rounded-sm peer dark:bg-gray-700 peer-checked:bg-gradient-to-r peer-checked:from-gray-500 peer-checked:to-gray-600 transition-all duration-300"></div>
+                  <div className="absolute left-1 top-1 w-3 h-3 sm:w-4 sm:h-4 bg-white border border-gray-300 rounded-sm shadow-sm transition-all duration-300 peer-checked:translate-x-4 sm:peer-checked:translate-x-5"></div>
                 </label>
-                <span className="text-blue-900 ml-1 sm:ml-2">
+                <span className="text-gray-900 ml-1 sm:ml-2">
                   <AiOutlineMoon size={20} />
                 </span>
               </div>
               <div ref={profileRef} className="relative">
                 <button
-                  className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-gray-300 bg-white hover:ring-2 hover:ring-blue-200 transition"
+                  className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-sm border border-gray-300 bg-white hover:ring-2 hover:ring-gray-200 transition"
                   onClick={() => setProfilePopoverOpen((v) => !v)}
                   title="User menu"
                 >
@@ -676,14 +676,14 @@ function Dashboard() {
                     src={`https://gravatar.com/avatar/${getGravatarHash(
                       email
                     )}?s=40`}
-                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full"
+                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-sm"
                     alt="User Avatar"
                   />
                 </button>
                 {profilePopoverOpen && (
-                  <div className="absolute right-0 mt-2 w-40 bg-white border border-blue-100 rounded-lg shadow-lg z-50 animate-fade-in">
+                  <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-100 rounded-sm shadow-sm z-50 animate-fade-in">
                     <button
-                      className="w-full flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 hover:text-red-800 rounded-lg text-sm font-medium transition-all"
+                      className="w-full flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 hover:text-red-800 rounded-sm text-sm font-medium transition-all"
                       onClick={handleLogout}
                     >
                       <PiSignOutDuotone size={22} />
@@ -707,7 +707,7 @@ function Dashboard() {
       </div>
       {/* Notification Popover/Banner */}
       {notificationPopping && latestNotification && (
-        <div className="fixed top-6 right-6 z-50 bg-blue-700 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-4 animate-fade-in">
+        <div className="fixed top-6 right-6 z-50 bg-gray-700 text-white px-6 py-4 rounded-sm shadow-sm flex items-center gap-4 animate-fade-in">
           <div className="flex-1">
             <strong>New Notification:</strong>{" "}
             {latestNotification.message ||
@@ -715,7 +715,7 @@ function Dashboard() {
               "You have a new notification."}
           </div>
           <button
-            className="ml-2 px-2 py-1 rounded bg-blue-900 hover:bg-blue-800 text-xs"
+            className="ml-2 px-2 py-1 rounded bg-gray-900 hover:bg-gray-800 text-xs"
             onClick={() => {
               setNotificationPopping(false);
               setLatestNotification(null);

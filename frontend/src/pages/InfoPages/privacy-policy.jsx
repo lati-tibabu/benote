@@ -33,7 +33,7 @@ function PrivacyPolicy() {
             href="https://www.termsfeed.com/privacy-policy-generator/"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline text-blue-500 hover:text-blue-700"
+            className="underline text-gray-500 hover:text-gray-700"
           >
             Privacy Policy Generator
           </a>
@@ -137,7 +137,7 @@ function PrivacyPolicy() {
                 href="https://benote.com.et"
                 rel="external nofollow noopener"
                 target="_blank"
-                className="underline text-blue-500 hover:text-blue-700"
+                className="underline text-gray-500 hover:text-gray-700"
               >
                 https://benote.com.et
               </a>
@@ -238,7 +238,7 @@ function PrivacyPolicy() {
             href="https://www.termsfeed.com/blog/cookies/#What_Are_Cookies"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline text-blue-500 hover:text-blue-700"
+            className="underline text-gray-500 hover:text-gray-700"
           >
             TermsFeed website
           </a>{" "}

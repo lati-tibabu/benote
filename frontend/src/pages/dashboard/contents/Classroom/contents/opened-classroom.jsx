@@ -193,7 +193,7 @@ const OpenedClassroom = () => {
       )}
 
       {classroom && (
-        <div className="bg-white/90 shadow-2xl rounded-3xl p-10 space-y-10 border border-gray-100 backdrop-blur-md">
+        <div className="bg-white/90 shadow-sm rounded-sm p-10 space-y-10 border border-gray-100 backdrop-blur-md">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 border-b pb-6">
             <div>
               <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
@@ -206,7 +206,7 @@ const OpenedClassroom = () => {
             <div className="flex gap-3 items-center">
               <button
                 onClick={() => navigate(-1)}
-                className="px-6 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white rounded-xl shadow-md font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                className="px-6 py-2 bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-700 hover:to-gray-600 text-white rounded-sm shadow-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
               >
                 Back
               </button>
@@ -217,7 +217,7 @@ const OpenedClassroom = () => {
                 <button
                   onClick={handleLeaveClassroom}
                   disabled={actionLoading}
-                  className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-red-500 to-red-400 hover:from-red-600 hover:to-red-500 text-white rounded-xl shadow-md font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-300"
+                  className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-red-500 to-red-400 hover:from-red-600 hover:to-red-500 text-white rounded-sm shadow-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-300"
                 >
                   <PiSignOutBold className="text-xl" /> Leave Classroom
                 </button>
@@ -228,7 +228,7 @@ const OpenedClassroom = () => {
           {/* Highlighted selected assignment name globally */}
           {selectedAssignmentId && selectedAssignmentName && (
             <div className="mb-2 flex justify-center">
-              <span className="inline-block px-5 py-2 bg-yellow-50 text-yellow-800 font-semibold rounded-full shadow-sm border border-yellow-200 text-base">
+              <span className="inline-block px-5 py-2 bg-yellow-50 text-yellow-800 font-semibold rounded-sm shadow-sm border border-yellow-200 text-base">
                 Selected Assignment: {selectedAssignmentName}
               </span>
             </div>
@@ -239,11 +239,11 @@ const OpenedClassroom = () => {
             {tabs.map((tab) => (
               <button
                 key={tab.key}
-                className={`px-5 py-2 font-semibold rounded-t-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-200
+                className={`px-5 py-2 font-semibold rounded-t-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-200
                   ${
                     activeTab === tab.key
-                      ? "bg-blue-50 text-blue-700 border-b-2 border-blue-600 shadow-sm"
-                      : "bg-transparent text-gray-500 hover:text-blue-600 hover:bg-blue-50"
+                      ? "bg-gray-50 text-gray-700 border-b-2 border-gray-600 shadow-sm"
+                      : "bg-transparent text-gray-500 hover:text-gray-600 hover:bg-gray-50"
                   }`}
                 onClick={() => setActiveTab(tab.key)}
               >
@@ -257,7 +257,7 @@ const OpenedClassroom = () => {
             {activeTab === "overview" && (
               <div className="space-y-4">
                 <h2 className="text-2xl font-bold text-gray-700 mb-2 flex items-center gap-2">
-                  <FaUserGraduate className="text-blue-400" /> Teacher
+                  <FaUserGraduate className="text-gray-400" /> Teacher
                 </h2>
                 <div className="flex items-center space-x-3 mb-4">
                   <span className="text-gray-800 font-medium text-lg">
@@ -278,22 +278,22 @@ const OpenedClassroom = () => {
                 <div className="flex items-center gap-2 mb-2">
                   <h2 className="text-2xl font-bold text-gray-700">Students</h2>
                   {classroom?.isTeacher && (
-                    <span className="text-blue-500 text-base">(Manage)</span>
+                    <span className="text-gray-500 text-base">(Manage)</span>
                   )}
                 </div>
                 {classroom?.isTeacher && (
-                  <div className="mb-4 flex gap-3 flex-wrap items-center bg-gray-50 p-4 rounded-xl border border-gray-200">
+                  <div className="mb-4 flex gap-3 flex-wrap items-center bg-gray-50 p-4 rounded-sm border border-gray-200">
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Student email"
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 bg-white shadow-sm text-base"
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-sm focus:ring-2 focus:ring-gray-400 bg-white shadow-sm text-base"
                     />
                     <button
                       onClick={handleAddStudent}
                       disabled={actionLoading}
-                      className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 text-white rounded-lg font-semibold shadow-md transition-all disabled:opacity-60"
+                      className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 text-white rounded-sm font-semibold shadow-sm transition-all disabled:opacity-60"
                     >
                       <AiOutlinePlus /> Add
                     </button>
@@ -303,10 +303,10 @@ const OpenedClassroom = () => {
                   {classroom.students.map((student) => (
                     <li
                       key={student.id}
-                      className="flex items-center justify-between bg-white px-5 py-3 rounded-xl border border-gray-200 shadow-sm hover:bg-blue-50 transition-all"
+                      className="flex items-center justify-between bg-white px-5 py-3 rounded-sm border border-gray-200 shadow-sm hover:bg-gray-50 transition-all"
                     >
                       <div className="flex items-center gap-3">
-                        <FaUserGraduate className="text-blue-500 text-xl" />
+                        <FaUserGraduate className="text-gray-500 text-xl" />
                         <div>
                           <p className="text-gray-800 font-medium">
                             {student.name}
@@ -319,7 +319,7 @@ const OpenedClassroom = () => {
                       {classroom?.isTeacher && (
                         <button
                           onClick={() => handleRemoveStudent(student.email)}
-                          className="flex items-center gap-1 text-sm px-4 py-1.5 bg-red-500 hover:bg-red-600 text-white rounded-md font-semibold shadow transition-all"
+                          className="flex items-center gap-1 text-sm px-4 py-1.5 bg-red-500 hover:bg-red-600 text-white rounded-sm font-semibold shadow transition-all"
                         >
                           <AiOutlineDelete /> Remove
                         </button>
@@ -330,7 +330,7 @@ const OpenedClassroom = () => {
               </div>
             )}
             {activeTab === "assignments" && (
-              <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 shadow-sm">
+              <div className="bg-gray-50 rounded-sm p-6 border border-gray-200 shadow-sm">
                 <Assignment
                   classroomId={classroomId}
                   isTeacher={classroom?.isTeacher}
@@ -341,28 +341,28 @@ const OpenedClassroom = () => {
               </div>
             )}
             {activeTab === "materials" && (
-              <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 shadow-sm">
+              <div className="bg-gray-50 rounded-sm p-6 border border-gray-200 shadow-sm">
                 <Materials isTeacher={classroom?.isTeacher || false} />
               </div>
             )}
             {activeTab === "submissions" && selectedAssignmentId && (
               <div className="space-y-6">
                 {!classroom?.isTeacher ? (
-                  <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 shadow-sm">
+                  <div className="bg-gray-50 rounded-sm p-6 border border-gray-200 shadow-sm">
                     <MySubmission
                       assignmentId={selectedAssignmentId}
                       isTeacher={classroom?.isTeacher}
                     />
                   </div>
                 ) : (
-                  <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 shadow-sm">
+                  <div className="bg-gray-50 rounded-sm p-6 border border-gray-200 shadow-sm">
                     <Submission assignmentId={selectedAssignmentId} />
                   </div>
                 )}
               </div>
             )}
             {activeTab === "communication" && (
-              <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 shadow-sm">
+              <div className="bg-gray-50 rounded-sm p-6 border border-gray-200 shadow-sm">
                 <Communication
                   classroomId={classroomId}
                   isTeacher={classroom?.isTeacher}

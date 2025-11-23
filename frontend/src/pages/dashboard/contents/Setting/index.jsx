@@ -12,8 +12,8 @@ const Settings = () => {
       <div className="mt-4">
         <button
           onClick={() => dispatch(toggleTheme())}
-          className={`px-4 py-2 rounded-md text-white ${
-            theme === "light" ? "bg-blue-500" : "bg-gray-800"
+          className={`px-4 py-2 rounded-sm text-white ${
+            theme === "light" ? "bg-gray-500" : "bg-gray-800"
           }`}
         >
           Switch to {theme === "light" ? "Dark" : "Light"} Mode

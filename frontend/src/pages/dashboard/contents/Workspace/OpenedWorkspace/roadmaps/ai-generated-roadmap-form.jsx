@@ -188,7 +188,7 @@ const AIGeneratedRoadmap = () => {
       AIGeneratedRoadmap
       <form
         action=""
-        className="border-2 p-3 mt-10 flex justify-between rounded-lg"
+        className="border-2 p-3 mt-10 flex justify-between rounded-sm"
         onSubmit={handleUserPrompt}
       >
         <textarea

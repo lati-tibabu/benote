@@ -143,13 +143,13 @@ const StudyPlanOpened = () => {
         {/* Header */}
         <div className="mb-6">
           <button
-            className="text-purple-700 hover:text-purple-900 font-medium mb-2 px-3 py-1 rounded-full bg-purple-50 hover:bg-purple-100 transition"
+            className="text-gray-700 hover:text-gray-900 font-medium mb-2 px-3 py-1 rounded-sm bg-gray-50 hover:bg-gray-100 transition"
             onClick={() => window.history.back()}
           >
             ← Back
           </button>
           <button
-            className="ml-4 text-white bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 font-semibold px-4 py-2 rounded-lg shadow transition"
+            className="ml-4 text-white bg-gradient-to-r from-gray-500 to-gray-700 hover:from-gray-600 hover:to-gray-800 font-semibold px-4 py-2 rounded-sm shadow transition"
             onClick={() => setShowAIGenerator(true)}
           >
             Generate Plan (AI)
@@ -157,11 +157,11 @@ const StudyPlanOpened = () => {
           <h1 className="font-extrabold text-2xl tracking-tight text-gray-900 mb-2">
             Study Plan
           </h1>
-          <div className="flex flex-wrap items-center gap-4 bg-purple-100/80 p-4 rounded-2xl shadow-md border border-purple-200">
-            <h1 className="text-lg font-semibold text-purple-700 truncate max-w-xs">
+          <div className="flex flex-wrap items-center gap-4 bg-gray-100/80 p-4 rounded-sm shadow-sm border border-gray-200">
+            <h1 className="text-lg font-semibold text-gray-700 truncate max-w-xs">
               {plan?.title}
             </h1>
-            <p className="text-sm text-purple-600">
+            <p className="text-sm text-gray-600">
               <span className="font-semibold">Start:</span>{" "}
               {new Date(plan?.start_date).toLocaleString("en-US", {
                 year: "numeric",
@@ -171,7 +171,7 @@ const StudyPlanOpened = () => {
                 minute: "2-digit",
               })}
             </p>
-            <p className="text-sm text-purple-600">
+            <p className="text-sm text-gray-600">
               <span className="font-semibold">End:</span>{" "}
               {new Date(plan?.end_date).toLocaleString("en-US", {
                 year: "numeric",
@@ -184,20 +184,20 @@ const StudyPlanOpened = () => {
             {/* View Mode Switcher */}
             <div className="ml-auto flex gap-2">
               <button
-                className={`px-3 py-1 rounded-lg font-medium transition border ${
+                className={`px-3 py-1 rounded-sm font-medium transition border ${
                   viewMode === "calendar"
-                    ? "bg-purple-500 text-white border-purple-500"
-                    : "bg-white text-purple-700 border-purple-300 hover:bg-purple-50"
+                    ? "bg-gray-500 text-white border-gray-500"
+                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
                 }`}
                 onClick={() => setViewMode("calendar")}
               >
                 Calendar View
               </button>
               <button
-                className={`px-3 py-1 rounded-lg font-medium transition border ${
+                className={`px-3 py-1 rounded-sm font-medium transition border ${
                   viewMode === "viewer"
-                    ? "bg-purple-500 text-white border-purple-500"
-                    : "bg-white text-purple-700 border-purple-300 hover:bg-purple-50"
+                    ? "bg-gray-500 text-white border-gray-500"
+                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
                 }`}
                 onClick={() => setViewMode("viewer")}
               >
@@ -208,13 +208,13 @@ const StudyPlanOpened = () => {
         </div>
         {/* Main Content: Calendar or Viewer */}
         {viewMode === "calendar" ? (
-          <div className="overflow-x-auto max-h-[600px] scrollbar-hide bg-white/90 rounded-2xl shadow-lg border border-gray-100 p-0 mt-6">
+          <div className="overflow-x-auto max-h-[600px] scrollbar-hide bg-white/90 rounded-sm shadow-sm border border-gray-100 p-0 mt-6">
             {/* Calendar Table */}
             <table
               ref={tableRef}
               className="table border-0 min-w-max w-full text-sm"
             >
-              <thead className="sticky top-0 z-10 bg-gradient-to-r from-purple-50 to-white/80">
+              <thead className="sticky top-0 z-10 bg-gradient-to-r from-gray-50 to-white/80">
                 <tr className="text-gray-700 text-base">
                   <th className="bg-white/0 w-20"></th>
                   {[...Array(days)]?.map((_, index) => (
@@ -223,7 +223,7 @@ const StudyPlanOpened = () => {
                       className="bg-white/0 px-4 py-3 min-w-[120px] border-b border-gray-200"
                     >
                       <div className="flex flex-col items-center gap-1">
-                        <span className="font-bold text-base text-purple-700 tracking-tight">
+                        <span className="font-bold text-base text-gray-700 tracking-tight">
                           {new Date(
                             start + index * 86400000
                           ).toLocaleDateString("en-US", { weekday: "short" })}
@@ -276,8 +276,8 @@ const StudyPlanOpened = () => {
                           key={index}
                           className={`border border-gray-100 min-w-[110px] h-12 align-top cursor-pointer relative transition group ${
                             job
-                              ? "bg-gradient-to-r from-purple-100/60 to-white/80"
-                              : "hover:bg-purple-50"
+                              ? "bg-gradient-to-r from-gray-100/60 to-white/80"
+                              : "hover:bg-gray-50"
                           }`}
                           title={targetTimestamp}
                           onClick={() => {
@@ -297,17 +297,17 @@ const StudyPlanOpened = () => {
                                     name="job"
                                     value={jobEdit}
                                     onChange={(e) => setJobEdit(e.target.value)}
-                                    className="input bg-gray-50 outline-1 ring-1 ring-purple-400 px-2 py-1 rounded-md text-xs w-20 focus:ring-2 focus:ring-purple-500"
+                                    className="input bg-gray-50 outline-1 ring-1 ring-gray-400 px-2 py-1 rounded-sm text-xs w-20 focus:ring-2 focus:ring-gray-500"
                                   />
                                   <button
                                     type="submit"
-                                    className="bg-purple-500 text-white px-2 py-1 rounded-md text-xs hover:bg-purple-600 transition"
+                                    className="bg-gray-500 text-white px-2 py-1 rounded-sm text-xs hover:bg-gray-600 transition"
                                   >
                                     Save
                                   </button>
                                 </form>
                                 <div className="mt-1 flex justify-between">
-                                  <button className="bg-red-500 text-white px-2 py-1 rounded-md text-xs hover:bg-red-600 transition">
+                                  <button className="bg-red-500 text-white px-2 py-1 rounded-sm text-xs hover:bg-red-600 transition">
                                     Delete
                                   </button>
                                   <button
@@ -320,7 +320,7 @@ const StudyPlanOpened = () => {
                               </div>
                             ) : (
                               <div
-                                className="bg-gradient-to-r from-purple-400/90 to-purple-600/80 text-white px-2 py-1 rounded-md text-xs font-semibold shadow hover:scale-105 transition-transform cursor-pointer h-full group-hover:ring-2 group-hover:ring-purple-300"
+                                className="bg-gradient-to-r from-gray-400/90 to-gray-600/80 text-white px-2 py-1 rounded-sm text-xs font-semibold shadow hover:scale-105 transition-transform cursor-pointer h-full group-hover:ring-2 group-hover:ring-gray-300"
                                 title={description}
                                 onClick={() => handleOpenPlanDetail(id, job)}
                               >
@@ -344,7 +344,7 @@ const StudyPlanOpened = () => {
                                           job: e.target.value,
                                         })
                                       }
-                                      className="input bg-gray-50 outline-1 ring-1 ring-purple-400 rounded-md px-2 py-1 text-xs w-20 focus:ring-2 focus:ring-purple-500"
+                                      className="input bg-gray-50 outline-1 ring-1 ring-gray-400 rounded-sm px-2 py-1 text-xs w-20 focus:ring-2 focus:ring-gray-500"
                                       autoFocus
                                     />
                                   </form>
@@ -367,7 +367,7 @@ const StudyPlanOpened = () => {
         {/* Modal for AI Generator */}
         {showAIGenerator && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-            <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-2xl w-full relative animate-fade-in">
+            <div className="bg-white rounded-sm shadow-sm p-6 max-w-2xl w-full relative animate-fade-in">
               <button
                 className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl font-bold"
                 onClick={() => setShowAIGenerator(false)}

@@ -111,20 +111,20 @@ const Search = () => {
   // Helper to render a modern card for each item in a category
   const renderCard = (item, fields, catKey) => {
     const categoryStyles = {
-      workspace: "border-blue-200 bg-blue-50 hover:shadow-blue-200",
+      workspace: "border-gray-200 bg-gray-50 hover:shadow-gray-200",
       teams: "border-green-200 bg-green-50 hover:shadow-green-200",
       tasks: "border-yellow-200 bg-yellow-50 hover:shadow-yellow-200",
-      study_plans: "border-purple-200 bg-purple-50 hover:shadow-purple-200",
-      roadmaps: "border-pink-200 bg-pink-50 hover:shadow-pink-200",
-      classrooms: "border-indigo-200 bg-indigo-50 hover:shadow-indigo-200",
+      study_plans: "border-gray-200 bg-gray-50 hover:shadow-gray-200",
+      roadmaps: "border-gray-200 bg-gray-50 hover:shadow-gray-200",
+      classrooms: "border-gray-200 bg-gray-50 hover:shadow-gray-200",
       notifications: "border-gray-200 bg-gray-50 hover:shadow-gray-200",
     };
     return (
       <div
         key={item.id}
-        className={`rounded-xl border p-4 mb-3 shadow-sm transition-all duration-200 flex flex-col gap-1 ${
+        className={`rounded-sm border p-4 mb-3 shadow-sm transition-all duration-200 flex flex-col gap-1 ${
           categoryStyles[catKey] || "border-gray-200 bg-white"
-        } hover:scale-[1.02] hover:shadow-lg`}
+        } hover:scale-[1.02] hover:shadow-sm`}
       >
         <div className="flex items-center gap-2">
           <span className="font-semibold text-lg text-gray-800 truncate">
@@ -175,7 +175,7 @@ const Search = () => {
   };
 
   return (
-    <div className="p-4 bg-white rounded-lg max-w-3xl max-h-[500px] mx-auto overflow-scroll scrollbar-hide">
+    <div className="p-4 bg-white rounded-sm max-w-3xl max-h-[500px] mx-auto overflow-scroll scrollbar-hide">
       <div className="mb-4">
         <p className="text-2xl font-extrabold text-gray-800">Search Result</p>
         <p className="text-md text-gray-600">
@@ -186,7 +186,7 @@ const Search = () => {
           placeholder="Search all your data..."
           value={query}
           onChange={handleSearch}
-          className="mt-4 p-3 border border-gray-300 bg-white rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="mt-4 p-3 border border-gray-300 bg-white rounded-sm w-full focus:outline-none focus:ring-2 focus:ring-gray-500"
         />
       </div>
 
@@ -197,8 +197,8 @@ const Search = () => {
             key={cat.key}
             className={`px-4 py-2 font-medium rounded-t-lg transition-colors duration-200 ${
               activeTab === cat.key
-                ? "bg-blue-100 text-blue-700 border-b-2 border-blue-500"
-                : "text-gray-600 hover:bg-gray-100 hover:text-blue-500"
+                ? "bg-gray-100 text-gray-700 border-b-2 border-gray-500"
+                : "text-gray-600 hover:bg-gray-100 hover:text-gray-500"
             }`}
             onClick={() => handleTabChange(cat.key)}
           >

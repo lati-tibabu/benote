@@ -94,7 +94,7 @@ const NoteChat = ({ noteContext = "There is no note provided" }) => {
         />
         <button
           type="submit"
-          className="text-gray-500 hover:text-blue-600 transition-colors"
+          className="text-gray-500 hover:text-gray-600 transition-colors"
           title="Ask"
         >
           <MdOutlineNoteAlt size={22} />
@@ -104,7 +104,7 @@ const NoteChat = ({ noteContext = "There is no note provided" }) => {
       {/* Minimalistic Action Buttons */}
       <div className="flex flex-wrap gap-2 justify-center items-center py-3 px-2 border-b border-gray-100 bg-white">
         <button
-          className="group flex items-center gap-1 px-3 py-1 rounded-md text-gray-600 hover:bg-gray-100 hover:text-blue-600 transition-colors text-sm font-medium"
+          className="group flex items-center gap-1 px-3 py-1 rounded-sm text-gray-600 hover:bg-gray-100 hover:text-gray-600 transition-colors text-sm font-medium"
           onClick={() =>
             requestAi("Convert the entire content to markdown rich")
           }
@@ -112,12 +112,12 @@ const NoteChat = ({ noteContext = "There is no note provided" }) => {
         >
           <MdOutlineFormatListBulleted
             size={18}
-            className="group-hover:text-blue-600"
+            className="group-hover:text-gray-600"
           />{" "}
           Markdown
         </button>
         <button
-          className="group flex items-center gap-1 px-3 py-1 rounded-md text-gray-600 hover:bg-gray-100 hover:text-teal-600 transition-colors text-sm font-medium"
+          className="group flex items-center gap-1 px-3 py-1 rounded-sm text-gray-600 hover:bg-gray-100 hover:text-teal-600 transition-colors text-sm font-medium"
           onClick={() =>
             requestAi(
               "Quiz from the content make sure it is comprehensive and review"
@@ -128,39 +128,39 @@ const NoteChat = ({ noteContext = "There is no note provided" }) => {
           <MdOutlineQuiz size={18} className="group-hover:text-teal-600" /> Quiz
         </button>
         <button
-          className="group flex items-center gap-1 px-3 py-1 rounded-md text-gray-600 hover:bg-gray-100 hover:text-purple-600 transition-colors text-sm font-medium"
+          className="group flex items-center gap-1 px-3 py-1 rounded-sm text-gray-600 hover:bg-gray-100 hover:text-gray-600 transition-colors text-sm font-medium"
           onClick={() => requestAi("Summarize the content")}
           title="Summarize"
         >
           <MdOutlineSummarize
             size={18}
-            className="group-hover:text-purple-600"
+            className="group-hover:text-gray-600"
           />{" "}
           Summarize
         </button>
         <button
-          className="group flex items-center gap-1 px-3 py-1 rounded-md text-gray-600 hover:bg-gray-100 hover:text-indigo-600 transition-colors text-sm font-medium"
+          className="group flex items-center gap-1 px-3 py-1 rounded-sm text-gray-600 hover:bg-gray-100 hover:text-gray-600 transition-colors text-sm font-medium"
           onClick={() => requestAi("Grammar correct and replace the original")}
           title="Grammar"
         >
           <MdOutlineSpellcheck
             size={18}
-            className="group-hover:text-indigo-600"
+            className="group-hover:text-gray-600"
           />{" "}
           Grammar
         </button>
         <button
-          className="group flex items-center gap-1 px-3 py-1 rounded-md text-gray-600 hover:bg-gray-100 hover:text-pink-600 transition-colors text-sm font-medium"
+          className="group flex items-center gap-1 px-3 py-1 rounded-sm text-gray-600 hover:bg-gray-100 hover:text-gray-600 transition-colors text-sm font-medium"
           onClick={() =>
             requestAi("Expand the note to make it more comprehensive")
           }
           title="Expand"
         >
-          <MdOutlineExpand size={18} className="group-hover:text-pink-600" />{" "}
+          <MdOutlineExpand size={18} className="group-hover:text-gray-600" />{" "}
           Expand
         </button>
         <button
-          className="group flex items-center gap-1 px-3 py-1 rounded-md text-gray-600 hover:bg-gray-100 hover:text-green-600 transition-colors text-sm font-medium"
+          className="group flex items-center gap-1 px-3 py-1 rounded-sm text-gray-600 hover:bg-gray-100 hover:text-green-600 transition-colors text-sm font-medium"
           onClick={() => requestAi(noteMakingPrompt)}
           title="Notefy"
         >
@@ -174,14 +174,14 @@ const NoteChat = ({ noteContext = "There is no note provided" }) => {
         <div className="max-w-2xl mx-auto">
           {loading ? (
             <div className="flex justify-center items-center h-40">
-              <span className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></span>
+              <span className="animate-spin rounded-sm h-8 w-8 border-b-2 border-gray-300"></span>
             </div>
           ) : (
             <div className="flex flex-col gap-2">
               {aiResponse ? (
-                <div className="relative group bg-gray-50 border border-gray-100 rounded-lg p-4 shadow-sm w-full h-full min-h-[200px] flex flex-col">
+                <div className="relative group bg-gray-50 border border-gray-100 rounded-sm p-4 shadow-sm w-full h-full min-h-[200px] flex flex-col">
                   <button
-                    className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 rounded text-xs text-gray-400 hover:text-blue-600 hover:bg-gray-100 transition-colors"
+                    className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 rounded text-xs text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
                     onClick={() => {
                       navigator.clipboard.writeText(aiResponse.content);
                       toast.success("Copied to clipboard!");

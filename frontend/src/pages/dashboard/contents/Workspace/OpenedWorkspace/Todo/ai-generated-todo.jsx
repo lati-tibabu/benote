@@ -241,7 +241,7 @@ const AiGeneratedTodo = () => {
       </div>
       <form
         action=""
-        className="border-2 p-3 mt-10 flex justify-between rounded-lg"
+        className="border-2 p-3 mt-10 flex justify-between rounded-sm"
         onSubmit={handleUserPrompt}
       >
         <textarea
@@ -257,7 +257,7 @@ const AiGeneratedTodo = () => {
         </button>
       </form>
 
-      <div className="border-2 p-3 mt-10 rounded-lg">
+      <div className="border-2 p-3 mt-10 rounded-sm">
         <div className="border-b-2 pb-2 px-4 flex justify-between">
           <p className="text-gray-800 font-bold "></p>
 
@@ -283,7 +283,7 @@ const AiGeneratedTodo = () => {
                 aiResponse.tasks?.length > 0 &&
                 aiResponse.tasks?.map((task, index) => (
                   <div
-                    className={`border-2 p-1 rounded-lg text-gray-600 flex gap-2 items-center`}
+                    className={`border-2 p-1 rounded-sm text-gray-600 flex gap-2 items-center`}
                   >
                     <span className="badge badge-outline text-xs">
                       {task.status.toUpperCase()}

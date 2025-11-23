@@ -15,11 +15,11 @@ const TeamOverview = () => {
       <div className="h-6 w-3/4 bg-gray-300 rounded animate-pulse"></div>
     </div>
   ) : (
-    <div className="sm:flex gap-6 p-6 bg-gray-50 rounded-lg shadow-md">
+    <div className="sm:flex gap-6 p-6 bg-gray-50 rounded-sm shadow-sm">
       {/* Right Side */}
       <div className="flex-1 flex flex-col gap-6">
         {/* Team Summary */}
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="bg-white p-6 rounded-sm shadow">
           <h1 className="font-bold text-xl mb-4">Team Summary</h1>
           <div className="space-y-2">
             <div className="flex items-center gap-2">
@@ -42,17 +42,17 @@ const TeamOverview = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="bg-white p-6 rounded-sm shadow">
           <h1 className="font-bold text-xl mb-4">Quick Actions</h1>
           <div className="flex flex-col gap-4">
             <button
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition"
+              className="bg-gray-600 text-white px-4 py-2 rounded-sm shadow hover:bg-gray-700 transition"
               onClick={() => document.getElementById("my_modal_3").showModal()}
             >
               Create New Workspace
             </button>
             <button
-              className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg shadow hover:bg-gray-300 transition"
+              className="bg-gray-200 text-gray-800 px-4 py-2 rounded-sm shadow hover:bg-gray-300 transition"
               onClick={() =>
                 document.getElementById("invitation_modal").showModal()
               }
@@ -63,7 +63,7 @@ const TeamOverview = () => {
         </div>
 
         {/* Notifications */}
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="bg-white p-6 rounded-sm shadow">
           <h1 className="font-bold text-xl mb-4">Notifications</h1>
           <ul className="list-disc list-inside text-gray-800 space-y-2">
             {team.notifications?.map((notification, index) => (
@@ -80,10 +80,10 @@ const TeamOverview = () => {
           {team.taskStats?.map((stat, index) => (
             <div
               key={index}
-              className="flex flex-col items-center bg-white p-6 rounded-lg shadow"
+              className="flex flex-col items-center bg-white p-6 rounded-sm shadow"
             >
               <h1 className="font-bold text-lg text-gray-800">{stat.label}</h1>
-              <span className="text-2xl font-bold text-blue-600">
+              <span className="text-2xl font-bold text-gray-600">
                 {stat.value}
               </span>
             </div>
@@ -91,7 +91,7 @@ const TeamOverview = () => {
         </div>
 
         {/* Recent Activities */}
-        <div className="bg-white p-6 rounded-lg shadow">
+        <div className="bg-white p-6 rounded-sm shadow">
           <h1 className="font-bold text-xl mb-4">Recent Activities</h1>
           <ul className="list-disc list-inside text-gray-800 space-y-2">
             {team.recentActivities?.map((activity, index) => (
@@ -103,7 +103,7 @@ const TeamOverview = () => {
 
       {/* Modals */}
       <dialog id="my_modal_3" className="modal">
-        <div className="modal-box bg-white p-6 rounded-lg shadow-lg w-fit lg:w-1/2 mx-auto">
+        <div className="modal-box bg-white p-6 rounded-sm shadow-sm w-fit lg:w-1/2 mx-auto">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
@@ -113,7 +113,7 @@ const TeamOverview = () => {
         </div>
       </dialog>
       <dialog id="invitation_modal" className="modal">
-        <div className="modal-box bg-white p-6 rounded-lg shadow-lg w-fit lg:w-1/2 mx-auto">
+        <div className="modal-box bg-white p-6 rounded-sm shadow-sm w-fit lg:w-1/2 mx-auto">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕

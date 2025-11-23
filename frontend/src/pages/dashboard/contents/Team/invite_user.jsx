@@ -114,7 +114,7 @@ const SendInvitation = (props) => {
 
   return (
     <div className="w-full flex">
-      <div className="bg-transparent p-4 rounded-md shadow-md lg:w-1/2 w-full mt-10 grow">
+      <div className="bg-transparent p-4 rounded-sm shadow-sm lg:w-1/2 w-full mt-10 grow">
         <div className="flex items-center gap-2 font-bold text-lg">
           <p className="text-2xl">📩</p>
           <h1>Send Team Invitation</h1>
@@ -132,7 +132,7 @@ const SendInvitation = (props) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter the email"
-              className="p-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-950"
+              className="p-2 border border-gray-300 rounded-sm bg-transparent focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-950"
               required
             />
           </fieldset>
@@ -144,7 +144,7 @@ const SendInvitation = (props) => {
               name="message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="p-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-950"
+              className="p-2 border border-gray-300 rounded-sm bg-transparent focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-950"
               placeholder="e.g. You are invited to join the software development team"
             ></textarea>
           </fieldset>

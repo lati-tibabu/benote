@@ -91,29 +91,29 @@ const TeamOpened = () => {
   };
 
   return (
-    <div className="h-full flex flex-col rounded-2xl shadow-xl bg-gradient-to-br from-white to-blue-50 border border-gray-200">
+    <div className="h-full flex flex-col rounded-sm shadow-sm bg-gradient-to-br from-white to-gray-50 border border-gray-200">
       <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white rounded-t-2xl">
         <button
           type="button"
-          className="p-2 rounded-full hover:bg-blue-100 transition"
+          className="p-2 rounded-sm hover:bg-gray-100 transition"
           onClick={() => navigate("/app/team")}
         >
-          <PiArrowLeftBold className="text-2xl text-blue-700" />
+          <PiArrowLeftBold className="text-2xl text-gray-700" />
         </button>
         <div className="flex items-center gap-2">
           <div className="dropdown dropdown-end">
             <button
               tabIndex={0}
-              className="p-2 rounded-full hover:bg-gray-100 transition"
+              className="p-2 rounded-sm hover:bg-gray-100 transition"
             >
               <PiDotsThreeOutlineVerticalBold className="text-2xl text-gray-600" />
             </button>
             <ul
               tabIndex={0}
-              className="dropdown-content menu bg-white rounded-xl shadow-lg w-40 mt-2 border border-gray-100"
+              className="dropdown-content menu bg-white rounded-sm shadow-sm w-40 mt-2 border border-gray-100"
             >
-              <li className="flex items-center gap-2 px-4 py-2 hover:bg-blue-50 cursor-pointer">
-                <PiPencilSimpleBold className="text-blue-500" />
+              <li className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                <PiPencilSimpleBold className="text-gray-500" />
                 <span>Edit</span>
               </li>
               <li
@@ -133,10 +133,10 @@ const TeamOpened = () => {
           {menuItems.map((item, index) => (
             <div
               key={index}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full transition cursor-pointer text-base font-medium
+              className={`flex items-center gap-2 px-4 py-2 rounded-sm transition cursor-pointer text-base font-medium
                 ${
                   onPage(item.link)
-                    ? "bg-blue-100 text-blue-700 shadow"
+                    ? "bg-gray-100 text-gray-700 shadow"
                     : "text-gray-500 hover:bg-gray-100"
                 }
               `}

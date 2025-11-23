@@ -63,7 +63,7 @@ const CodeHighlighter = ({ node, inline, className, children, ...props }) => {
   if (inline) {
     return (
       <code
-        className="text-sm font-mono bg-gray-200 text-purple-700 dark:bg-gray-700 dark:text-purple-300 px-1 py-0.5 rounded"
+        className="text-sm font-mono bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-1 py-0.5 rounded"
         {...props}
       >
         {children}
@@ -74,7 +74,7 @@ const CodeHighlighter = ({ node, inline, className, children, ...props }) => {
   // --- Block Code Rendering ---
   return (
     // Simplified wrapper div: light border, rounded, no shadow
-    <div className="relative rounded-lg border border-gray-300 my-4 overflow-hidden">
+    <div className="relative rounded-sm border border-gray-300 my-4 overflow-hidden">
       {/* Header bar for the code block: light border-b, text color adjusted */}
       <div className="flex justify-between items-center bg-gray-50 text-gray-700 px-4 py-2 text-xs font-semibold border-b border-gray-300">
         <span className="capitalize">
@@ -86,7 +86,7 @@ const CodeHighlighter = ({ node, inline, className, children, ...props }) => {
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
-            className="flex items-center gap-1 px-3 py-1 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex items-center gap-1 px-3 py-1 rounded-sm bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
             title={
               currentTheme === "atomDark"
                 ? "Switch to Light Theme"
@@ -103,7 +103,7 @@ const CodeHighlighter = ({ node, inline, className, children, ...props }) => {
           {/* Copy button */}
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1 px-3 py-1 rounded-md bg-blue-500 hover:bg-blue-600 text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex items-center gap-1 px-3 py-1 rounded-sm bg-gray-500 hover:bg-gray-600 text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
             title={copied ? "Copied!" : "Copy code to clipboard"}
           >
             {copied ? (

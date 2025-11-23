@@ -74,7 +74,7 @@ const WorkspaceToTeam = ({ workspaceId }) => {
   };
 
   return (
-    <div className="max-w-lg mx-auto bg-white/90 shadow-xl rounded-2xl p-8 mt-8 border border-gray-200">
+    <div className="max-w-lg mx-auto bg-white/90 shadow-sm rounded-sm p-8 mt-8 border border-gray-200">
       <ToastContainer />
       <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center tracking-tight">
         Move Workspace to Team
@@ -89,7 +89,7 @@ const WorkspaceToTeam = ({ workspaceId }) => {
           </label>
           <select
             id="team-select"
-            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50 text-gray-900 text-base transition"
+            className="w-full px-4 py-3 rounded-sm border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:border-gray-500 bg-gray-50 text-gray-900 text-base transition"
             value={selectedTeam}
             onChange={(e) => setSelectedTeam(e.target.value)}
             required
@@ -104,7 +104,7 @@ const WorkspaceToTeam = ({ workspaceId }) => {
         </div>
         <button
           type="submit"
-          className="w-full py-3 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold text-lg shadow-md transition disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full py-3 rounded-sm bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-700 hover:to-gray-600 text-white font-semibold text-lg shadow-sm transition disabled:opacity-60 disabled:cursor-not-allowed"
           disabled={loading}
         >
           {loading ? (

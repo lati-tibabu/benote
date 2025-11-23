@@ -186,7 +186,7 @@ const AiGeneratedTask = () => {
       <div className="text-2xl text-gray-800 mt-5">Ai Generated Tasks</div>
       <form
         action=""
-        className="border-2 p-3 mt-10 flex justify-between rounded-lg"
+        className="border-2 p-3 mt-10 flex justify-between rounded-sm"
         onSubmit={handleUserPrompt}
       >
         <textarea
@@ -202,7 +202,7 @@ const AiGeneratedTask = () => {
         </button>
       </form>
 
-      <div className="border-2 p-3 mt-10 rounded-lg">
+      <div className="border-2 p-3 mt-10 rounded-sm">
         <div className="border-b-2 pb-2 px-4 flex justify-between">
           <p className="text-gray-800 font-bold "></p>
 
@@ -216,7 +216,7 @@ const AiGeneratedTask = () => {
           )}
         </div>
         {error && (
-          <p className="text-red-500 bg-red-100 border-red-500 border p-1 rounded-md flex items-center gap-2">
+          <p className="text-red-500 bg-red-100 border-red-500 border p-1 rounded-sm flex items-center gap-2">
             <FaTriangleExclamation size={30} />
             {error}
           </p>
@@ -234,7 +234,7 @@ const AiGeneratedTask = () => {
                 generatedTasks.map((task, index) => (
                   <div
                     key={index}
-                    className="border-2 p-2 rounded-lg text-gray-600 flex flex-col gap-2"
+                    className="border-2 p-2 rounded-sm text-gray-600 flex flex-col gap-2"
                   >
                     {/* Status Badge */}
                     <div className="flex items-center gap-2">

@@ -130,13 +130,13 @@ const Settings = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-8 bg-gradient-to-br from-gray-50 to-white shadow-xl rounded-2xl">
+    <div className="max-w-4xl mx-auto p-8 bg-gradient-to-br from-gray-50 to-white shadow-sm rounded-sm">
       <ToastContainer />
       <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 mb-8 text-center">
         Workspace Settings
       </h2>
       <form className="space-y-8">
-        <fieldset className="flex flex-col relative border border-gray-200 p-6 rounded-xl bg-white/90">
+        <fieldset className="flex flex-col relative border border-gray-200 p-6 rounded-sm bg-white/90">
           <legend className="text-lg font-semibold text-gray-600 mb-2 px-2">
             Workspace Name
           </legend>
@@ -146,12 +146,12 @@ const Settings = () => {
             onChange={(e) =>
               setUpdatedWorkspace({ ...updatedWorkspace, name: e.target.value })
             }
-            className="p-3 border rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 bg-transparent text-lg"
+            className="p-3 border rounded-sm border-gray-300 focus:ring-2 focus:ring-gray-500 bg-transparent text-lg"
             placeholder="Enter workspace name"
             required
           />
         </fieldset>
-        <fieldset className="flex flex-col relative border border-gray-200 p-6 rounded-xl bg-white/90">
+        <fieldset className="flex flex-col relative border border-gray-200 p-6 rounded-sm bg-white/90">
           <legend className="text-lg font-semibold text-gray-600 mb-2 px-2">
             Description
           </legend>
@@ -163,12 +163,12 @@ const Settings = () => {
                 description: e.target.value,
               })
             }
-            className="p-3 border rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 bg-transparent text-lg min-h-[80px]"
+            className="p-3 border rounded-sm border-gray-300 focus:ring-2 focus:ring-gray-500 bg-transparent text-lg min-h-[80px]"
             placeholder="Enter workspace description"
             required
           />
         </fieldset>
-        <fieldset className="flex flex-col relative border border-gray-200 p-6 rounded-xl bg-white/90">
+        <fieldset className="flex flex-col relative border border-gray-200 p-6 rounded-sm bg-white/90">
           <legend className="text-lg font-semibold text-gray-600 mb-2 px-2">
             Emoji
           </legend>
@@ -176,12 +176,12 @@ const Settings = () => {
             <input
               type="text"
               disabled
-              className="p-2 text-4xl rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-950 w-16 text-center"
+              className="p-2 text-4xl rounded-sm bg-transparent focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-950 w-16 text-center"
               value={updatedWorkspace.emoji}
             />
             <button
               type="button"
-              className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-800 rounded-sm hover:bg-gray-300 transition"
               onClick={() => setShowEmojiPicker(!showEmojiPicker)}
             >
               <FaRegSmile className="text-xl" />
@@ -195,7 +195,7 @@ const Settings = () => {
             />
           </div>
           {showEmojiPicker && (
-            <div className="absolute top-16 left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded-xl z-50 p-4 border border-gray-200">
+            <div className="absolute top-16 left-1/2 transform -translate-x-1/2 bg-white shadow-sm rounded-sm z-50 p-4 border border-gray-200">
               <h3 className="text-center text-lg font-semibold mb-2">
                 Select an Emoji
               </h3>
@@ -203,7 +203,7 @@ const Settings = () => {
             </div>
           )}
         </fieldset>
-        <fieldset className="flex flex-col relative border border-gray-200 p-6 rounded-xl bg-white/90">
+        <fieldset className="flex flex-col relative border border-gray-200 p-6 rounded-sm bg-white/90">
           <legend className="text-lg font-semibold text-gray-600 mb-2 px-2">
             Privacy Settings
           </legend>
@@ -215,7 +215,7 @@ const Settings = () => {
                 privacy: e.target.value,
               })
             }
-            className="p-3 border rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 bg-transparent text-lg"
+            className="p-3 border rounded-sm border-gray-300 focus:ring-2 focus:ring-gray-500 bg-transparent text-lg"
           >
             <option value="Private">Private</option>
             <option value="Team-based">Team-based</option>
@@ -225,13 +225,13 @@ const Settings = () => {
           <button
             type="button"
             onClick={handleSave}
-            className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold rounded-full shadow-md transition text-lg"
+            className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-700 hover:to-gray-600 text-white font-semibold rounded-sm shadow-sm transition text-lg"
           >
             Save Settings
           </button>
           <button
             type="button"
-            className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-semibold rounded-full shadow-md transition text-lg"
+            className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-semibold rounded-sm shadow-sm transition text-lg"
             onClick={handleDelete}
           >
             Delete Workspace

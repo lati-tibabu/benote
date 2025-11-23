@@ -65,15 +65,15 @@ const Roadmaps = () => {
     <div className="min-h-screen bg-white p-4">
       <ToastContainer />
       {/* Header */}
-      <div className="flex flex-row items-center justify-between border-b border-gray-100 pb-3 mb-6 bg-white rounded-xl shadow-sm px-2">
+      <div className="flex flex-row items-center justify-between border-b border-gray-100 pb-3 mb-6 bg-white rounded-sm shadow-sm px-2">
         <h1 className="font-bold text-xl tracking-tight text-gray-900 flex items-center gap-2">
-          <FaMap className="text-blue-500" size={22} />
+          <FaMap className="text-gray-500" size={22} />
           Roadmaps
         </h1>
         <div className="flex items-center gap-2">
           {useGemini && (
             <button
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-tr from-blue-50 to-pink-50 hover:from-blue-100 hover:to-pink-100 text-gray-700 border border-gray-100 shadow-sm transition"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-sm bg-gradient-to-tr from-gray-50 to-gray-50 hover:from-gray-100 hover:to-gray-100 text-gray-700 border border-gray-100 shadow-sm transition"
               onClick={() =>
                 document.getElementById("ai-gen-roadmap-form").showModal()
               }
@@ -83,7 +83,7 @@ const Roadmaps = () => {
             </button>
           )}
           <button
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm shadow-sm transition"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-sm bg-gray-600 hover:bg-gray-700 text-white font-medium text-sm shadow-sm transition"
             onClick={() =>
               document.getElementById("new-roadmap-form").showModal()
             }
@@ -97,15 +97,15 @@ const Roadmaps = () => {
         <input
           type="text"
           placeholder="Search roadmaps..."
-          className="w-full sm:w-64 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-100 text-sm bg-gray-50"
+          className="w-full sm:w-64 px-3 py-2 border border-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gray-100 text-sm bg-gray-50"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <div className="flex gap-1 items-center justify-end mt-2 sm:mt-0">
           <button
-            className={`p-2 rounded-lg ${
+            className={`p-2 rounded-sm ${
               viewMode === "list"
-                ? "bg-blue-100 text-blue-600"
+                ? "bg-gray-100 text-gray-600"
                 : "bg-gray-100 text-gray-400"
             }`}
             title="List view"
@@ -114,9 +114,9 @@ const Roadmaps = () => {
             <AiOutlineMenu size={18} />
           </button>
           <button
-            className={`p-2 rounded-lg ${
+            className={`p-2 rounded-sm ${
               viewMode === "grid"
-                ? "bg-blue-100 text-blue-600"
+                ? "bg-gray-100 text-gray-600"
                 : "bg-gray-100 text-gray-400"
             }`}
             title="Grid view"
@@ -135,7 +135,7 @@ const Roadmaps = () => {
                 No roadmaps found.
               </p>
             ) : (
-              <div className="overflow-x-auto rounded-lg shadow bg-white">
+              <div className="overflow-x-auto rounded-sm shadow bg-white">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="text-gray-600 bg-gray-50 border-b border-gray-100">
@@ -148,14 +148,14 @@ const Roadmaps = () => {
                     {filteredRoadmaps.map((roadmap, index) => (
                       <tr
                         key={roadmap.id}
-                        className="hover:bg-blue-50/60 transition group border-b border-gray-50 cursor-pointer"
+                        className="hover:bg-gray-50/60 transition group border-b border-gray-50 cursor-pointer"
                         onClick={() => handleOpenRoadmap(roadmap.id)}
                       >
                         <td className="text-gray-300 text-xs pl-2">
                           {index + 1}
                         </td>
-                        <td className="flex items-center gap-2 text-blue-700 font-medium hover:underline">
-                          <FaMap size={18} className="text-blue-400" />
+                        <td className="flex items-center gap-2 text-gray-700 font-medium hover:underline">
+                          <FaMap size={18} className="text-gray-400" />
                           <span className="truncate max-w-[180px]">
                             {roadmap.title}
                           </span>
@@ -186,12 +186,12 @@ const Roadmaps = () => {
               filteredRoadmaps.map((roadmap, index) => (
                 <div
                   key={roadmap.id}
-                  className="bg-white border border-gray-100 rounded-xl shadow-sm p-4 flex flex-col gap-2 hover:shadow-md transition cursor-pointer group"
+                  className="bg-white border border-gray-100 rounded-sm shadow-sm p-4 flex flex-col gap-2 hover:shadow-sm transition cursor-pointer group"
                   onClick={() => handleOpenRoadmap(roadmap.id)}
                 >
                   <div className="flex items-center gap-2 mb-1">
-                    <FaMap size={20} className="text-blue-400" />
-                    <span className="font-semibold text-blue-700 truncate max-w-[120px]">
+                    <FaMap size={20} className="text-gray-400" />
+                    <span className="font-semibold text-gray-700 truncate max-w-[120px]">
                       {roadmap.title}
                     </span>
                   </div>
@@ -211,7 +211,7 @@ const Roadmaps = () => {
       </div>
       {/* AI Roadmap Modal */}
       <dialog id="ai-gen-roadmap-form" className="modal">
-        <div className="modal-box bg-white p-4 rounded-md shadow-md w-full max-w-lg mx-auto mt-10">
+        <div className="modal-box bg-white p-4 rounded-sm shadow-sm w-full max-w-lg mx-auto mt-10">
           <form method="dialog">
             <button
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
@@ -225,7 +225,7 @@ const Roadmaps = () => {
       </dialog>
       {/* Add New Roadmap Modal */}
       <dialog id="new-roadmap-form" className="modal">
-        <div className="modal-box bg-white p-4 rounded-md shadow-md w-full max-w-lg mx-auto mt-10">
+        <div className="modal-box bg-white p-4 rounded-sm shadow-sm w-full max-w-lg mx-auto mt-10">
           <form method="dialog">
             <button
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"

@@ -15,9 +15,9 @@ const PomodoroFocus = () => {
   );
 
   return (
-    <div className="w-full max-w-full sm:max-w-lg mx-auto p-3 sm:p-6 bg-gradient-to-br from-blue-100 to-indigo-50 rounded-2xl shadow-xl flex flex-col items-center">
+    <div className="w-full max-w-full sm:max-w-lg mx-auto p-3 sm:p-6 bg-gradient-to-br from-gray-100 to-gray-50 rounded-sm shadow-sm flex flex-col items-center">
       <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-        <FaCentercode size={24} className="text-blue-600" />
+        <FaCentercode size={24} className="text-gray-600" />
         <span className="font-extrabold text-lg sm:text-2xl tracking-tight text-gray-800">
           Focus Timer
         </span>
@@ -28,11 +28,11 @@ const PomodoroFocus = () => {
         {timerArray.map((item, index) => (
           <button
             key={index}
-            className={`px-3 sm:px-4 py-2 rounded-lg font-semibold border transition-all duration-150 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 text-xs sm:text-sm \
+            className={`px-3 sm:px-4 py-2 rounded-sm font-semibold border transition-all duration-150 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 text-xs sm:text-sm \
               ${
                 selectedTimer === item
-                  ? "bg-blue-600 text-white border-blue-600"
-                  : "bg-white text-blue-700 border-blue-200 hover:bg-blue-50"
+                  ? "bg-gray-600 text-white border-gray-600"
+                  : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
               }`}
             onClick={() => dispatch(resetTimer(item))}
             aria-pressed={selectedTimer === item}
@@ -43,14 +43,14 @@ const PomodoroFocus = () => {
       </div>
 
       {/* Timer Display */}
-      <div className="flex items-center justify-center text-4xl sm:text-6xl font-mono font-bold text-blue-800 mb-6 tracking-widest drop-shadow-sm select-none w-full">
+      <div className="flex items-center justify-center text-4xl sm:text-6xl font-mono font-bold text-gray-800 mb-6 tracking-widest drop-shadow-sm select-none w-full">
         {timerFormatter(countingTimer)}
       </div>
 
       {/* Play/Pause/Reset Controls */}
       <div className="flex flex-wrap items-center gap-4 sm:gap-6 justify-center mb-2 w-full">
         <button
-          className="p-3 sm:p-4 rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="p-3 sm:p-4 rounded-sm bg-gray-600 hover:bg-gray-700 shadow-sm transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-gray-400"
           onClick={() =>
             counting ? dispatch(stopTimer()) : dispatch(startTimer())
           }
@@ -63,13 +63,13 @@ const PomodoroFocus = () => {
           )}
         </button>
         <button
-          className="p-3 sm:p-4 rounded-full bg-gray-100 hover:bg-gray-200 shadow transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          className="p-3 sm:p-4 rounded-sm bg-gray-100 hover:bg-gray-200 shadow transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-gray-200"
           onClick={() => dispatch(resetTimer(selectedTimer))}
           aria-label="Reset timer"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600"
+            className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -86,7 +86,7 @@ const PomodoroFocus = () => {
 
       {/* Alarm notification */}
       {alarmPlaying && (
-        <div className="mt-4 flex flex-col sm:flex-row items-center gap-2 bg-green-100 border border-green-300 text-green-800 px-4 py-2 rounded-lg shadow animate-pulse w-full">
+        <div className="mt-4 flex flex-col sm:flex-row items-center gap-2 bg-green-100 border border-green-300 text-green-800 px-4 py-2 rounded-sm shadow animate-pulse w-full">
           <span className="font-semibold">Time's up!</span>
           <button
             className="ml-0 sm:ml-2 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-all text-xs font-bold"

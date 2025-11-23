@@ -136,27 +136,27 @@ const StudyPlans = () => {
   return (
     <div className="bg-gradient-to-br from-gray-50 to-white min-h-screen p-6">
       <h2 className="flex items-center gap-2 text-3xl font-extrabold tracking-tight text-gray-900 mb-8">
-        <PiBookOpenTextBold className="text-purple-700 text-4xl" />
+        <PiBookOpenTextBold className="text-gray-700 text-4xl" />
         Study Plans
       </h2>
       <div className="flex gap-3 mb-8">
         <button
-          className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-full px-6 py-2 shadow-lg transition text-base"
+          className="flex items-center gap-2 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold rounded-sm px-6 py-2 shadow-sm transition text-base"
           onClick={() => setIsOpen(true)}
         >
           <PiPlusBold className="text-lg" /> New Study Plan
         </button>
         <button
-          className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white font-semibold rounded-full px-6 py-2 shadow-lg transition text-base"
+          className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white font-semibold rounded-sm px-6 py-2 shadow-sm transition text-base"
           onClick={() => setShowAiModal(true)}
         >
           <PiMagicWandBold className="text-lg" /> Generate Study Plan
         </button>
       </div>
-      <div className="overflow-x-auto rounded-2xl shadow-xl bg-white/95 border border-gray-200">
+      <div className="overflow-x-auto rounded-sm shadow-sm bg-white/95 border border-gray-200">
         {studyPlans.length > 0 ? (
           <table className="table w-full">
-            <thead className="bg-gradient-to-r from-purple-50 to-white text-gray-700 text-base">
+            <thead className="bg-gradient-to-r from-gray-50 to-white text-gray-700 text-base">
               <tr>
                 <th className="py-4 px-4 text-left font-bold">Title</th>
                 <th className="py-4 px-4 text-left font-bold">Description</th>
@@ -173,10 +173,10 @@ const StudyPlans = () => {
             </thead>
             <tbody>
               {studyPlans.map((plan) => (
-                <tr key={plan.id} className="hover:bg-purple-50/60 transition">
+                <tr key={plan.id} className="hover:bg-gray-50/60 transition">
                   <td
                     onClick={() => handleOpenPlan(plan.id)}
-                    className="hover:underline cursor-pointer font-semibold text-purple-700 text-base px-4 py-3 rounded-l-xl"
+                    className="hover:underline cursor-pointer font-semibold text-gray-700 text-base px-4 py-3 rounded-l-xl"
                   >
                     {plan.title}
                   </td>
@@ -191,7 +191,7 @@ const StudyPlans = () => {
                   </td>
                   <td className="px-4 py-3">
                     <button
-                      className="flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white rounded-full px-4 py-2 shadow transition text-sm"
+                      className="flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white rounded-sm px-4 py-2 shadow transition text-sm"
                       onClick={() => handleDeletePlan(plan.id)}
                     >
                       <PiTrashBold className="text-base" /> Delete
@@ -210,7 +210,7 @@ const StudyPlans = () => {
       </div>
       {isOpen && (
         <div className="modal modal-open">
-          <div className="modal-box bg-white text-gray-800 rounded-2xl shadow-lg border border-gray-200">
+          <div className="modal-box bg-white text-gray-800 rounded-sm shadow-sm border border-gray-200">
             <h3 className="text-xl font-bold mb-4">Create Study Plan</h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -227,7 +227,7 @@ const StudyPlans = () => {
                   placeholder="Title"
                   value={formData.title}
                   onChange={handleChange}
-                  className="input input-bordered w-full bg-gray-100 rounded-md"
+                  className="input input-bordered w-full bg-gray-100 rounded-sm"
                   required
                 />
               </div>
@@ -244,7 +244,7 @@ const StudyPlans = () => {
                   placeholder="Description"
                   value={formData.description}
                   onChange={handleChange}
-                  className="textarea textarea-bordered w-full bg-gray-100 rounded-md"
+                  className="textarea textarea-bordered w-full bg-gray-100 rounded-sm"
                   required
                 ></textarea>
               </div>
@@ -262,7 +262,7 @@ const StudyPlans = () => {
                     name="start_date"
                     value={formData.start_date}
                     onChange={handleChange}
-                    className="input input-bordered w-full bg-gray-100 rounded-md"
+                    className="input input-bordered w-full bg-gray-100 rounded-sm"
                     required
                   />
                 </div>
@@ -279,7 +279,7 @@ const StudyPlans = () => {
                     name="end_date"
                     value={formData.end_date}
                     onChange={handleChange}
-                    className="input input-bordered w-full bg-gray-100 rounded-md"
+                    className="input input-bordered w-full bg-gray-100 rounded-sm"
                     required
                   />
                 </div>
@@ -288,14 +288,14 @@ const StudyPlans = () => {
               <div className="modal-action flex gap-2 justify-end">
                 <button
                   type="button"
-                  className="btn btn-ghost text-gray-700 rounded-full px-4 py-2"
+                  className="btn btn-ghost text-gray-700 rounded-sm px-4 py-2"
                   onClick={() => setIsOpen(false)}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="btn bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full px-6 py-2 shadow-md transition"
+                  className="btn bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-sm px-6 py-2 shadow-sm transition"
                 >
                   Save
                 </button>
@@ -306,11 +306,11 @@ const StudyPlans = () => {
       )}
       {showAiModal && (
         <div className="modal modal-open">
-          <div className="modal-box bg-white text-gray-800 rounded-2xl shadow-lg border border-gray-200 max-w-3xl w-full">
+          <div className="modal-box bg-white text-gray-800 rounded-sm shadow-sm border border-gray-200 max-w-3xl w-full">
             <div className="flex justify-between items-center mb-2">
               <h3 className="text-xl font-bold">AI Generated Study Plan</h3>
               <button
-                className="btn btn-ghost text-gray-700 rounded-full px-4 py-2"
+                className="btn btn-ghost text-gray-700 rounded-sm px-4 py-2"
                 onClick={() => setShowAiModal(false)}
               >
                 Close

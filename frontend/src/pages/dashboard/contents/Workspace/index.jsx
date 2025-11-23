@@ -71,7 +71,7 @@ function Workspace() {
         <>
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
             <button
-              className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-all"
+              className="flex items-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-sm shadow-sm hover:bg-gray-700 transition-all"
               onClick={() => document.getElementById("my_modal_3").showModal()}
             >
               <FaPlus /> Create New
@@ -85,14 +85,14 @@ function Workspace() {
                   placeholder="Search Workspaces..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white"
+                  className="w-full pl-10 pr-4 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-300 bg-white"
                 />
               </div>
 
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
-                className="px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white"
+                className="px-4 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-300 bg-white"
               >
                 <option value="">All</option>
                 <option value="team">Team</option>
@@ -100,7 +100,7 @@ function Workspace() {
               </select>
 
               <button
-                className="flex items-center gap-2 px-6 py-3 border rounded-lg shadow-md hover:bg-gray-100 transition-all"
+                className="flex items-center gap-2 px-6 py-3 border rounded-sm shadow-sm hover:bg-gray-100 transition-all"
                 onClick={toggleViewMode}
               >
                 {viewMode === "grid" ? <FaList /> : <FaTh />}
@@ -112,7 +112,7 @@ function Workspace() {
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
               {[...Array(3)].map((_, idx) => (
-                <div key={idx} className="h-32 bg-gray-200 rounded-lg"></div>
+                <div key={idx} className="h-32 bg-gray-200 rounded-sm"></div>
               ))}
             </div>
           ) : filteredWorkspaces.length > 0 ? (
@@ -121,7 +121,7 @@ function Workspace() {
                 {filteredWorkspaces.map((workspace) => (
                   <div
                     key={workspace.workspace.id}
-                    className="p-6 bg-white shadow-lg rounded-lg cursor-pointer hover:shadow-xl transition-all"
+                    className="p-6 bg-white shadow-sm rounded-sm cursor-pointer hover:shadow-sm transition-all"
                     onClick={handleWorkspaceOpen(workspace.workspace.id)}
                   >
                     <div className="flex items-center gap-4">
@@ -150,7 +150,7 @@ function Workspace() {
                 ))}
               </div>
             ) : (
-              <table className="table-auto w-full border border-gray-300 rounded-lg shadow-md">
+              <table className="table-auto w-full border border-gray-300 rounded-sm shadow-sm">
                 <thead className="bg-gray-100 text-left">
                   <tr>
                     <th className="px-6 py-3 border">Workspace</th>
@@ -189,7 +189,7 @@ function Workspace() {
           )}
 
           <dialog id="my_modal_3" className="modal">
-            <div className="modal-box bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl overflow-y-auto max-h-[90vh]">
+            <div className="modal-box bg-white p-6 rounded-sm shadow-sm w-full max-w-2xl overflow-y-auto max-h-[90vh]">
               <form method="dialog">
                 <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
                   ✕

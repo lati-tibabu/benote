@@ -229,15 +229,15 @@ const TodoLists = () => {
     <div className="min-h-screen bg-white p-4">
       <ToastContainer />
       {/* Header */}
-      <div className="flex gap-4 justify-between items-center p-4 border-b border-gray-100 mb-6 bg-white rounded-xl shadow-sm">
+      <div className="flex gap-4 justify-between items-center p-4 border-b border-gray-100 mb-6 bg-white rounded-sm shadow-sm">
         <h1 className="font-bold text-xl tracking-tight text-gray-900 flex items-center gap-2">
-          <FaRegListAlt className="text-blue-500" size={22} />
+          <FaRegListAlt className="text-gray-500" size={22} />
           To-Do Lists
         </h1>
         <div className="flex items-center gap-2">
           {useGemini && (
             <button
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-tr from-blue-50 to-pink-50 hover:from-blue-100 hover:to-pink-100 text-gray-700 border border-gray-100 shadow-sm transition"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-sm bg-gradient-to-tr from-gray-50 to-gray-50 hover:from-gray-100 hover:to-gray-100 text-gray-700 border border-gray-100 shadow-sm transition"
               onClick={() => document.getElementById("ai_gen_todo").showModal()}
             >
               <FaMagic size={16} />
@@ -245,7 +245,7 @@ const TodoLists = () => {
             </button>
           )}
           <button
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm shadow-sm transition"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-sm bg-gray-600 hover:bg-gray-700 text-white font-medium text-sm shadow-sm transition"
             onClick={() => document.getElementById("my_modal_3").showModal()}
           >
             <FaPlus size={16} /> New
@@ -256,14 +256,14 @@ const TodoLists = () => {
       <div className="overflow-x-auto scrollbar-hide pt-4">
         <div className="flex gap-6 w-fit sm:w-full">
           {/* Sidebar */}
-          <div className="flex flex-col gap-2 p-3 bg-white border border-gray-100 rounded-xl shadow-md min-w-[280px] max-h-[80vh] overflow-y-auto">
+          <div className="flex flex-col gap-2 p-3 bg-white border border-gray-100 rounded-sm shadow-sm min-w-[280px] max-h-[80vh] overflow-y-auto">
             {todoList.length > 0 ? (
               todoList.map((item, index) => (
                 <TodoMinimizedCard
                   key={item.id}
-                  className={`hover:bg-blue-50 hover:cursor-pointer w-64 rounded-xl border transition shadow-sm ${
+                  className={`hover:bg-gray-50 hover:cursor-pointer w-64 rounded-sm border transition shadow-sm ${
                     openedTodoList.id === item.id
-                      ? "border-blue-500 bg-blue-50"
+                      ? "border-gray-500 bg-gray-50"
                       : "border-gray-100 bg-white"
                   }`}
                   title={item.title}
@@ -286,7 +286,7 @@ const TodoLists = () => {
             {Object.keys(openedTodoList).length > 0 && (
               <div className="flex items-center gap-3 mb-4">
                 <progress
-                  className="progress progress-success transition w-48 h-3 rounded-full"
+                  className="progress progress-success transition w-48 h-3 rounded-sm"
                   value={progress}
                   max="100"
                 ></progress>
@@ -312,7 +312,7 @@ const TodoLists = () => {
       </div>
       {/* Add New Todo List Modal */}
       <dialog id="my_modal_3" className="modal">
-        <div className="modal-box bg-white p-4 rounded-md shadow-md w-full max-w-lg mx-auto mt-10">
+        <div className="modal-box bg-white p-4 rounded-sm shadow-sm w-full max-w-lg mx-auto mt-10">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
@@ -323,7 +323,7 @@ const TodoLists = () => {
       </dialog>
       {/* AI Todo Modal */}
       <dialog id="ai_gen_todo" className="modal">
-        <div className="modal-box bg-white p-4 rounded-md shadow-md w-full max-w-lg mx-auto mt-10">
+        <div className="modal-box bg-white p-4 rounded-sm shadow-sm w-full max-w-lg mx-auto mt-10">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕

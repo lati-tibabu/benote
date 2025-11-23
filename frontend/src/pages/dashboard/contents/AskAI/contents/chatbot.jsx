@@ -146,8 +146,8 @@ function Chatbot() {
 
   if (!useGemini) {
     return (
-      <div className="flex flex-col h-full w-full max-w-none mx-auto bg-white border border-blue-100 shadow rounded-lg overflow-hidden animate-fade-in">
-        <div className="bg-blue-600 text-white p-4 flex items-center justify-between shadow-sm rounded-t-lg">
+      <div className="flex flex-col h-full w-full max-w-none mx-auto bg-white border border-gray-100 shadow rounded-sm overflow-hidden animate-fade-in">
+        <div className="bg-gray-600 text-white p-4 flex items-center justify-between shadow-sm rounded-t-lg">
           <h2 className="text-xl font-semibold">AI Assistant</h2>
         </div>
         <div className="flex-1 p-4 flex items-center justify-center text-gray-600">
@@ -161,7 +161,7 @@ function Chatbot() {
   }
 
   return (
-    <div className="flex flex-col max-h-[70vh] w-full max-w-none mx-auto bg-white border border-blue-100 shadow rounded-lg overflow-hidden animate-fade-in">
+    <div className="flex flex-col max-h-[70vh] w-full max-w-none mx-auto bg-white border border-gray-100 shadow rounded-sm overflow-hidden animate-fade-in">
       <ToastContainer />
       {/* Stateless/memoryless note */}
       <div className="bg-yellow-50 text-yellow-800 text-xs px-4 py-2 border-b border-yellow-200 flex items-center gap-2">
@@ -172,7 +172,7 @@ function Chatbot() {
         </span>
       </div>
       {/* Chat header */}
-      <div className="bg-blue-600 text-white p-4 flex items-center justify-between shadow-sm rounded-t-lg">
+      <div className="bg-gray-600 text-white p-4 flex items-center justify-between shadow-sm rounded-t-lg">
         <h2 className="text-xl font-semibold">AI Assistant</h2>
         <div className="flex items-center gap-3">
           {processing && (
@@ -182,7 +182,7 @@ function Chatbot() {
             </div>
           )}
           <button
-            className="ml-2 p-2 rounded-full hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-white"
+            className="ml-2 p-2 rounded-sm hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-white"
             title="AI Settings"
             onClick={() => setShowSettings(true)}
           >
@@ -194,7 +194,7 @@ function Chatbot() {
       {/* Settings Modal */}
       {showSettings && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative animate-fade-in">
+          <div className="bg-white rounded-sm shadow-sm p-6 w-full max-w-md relative animate-fade-in">
             <h3 className="text-lg font-semibold mb-4">AI Bot Preferences</h3>
             <div className="mb-3">
               <label className="block text-sm font-medium mb-1">Tone</label>
@@ -244,7 +244,7 @@ function Chatbot() {
                 Cancel
               </button>
               <button
-                className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                className="px-4 py-2 rounded bg-gray-600 hover:bg-gray-700 text-white font-semibold"
                 onClick={handleSavePreferences}
               >
                 Save
@@ -264,7 +264,7 @@ function Chatbot() {
       {/* Message Area */}
       <div className="flex-1 p-4 overflow-y-auto space-y-4 custom-scrollbar bg-gray-50">
         {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full text-blue-400 opacity-80 select-none pt-10">
+          <div className="flex flex-col items-center justify-center h-full text-gray-400 opacity-80 select-none pt-10">
             <span className="text-4xl mb-2">💬</span>
             <span className="text-base">
               Start a conversation with your AI assistant.
@@ -279,9 +279,9 @@ function Chatbot() {
             }`}
           >
             <div
-              className={`relative max-w-[70%] p-3 rounded-xl shadow-sm break-words ${
+              className={`relative max-w-[70%] p-3 rounded-sm shadow-sm break-words ${
                 msg.sender === "user"
-                  ? "bg-blue-100 text-blue-900 rounded-br-md animate-slide-in-right"
+                  ? "bg-gray-100 text-gray-900 rounded-br-md animate-slide-in-right"
                   : "bg-gray-100 text-gray-800 rounded-bl-md animate-slide-in-left"
               } ${
                 msg.sender === "system"
@@ -294,7 +294,7 @@ function Chatbot() {
                   <MarkdownRenderer content={msg.text} />
                   <div className="text-right mt-2">
                     <button
-                      className="text-xs text-blue-600 hover:underline"
+                      className="text-xs text-gray-600 hover:underline"
                       onClick={() => handleCopy(msg.text)}
                     >
                       Copy
@@ -311,10 +311,10 @@ function Chatbot() {
       </div>
 
       {/* Input Area */}
-      <div className="p-4 bg-white border-t border-blue-100 flex items-center gap-2 rounded-b-lg">
+      <div className="p-4 bg-white border-t border-gray-100 flex items-center gap-2 rounded-b-lg">
         <input
           type="text"
-          className="flex-1 border border-blue-200 rounded-full py-3 px-5 text-base focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 bg-gray-50 placeholder-gray-400"
+          className="flex-1 border border-gray-200 rounded-sm py-3 px-5 text-base focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200 bg-gray-50 placeholder-gray-400"
           placeholder={processing ? "AI is typing..." : "Type your message..."}
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -322,9 +322,9 @@ function Chatbot() {
           disabled={processing}
         />
         <button
-          className={`bg-blue-600 text-white p-3 rounded-full shadow transition-all duration-300 flex items-center justify-center ${
+          className={`bg-gray-600 text-white p-3 rounded-sm shadow transition-all duration-300 flex items-center justify-center ${
             input.trim() && !processing
-              ? "hover:bg-blue-700 transform hover:scale-105"
+              ? "hover:bg-gray-700 transform hover:scale-105"
               : "opacity-60 cursor-not-allowed"
           }`}
           onClick={handleSend}
@@ -341,7 +341,7 @@ function Chatbot() {
         }
 
         .custom-scrollbar::-webkit-scrollbar-track {
-          background: #f0f4f8; /* Light blue-gray for track */
+          background: #f0f4f8; /* Light gray-gray for track */
           border-radius: 10px;
         }
 

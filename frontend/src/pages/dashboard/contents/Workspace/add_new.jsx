@@ -151,7 +151,7 @@ const AddNew = (props) => {
   return (
     <div className="w-full flex">
       <ToastContainer />
-      <div className="bg-transparent p-4 rounded-md shadow-md lg:w-1/2 w-full mt-10 grow">
+      <div className="bg-transparent p-4 rounded-sm shadow-sm lg:w-1/2 w-full mt-10 grow">
         <div className="flex items-center gap-2 font-bold text-lg">
           <p className="text-2xl">🗂️</p>
           <h1>add new workspace</h1>
@@ -173,7 +173,7 @@ const AddNew = (props) => {
                 setWorkspaceData({ ...workspaceData, name: e.target.value });
               }}
               placeholder="eg. My workspace"
-              className="p-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-950"
+              className="p-2 border border-gray-300 rounded-sm bg-transparent focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-950"
               required
             />
           </fieldset>
@@ -190,7 +190,7 @@ const AddNew = (props) => {
                   description: e.target.value,
                 });
               }}
-              className="p-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-950"
+              className="p-2 border border-gray-300 rounded-sm bg-transparent focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-950"
               placeholder="eg. This workspace is for my personal projects"
             ></textarea>
           </fieldset>
@@ -201,7 +201,7 @@ const AddNew = (props) => {
               <input
                 type="text"
                 disabled
-                className="p-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-950 text-xl"
+                className="p-2 border border-gray-300 rounded-sm bg-transparent focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-950 text-xl"
                 value={workspaceData.emoji}
                 onChange={(e) => {
                   setWorkspaceData({

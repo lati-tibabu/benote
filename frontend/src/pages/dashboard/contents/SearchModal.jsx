@@ -31,7 +31,7 @@ const SearchModal = ({ open, onClose }) => {
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-opacity-40 transition-opacity animate-fade-in">
       <div
         ref={modalRef}
-        className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 p-6 animate-slide-down"
+        className="relative bg-white rounded-sm shadow-sm w-full max-w-lg mx-4 p-6 animate-slide-down"
       >
         <button
           //   className="absolute top-[-3] right-[-3] text-gray-500 hover:text-gray-800 text-2xl focus:outline-none"

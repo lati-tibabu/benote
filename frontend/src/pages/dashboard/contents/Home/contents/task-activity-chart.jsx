@@ -73,13 +73,13 @@ const TaskActivityChart = () => {
   };
 
   return (
-    <div className="w-full max-w-md h-fit p-5 sm:p-7 bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-2xl shadow-lg mx-auto">
-      <h2 className="text-xl sm:text-2xl font-bold mb-5 pb-2 border-b border-blue-200 text-blue-800 flex items-center gap-2">
-        <span className="inline-block w-2 h-6 bg-blue-400 rounded-full mr-2"></span>
+    <div className="w-full max-w-md h-fit p-5 sm:p-7 bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 rounded-sm shadow-sm mx-auto">
+      <h2 className="text-xl sm:text-2xl font-bold mb-5 pb-2 border-b border-gray-200 text-gray-800 flex items-center gap-2">
+        <span className="inline-block w-2 h-6 bg-gray-400 rounded-sm mr-2"></span>
         Task Activity Overview
       </h2>
-      <p className="text-blue-700 mb-4 text-sm">
-        ✅ You have <span className="font-bold text-blue-900">{doneCount}</span>{" "}
+      <p className="text-gray-700 mb-4 text-sm">
+        ✅ You have <span className="font-bold text-gray-900">{doneCount}</span>{" "}
         task
         {doneCount !== 1 ? "s" : ""} marked as{" "}
         <span className="text-green-600">done</span>.
@@ -87,7 +87,7 @@ const TaskActivityChart = () => {
       <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
         {/* Pie Chart */}
         <div className="w-full sm:w-1/2 flex flex-col items-center">
-          <span className="text-xs text-blue-400 mb-1">
+          <span className="text-xs text-gray-400 mb-1">
             Status Distribution
           </span>
           <div className="w-full h-56">
@@ -132,7 +132,7 @@ const TaskActivityChart = () => {
         </div>
         {/* Bar Chart */}
         <div className="w-full sm:w-1/2 flex flex-col items-center">
-          <span className="text-xs text-blue-400 mb-1">Status Count</span>
+          <span className="text-xs text-gray-400 mb-1">Status Count</span>
           <div className="w-full h-56">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart

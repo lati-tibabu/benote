@@ -68,7 +68,7 @@ const ArchivedTasks = () => {
 
   return (
     <div className="w-full flex flex-col items-center">
-      <div className="bg-transparent p-4 rounded-md shadow-md lg:w-2/3 w-full mt-10">
+      <div className="bg-transparent p-4 rounded-sm shadow-sm lg:w-2/3 w-full mt-10">
         <div className="flex items-center gap-2 font-bold text-lg">
           <p className="text-2xl">📂</p>
           <h1>Archived Tasks</h1>
@@ -84,7 +84,7 @@ const ArchivedTasks = () => {
             {archivedTasks.map((task) => (
               <li
                 key={task.id}
-                className="flex justify-between items-center p-3 border border-gray-300 rounded-md mb-2"
+                className="flex justify-between items-center p-3 border border-gray-300 rounded-sm mb-2"
               >
                 <div>
                   <h2 className="font-bold">{task.name}</h2>

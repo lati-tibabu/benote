@@ -7,7 +7,7 @@ function Footer1() {
     <footer className="mt-auto bg-gradient-to-r from-gray-50 via-white to-gray-100 border-t border-gray-100 py-8 px-4 md:px-16">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
         <div className="flex items-center gap-3 mb-4 md:mb-0">
-          {/* <img src="/rect19.png" alt="Logo" width={44} className="rounded-lg" /> */}
+          {/* <img src="/rect19.png" alt="Logo" width={44} className="rounded-sm" /> */}
           <img src="/rect19.png" alt="Logo" className="w-14 animate-logo-pop" />
           <span className="text-lg font-bold text-gray-700">
             Benote

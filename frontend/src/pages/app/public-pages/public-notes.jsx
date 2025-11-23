@@ -25,7 +25,7 @@ const NoteCard = ({ note, viewStyle, truncateContent, formatDate }) => {
     <Link
       to={`/public/notes/${note.id}`}
       key={note.id}
-      className={`block bg-white rounded-xl border border-gray-200 hover:border-blue-400 transition-all duration-300 transform hover:-translate-y-1 relative group overflow-hidden ${
+      className={`block bg-white rounded-sm border border-gray-200 hover:border-gray-400 transition-all duration-300 transform hover:-translate-y-1 relative group overflow-hidden ${
         viewStyle === "list" ? "w-full max-w-3xl" : "" // Constrain width in list view
       }`}
     >
@@ -45,7 +45,7 @@ const NoteCard = ({ note, viewStyle, truncateContent, formatDate }) => {
                 ? "Hide content preview"
                 : "Show content preview"
             }
-            className="p-1 rounded-full text-gray-500 hover:bg-gray-100 hover:text-blue-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="p-1 rounded-sm text-gray-500 hover:bg-gray-100 hover:text-gray-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
           >
             {showIndividualContentPreview ? (
               <PiEyeSlash className="text-xl" />
@@ -56,7 +56,7 @@ const NoteCard = ({ note, viewStyle, truncateContent, formatDate }) => {
         </div>
 
         {/* Title */}
-        <h2 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors leading-tight">
+        <h2 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-gray-700 transition-colors leading-tight">
           {note.title}
         </h2>
 
@@ -208,7 +208,7 @@ const PublicNotesPage = () => {
   if (loading) {
     return (
       <div className="flex flex-col justify-center items-center h-screen bg-gray-50 text-gray-700">
-        <PiSpinnerGap className="animate-spin text-6xl text-blue-600 mb-4" />
+        <PiSpinnerGap className="animate-spin text-6xl text-gray-600 mb-4" />
         <p className="text-lg">Loading public notes...</p>
       </div>
     );
@@ -222,7 +222,7 @@ const PublicNotesPage = () => {
         </p>
         <button
           onClick={() => fetchPublicNotes(1, currentSearchTerm, itemsPerPage)}
-          className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors"
+          className="mt-4 px-6 py-3 bg-gray-600 text-white rounded-sm shadow-sm hover:bg-gray-700 transition-colors"
         >
           Retry
         </button>
@@ -238,7 +238,7 @@ const PublicNotesPage = () => {
       {/* Header Section */}
       <header className="flex flex-col items-center justify-center mb-10">
         <div className="flex items-center mb-4">
-          <PiGlobeSimpleFill className="text-blue-600 text-5xl mr-4" />
+          <PiGlobeSimpleFill className="text-gray-600 text-5xl mr-4" />
           <h1 className="text-5xl font-extrabold text-gray-900 leading-tight">
             Benote Public Notes
           </h1>
@@ -252,13 +252,13 @@ const PublicNotesPage = () => {
             onChange={handleSearchInputChange}
             onKeyPress={handleKeyPress}
             aria-label="Search notes"
-            className="flex-grow px-6 py-3 pl-14 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-3 focus:ring-blue-300 focus:border-blue-400 transition-all duration-200 text-gray-800 bg-white text-lg"
+            className="flex-grow px-6 py-3 pl-14 border border-gray-300 rounded-sm shadow-sm focus:outline-none focus:ring-3 focus:ring-gray-300 focus:border-gray-400 transition-all duration-200 text-gray-800 bg-white text-lg"
           />
           <PiMagnifyingGlass className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 text-2xl" />
           <button
             onClick={executeSearch}
             aria-label="Submit search"
-            className="ml-4 px-8 py-3 bg-blue-600 text-white font-semibold rounded-full shadow-md hover:bg-blue-700 focus:outline-none focus:ring-3 focus:ring-blue-400 transition-colors text-lg"
+            className="ml-4 px-8 py-3 bg-gray-600 text-white font-semibold rounded-sm shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-3 focus:ring-gray-400 transition-colors text-lg"
           >
             Search
           </button>
@@ -279,7 +279,7 @@ const PublicNotesPage = () => {
               value={selectedFont}
               onChange={(e) => setSelectedFont(e.target.value)}
               aria-label="Select font style"
-              className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-800 cursor-pointer text-base"
+              className="px-4 py-2 border border-gray-300 rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white text-gray-800 cursor-pointer text-base"
             >
               <option value="Inter">Inter</option>
               <option value="Roboto">Roboto</option>
@@ -304,7 +304,7 @@ const PublicNotesPage = () => {
                 setCurrentPage(1); // Reset to first page when items per page changes
               }}
               aria-label="Select number of notes per page"
-              className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-800 cursor-pointer text-base"
+              className="px-4 py-2 border border-gray-300 rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white text-gray-800 cursor-pointer text-base"
             >
               <option value="6">6</option>
               <option value="9">9</option>
@@ -319,9 +319,9 @@ const PublicNotesPage = () => {
             <button
               onClick={() => setViewStyle("grid")}
               aria-label="View as grid"
-              className={`p-3 rounded-lg transition-colors duration-200 ${
+              className={`p-3 rounded-sm transition-colors duration-200 ${
                 viewStyle === "grid"
-                  ? "bg-blue-600 text-white shadow-md"
+                  ? "bg-gray-600 text-white shadow-sm"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
             >
@@ -330,9 +330,9 @@ const PublicNotesPage = () => {
             <button
               onClick={() => setViewStyle("list")}
               aria-label="View as list"
-              className={`p-3 rounded-lg transition-colors duration-200 ${
+              className={`p-3 rounded-sm transition-colors duration-200 ${
                 viewStyle === "list"
-                  ? "bg-blue-600 text-white shadow-md"
+                  ? "bg-gray-600 text-white shadow-sm"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
             >
@@ -344,7 +344,7 @@ const PublicNotesPage = () => {
 
       {/* Main Content Area */}
       {notes.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-xl border border-gray-200 mx-auto max-w-3xl">
+        <div className="text-center py-20 bg-white rounded-sm border border-gray-200 mx-auto max-w-3xl">
           <p className="text-gray-700 text-2xl font-semibold mb-4">
             {currentSearchTerm
               ? `No public notes found for "${currentSearchTerm}".`
@@ -362,7 +362,7 @@ const PublicNotesPage = () => {
                 setCurrentSearchTerm("");
                 setCurrentPage(1);
               }}
-              className="mt-6 px-6 py-3 bg-blue-500 text-white font-medium rounded-full hover:bg-blue-600 transition-colors shadow-md"
+              className="mt-6 px-6 py-3 bg-gray-500 text-white font-medium rounded-sm hover:bg-gray-600 transition-colors shadow-sm"
             >
               Clear Search
             </button>
@@ -396,7 +396,7 @@ const PublicNotesPage = () => {
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
                 aria-label="Go to previous page"
-                className="p-3 bg-blue-600 text-white font-medium rounded-full shadow-md disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors transform hover:scale-105 text-lg"
+                className="p-3 bg-gray-600 text-white font-medium rounded-sm shadow-sm disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors transform hover:scale-105 text-lg"
               >
                 <PiCaretLeftBold className="text-xl" />
               </button>
@@ -407,7 +407,7 @@ const PublicNotesPage = () => {
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 aria-label="Go to next page"
-                className="p-3 bg-blue-600 text-white font-medium rounded-full shadow-md disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors transform hover:scale-105 text-lg"
+                className="p-3 bg-gray-600 text-white font-medium rounded-sm shadow-sm disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors transform hover:scale-105 text-lg"
               >
                 <PiCaretRightBold className="text-xl" />
               </button>

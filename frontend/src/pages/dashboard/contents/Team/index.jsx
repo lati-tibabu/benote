@@ -58,11 +58,11 @@ function Team() {
         <li
           key={team.team.id}
           onClick={handleTeamOpen(team.team.id)}
-          className="cursor-pointer shadow-lg hover:shadow-xl transition-shadow duration-300"
+          className="cursor-pointer shadow-sm hover:shadow-sm transition-shadow duration-300"
         >
           <div
             title={team.team.name}
-            className="bg-white rounded-lg overflow-hidden border border-gray-200 hover:border-gray-300"
+            className="bg-white rounded-sm overflow-hidden border border-gray-200 hover:border-gray-300"
           >
             <div className="bg-gray-100 p-4 flex justify-center items-center">
               <FaUserFriends className="text-4xl text-gray-600" />
@@ -76,10 +76,10 @@ function Team() {
               </p>
               <div className="mt-2 flex justify-between items-center">
                 <span
-                  className={`text-xs font-medium px-2 py-1 rounded-full ${
+                  className={`text-xs font-medium px-2 py-1 rounded-sm ${
                     team.role === "admin"
                       ? "bg-green-100 text-green-600"
-                      : "bg-blue-100 text-blue-600"
+                      : "bg-gray-100 text-gray-600"
                   }`}
                 >
                   {team.role === "admin" ? "Admin" : "Member"}
@@ -123,10 +123,10 @@ function Team() {
             </td>
             <td className="px-4 py-2 border border-gray-200">
               <span
-                className={`text-xs font-medium px-2 py-1 rounded-full ${
+                className={`text-xs font-medium px-2 py-1 rounded-sm ${
                   team.role === "admin"
                     ? "bg-green-100 text-green-600"
-                    : "bg-blue-100 text-blue-600"
+                    : "bg-gray-100 text-gray-600"
                 }`}
               >
                 {team.role === "admin" ? "Admin" : "Member"}
@@ -148,28 +148,28 @@ function Team() {
         <div>
           <div className="flex justify-between items-center mb-6">
             <button
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition"
+              className="bg-gray-600 text-white px-4 py-2 rounded-sm shadow hover:bg-gray-700 transition"
               onClick={() => document.getElementById("my_modal_3").showModal()}
             >
               + Create New
             </button>
             <div className="flex gap-2">
               <button
-                className={`px-4 py-2 rounded-lg shadow ${
+                className={`px-4 py-2 rounded-sm shadow ${
                   viewMode === "grid"
-                    ? "bg-blue-600 text-white"
+                    ? "bg-gray-600 text-white"
                     : "bg-white text-gray-600 border border-gray-200"
-                } hover:bg-blue-700 hover:text-white transition`}
+                } hover:bg-gray-700 hover:text-white transition`}
                 onClick={() => setViewMode("grid")}
               >
                 <FaTh />
               </button>
               <button
-                className={`px-4 py-2 rounded-lg shadow ${
+                className={`px-4 py-2 rounded-sm shadow ${
                   viewMode === "list"
-                    ? "bg-blue-600 text-white"
+                    ? "bg-gray-600 text-white"
                     : "bg-white text-gray-600 border border-gray-200"
-                } hover:bg-blue-700 hover:text-white transition`}
+                } hover:bg-gray-700 hover:text-white transition`}
                 onClick={() => setViewMode("list")}
               >
                 <FaList />
@@ -185,7 +185,7 @@ function Team() {
             <div className="flex flex-col items-center justify-center w-full h-96">
               <h1 className="text-2xl text-gray-500">No teams Found</h1>
               <button
-                className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition"
+                className="mt-4 bg-gray-600 text-white px-4 py-2 rounded-sm shadow hover:bg-gray-700 transition"
                 onClick={() => document.getElementById("my_modal_3").showModal()}
               >
                 + Create New
@@ -194,7 +194,7 @@ function Team() {
           )}
 
           <dialog id="my_modal_3" className="modal">
-            <div className="modal-box bg-white p-6 rounded-lg shadow-lg w-fit lg:w-1/2 mx-auto mt-10">
+            <div className="modal-box bg-white p-6 rounded-sm shadow-sm w-fit lg:w-1/2 mx-auto mt-10">
               <form method="dialog">
                 <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
                   ✕

@@ -274,13 +274,13 @@ const Resources = () => {
             <div className="mt-4 flex gap-4">
               <button
                 onClick={() => setZoom((z) => z + 0.1)}
-                className="bg-gray-200 text-gray-700 hover:bg-gray-300 p-2 rounded-md"
+                className="bg-gray-200 text-gray-700 hover:bg-gray-300 p-2 rounded-sm"
               >
                 <FaSearchPlus />
               </button>
               <button
                 onClick={() => setZoom((z) => Math.max(0.1, z - 0.1))}
-                className="bg-gray-200 text-gray-700 hover:bg-gray-300 p-2 rounded-md"
+                className="bg-gray-200 text-gray-700 hover:bg-gray-300 p-2 rounded-sm"
               >
                 <FaSearchMinus />
               </button>
@@ -305,7 +305,7 @@ const Resources = () => {
             <p className="text-sm">Please download the file to view it.</p>
             <button
               onClick={() => handleDownload(selectedFileUrl, selectedFileName)}
-              className="mt-4 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+              className="mt-4 bg-gray-600 text-white py-2 px-4 rounded-sm hover:bg-gray-700 transition-colors"
             >
               <FaDownload className="inline-block mr-2" /> Download File
             </button>
@@ -316,7 +316,7 @@ const Resources = () => {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center px-4">
-        <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl relative overflow-hidden">
+        <div className="bg-white rounded-sm shadow-sm w-full max-w-4xl relative overflow-hidden">
           {/* Header */}
           <div className="flex justify-between items-center p-4 border-b">
             <h2 className="text-lg font-semibold text-gray-800">
@@ -327,7 +327,7 @@ const Resources = () => {
                 onClick={() =>
                   handleDownload(selectedFileUrl, selectedFileName)
                 }
-                className="text-blue-500 hover:text-blue-700 text-sm"
+                className="text-gray-500 hover:text-gray-700 text-sm"
                 title="Download file"
               >
                 <FaDownload className="w-5 h-5" />
@@ -372,7 +372,7 @@ const Resources = () => {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col p-8 w-full">
         {/* Header Section */}
-        <div className="bg-white shadow-md rounded-lg p-6 mb-8">
+        <div className="bg-white shadow-sm rounded-sm p-6 mb-8">
           <h1 className="flex gap-2 items-center text-3xl font-bold text-gray-800">
             <PiBookBold />
             Resources
@@ -384,26 +384,26 @@ const Resources = () => {
 
         {isUploading && (
           <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+            <div className="bg-white p-6 rounded-sm shadow-sm text-center">
               <p className="text-lg font-semibold text-gray-800 mb-4">
                 Uploading...
               </p>
-              <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-16 h-16 border-4 border-gray-500 border-t-transparent rounded-sm animate-spin"></div>
             </div>
           </div>
         )}
 
         {/* Upload Section - Reimagined */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div className="bg-white rounded-sm shadow-sm p-6 mb-8">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
             Upload New Resource
           </h2>
           <form onSubmit={handleUpload} className="space-y-4">
             <div
-              className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200
+              className={`border-2 border-dashed rounded-sm p-8 text-center transition-all duration-200
                 ${
                   isDragging
-                    ? "border-blue-500 bg-blue-50"
+                    ? "border-gray-500 bg-gray-50"
                     : "border-gray-300 bg-gray-50 hover:border-gray-400"
                 }`}
               onDragOver={handleDragOver}
@@ -419,7 +419,7 @@ const Resources = () => {
               <label htmlFor="file-upload" className="cursor-pointer">
                 <FaUpload className="mx-auto text-4xl text-gray-400 mb-3" />
                 <p className="text-gray-600">
-                  <span className="font-semibold text-blue-600">
+                  <span className="font-semibold text-gray-600">
                     Click to upload
                   </span>{" "}
                   or drag and drop
@@ -434,11 +434,11 @@ const Resources = () => {
               placeholder="Enter description for the file (optional)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="bg-white text-black w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-white text-black w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-gray-500"
             />
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="w-full bg-gray-600 text-white py-2 px-4 rounded-sm hover:bg-gray-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
               disabled={!file || isUploading} // Disable during upload
             >
               {isUploading ? "Uploading..." : "Upload Resource"}
@@ -447,16 +447,16 @@ const Resources = () => {
         </div>
 
         {/* Resources Display and View Toggle */}
-        <div className="bg-white shadow-md rounded-lg p-6 flex-1">
+        <div className="bg-white shadow-sm rounded-sm p-6 flex-1">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold text-gray-800">
               Available Resources
             </h2>
-            <div className="flex items-center space-x-2 bg-gray-100 p-1 rounded-lg">
+            <div className="flex items-center space-x-2 bg-gray-100 p-1 rounded-sm">
               <button
-                className={`p-2 rounded-md transition-colors duration-200 ${
+                className={`p-2 rounded-sm transition-colors duration-200 ${
                   isGridView
-                    ? "bg-blue-500 text-white"
+                    ? "bg-gray-500 text-white"
                     : "text-gray-600 hover:bg-gray-200"
                 }`}
                 onClick={() => setIsGridView(true)}
@@ -465,9 +465,9 @@ const Resources = () => {
                 <FaTh className="text-lg" />
               </button>
               <button
-                className={`p-2 rounded-md transition-colors duration-200 ${
+                className={`p-2 rounded-sm transition-colors duration-200 ${
                   !isGridView
-                    ? "bg-blue-500 text-white"
+                    ? "bg-gray-500 text-white"
                     : "text-gray-600 hover:bg-gray-200"
                 }`}
                 onClick={() => setIsGridView(false)}
@@ -481,7 +481,7 @@ const Resources = () => {
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="bg-gray-200 h-32 rounded-lg"></div>
+                <div key={i} className="bg-gray-200 h-32 rounded-sm"></div>
               ))}
             </div>
           ) : resources.length === 0 ? (
@@ -493,7 +493,7 @@ const Resources = () => {
               {resources.map((res) => (
                 <div
                   key={res.id}
-                  className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col p-4"
+                  className="bg-white border border-gray-200 rounded-sm shadow-sm hover:shadow-sm transition-shadow duration-200 flex flex-col p-4"
                 >
                   <div className="flex items-center mb-3">
                     {getFileIcon(res.name)}
@@ -514,14 +514,14 @@ const Resources = () => {
                   </div>
                   <div className="flex gap-2">
                     <button
-                      className="flex-1 btn btn-sm bg-blue-50 text-blue-600 hover:bg-blue-200 border-none rounded-md flex items-center justify-center py-2 px-3"
+                      className="flex-1 btn btn-sm bg-gray-50 text-gray-600 hover:bg-gray-200 border-none rounded-sm flex items-center justify-center py-2 px-3"
                       onClick={() => handleDownload(res.path, res.name)}
                       title="Download Resource"
                     >
                       <PiDownloadDuotone className="mr-1" />
                     </button>
                     <button
-                      className="flex-1 btn btn-sm bg-red-50 text-red-600 hover:bg-red-200 border-none rounded-md flex items-center justify-center py-2 px-3"
+                      className="flex-1 btn btn-sm bg-red-50 text-red-600 hover:bg-red-200 border-none rounded-sm flex items-center justify-center py-2 px-3"
                       onClick={() => handleDelete(res.id)}
                       title="Delete Resource"
                     >
@@ -579,7 +579,7 @@ const Resources = () => {
                       <td className="py-3 px-6 text-center">
                         <div className="flex item-center justify-center space-x-2">
                           <button
-                            className="btn btn-xs btn-ghost text-blue-500 hover:text-blue-700"
+                            className="btn btn-xs btn-ghost text-gray-500 hover:text-gray-700"
                             onClick={() => handleDownload(res.path, res.name)}
                           >
                             <FaDownload className="text-lg" />
@@ -602,10 +602,10 @@ const Resources = () => {
 
         {/* Pagination Placeholder */}
         <div className="flex justify-center mt-8 space-x-2">
-          <button className="btn bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-md px-4 py-2">
+          <button className="btn bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-sm px-4 py-2">
             Previous
           </button>
-          <button className="btn bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-md px-4 py-2">
+          <button className="btn bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-sm px-4 py-2">
             Next
           </button>
         </div>

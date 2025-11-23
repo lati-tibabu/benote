@@ -11,7 +11,7 @@ const Unexpected = () => {
 
   return (
     <div className="w-screen h-screen flex flex-col items-center justify-center bg-gray-100 text-gray-800 p-6">
-      <div className="bg-white shadow-lg rounded-xl p-8 text-center max-w-lg">
+      <div className="bg-white shadow-sm rounded-sm p-8 text-center max-w-lg">
         <AiFillWarning
           size={70}
           className="text-green-500 animate-bounce mx-auto"
@@ -29,7 +29,7 @@ const Unexpected = () => {
         />
         <button
           onClick={handleRetry}
-          className="bg-black text-white px-6 py-3 rounded-lg shadow-md hover:bg-gray-800 transition duration-300"
+          className="bg-black text-white px-6 py-3 rounded-sm shadow-sm hover:bg-gray-800 transition duration-300"
         >
           Try Again
         </button>

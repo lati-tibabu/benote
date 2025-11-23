@@ -128,7 +128,7 @@ const Assignment = ({ classroomId, isTeacher, onAssignmentClick }) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl border border-gray-200">
+    <div className="max-w-4xl mx-auto p-6 bg-gradient-to-br from-white to-gray-50 rounded-sm shadow-sm border border-gray-200">
       <h2 className="text-3xl font-bold text-gray-800 mb-8 tracking-tight">
         Assignments
       </h2>
@@ -137,7 +137,7 @@ const Assignment = ({ classroomId, isTeacher, onAssignmentClick }) => {
       {isTeacher && (
         <form
           onSubmit={handleSubmit}
-          className="mb-10 bg-white/80 rounded-xl shadow p-6 flex flex-col gap-4 border border-gray-100"
+          className="mb-10 bg-white/80 rounded-sm shadow p-6 flex flex-col gap-4 border border-gray-100"
         >
           <div className="flex flex-col gap-2">
             <label className="font-medium text-gray-700">Title</label>
@@ -147,7 +147,7 @@ const Assignment = ({ classroomId, isTeacher, onAssignmentClick }) => {
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
               required
-              className="input bg-white text-black input-bordered w-full focus:ring-2 focus:ring-blue-400 transition"
+              className="input bg-white text-black input-bordered w-full focus:ring-2 focus:ring-gray-400 transition"
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -159,7 +159,7 @@ const Assignment = ({ classroomId, isTeacher, onAssignmentClick }) => {
                 setForm({ ...form, description: e.target.value })
               }
               required
-              className="textarea bg-white text-black textarea-bordered w-full min-h-[80px] focus:ring-2 focus:ring-blue-400 transition"
+              className="textarea bg-white text-black textarea-bordered w-full min-h-[80px] focus:ring-2 focus:ring-gray-400 transition"
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -169,13 +169,13 @@ const Assignment = ({ classroomId, isTeacher, onAssignmentClick }) => {
               value={form.due_date}
               onChange={(e) => setForm({ ...form, due_date: e.target.value })}
               required
-              className="input bg-white text-black input-bordered w-full focus:ring-2 focus:ring-blue-400 transition"
+              className="input bg-white text-black input-bordered w-full focus:ring-2 focus:ring-gray-400 transition"
             />
           </div>
           <div className="flex justify-end">
             <button
               type="submit"
-              className="px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition"
+              className="px-6 py-2 rounded-sm bg-gray-600 text-white font-semibold shadow hover:bg-gray-700 transition"
             >
               Post Assignment
             </button>
@@ -195,10 +195,10 @@ const Assignment = ({ classroomId, isTeacher, onAssignmentClick }) => {
             {assignments?.map((assignment) => (
               <div
                 key={assignment.id}
-                className="flex items-center justify-between bg-white rounded-xl border border-gray-100 shadow-sm p-5 group hover:shadow-md hover:border-blue-200 transition"
+                className="flex items-center justify-between bg-white rounded-sm border border-gray-100 shadow-sm p-5 group hover:shadow-sm hover:border-gray-200 transition"
               >
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-xl font-semibold text-gray-800 group-hover:text-blue-700 truncate">
+                  <h3 className="text-xl font-semibold text-gray-800 group-hover:text-gray-700 truncate">
                     {assignment.title}
                   </h3>
                   <div className="flex items-center gap-3 mt-1">
@@ -206,7 +206,7 @@ const Assignment = ({ classroomId, isTeacher, onAssignmentClick }) => {
                       Due: {new Date(assignment.due_date).toLocaleDateString()}
                     </span>
                     <span
-                      className={`text-xs font-semibold px-2 py-0.5 rounded-full ml-2 ${
+                      className={`text-xs font-semibold px-2 py-0.5 rounded-sm ml-2 ${
                         isOverdue(assignment.due_date)
                           ? "bg-red-100 text-red-600"
                           : "bg-green-100 text-green-700"
@@ -222,7 +222,7 @@ const Assignment = ({ classroomId, isTeacher, onAssignmentClick }) => {
                 <div className="flex flex-col gap-2 ml-6">
                   <button
                     onClick={() => fetchAssignmentById(assignment.id)}
-                    className="px-4 py-1 rounded-lg bg-blue-500 text-white font-medium shadow hover:bg-blue-600 transition"
+                    className="px-4 py-1 rounded-sm bg-gray-500 text-white font-medium shadow hover:bg-gray-600 transition"
                   >
                     View
                   </button>
@@ -230,12 +230,12 @@ const Assignment = ({ classroomId, isTeacher, onAssignmentClick }) => {
                     onClick={() =>
                       onAssignmentClick(assignment.id, assignment.title)
                     }
-                    className="px-4 py-1 rounded-lg bg-gray-100 text-gray-700 font-medium shadow hover:bg-gray-200 transition"
+                    className="px-4 py-1 rounded-sm bg-gray-100 text-gray-700 font-medium shadow hover:bg-gray-200 transition"
                   >
                     Select
                   </button>
                   {isTeacher && (
-                    <button className="px-4 py-1 rounded-lg bg-red-50 text-red-600 font-medium border border-red-100 hover:bg-red-100 transition">
+                    <button className="px-4 py-1 rounded-sm bg-red-50 text-red-600 font-medium border border-red-100 hover:bg-red-100 transition">
                       Delete
                     </button>
                   )}
@@ -251,7 +251,7 @@ const Assignment = ({ classroomId, isTeacher, onAssignmentClick }) => {
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
-          className="px-4 py-2 rounded-lg bg-gray-100 text-gray-600 font-medium hover:bg-gray-200 disabled:opacity-50 transition"
+          className="px-4 py-2 rounded-sm bg-gray-100 text-gray-600 font-medium hover:bg-gray-200 disabled:opacity-50 transition"
         >
           Previous
         </button>
@@ -263,7 +263,7 @@ const Assignment = ({ classroomId, isTeacher, onAssignmentClick }) => {
             setCurrentPage((prev) => Math.min(prev + 1, totalPages))
           }
           disabled={currentPage === totalPages}
-          className="px-4 py-2 rounded-lg bg-gray-100 text-gray-600 font-medium hover:bg-gray-200 disabled:opacity-50 transition"
+          className="px-4 py-2 rounded-sm bg-gray-100 text-gray-600 font-medium hover:bg-gray-200 disabled:opacity-50 transition"
         >
           Next
         </button>
@@ -272,7 +272,7 @@ const Assignment = ({ classroomId, isTeacher, onAssignmentClick }) => {
       {/* Assignment Detail Drawer/Panel */}
       {selectedAssignment && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-          <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-8 border border-gray-100 animate-fade-in">
+          <div className="relative w-full max-w-2xl bg-white rounded-sm shadow-sm p-8 border border-gray-100 animate-fade-in">
             <button
               onClick={() => setSelectedAssignment(null)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-xl font-bold focus:outline-none"
@@ -307,14 +307,14 @@ const Assignment = ({ classroomId, isTeacher, onAssignmentClick }) => {
                     value={submissionForm.description}
                     onChange={handleSubmissionChange}
                     rows="4"
-                    className="textarea bg-white text-black textarea-bordered w-full min-h-[80px] focus:ring-2 focus:ring-blue-400 transition"
+                    className="textarea bg-white text-black textarea-bordered w-full min-h-[80px] focus:ring-2 focus:ring-gray-400 transition"
                     placeholder="Write your answer here..."
                   ></textarea>
                 </div>
                 <div className="flex justify-end">
                   <button
                     type="submit"
-                    className="px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition"
+                    className="px-6 py-2 rounded-sm bg-gray-600 text-white font-semibold shadow hover:bg-gray-700 transition"
                   >
                     Submit Assignment
                   </button>

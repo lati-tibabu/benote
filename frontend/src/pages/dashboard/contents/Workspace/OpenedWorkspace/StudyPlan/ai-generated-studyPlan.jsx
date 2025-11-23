@@ -378,7 +378,7 @@ const AiGeneratedTask = () => {
       </h1>
 
       {/* Input Form Section */}
-      <section className="bg-gray-50 border border-gray-200 rounded-xl shadow-sm p-6 mb-10 transition-all duration-300 hover:shadow-md">
+      <section className="bg-gray-50 border border-gray-200 rounded-sm shadow-sm p-6 mb-10 transition-all duration-300 hover:shadow-sm">
         <form onSubmit={handleUserPrompt} className="flex flex-col space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Length of Plan */}
@@ -394,7 +394,7 @@ const AiGeneratedTask = () => {
                 type="number"
                 min={1}
                 max={52}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-gray-900 placeholder-gray-400"
+                className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent transition duration-200 text-gray-900 placeholder-gray-400"
                 value={planLength}
                 onChange={(e) => setPlanLength(Number(e.target.value))}
               />
@@ -412,7 +412,7 @@ const AiGeneratedTask = () => {
                 id="preferredTime"
                 type="text"
                 placeholder="e.g., 7-9pm, mornings, etc."
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-gray-900 placeholder-gray-400"
+                className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent transition duration-200 text-gray-900 placeholder-gray-400"
                 value={preferredTime}
                 onChange={(e) => setPreferredTime(e.target.value)}
               />
@@ -430,7 +430,7 @@ const AiGeneratedTask = () => {
                 id="additionalNotes"
                 type="text"
                 placeholder="Any other info..."
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-gray-900 placeholder-gray-400"
+                className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent transition duration-200 text-gray-900 placeholder-gray-400"
                 value={additionalNotes}
                 onChange={(e) => setAdditionalNotes(e.target.value)}
               />
@@ -438,7 +438,7 @@ const AiGeneratedTask = () => {
           </div>
 
           {/* Prompt Input Area */}
-          <div className="relative border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition duration-200 p-3 flex items-end">
+          <div className="relative border border-gray-300 rounded-sm focus-within:ring-2 focus-within:ring-gray-500 focus-within:border-transparent transition duration-200 p-3 flex items-end">
             <textarea
               id="userPrompt"
               className="w-full resize-none outline-none border-none bg-transparent text-gray-900 placeholder-gray-400 h-24 sm:h-32 pr-10"
@@ -448,7 +448,7 @@ const AiGeneratedTask = () => {
             ></textarea>
             <button
               type="submit"
-              className="absolute bottom-3 right-3 p-2 bg-blue-600 text-white rounded-full shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:bg-blue-300 disabled:cursor-not-allowed"
+              className="absolute bottom-3 right-3 p-2 bg-gray-600 text-white rounded-sm shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed"
               disabled={loading}
               aria-label="Generate Study Plan"
             >
@@ -459,7 +459,7 @@ const AiGeneratedTask = () => {
       </section>
 
       {/* Generated Plan / Status Section */}
-      <section className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+      <section className="bg-white border border-gray-200 rounded-sm shadow-sm p-6">
         <div className="flex justify-between items-center pb-4 mb-4 border-b border-gray-200">
           <h2 className="text-xl md:text-2xl font-semibold text-gray-900">
             Generated Plan
@@ -468,7 +468,7 @@ const AiGeneratedTask = () => {
             <button
               onClick={handleAcceptAiResponse}
               disabled={loading}
-              className="px-6 py-2 bg-green-600 text-white font-medium rounded-lg shadow hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200 disabled:bg-green-300 disabled:cursor-not-allowed"
+              className="px-6 py-2 bg-green-600 text-white font-medium rounded-sm shadow hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200 disabled:bg-green-300 disabled:cursor-not-allowed"
             >
               {loading ? "Saving..." : "Accept Plan"}
             </button>
@@ -476,7 +476,7 @@ const AiGeneratedTask = () => {
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start gap-3 mb-4">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-sm flex items-start gap-3 mb-4">
             <FaTriangleExclamation className="text-red-500 text-2xl mt-0.5" />
             <p className="text-sm font-medium">{error}</p>
           </div>
@@ -484,7 +484,7 @@ const AiGeneratedTask = () => {
 
         {loading ? (
           <div className="flex items-center justify-center py-10">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+            <div className="animate-spin rounded-sm h-12 w-12 border-b-2 border-gray-900"></div>
             <p className="ml-4 text-gray-600 text-lg">
               Generating your plan...
             </p>
@@ -495,13 +495,13 @@ const AiGeneratedTask = () => {
               generatedTasks.map((plan, idx) => (
                 <div
                   key={idx}
-                  className="bg-blue-50 border border-blue-200 rounded-lg p-5 mb-6 shadow-sm"
+                  className="bg-gray-50 border border-gray-200 rounded-sm p-5 mb-6 shadow-sm"
                 >
-                  <h3 className="text-2xl font-bold text-blue-800 mb-2">
+                  <h3 className="text-2xl font-bold text-gray-800 mb-2">
                     {plan.title}
                   </h3>
                   <p className="text-gray-700 mb-3">{plan.description}</p>
-                  <div className="text-sm text-gray-600 mb-4 border-t border-b border-blue-100 py-2">
+                  <div className="text-sm text-gray-600 mb-4 border-t border-b border-gray-100 py-2">
                     <p>
                       <strong>Start Date:</strong>{" "}
                       {new Date(plan.start_date).toLocaleString()}
@@ -519,7 +519,7 @@ const AiGeneratedTask = () => {
                     {plan.timeBlocks?.map((block, bIdx) => (
                       <div
                         key={bIdx}
-                        className="bg-white border border-gray-200 rounded-md p-4 shadow-sm hover:shadow-md transition-shadow duration-200"
+                        className="bg-white border border-gray-200 rounded-sm p-4 shadow-sm hover:shadow-sm transition-shadow duration-200"
                       >
                         <p className="font-bold text-gray-900">{block.job}</p>
                         <p className="text-sm text-gray-700 mt-1">

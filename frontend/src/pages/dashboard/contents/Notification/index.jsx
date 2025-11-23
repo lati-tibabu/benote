@@ -109,7 +109,7 @@ const Notifications = () => {
         {notifications.map((notification) => (
           <div
             key={notification.id}
-            className="border border-gray-300 rounded-lg shadow-md p-4 bg-white hover:shadow-lg transition-shadow duration-300"
+            className="border border-gray-300 rounded-sm shadow-sm p-4 bg-white hover:shadow-sm transition-shadow duration-300"
           >
             <div className="flex justify-between items-center">
               <p className="text-sm font-medium text-gray-800">
@@ -122,18 +122,18 @@ const Notifications = () => {
             {notification.type === "invitation" && (
               <div className="mt-3 flex gap-2">
                 <button
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-lg hover:bg-green-600 transition-colors duration-300"
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-sm hover:bg-green-600 transition-colors duration-300"
                   onClick={() => handleAcceptInvitation(notification.action)}
                 >
                   <AiOutlineCheckCircle /> Accept
                 </button>
-                <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors duration-300">
+                <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-sm hover:bg-red-600 transition-colors duration-300">
                   <AiOutlineCloseCircle /> Ignore
                 </button>
               </div>
             )}
             <div className="mt-2">
-              <span className="inline-block px-3 py-1 text-xs font-medium text-gray-700 bg-gray-200 rounded-full">
+              <span className="inline-block px-3 py-1 text-xs font-medium text-gray-700 bg-gray-200 rounded-sm">
                 {notification.type}
               </span>
             </div>

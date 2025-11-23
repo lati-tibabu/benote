@@ -72,7 +72,7 @@ function Login() {
   };
 
   return (
-    <div className="m-5 min-w-80 max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg">
+    <div className="m-5 min-w-80 max-w-md mx-auto bg-white p-8 rounded-sm shadow-sm">
       <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome back!</h1>
       <p className="text-sm text-gray-600">Enter your credentials to log in</p>
 
@@ -89,7 +89,7 @@ function Login() {
             onChange={handleChange}
             disabled={loading}
             placeholder="you@example.com"
-            className="mt-1 p-3 w-full rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="mt-1 p-3 w-full rounded-sm border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:outline-none"
           />
         </div>
 
@@ -108,14 +108,14 @@ function Login() {
             onChange={handleChange}
             disabled={loading}
             placeholder="••••••••"
-            className="mt-1 p-3 w-full rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="mt-1 p-3 w-full rounded-sm border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:outline-none"
           />
         </div>
 
         <div className="text-right">
           <Link
             to="/auth/forgot-password"
-            className="text-sm text-blue-600 hover:underline"
+            className="text-sm text-gray-600 hover:underline"
           >
             Forgot your password?
           </Link>
@@ -126,10 +126,10 @@ function Login() {
         <button
           type="submit"
           disabled={loading}
-          className={`w-full py-3 rounded-lg font-medium text-white transition duration-300 ${
+          className={`w-full py-3 rounded-sm font-medium text-white transition duration-300 ${
             loading
-              ? "bg-blue-400 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700"
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-gray-600 hover:bg-gray-700"
           }`}
         >
           {loading ? "Logging in..." : "Log In"}
@@ -145,7 +145,7 @@ function Login() {
           type="button"
           disabled={loading}
           onClick={handleGoogleRedirect}
-          className={`flex items-center justify-center gap-3 p-3 w-full rounded-lg border border-gray-300 bg-gray-50 hover:shadow-md transition ${
+          className={`flex items-center justify-center gap-3 p-3 w-full rounded-sm border border-gray-300 bg-gray-50 hover:shadow-sm transition ${
             loading ? "cursor-not-allowed opacity-70" : ""
           }`}
         >
@@ -158,7 +158,7 @@ function Login() {
 
       <div className="mt-6 text-center text-sm text-gray-600">
         Don’t have an account?{" "}
-        <Link to="/auth/signup" className="text-blue-600 hover:underline">
+        <Link to="/auth/signup" className="text-gray-600 hover:underline">
           Register here!
         </Link>
       </div>

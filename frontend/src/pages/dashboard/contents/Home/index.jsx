@@ -21,9 +21,9 @@ const WorkspaceSection = ({
   workspaceLoading,
   handleWorkspaceOpen,
 }) => (
-  <div className="w-full max-w-3xl bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-2xl shadow-lg p-5 sm:p-7 mx-auto">
-    <h2 className="text-xl sm:text-2xl font-bold mb-5 pb-2 border-b border-blue-200 text-blue-800 flex items-center gap-2">
-      <AiOutlineClockCircle className="text-blue-500 text-2xl" />
+  <div className="w-full max-w-3xl bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 rounded-sm shadow-sm p-5 sm:p-7 mx-auto">
+    <h2 className="text-xl sm:text-2xl font-bold mb-5 pb-2 border-b border-gray-200 text-gray-800 flex items-center gap-2">
+      <AiOutlineClockCircle className="text-gray-500 text-2xl" />
       Recent Workspaces
     </h2>
     {workspaceLoading ? (
@@ -31,11 +31,11 @@ const WorkspaceSection = ({
         {[...Array(3)].map((_, index) => (
           <div
             key={index}
-            className="bg-blue-100 rounded-xl p-4 h-28 flex flex-col justify-between"
+            className="bg-gray-100 rounded-sm p-4 h-28 flex flex-col justify-between"
           >
-            <div className="h-5 bg-blue-200 rounded w-3/4 mb-2"></div>
-            <div className="h-4 bg-blue-200 rounded w-1/2"></div>
-            <div className="h-4 bg-blue-200 rounded w-full"></div>
+            <div className="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+            <div className="h-4 bg-gray-200 rounded w-full"></div>
           </div>
         ))}
       </div>
@@ -46,16 +46,16 @@ const WorkspaceSection = ({
             <li key={workspace.workspace.id}>
               <div
                 title={workspace.workspace.description || workspace.workspace.name}
-                className="flex flex-col p-4 rounded-xl shadow-sm border border-blue-100 bg-white/80 hover:bg-blue-50 hover:border-blue-400 transition-all duration-200 cursor-pointer h-full group"
+                className="flex flex-col p-4 rounded-sm shadow-sm border border-gray-100 bg-white/80 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 cursor-pointer h-full group"
                 onClick={handleWorkspaceOpen(workspace.workspace.id)}
               >
                 <div className="text-4xl mb-3 select-none">
                   {workspace.workspace.emoji}
                 </div>
-                <div className="font-semibold text-lg text-blue-900 group-hover:text-blue-700 truncate mb-1">
+                <div className="font-semibold text-lg text-gray-900 group-hover:text-gray-700 truncate mb-1">
                   {workspace.workspace.name}
                 </div>
-                <div className="text-xs text-blue-500 mt-auto">
+                <div className="text-xs text-gray-500 mt-auto">
                   Accessed: {(() => {
                     const accessedAt = new Date(workspace.workspace.last_accessed_at);
                     const now = new Date();
@@ -95,7 +95,7 @@ const WorkspaceSection = ({
             </li>
           ))
         ) : (
-          <div className="text-blue-400 text-center col-span-full py-8">
+          <div className="text-gray-400 text-center col-span-full py-8">
             No recent workspaces to display.
           </div>
         )}
@@ -107,15 +107,15 @@ const WorkspaceSection = ({
 // LatestTasks component
 const LatestTasks = ({ tasks, taskLoading }) => {
   return (
-    <div className="w-full max-w-md bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-2xl shadow-lg p-5 sm:p-7 mx-auto">
-      <h2 className="text-xl sm:text-2xl font-bold mb-5 pb-2 border-b border-blue-200 text-blue-800 flex items-center gap-2">
-        <FaClock className="text-blue-500 text-2xl" />
+    <div className="w-full max-w-md bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 rounded-sm shadow-sm p-5 sm:p-7 mx-auto">
+      <h2 className="text-xl sm:text-2xl font-bold mb-5 pb-2 border-b border-gray-200 text-gray-800 flex items-center gap-2">
+        <FaClock className="text-gray-500 text-2xl" />
         Latest Tasks
       </h2>
       {taskLoading ? (
         <div className="flex flex-col gap-3 animate-pulse">
           {[...Array(3)].map((_, index) => (
-            <div key={index} className="bg-blue-100 rounded-xl h-16 w-full" />
+            <div key={index} className="bg-gray-100 rounded-sm h-16 w-full" />
           ))}
         </div>
       ) : (
@@ -125,12 +125,12 @@ const LatestTasks = ({ tasks, taskLoading }) => {
               <li
                 key={task.id}
                 title={task.description}
-                className="flex items-center bg-white/80 border border-blue-100 p-4 rounded-xl shadow-sm hover:bg-blue-50 transition-all duration-200 group"
+                className="flex items-center bg-white/80 border border-gray-100 p-4 rounded-sm shadow-sm hover:bg-gray-50 transition-all duration-200 group"
               >
                 {/* Task Status Icon */}
                 <div
                   className={`text-2xl sm:text-3xl mr-4 ${
-                    task.status === "done" ? "text-green-500" : "text-blue-400"
+                    task.status === "done" ? "text-green-500" : "text-gray-400"
                   }`}
                 >
                   {task.status === "done" ? <FaCheckCircle /> : <FaClock />}
@@ -139,12 +139,12 @@ const LatestTasks = ({ tasks, taskLoading }) => {
                 {/* Main Content */}
                 <div className="flex-1 min-w-0">
                   {/* Task Title */}
-                  <div className="text-base sm:text-lg font-semibold text-blue-900 group-hover:text-blue-700 mb-1 truncate">
+                  <div className="text-base sm:text-lg font-semibold text-gray-900 group-hover:text-gray-700 mb-1 truncate">
                     {task.title}
                   </div>
 
                   {/* Task Metadata */}
-                  <div className="flex flex-wrap gap-2 items-center text-xs sm:text-sm text-blue-500">
+                  <div className="flex flex-wrap gap-2 items-center text-xs sm:text-sm text-gray-500">
                     {/* Due Date */}
                     <span className="flex items-center gap-1">
                       📅 {new Date(task.due_date).toLocaleDateString()}
@@ -152,7 +152,7 @@ const LatestTasks = ({ tasks, taskLoading }) => {
 
                     {/* Workspace Name */}
                     {task.workspace?.name && (
-                      <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                      <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-sm text-xs font-medium">
                         {task.workspace.name}
                       </span>
                     )}
@@ -162,10 +162,10 @@ const LatestTasks = ({ tasks, taskLoading }) => {
                 {/* Task Status */}
                 <div className="ml-4">
                   <span
-                    className={`text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wide ${
+                    className={`text-xs px-3 py-1 rounded-sm font-bold uppercase tracking-wide ${
                       task.status === "done"
                         ? "bg-green-100 text-green-700 border border-green-200"
-                        : "bg-blue-100 text-blue-700 border border-blue-200"
+                        : "bg-gray-100 text-gray-700 border border-gray-200"
                     }`}
                   >
                     {task.status === "done" ? "Completed" : "Pending"}
@@ -174,7 +174,7 @@ const LatestTasks = ({ tasks, taskLoading }) => {
               </li>
             ))
           ) : (
-            <div className="text-blue-400 text-center w-full py-8">
+            <div className="text-gray-400 text-center w-full py-8">
               No recent tasks to display.
             </div>
           )}
@@ -274,7 +274,7 @@ const Home = () => {
     {
       key: "workspaces",
       label: "Workspaces",
-      icon: <AiOutlineClockCircle className="text-blue-500 text-lg" />,
+      icon: <AiOutlineClockCircle className="text-gray-500 text-lg" />,
     },
     {
       key: "tasks",
@@ -289,17 +289,17 @@ const Home = () => {
     {
       key: "todos",
       label: "Today's Todos",
-      icon: <FaCheckCircle className="text-indigo-500 text-lg" />,
+      icon: <FaCheckCircle className="text-gray-500 text-lg" />,
     },
     {
       key: "ai",
       label: "AI Summary",
-      icon: <FaGem className="text-purple-500 text-lg" />,
+      icon: <FaGem className="text-gray-500 text-lg" />,
     },
     {
       key: "assignments",
       label: "Assignments",
-      icon: <FaDiamond className="text-pink-500 text-lg" />,
+      icon: <FaDiamond className="text-gray-500 text-lg" />,
     },
     {
       key: "status",
@@ -332,22 +332,22 @@ const Home = () => {
   }, [viewMode]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-100 p-6 font-sans antialiased">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 p-6 font-sans antialiased">
       {/* Top Section */}
-      <div className="p-10 my-8 bg-white/80 backdrop-blur rounded-3xl shadow-2xl text-gray-900 flex flex-col justify-center items-center text-center border border-blue-100 animate-fade-in-down">
-        <h1 className="text-4xl sm:text-6xl font-black mb-3 leading-tight tracking-tight text-blue-700">
+      <div className="p-10 my-8 bg-white/80 backdrop-blur rounded-sm shadow-sm text-gray-900 flex flex-col justify-center items-center text-center border border-gray-100 animate-fade-in-down">
+        <h1 className="text-4xl sm:text-6xl font-black mb-3 leading-tight tracking-tight text-gray-700">
           Hello,{" "}
-          <span className="text-indigo-600">{userData && userData.name}</span>{" "}
+          <span className="text-gray-600">{userData && userData.name}</span>{" "}
           👋
         </h1>
         <p className="text-lg sm:text-2xl text-gray-600 mb-3 font-medium">
           How are you doing today?
         </p>
-        <span className="text-2xl sm:text-3xl font-mono text-blue-600 tracking-widest bg-blue-50 px-4 py-1 rounded-xl shadow-inner">
+        <span className="text-2xl sm:text-3xl font-mono text-gray-600 tracking-widest bg-gray-50 px-4 py-1 rounded-sm shadow-inner">
           {time}
         </span>
         <div className="mt-7 flex items-center space-x-4 text-gray-800">
-          <FaClock className="h-8 w-8 text-blue-400" />
+          <FaClock className="h-8 w-8 text-gray-400" />
           <p className="font-bold text-2xl uppercase tracking-wider">
             {new Date().toLocaleDateString("en-US", { weekday: "long" })}
           </p>
@@ -364,11 +364,11 @@ const Home = () => {
       {/* View Mode Toggle */}
       <div className="flex justify-end mb-6 gap-3">
         <button
-          className={`px-5 py-2 rounded-xl font-semibold border transition-all duration-150 shadow focus:outline-none focus:ring-2 focus:ring-blue-400 text-base \
+          className={`px-5 py-2 rounded-sm font-semibold border transition-all duration-150 shadow focus:outline-none focus:ring-2 focus:ring-gray-400 text-base \
             ${
               viewMode === "default"
-                ? "bg-blue-700 text-white border-blue-700 shadow-lg"
-                : "bg-white text-blue-700 border-blue-200 hover:bg-blue-50"
+                ? "bg-gray-700 text-white border-gray-700 shadow-sm"
+                : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
             }`}
           onClick={() => setViewMode("default")}
           aria-label="Default View"
@@ -376,11 +376,11 @@ const Home = () => {
           Default View
         </button>
         <button
-          className={`px-5 py-2 rounded-xl font-semibold border transition-all duration-150 shadow focus:outline-none focus:ring-2 focus:ring-blue-400 text-base \
+          className={`px-5 py-2 rounded-sm font-semibold border transition-all duration-150 shadow focus:outline-none focus:ring-2 focus:ring-gray-400 text-base \
             ${
               viewMode === "tabbed"
-                ? "bg-blue-700 text-white border-blue-700 shadow-lg"
-                : "bg-white text-blue-700 border-blue-200 hover:bg-blue-50"
+                ? "bg-gray-700 text-white border-gray-700 shadow-sm"
+                : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
             }`}
           onClick={() => setViewMode("tabbed")}
           aria-label="Tabbed View"
@@ -416,16 +416,16 @@ const Home = () => {
           </>
         ) : (
           // Tabbed view should take full width
-          <div className="md:col-span-3 bg-white/90 rounded-2xl shadow-xl border border-blue-100">
-            <div className="flex border-b border-blue-100 overflow-x-auto whitespace-nowrap scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-blue-50 scrollbar-hide">
+          <div className="md:col-span-3 bg-white/90 rounded-sm shadow-sm border border-gray-100">
+            <div className="flex border-b border-gray-100 overflow-x-auto whitespace-nowrap scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-gray-50 scrollbar-hide">
               {tabConfig.map((tab) => (
                 <button
                   key={tab.key}
                   className={`flex-shrink-0 flex items-center gap-2 px-6 py-4 text-center font-semibold transition-all duration-150 text-base \
                   ${
                     activeTab === tab.key
-                      ? "border-b-4 border-blue-600 text-blue-700 bg-blue-50 shadow-inner"
-                      : "text-gray-600 hover:bg-blue-50 border-b-4 border-transparent"
+                      ? "border-b-4 border-gray-600 text-gray-700 bg-gray-50 shadow-inner"
+                      : "text-gray-600 hover:bg-gray-50 border-b-4 border-transparent"
                   }`}
                   onClick={() => setActiveTab(tab.key)}
                   aria-label={tab.label}

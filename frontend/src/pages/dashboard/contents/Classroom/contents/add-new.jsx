@@ -53,13 +53,13 @@ const AddNew = () => {
       Add New Classroom
       <form onSubmit={handleFormSubmit} className="flex flex-col gap-2">
         {/* Classroom Name */}
-        <fieldset className="border-2 p-2 rounded-lg">
+        <fieldset className="border-2 p-2 rounded-sm">
           <legend>Name</legend>
           <input
             type="text"
             placeholder="Classroom Name"
             value={classroomData.name}
-            className="p-3 border rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 bg-transparent w-full"
+            className="p-3 border rounded-sm border-gray-300 focus:ring-2 focus:ring-gray-500 bg-transparent w-full"
             onChange={(e) => {
               setClassroomData((prev) => ({
                 ...prev,
@@ -70,13 +70,13 @@ const AddNew = () => {
         </fieldset>
 
         {/* Classroom Description */}
-        <fieldset className="border-2 p-2 rounded-lg">
+        <fieldset className="border-2 p-2 rounded-sm">
           <legend>Description</legend>
           <input
             type="text"
             placeholder="Classroom Description"
             value={classroomData.description}
-            className="p-3 border rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 bg-transparent w-full"
+            className="p-3 border rounded-sm border-gray-300 focus:ring-2 focus:ring-gray-500 bg-transparent w-full"
             onChange={(e) => {
               setClassroomData((prev) => ({
                 ...prev,

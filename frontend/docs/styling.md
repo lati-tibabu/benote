@@ -181,7 +181,7 @@ const App = () => {
 }
 
 .dark .btn-primary {
-  @apply bg-blue-600 hover:bg-blue-700;
+  @apply bg-gray-600 hover:bg-gray-700;
 }
 ```
 
@@ -219,7 +219,7 @@ const App = () => {
 // components/Card.jsx
 const Card = ({ title, children, className = '' }) => {
   return (
-    <div className={`card bg-base-100 shadow-xl ${className}`}>
+    <div className={`card bg-base-100 shadow-sm ${className}`}>
       {title && (
         <div className="card-body">
           <h2 className="card-title">{title}</h2>
@@ -315,7 +315,7 @@ const Badge = ({ children, variant = 'default', size = 'sm' }) => {
 // Loading spinner
 const LoadingSpinner = () => {
   return (
-    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    <div className="animate-spin rounded-sm h-8 w-8 border-b-2 border-primary"></div>
   );
 };
 ```
@@ -342,11 +342,11 @@ const LoadingSpinner = () => {
 
 @layer components {
   .btn-custom {
-    @apply btn btn-primary rounded-lg font-medium;
+    @apply btn btn-primary rounded-sm font-medium;
   }
 
   .card-shadow {
-    @apply shadow-lg hover:shadow-xl transition-shadow duration-200;
+    @apply shadow-sm hover:shadow-sm transition-shadow duration-200;
   }
 }
 ```

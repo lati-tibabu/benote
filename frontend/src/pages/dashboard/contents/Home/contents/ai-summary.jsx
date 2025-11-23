@@ -147,15 +147,15 @@ const AiSummary = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-green-50 shadow-xl p-0 mb-0 w-full max-w-3xl mx-auto rounded-2xl border border-gray-200 overflow-hidden animate-fade-in">
+    <div className="bg-gradient-to-br from-gray-50 to-green-50 shadow-sm p-0 mb-0 w-full max-w-3xl mx-auto rounded-sm border border-gray-200 overflow-hidden animate-fade-in">
       <div className="flex items-center justify-between px-8 py-6 border-b bg-white/80 backdrop-blur-md">
-        <div className="text-2xl font-bold flex items-center gap-2 text-blue-700">
-          <AiOutlineInfoCircle className="text-blue-500 text-2xl" />
+        <div className="text-2xl font-bold flex items-center gap-2 text-gray-700">
+          <AiOutlineInfoCircle className="text-gray-500 text-2xl" />
           <span>Workspace Summary</span>
         </div>
         {useGemini && (
           <button
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-green-500 to-blue-400 text-white font-semibold shadow hover:from-blue-500 hover:to-green-400 focus:outline-none focus:ring-2 focus:ring-green-400 transition-all duration-200"
+            className="flex items-center gap-2 px-4 py-2 rounded-sm bg-gradient-to-r from-green-500 to-gray-400 text-white font-semibold shadow hover:from-gray-500 hover:to-green-400 focus:outline-none focus:ring-2 focus:ring-green-400 transition-all duration-200"
             onClick={handleLoadUserActivityData}
           >
             <FaGears className="text-lg" />
@@ -164,25 +164,25 @@ const AiSummary = () => {
         )}
       </div>
 
-      <div className="p-8 pt-6 max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-transparent">
+      <div className="p-8 pt-6 max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
         {processing && (
           <div className="flex justify-center items-center py-8">
-            <span className="loading loading-dots loading-lg text-blue-500 scale-150"></span>
+            <span className="loading loading-dots loading-lg text-gray-500 scale-150"></span>
           </div>
         )}
 
         {aiResponse && aiResponse?.workspacePresent ? (
           <>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 text-base text-blue-900 flex items-start gap-3 shadow-sm">
-              <AiOutlineInfoCircle className="mt-1 text-blue-400 text-xl" />
+            <div className="bg-gray-50 border border-gray-200 rounded-sm p-4 mb-4 text-base text-gray-900 flex items-start gap-3 shadow-sm">
+              <AiOutlineInfoCircle className="mt-1 text-gray-400 text-xl" />
               <div>
                 <div className="font-semibold mb-1">Overall Status</div>
-                <div className="prose prose-blue max-w-none">
+                <div className="prose prose-gray max-w-none">
                   <MarkdownRenderer content={aiResponse.overallStatus} />
                 </div>
               </div>
             </div>
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 text-base text-green-900 flex items-center gap-3 shadow-sm">
+            <div className="bg-green-50 border border-green-200 rounded-sm p-4 mb-6 text-base text-green-900 flex items-center gap-3 shadow-sm">
               <AiOutlineFolder className="text-green-400 text-xl" />
               <span className="font-medium">
                 {aiResponse.totalWorkspaces} workspaces, {aiResponse.totalTasks}{" "}
@@ -194,7 +194,7 @@ const AiSummary = () => {
               {aiResponse.workspaces.map((ws) => (
                 <div
                   key={ws?.id}
-                  className="border border-gray-100 rounded-xl p-6 bg-white/90 shadow hover:shadow-lg transition-all duration-200"
+                  className="border border-gray-100 rounded-sm p-6 bg-white/90 shadow hover:shadow-sm transition-all duration-200"
                 >
                   <h3 className="text-xl font-semibold mb-2 flex items-center gap-2 text-gray-800">
                     <span className="text-2xl">{ws?.emoji}</span>
@@ -206,11 +206,11 @@ const AiSummary = () => {
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-blue-50 border border-blue-100 rounded p-3 text-sm">
-                      <div className="font-semibold mb-1 text-blue-700">
+                    <div className="bg-gray-50 border border-gray-100 rounded p-3 text-sm">
+                      <div className="font-semibold mb-1 text-gray-700">
                         Tasks
                       </div>
-                      <div className="prose prose-blue max-w-none">
+                      <div className="prose prose-gray max-w-none">
                         <MarkdownRenderer content={ws?.taskSummary} />
                       </div>
                     </div>

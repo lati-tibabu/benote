@@ -43,7 +43,7 @@ function Sidebar({
       {/* Hamburger for mobile */}
       {!showSidebar && !isMobileNavOpen && (
         <button
-          className="fixed top-4 left-4 z-50 p-2 rounded-full bg-blue-600 text-white shadow-lg sm:hidden"
+          className="fixed top-4 left-4 z-50 p-2 rounded-sm bg-gray-600 text-white shadow-sm sm:hidden"
           onClick={toggleMobileNav}
           aria-label="Open sidebar"
         >
@@ -62,7 +62,7 @@ function Sidebar({
 
       {(showSidebar || isMobileNavOpen) && (
         <aside
-          className={`fixed sm:static top-0 left-0 z-40 h-full bg-white/90 border-r border-blue-100 shadow-lg sm:shadow-none p-6 transition-transform duration-300 transform ${
+          className={`fixed sm:static top-0 left-0 z-40 h-full bg-white/90 border-r border-gray-100 shadow-sm sm:shadow-none p-6 transition-transform duration-300 transform ${
             isMobileNavOpen ? "translate-x-0" : "-translate-x-full"
           } ${
             showSidebar ? "sm:translate-x-0" : "sm:-translate-x-full"
@@ -79,7 +79,7 @@ function Sidebar({
               {(!collapsedNav || !showSidebar) && (
                 <>
                   <img src="/rect19.png" alt="Logo" className="h-10 w-auto" />
-                  <span className="font-black text-lg tracking-tight text-blue-700">
+                  <span className="font-black text-lg tracking-tight text-gray-700">
                     Benote
                   </span>
                 </>
@@ -87,7 +87,7 @@ function Sidebar({
             </Link>
             <div className="flex items-center gap-2">
               <div
-                className={`hidden sm:flex p-2 hover:bg-blue-50 rounded-full cursor-pointer ${
+                className={`hidden sm:flex p-2 hover:bg-gray-50 rounded-sm cursor-pointer ${
                   showSidebar ? "" : "pointer-events-none opacity-0"
                 }`}
                 onClick={handleCollapseBar}
@@ -107,7 +107,7 @@ function Sidebar({
           <nav className="bg-white max-h-full overflow-auto scrollbar-hide">
             <div className="flex sm:hidden gap-2 mb-4">
               <button
-                className="flex items-center justify-center gap-2 flex-1 px-2 py-2 rounded-lg bg-blue-50 text-blue-800 font-semibold shadow hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                className="flex items-center justify-center gap-2 flex-1 px-2 py-2 rounded-sm bg-gray-50 text-gray-800 font-semibold shadow hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200"
                 onClick={() => {
                   setSearchOpened(true);
                   setIsMobileNavOpen(false);
@@ -118,7 +118,7 @@ function Sidebar({
                 <span className="text-sm">Search</span>
               </button>
               <button
-                className="flex items-center justify-center gap-2 flex-1 px-2 py-2 rounded-lg bg-blue-50 text-blue-800 font-semibold shadow hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                className="flex items-center justify-center gap-2 flex-1 px-2 py-2 rounded-sm bg-gray-50 text-gray-800 font-semibold shadow hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200"
                 onClick={() => {
                   setAiOverviewOpen(true);
                   setIsMobileNavOpen(false);
@@ -135,10 +135,10 @@ function Sidebar({
                   to="home"
                   className={`flex items-center ${
                     collapsedNav && "justify-center"
-                  } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                  } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${
                     loc[0] === "home"
-                      ? "bg-blue-100 text-blue-700"
-                      : "text-gray-700 hover:bg-blue-50"
+                      ? "bg-gray-100 text-gray-700"
+                      : "text-gray-700 hover:bg-gray-50"
                   }`}
                   onClick={() => setIsMobileNavOpen(false)}
                   title="Home"
@@ -154,10 +154,10 @@ function Sidebar({
                   to="workspace"
                   className={`flex items-center ${
                     collapsedNav && "justify-center"
-                  } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                  } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${
                     loc[0] === "workspace"
-                      ? "bg-blue-100 text-blue-700"
-                      : "text-gray-700 hover:bg-blue-50"
+                      ? "bg-gray-100 text-gray-700"
+                      : "text-gray-700 hover:bg-gray-50"
                   }`}
                   onClick={() => setIsMobileNavOpen(false)}
                   title="Workspace"
@@ -170,7 +170,7 @@ function Sidebar({
                 {loc[1] === "open" && loc[0] === "workspace" && (
                   <ul
                     className={`${
-                      collapsedNav ? "p-1 bg-blue-50 rounded" : "pl-7 p-2"
+                      collapsedNav ? "p-1 bg-gray-50 rounded" : "pl-7 p-2"
                     } mt-2 flex flex-col gap-1`}
                   >
                     {workspaceSubMenusModern.map((item, idx) => (
@@ -178,8 +178,8 @@ function Sidebar({
                         key={idx}
                         className={`flex items-center gap-2 py-1 rounded transition-all cursor-pointer ${
                           onPage(item.link)
-                            ? "bg-blue-200 text-blue-900 font-semibold"
-                            : "text-gray-600 hover:bg-blue-100"
+                            ? "bg-gray-200 text-gray-900 font-semibold"
+                            : "text-gray-600 hover:bg-gray-100"
                         }`}
                         onClick={() => {
                           handleNavigation(item.link, loc[2])();
@@ -206,10 +206,10 @@ function Sidebar({
                   to="team"
                   className={`flex items-center ${
                     collapsedNav && "justify-center"
-                  } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                  } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${
                     loc[0] === "team"
-                      ? "bg-blue-100 text-blue-700"
-                      : "text-gray-700 hover:bg-blue-50"
+                      ? "bg-gray-100 text-gray-700"
+                      : "text-gray-700 hover:bg-gray-50"
                   }`}
                   onClick={() => setIsMobileNavOpen(false)}
                   title="Teams"
@@ -225,10 +225,10 @@ function Sidebar({
                   to="classroom"
                   className={`flex items-center ${
                     collapsedNav && "justify-center"
-                  } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                  } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${
                     loc[0] === "classroom"
-                      ? "bg-blue-100 text-blue-700"
-                      : "text-gray-700 hover:bg-blue-50"
+                      ? "bg-gray-100 text-gray-700"
+                      : "text-gray-700 hover:bg-gray-50"
                   }`}
                   onClick={() => setIsMobileNavOpen(false)}
                   title="Classroom"
@@ -244,10 +244,10 @@ function Sidebar({
                   to="news"
                   className={`flex items-center ${
                     collapsedNav && "justify-center"
-                  } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                  } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${
                     loc[0] === "news"
-                      ? "bg-blue-100 text-blue-700"
-                      : "text-gray-700 hover:bg-blue-50"
+                      ? "bg-gray-100 text-gray-700"
+                      : "text-gray-700 hover:bg-gray-50"
                   }`}
                   onClick={() => setIsMobileNavOpen(false)}
                   title="News"
@@ -263,10 +263,10 @@ function Sidebar({
                   to="askAI"
                   className={`flex items-center ${
                     collapsedNav && "justify-center"
-                  } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                  } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${
                     loc[0] === "askAI"
-                      ? "bg-blue-100 text-blue-700"
-                      : "text-gray-700 hover:bg-blue-50"
+                      ? "bg-gray-100 text-gray-700"
+                      : "text-gray-700 hover:bg-gray-50"
                   }`}
                   onClick={() => setIsMobileNavOpen(false)}
                   title="AskAI"
@@ -278,17 +278,17 @@ function Sidebar({
                 </Link>
               </li>
             </ul>
-            <hr className="my-4 border-blue-100" />
+            <hr className="my-4 border-gray-100" />
             <ul className="flex flex-col gap-2">
               <li>
                 <Link
                   to="profile"
                   className={`flex items-center ${
                     collapsedNav && "justify-center"
-                  } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                  } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${
                     loc[0] === "profile"
-                      ? "bg-blue-100 text-blue-700"
-                      : "text-gray-700 hover:bg-blue-50"
+                      ? "bg-gray-100 text-gray-700"
+                      : "text-gray-700 hover:bg-gray-50"
                   }`}
                   onClick={() => setIsMobileNavOpen(false)}
                   title="Profile"
@@ -304,10 +304,10 @@ function Sidebar({
                   to="llm-setting"
                   className={`flex items-center ${
                     collapsedNav && "justify-center"
-                  } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                  } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${
                     loc[0] === "llm-setting"
-                      ? "bg-blue-100 text-blue-700"
-                      : "text-gray-700 hover:bg-blue-50"
+                      ? "bg-gray-100 text-gray-700"
+                      : "text-gray-700 hover:bg-gray-50"
                   }`}
                   onClick={() => setIsMobileNavOpen(false)}
                   title="LLM Setting"
@@ -323,10 +323,10 @@ function Sidebar({
                   to="notifications"
                   className={`flex items-center ${
                     collapsedNav && "justify-center"
-                  } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                  } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${
                     loc[0] === "notifications"
-                      ? "bg-blue-100 text-blue-700"
-                      : "text-gray-700 hover:bg-blue-50"
+                      ? "bg-gray-100 text-gray-700"
+                      : "text-gray-700 hover:bg-gray-50"
                   }`}
                   onClick={() => setIsMobileNavOpen(false)}
                   title="Notifications"
@@ -334,7 +334,7 @@ function Sidebar({
                   <span className="relative flex items-center justify-center min-w-[40px] min-h-[40px]">
                     <PiBellRingingDuotone size={22} />
                     {unreadCount > 0 && (
-                      <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-sm w-5 h-5 flex items-center justify-center">
                         {unreadCount > 9 ? "9+" : unreadCount}
                       </span>
                     )}
@@ -347,10 +347,10 @@ function Sidebar({
                   to="setting"
                   className={`flex items-center ${
                     collapsedNav && "justify-center"
-                  } gap-2 px-0 py-2 rounded-lg font-medium transition-all ${
+                  } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${
                     loc[0] === "setting"
-                      ? "bg-blue-100 text-blue-700"
-                      : "text-gray-700 hover:bg-blue-50"
+                      ? "bg-gray-100 text-gray-700"
+                      : "text-gray-700 hover:bg-gray-50"
                   }`}
                   onClick={() => setIsMobileNavOpen(false)}
                   title="Setting"
@@ -363,7 +363,7 @@ function Sidebar({
               </li>
               <li>
                 <button
-                  className="w-full flex items-center gap-2 px-0 py-2 text-red-600 hover:bg-red-50 hover:text-red-800 rounded-lg font-medium transition-all"
+                  className="w-full flex items-center gap-2 px-0 py-2 text-red-600 hover:bg-red-50 hover:text-red-800 rounded-sm font-medium transition-all"
                   onClick={handleLogout}
                   title="Logout"
                 >
