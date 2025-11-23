@@ -238,15 +238,15 @@ const Overview = () => {
                 }
               </span>
             </div>
-            <div className="flex flex-col items-center justify-between p-6 bg-green-50 rounded-sm shadow hover:shadow-sm transition w-full">
+            <div className="flex flex-col items-center justify-between p-6 bg-gray-50 rounded-sm shadow hover:shadow-sm transition w-full">
               <div className="flex flex-col items-center">
-                <FaCheckCircle className="text-3xl text-green-400 mb-1" />{" "}
+                <FaCheckCircle className="text-3xl text-gray-400 mb-1" />{" "}
                 {/* <span className="text-2xl">✅</span> */}
-                <h1 className="font-bold text-lg text-green-700 text-center">
+                <h1 className="font-bold text-lg text-gray-700 text-center">
                   Completed Tasks
                 </h1>
               </div>
-              <span className="text-3xl font-bold text-green-800 mt-2">
+              <span className="text-3xl font-bold text-gray-800 mt-2">
                 {workspace?.tasks?.filter((task) => task.status === "done")
                   ?.length || 0}
               </span>

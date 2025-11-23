@@ -379,14 +379,14 @@ const TaskCard = ({ task }) => {
     switch (priority) {
       case 'high': return 'text-red-500';
       case 'medium': return 'text-yellow-500';
-      case 'low': return 'text-green-500';
+      case 'low': return 'text-gray-500';
       default: return 'text-gray-500';
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800';
+      case 'completed': return 'bg-gray-100 text-gray-800';
       case 'in_progress': return 'bg-gray-100 text-gray-800';
       case 'todo': return 'bg-gray-100 text-gray-800';
       default: return 'bg-gray-100 text-gray-800';

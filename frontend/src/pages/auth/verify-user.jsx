@@ -119,7 +119,7 @@ function VerifyUser() {
         Resend Verification Code
       </button>
       {error && <p className="text-red-500 mt-4">{error}</p>}
-      {success && <p className="text-green-600 mt-4">{success}</p>}
+      {success && <p className="text-gray-600 mt-4">{success}</p>}
       {loading && !showForm && (
         <p className="text-gray-500 mt-4">Verifying...</p>
       )}

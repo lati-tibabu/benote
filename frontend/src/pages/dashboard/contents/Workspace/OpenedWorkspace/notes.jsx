@@ -169,7 +169,7 @@ const Notes = () => {
             </button>
           )}
           <button
-            className="flex items-center gap-2 px-4 py-2 rounded-sm bg-white text-green-600 border border-green-200 font-medium text-sm shadow-sm hover:bg-green-50 hover:border-green-300 transition transform hover:-translate-y-0.5"
+            className="flex items-center gap-2 px-4 py-2 rounded-sm bg-white text-gray-600 border border-gray-200 font-medium text-sm shadow-sm hover:bg-gray-50 hover:border-gray-300 transition transform hover:-translate-y-0.5"
             onClick={() =>
               document.getElementById("upload_note_modal").showModal()
             }
@@ -398,7 +398,7 @@ const Notes = () => {
             </button>
           </form>
           <h3 className="font-bold text-xl text-gray-800 mb-4 flex items-center gap-3">
-            <PiUploadSimple className="text-green-600" size={24} />
+            <PiUploadSimple className="text-gray-600" size={24} />
             Upload File to Create Note
           </h3>
           <p className="text-sm text-gray-600 mb-6">

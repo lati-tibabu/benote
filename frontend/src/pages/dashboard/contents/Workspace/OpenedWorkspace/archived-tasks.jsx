@@ -93,7 +93,7 @@ const ArchivedTasks = () => {
                 <div className="flex gap-3">
                   <button
                     onClick={() => restoreTask(task.id)}
-                    className="text-green-600 hover:text-green-800 flex items-center"
+                    className="text-gray-600 hover:text-gray-800 flex items-center"
                   >
                     <AiOutlineUndo className="mr-1" /> Restore
                   </button>

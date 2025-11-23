@@ -65,7 +65,7 @@ const ClassroomList = ({ requestType }) => {
                 {classroom.description || "No description available"}
               </p>
               <div className="flex items-center gap-2 mt-3 text-gray-700">
-                <FaChalkboardTeacher className="text-xl text-green-600" />
+                <FaChalkboardTeacher className="text-xl text-gray-600" />
                 <span className="text-sm font-medium">
                   {classroom.teacher?.name || "Unknown Teacher"}
                 </span>

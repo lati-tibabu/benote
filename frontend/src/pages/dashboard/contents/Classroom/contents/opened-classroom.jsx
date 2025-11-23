@@ -293,7 +293,7 @@ const OpenedClassroom = () => {
                     <button
                       onClick={handleAddStudent}
                       disabled={actionLoading}
-                      className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 text-white rounded-sm font-semibold shadow-sm transition-all disabled:opacity-60"
+                      className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-gray-500 to-gray-400 hover:from-gray-600 hover:to-gray-500 text-white rounded-sm font-semibold shadow-sm transition-all disabled:opacity-60"
                     >
                       <AiOutlinePlus /> Add
                     </button>

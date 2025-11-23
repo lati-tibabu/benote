@@ -66,7 +66,7 @@ const AssignmentList = () => {
     fetchAssignments();
   }, []);
 
-  // Overdue: reddish gray, Upcoming: greenish gray
+  // Overdue: reddish gray, Upcoming: grayish gray
   const AssignmentCard = ({ assignment, overdue }) => (
     <button
       type="button"
@@ -74,7 +74,7 @@ const AssignmentList = () => {
       className={`relative flex flex-col gap-2 p-6 rounded-sm shadow bg-gradient-to-br ${
         overdue
           ? 'from-red-50 to-gray-50 border-red-200 ring-2 ring-red-300'
-          : 'from-green-50 to-gray-50 border-green-200 ring-1 ring-green-200'
+          : 'from-gray-50 to-gray-50 border-gray-200 ring-1 ring-gray-200'
       } hover:shadow-sm transition group focus:outline-none focus:ring-2 focus:ring-gray-300 active:scale-[0.98] text-left w-full cursor-pointer`}
       tabIndex={0}
       aria-label={`View classroom for ${assignment.title}`}
@@ -93,7 +93,7 @@ const AssignmentList = () => {
         {assignment.description}
       </p>
       <div className="flex items-center justify-between mt-2">
-        <span className={`text-xs font-medium flex items-center gap-1 ${overdue ? 'text-red-500' : 'text-green-600'}`}> 
+        <span className={`text-xs font-medium flex items-center gap-1 ${overdue ? 'text-red-500' : 'text-gray-600'}`}> 
           <svg
             className="inline w-4 h-4"
             fill="none"
@@ -111,7 +111,7 @@ const AssignmentList = () => {
         </span>
         <span
           className={`text-xs font-semibold ${
-            overdue ? "text-red-600" : "text-green-700"
+            overdue ? "text-red-600" : "text-gray-700"
           }`}
         >
           Due: {assignment.dueDateObj.toLocaleDateString()}

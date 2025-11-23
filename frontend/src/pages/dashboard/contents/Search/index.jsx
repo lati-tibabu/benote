@@ -112,7 +112,7 @@ const Search = () => {
   const renderCard = (item, fields, catKey) => {
     const categoryStyles = {
       workspace: "border-gray-200 bg-gray-50 hover:shadow-gray-200",
-      teams: "border-green-200 bg-green-50 hover:shadow-green-200",
+      teams: "border-gray-200 bg-gray-50 hover:shadow-gray-200",
       tasks: "border-yellow-200 bg-yellow-50 hover:shadow-yellow-200",
       study_plans: "border-gray-200 bg-gray-50 hover:shadow-gray-200",
       roadmaps: "border-gray-200 bg-gray-50 hover:shadow-gray-200",

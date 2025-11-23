@@ -43,7 +43,7 @@ const ForgotPassword = () => {
           </p>
         </div>
         {emailSent && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative text-center">
+          <div className="bg-gray-100 border border-gray-400 text-gray-700 px-4 py-3 rounded relative text-center">
             <strong className="font-bold">Email sent!</strong>
             <span className="block sm:inline ml-2">
               Please check your inbox (and spam folder) for the reset link.

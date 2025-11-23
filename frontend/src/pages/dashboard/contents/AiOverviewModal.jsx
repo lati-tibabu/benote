@@ -43,7 +43,7 @@ const AiOverviewModal = ({ open, onClose }) => {
         >
           <HiX />
         </button>
-        <div className="pt-8 pb-2 px-8 border-b flex items-center gap-2 bg-gradient-to-r from-gray-50 to-green-50">
+        <div className="pt-8 pb-2 px-8 border-b flex items-center gap-2 bg-gradient-to-r from-gray-50 to-gray-50">
           <span role="img" aria-label="AI" className="text-2xl">
             🤖
           </span>

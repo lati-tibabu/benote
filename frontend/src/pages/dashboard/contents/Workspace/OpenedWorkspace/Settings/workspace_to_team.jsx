@@ -136,7 +136,7 @@ const WorkspaceToTeam = ({ workspaceId }) => {
           )}
         </button>
         {success && (
-          <div className="text-green-600 text-center font-medium">
+          <div className="text-gray-600 text-center font-medium">
             {success}
           </div>
         )}

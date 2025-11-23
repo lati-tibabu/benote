@@ -138,7 +138,7 @@ const TaskStatus = () => {
             title="🟢 On Time Tasks"
             name="onTime"
             list={groupTasks.onTime}
-            colorClass="text-green-500"
+            colorClass="text-gray-500"
           />
         </>
       )}

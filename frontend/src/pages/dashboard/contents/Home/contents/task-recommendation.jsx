@@ -30,7 +30,7 @@ const getPriorityStyle = (priority) => {
     case "Medium":
       return "text-yellow-600 border-yellow-600";
     case "Low":
-      return "text-green-600 border-green-600";
+      return "text-gray-600 border-gray-600";
     default:
       return "text-black border-black";
   }

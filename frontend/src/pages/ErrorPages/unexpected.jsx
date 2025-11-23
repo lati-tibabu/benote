@@ -14,7 +14,7 @@ const Unexpected = () => {
       <div className="bg-white shadow-sm rounded-sm p-8 text-center max-w-lg">
         <AiFillWarning
           size={70}
-          className="text-green-500 animate-bounce mx-auto"
+          className="text-gray-500 animate-bounce mx-auto"
         />
         <h1 className="text-3xl font-bold mt-4">Oops! Something went wrong</h1>
         <p className="text-gray-600 mt-2">

@@ -413,12 +413,12 @@ const Tasks = () => {
           <div className="flex-1 flex flex-col gap-3 p-4 bg-white/80 border border-gray-200 rounded-sm shadow-sm min-w-[320px] transition hover:shadow-sm">
             <div className="flex justify-between items-center border-b pb-2 mb-2">
               <div className="flex gap-2 items-center">
-                <h1 className="font-bold text-lg text-green-700">Done</h1>
-                <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-sm font-semibold">
+                <h1 className="font-bold text-lg text-gray-700">Done</h1>
+                <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-sm font-semibold">
                   {tasks.filter((task) => task.status === "done").length}
                 </span>
               </div>
-              <button className="text-gray-400 hover:text-green-500 transition">
+              <button className="text-gray-400 hover:text-gray-500 transition">
                 <AiOutlineMore />
               </button>
             </div>

@@ -147,7 +147,7 @@ const StudyPlans = () => {
           <PiPlusBold className="text-lg" /> New Study Plan
         </button>
         <button
-          className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white font-semibold rounded-sm px-6 py-2 shadow-sm transition text-base"
+          className="flex items-center gap-2 bg-gradient-to-r from-gray-500 to-gray-700 hover:from-gray-600 hover:to-gray-800 text-white font-semibold rounded-sm px-6 py-2 shadow-sm transition text-base"
           onClick={() => setShowAiModal(true)}
         >
           <PiMagicWandBold className="text-lg" /> Generate Study Plan
@@ -161,7 +161,7 @@ const StudyPlans = () => {
                 <th className="py-4 px-4 text-left font-bold">Title</th>
                 <th className="py-4 px-4 text-left font-bold">Description</th>
                 <th className="py-4 px-4 text-left font-bold">
-                  <PiCalendarCheckBold className="inline mr-1 text-green-600" />{" "}
+                  <PiCalendarCheckBold className="inline mr-1 text-gray-600" />{" "}
                   Start Date
                 </th>
                 <th className="py-4 px-4 text-left font-bold">

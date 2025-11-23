@@ -209,7 +209,7 @@ const Assignment = ({ classroomId, isTeacher, onAssignmentClick }) => {
                       className={`text-xs font-semibold px-2 py-0.5 rounded-sm ml-2 ${
                         isOverdue(assignment.due_date)
                           ? "bg-red-100 text-red-600"
-                          : "bg-green-100 text-green-700"
+                          : "bg-gray-100 text-gray-700"
                       }`}
                     >
                       {isOverdue(assignment.due_date) ? "Overdue" : "Upcoming"}

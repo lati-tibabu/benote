@@ -130,7 +130,7 @@ const LatestTasks = ({ tasks, taskLoading }) => {
                 {/* Task Status Icon */}
                 <div
                   className={`text-2xl sm:text-3xl mr-4 ${
-                    task.status === "done" ? "text-green-500" : "text-gray-400"
+                    task.status === "done" ? "text-gray-500" : "text-gray-400"
                   }`}
                 >
                   {task.status === "done" ? <FaCheckCircle /> : <FaClock />}
@@ -164,7 +164,7 @@ const LatestTasks = ({ tasks, taskLoading }) => {
                   <span
                     className={`text-xs px-3 py-1 rounded-sm font-bold uppercase tracking-wide ${
                       task.status === "done"
-                        ? "bg-green-100 text-green-700 border border-green-200"
+                        ? "bg-gray-100 text-gray-700 border border-gray-200"
                         : "bg-gray-100 text-gray-700 border border-gray-200"
                     }`}
                   >
@@ -279,7 +279,7 @@ const Home = () => {
     {
       key: "tasks",
       label: "Tasks",
-      icon: <FaCheck className="text-green-500 text-lg" />,
+      icon: <FaCheck className="text-gray-500 text-lg" />,
     },
     {
       key: "pomodoro",

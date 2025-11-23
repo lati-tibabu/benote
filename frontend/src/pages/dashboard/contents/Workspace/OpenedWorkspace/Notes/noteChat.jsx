@@ -160,11 +160,11 @@ const NoteChat = ({ noteContext = "There is no note provided" }) => {
           Expand
         </button>
         <button
-          className="group flex items-center gap-1 px-3 py-1 rounded-sm text-gray-600 hover:bg-gray-100 hover:text-green-600 transition-colors text-sm font-medium"
+          className="group flex items-center gap-1 px-3 py-1 rounded-sm text-gray-600 hover:bg-gray-100 hover:text-gray-600 transition-colors text-sm font-medium"
           onClick={() => requestAi(noteMakingPrompt)}
           title="Notefy"
         >
-          <MdOutlineNoteAlt size={18} className="group-hover:text-green-600" />{" "}
+          <MdOutlineNoteAlt size={18} className="group-hover:text-gray-600" />{" "}
           Notefy
         </button>
       </div>
@@ -191,7 +191,7 @@ const NoteChat = ({ noteContext = "There is no note provided" }) => {
                     title="Copy"
                   >
                     {copied ? (
-                      <AiOutlineCheck className="text-green-500" />
+                      <AiOutlineCheck className="text-gray-500" />
                     ) : (
                       <AiOutlineCopy />
                     )}

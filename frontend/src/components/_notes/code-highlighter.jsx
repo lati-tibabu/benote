@@ -108,7 +108,7 @@ const CodeHighlighter = ({ node, inline, className, children, ...props }) => {
           >
             {copied ? (
               <>
-                <LuCheck className="text-green-300" /> Copied!
+                <LuCheck className="text-gray-300" /> Copied!
               </>
             ) : (
               <>

@@ -468,7 +468,7 @@ const AiGeneratedTask = () => {
             <button
               onClick={handleAcceptAiResponse}
               disabled={loading}
-              className="px-6 py-2 bg-green-600 text-white font-medium rounded-sm shadow hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200 disabled:bg-green-300 disabled:cursor-not-allowed"
+              className="px-6 py-2 bg-gray-600 text-white font-medium rounded-sm shadow hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               {loading ? "Saving..." : "Accept Plan"}
             </button>

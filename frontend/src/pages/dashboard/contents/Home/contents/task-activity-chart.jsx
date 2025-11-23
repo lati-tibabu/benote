@@ -82,7 +82,7 @@ const TaskActivityChart = () => {
         ✅ You have <span className="font-bold text-gray-900">{doneCount}</span>{" "}
         task
         {doneCount !== 1 ? "s" : ""} marked as{" "}
-        <span className="text-green-600">done</span>.
+        <span className="text-gray-600">done</span>.
       </p>
       <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
         {/* Pie Chart */}

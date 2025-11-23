@@ -86,10 +86,10 @@ const PomodoroFocus = () => {
 
       {/* Alarm notification */}
       {alarmPlaying && (
-        <div className="mt-4 flex flex-col sm:flex-row items-center gap-2 bg-green-100 border border-green-300 text-green-800 px-4 py-2 rounded-sm shadow animate-pulse w-full">
+        <div className="mt-4 flex flex-col sm:flex-row items-center gap-2 bg-gray-100 border border-gray-300 text-gray-800 px-4 py-2 rounded-sm shadow animate-pulse w-full">
           <span className="font-semibold">Time's up!</span>
           <button
-            className="ml-0 sm:ml-2 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-all text-xs font-bold"
+            className="ml-0 sm:ml-2 px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 transition-all text-xs font-bold"
             onClick={() => dispatch(stopAlarm())}
           >
             Stop Alarm

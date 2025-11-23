@@ -275,7 +275,7 @@ const LoadingSpinner = ({ size = 'md', color = 'gray' }) => {
   const colorClasses = {
     gray: 'border-gray-500',
     gray: 'border-gray-500',
-    green: 'border-green-500',
+    gray: 'border-gray-500',
   };
 
   return (

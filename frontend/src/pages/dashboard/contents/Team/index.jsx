@@ -78,7 +78,7 @@ function Team() {
                 <span
                   className={`text-xs font-medium px-2 py-1 rounded-sm ${
                     team.role === "admin"
-                      ? "bg-green-100 text-green-600"
+                      ? "bg-gray-100 text-gray-600"
                       : "bg-gray-100 text-gray-600"
                   }`}
                 >
@@ -125,7 +125,7 @@ function Team() {
               <span
                 className={`text-xs font-medium px-2 py-1 rounded-sm ${
                   team.role === "admin"
-                    ? "bg-green-100 text-green-600"
+                    ? "bg-gray-100 text-gray-600"
                     : "bg-gray-100 text-gray-600"
                 }`}
               >

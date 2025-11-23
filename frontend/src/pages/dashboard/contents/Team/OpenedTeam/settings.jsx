@@ -170,7 +170,7 @@ const TeamSettings = () => {
                     </button>
                   ) : (
                     <button
-                      className="px-4 py-2 bg-green-500 text-white rounded-sm hover:bg-green-600 shadow-sm"
+                      className="px-4 py-2 bg-gray-500 text-white rounded-sm hover:bg-gray-600 shadow-sm"
                       onClick={() => handleMemberAction(member.id, "promote")}
                     >
                       Promote

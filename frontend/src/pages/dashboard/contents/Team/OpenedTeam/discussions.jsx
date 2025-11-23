@@ -326,7 +326,7 @@ const Discussions = () => {
         <h1 className="font-bold text-lg text-gray-900">Team Discussions</h1>
         <span
           className={`ml-auto text-xs font-bold flex items-center gap-1 ${
-            isConnected ? "text-green-600" : "text-red-500"
+            isConnected ? "text-gray-600" : "text-red-500"
           }`}
         >
           {isConnected ? (

@@ -268,7 +268,7 @@ function Signup() {
               <IoMdClose />
             </button>
             <div className="flex flex-col items-center gap-2">
-              <span className="bg-green-600 rounded-sm p-3 mb-2 shadow-sm">
+              <span className="bg-gray-600 rounded-sm p-3 mb-2 shadow-sm">
                 <AiOutlineCheckCircle size={48} className="text-white" />
               </span>
               <h3 className="font-extrabold text-2xl mb-2 tracking-tight text-center">

@@ -239,7 +239,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
       <ToastContainer />
       <main className="p-8 max-w-4xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
@@ -250,7 +250,7 @@ const Profile = () => {
             <div className="flex gap-2">
               <button
                 onClick={saveProfile}
-                className="inline-flex items-center gap-2 px-5 py-2 rounded-sm bg-gradient-to-r from-green-500 to-gray-500 text-white font-semibold shadow hover:from-green-600 hover:to-gray-600 transition disabled:opacity-60"
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-sm bg-gradient-to-r from-gray-500 to-gray-500 text-white font-semibold shadow hover:from-gray-600 hover:to-gray-600 transition disabled:opacity-60"
                 disabled={isSaving}
               >
                 {isSaving ? (
@@ -424,7 +424,7 @@ const Profile = () => {
                 />
               </fieldset>
               <button
-                className="mt-4 inline-flex items-center px-6 py-2 rounded-sm bg-gradient-to-r from-gray-500 to-green-500 text-white font-semibold shadow hover:from-gray-600 hover:to-green-600 transition"
+                className="mt-4 inline-flex items-center px-6 py-2 rounded-sm bg-gradient-to-r from-gray-500 to-gray-500 text-white font-semibold shadow hover:from-gray-600 hover:to-gray-600 transition"
                 onClick={() => handleChangeUserInfo()}
               >
                 Update User Info

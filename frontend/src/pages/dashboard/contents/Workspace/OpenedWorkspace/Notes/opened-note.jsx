@@ -285,7 +285,7 @@ const OpenedNote = () => {
                       <PiSparkleDuotone size={14} />
                     </span>
                   ) : (
-                    <span className="absolute -right-2 -top-2 text-green-400">
+                    <span className="absolute -right-2 -top-2 text-gray-400">
                       <PiCheckCircleDuotone size={14} />
                     </span>
                   )}

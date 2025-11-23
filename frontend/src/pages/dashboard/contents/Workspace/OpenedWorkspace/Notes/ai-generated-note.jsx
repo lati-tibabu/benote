@@ -708,7 +708,7 @@ const AiGeneratedNote = () => {
 
           {(currentNoteTitle || currentNoteContent) && !loading && (
             <button
-              className="ml-3 px-4 py-2 bg-green-600 text-white font-medium rounded-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-1 transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 flex-shrink-0"
+              className="ml-3 px-4 py-2 bg-gray-600 text-white font-medium rounded-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-1 transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95 flex-shrink-0"
               onClick={handleAcceptAiResponse}
               disabled={loading}
             >
