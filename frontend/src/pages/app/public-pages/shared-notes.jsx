@@ -11,7 +11,7 @@ import {
   PiGearSixFill,
   PiFile,
 } from "react-icons/pi";
-import MarkdownRenderer from "../../../components/markdown-renderer";
+import MarkdownRenderer from "@features/notes/components/markdown-renderer";
 
 // Expanded font options for user selection
 const fontOptions = [

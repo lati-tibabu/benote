@@ -2,45 +2,49 @@ import React from "react";
 
 import Dashboard from "../pages/dashboard";
 
-import Home from "../pages/dashboard/contents/Home";
-import Workspace from "../pages/dashboard/contents/Workspace";
-import WorkspaceOpened from "../pages/dashboard/contents/Workspace/workspace_opened";
+// Home feature
+import Home from "../features/home/pages/Home";
 
-import Overview from "../pages/dashboard/contents/Workspace/OpenedWorkspace/overview";
-import Projects from "../pages/dashboard/contents/Workspace/OpenedWorkspace/projects";
-import StudyPlans from "../pages/dashboard/contents/Workspace/OpenedWorkspace/study-plans";
-import Tasks from "../pages/dashboard/contents/Workspace/OpenedWorkspace/tasks";
-import TodoLists from "../pages/dashboard/contents/Workspace/OpenedWorkspace/todo-lists";
-import Teams from "../pages/dashboard/contents/Workspace/OpenedWorkspace/teams";
-import Notes from "../pages/dashboard/contents/Workspace/OpenedWorkspace/notes";
-import Roadmaps from "../pages/dashboard/contents/Workspace/OpenedWorkspace/roadmaps";
-import Settings from "../pages/dashboard/contents/Workspace/OpenedWorkspace/settings";
+// Workspace feature
+import Workspace from "../features/workspace/pages";
+import WorkspaceOpened from "../features/workspace/pages/workspace_opened";
+import Overview from "../features/workspace/pages/OpenedWorkspace/overview";
+import Projects from "../features/workspace/pages/OpenedWorkspace/projects";
+import StudyPlans from "../features/workspace/pages/OpenedWorkspace/study-plans";
+import Tasks from "../features/workspace/pages/OpenedWorkspace/tasks";
+import TodoLists from "../features/workspace/pages/OpenedWorkspace/todo-lists";
+import Teams from "../features/workspace/pages/OpenedWorkspace/teams";
+import Notes from "../features/workspace/pages/OpenedWorkspace/notes";
+import Roadmaps from "../features/workspace/pages/OpenedWorkspace/roadmaps";
+import Settings from "../features/workspace/pages/OpenedWorkspace/settings";
+import StudyPlanOpened from "../features/workspace/pages/OpenedWorkspace/study-plan-open";
+import OpenedNote from "../features/workspace/pages/OpenedWorkspace/Notes/opened-note";
+import OpenedRoadmap from "../features/workspace/pages/OpenedWorkspace/roadmaps/opened-roadmap";
 
-import Team from "../pages/dashboard/contents/Team";
-import Profile from "../pages/dashboard/contents/Profile";
-import LLMSetting from "../pages/dashboard/contents/LlmSetting";
-import Setting from "../pages/dashboard/contents/Setting";
+// Team feature
+import Team from "../features/team/pages/Team";
+import TeamOpened from "../features/team/pages/Team/team_opened";
+import TeamOverview from "../features/team/pages/Team/OpenedTeam/overview";
+import TeamWorkspaces from "../features/team/pages/Team/OpenedTeam/workspaces";
+import Discussions from "../features/team/pages/Team/OpenedTeam/discussions";
+import TeamSettings from "../features/team/pages/Team/OpenedTeam/settings";
+import Resources from "../features/team/pages/Team/OpenedTeam/resources";
+import TeamTodoLists from "../features/team/pages/Team/OpenedTeam/todo-lists";
 
+// Other features
+import Profile from "../features/profile/pages/Profile";
+import LLMSetting from "../features/settings/pages/LlmSetting";
+import Setting from "../features/settings/pages/Setting";
+import Notification from "../features/notifications/pages/Notification";
+import Classroom from "../features/classroom/pages/Classroom";
+import OpenedClassroom from "../features/classroom/pages/Classroom/contents/opened-classroom";
+import News from "../features/news/pages/News";
+import AskAI from "../features/ai/pages/AskAI/askAI";
+
+// Error pages
 import ProtectedRoute from "./protected-routes";
-import Notification from "../pages/dashboard/contents/Notification";
 import Unexpected from "../pages/ErrorPages/unexpected";
 import WorkspaceNotFound from "../pages/ErrorPages/workspace-unexpected";
-
-import TeamOpened from "../pages/dashboard/contents/Team/team_opened";
-import TeamOverview from "../pages/dashboard/contents/Team/OpenedTeam/overview";
-import TeamWorkspaces from "../pages/dashboard/contents/Team/OpenedTeam/workspaces";
-import Discussions from "../pages/dashboard/contents/Team/OpenedTeam/discussions";
-import TeamSettings from "../pages/dashboard/contents/Team/OpenedTeam/settings";
-import Resources from "../pages/dashboard/contents/Team/OpenedTeam/resources";
-import TeamTodoLists from "../pages/dashboard/contents/Team/OpenedTeam/todo-lists";
-import StudyPlanOpened from "../pages/dashboard/contents/Workspace/OpenedWorkspace/study-plan-open";
-import OpenedNote from "../pages/dashboard/contents/Workspace/OpenedWorkspace/Notes/opened-note";
-import OpenedRoadmap from "../pages/dashboard/contents/Workspace/OpenedWorkspace/roadmaps/opened-roadmap";
-
-import Classroom from "../pages/dashboard/contents/Classroom";
-import OpenedClassroom from "../pages/dashboard/contents/Classroom/contents/opened-classroom";
-import News from "../pages/dashboard/contents/News";
-import AskAI from "../pages/dashboard/contents/AskAI/askAI";
 
 const dashboardRoutes = {
   path: "/app",

@@ -12,7 +12,7 @@ import {
   PiEyeSlash,
   PiFileLight,
 } from "react-icons/pi";
-import MarkdownRenderer from "../../../components/markdown-renderer";
+import MarkdownRenderer from "@features/notes/components/markdown-renderer";
 
 const apiURL = import.meta.env.VITE_API_URL;
 

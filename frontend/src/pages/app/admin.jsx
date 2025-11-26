@@ -2,7 +2,7 @@ import React from "react";
 import { Link, Outlet } from "react-router-dom";
 import {} from "react-icons/ai";
 import { FaObjectGroup, FaTeamspeak, FaTelegram, FaUser } from "react-icons/fa";
-import Footer1 from "../../components/_footers/footer1";
+import { Footer } from "@shared/components/layout";
 
 const Admin = () => {
   return (
@@ -37,7 +37,7 @@ const Admin = () => {
         <Outlet />
       </div>
       <div className="mb-0">
-        <Footer1 />
+        <Footer />
       </div>
     </div>
   );
