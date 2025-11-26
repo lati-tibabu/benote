@@ -140,6 +140,15 @@ Comprehensive technical documentation is available in the [`docs/`](docs/) direc
 - [Hooks](docs/hooks.md) - Custom React hooks
 - [Utils](docs/utils.md) - Utility functions and helpers
 
+### Refactoring Documentation
+
+Documentation about the feature-based architecture refactoring:
+
+- [Refactoring Overview](docs/refactoring/README.md) - Overview of the refactoring process
+- [Quick Reference](docs/refactoring/QUICK_REFERENCE.md) - Quick guide for developers
+- [Architecture Comparison](docs/refactoring/ARCHITECTURE_COMPARISON.md) - Before/after comparison
+- [Detailed Guide](docs/refactoring/REFACTORING.md) - Complete refactoring documentation
+
 ### API Documentation
 
 Detailed API integration docs in [`docs/API/`](docs/API/):

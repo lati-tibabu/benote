@@ -1,2 +1,0 @@
-- Height: 1/2 for 2px , 1/4 for 1px to be used as h-1/2 and h-1/4 is added in tailwind.config.js
-- 

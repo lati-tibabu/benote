@@ -34,6 +34,15 @@ The `API/` subdirectory contains comprehensive documentation for backend API end
 - `notifications-api.md`: Real-time notifications API with WebSocket integration
 - `search-api.md`: Global search API with advanced filtering and suggestions
 
+## Refactoring Documentation
+
+The `refactoring/` subdirectory contains documentation about the frontend refactoring from monolithic to feature-based architecture:
+
+- `README.md`: Overview of the refactoring process and status
+- `QUICK_REFERENCE.md`: Quick guide for developers working with the new structure
+- `ARCHITECTURE_COMPARISON.md`: Before and after comparison showing improvements
+- `REFACTORING.md`: Detailed refactoring guide with migration maps and conventions
+
 ## Getting Started
 
 1. Start with `architecture.md` for a high-level understanding
