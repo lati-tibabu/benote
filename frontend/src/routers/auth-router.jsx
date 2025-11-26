@@ -1,12 +1,13 @@
 import React from "react";
 
-import Login from "../pages/auth/login";
-import SignUp from "../pages/auth/signup";
-import AuthPages from "../pages/auth/index";
-import AuthLoading from "../pages/auth/auth-loading";
-import ForgotPassword from "../pages/auth/forgot-password";
-import ResetPassword from "../pages/auth/reset-password";
-const VerifyUser = React.lazy(() => import("../pages/auth/verify-user"));
+// Auth feature
+import Login from "../features/auth/pages/login";
+import SignUp from "../features/auth/pages/signup";
+import AuthPages from "../features/auth/pages/index";
+import AuthLoading from "../features/auth/pages/auth-loading";
+import ForgotPassword from "../features/auth/pages/forgot-password";
+import ResetPassword from "../features/auth/pages/reset-password";
+const VerifyUser = React.lazy(() => import("../features/auth/pages/verify-user"));
 
 const authRoutes = {
   path: "/auth",

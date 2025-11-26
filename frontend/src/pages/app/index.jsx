@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import Footer1 from "../../components/_footers/footer1";
+import { Footer } from "@shared/components/layout";
 import { AiOutlineArrowRight } from "react-icons/ai";
 import {
   FaTasks,
@@ -243,7 +243,7 @@ function Home() {
         </section>
 
         {/* Footer */}
-        <Footer1 />
+        <Footer />
       </div>
       {/* Custom Animations */}
       <style>{`
