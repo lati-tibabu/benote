@@ -23,6 +23,7 @@ import {
 } from "react-icons/pi";
 import { HiSearch } from "react-icons/hi";
 import { GeminiIcon } from "../../../features/ai";
+import OpenERPButton from "../ui/OpenERPButton";
 
 const workspaceSubMenusModern = [
     { icon: <PiChartBarDuotone />, label: "Overview", link: "overview" },
@@ -283,6 +284,10 @@ function Sidebar({
                             </span>
                             {!collapsedNav && <span>Profile</span>}
                         </Link>
+                    </li>
+
+                    <li>
+                        <OpenERPButton />
                     </li>
                     <li>
                         <Link
