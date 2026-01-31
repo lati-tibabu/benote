@@ -24,7 +24,7 @@ function Contact() {
           cursor={"pointer"}
         />
       </div>
-      <img src={`/rect19.png`} alt="Benote Logo" className="w-36 h-auto mb-6" />
+      <img src={`/rect19.png`} alt="PP - BAS Logo" className="w-36 h-auto mb-6" />
       <h1 className="text-2xl text-black font-bold mb-4">Contact Us</h1>
       <p className="text-lg text-black max-w-2xl mb-6">
         We'd love to hear from you! You can reach us through the following

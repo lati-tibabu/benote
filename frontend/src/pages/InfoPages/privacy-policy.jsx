@@ -14,7 +14,7 @@ function PrivacyPolicy() {
           size={40}
         />
       </div>
-      <img src={`/rect19.png`} alt="Benote Logo" className="w-36 h-auto mb-6" />
+      <img src={`/rect19.png`} alt="PP - BAS Logo" className="w-36 h-auto mb-6" />
       <div className="max-w-3xl prose prose-lg dark:prose-invert">
         <h1 className="text-3xl font-bold mb-4">Privacy Policy</h1>
         <p className="text-gray-600 mb-4">Last updated: December 13, 2024</p>
@@ -69,7 +69,7 @@ function PrivacyPolicy() {
           </li>
           <li>
             <p>
-              <strong>Application</strong> refers to Benote,
+              <strong>Application</strong> refers to PP - BAS,
               the software program provided by the Company.
             </p>
           </li>
@@ -131,7 +131,7 @@ function PrivacyPolicy() {
           </li>
           <li>
             <p>
-              <strong>Website</strong> refers to Benote,
+              <strong>Website</strong> refers to PP - BAS,
               accessible from{" "}
               <a
                 href="https://benote.com.et"
@@ -139,7 +139,7 @@ function PrivacyPolicy() {
                 target="_blank"
                 className="underline text-gray-500 hover:text-gray-700"
               >
-                https://benote.com.et
+                https://pp-bas.com.et
               </a>
             </p>
           </li>

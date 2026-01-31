@@ -231,7 +231,7 @@ function DashboardLayout() {
                     </section>
 
                     <footer className="w-full text-center mt-5 border-t pt-4 text-gray-500 text-xs sm:text-sm px-4">
-                        &copy; 2025 Benote
+                        &copy; 2025 PP - BAS
                     </footer>
                 </main>
             </div>

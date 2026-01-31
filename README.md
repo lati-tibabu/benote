@@ -1,4 +1,4 @@
-# Benote
+# PP - BAS
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/lati-tibabu/benote)
 

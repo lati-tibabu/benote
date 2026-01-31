@@ -27,7 +27,7 @@ function Home() {
         <div className="flex items-center gap-4">
           <img src="rect19.png" alt="Logo" className="w-14 animate-logo-pop" />
           <span className="ml-2 text-xl font-bold text-gray-700 hidden sm:inline">
-            Benote
+            PP - BAS
           </span>
         </div>
         <div className="flex gap-3">
@@ -87,7 +87,7 @@ function Home() {
         <section className="h-screen/2 xl:h-fit text-center m-3 flex flex-col-reverse md:flex-row items-center gap-8 animate-fade-in-up delay-100">
           <div className="flex-1 flex flex-col justify-center items-center bg-transparent">
             <h1 className="text-5xl md:text-6xl font-extrabold mb-6 drop-shadow-sm animate-title-pop">
-               Benote
+               PP - BAS
             </h1>
             <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-xl animate-fade-in-up delay-200">
               Your ultimate platform to boost academic performance and manage
@@ -117,7 +117,7 @@ function Home() {
               Boost Your Personal Productivity
             </h2>
             <p className="text-lg text-gray-600">
-              Benote offers a powerful set of tools and features designed to help you stay organized, work efficiently, and reach your goals across any area of life.
+              PP - BAS offers a powerful set of tools and features designed to help you stay organized, work efficiently, and reach your goals across any area of life.
             </p>
           </div>
         </section>
@@ -231,7 +231,7 @@ function Home() {
             Start Boosting Your Productivity Today
           </h3>
           <p className="text-lg mb-6">
-            Join the Benote and take control of your academic
+            Join the PP - BAS and take control of your academic
             journey. Start managing your tasks, collaborating with classmates, and
             improving your study habits with ease.
           </p>

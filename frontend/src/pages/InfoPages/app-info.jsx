@@ -16,19 +16,19 @@ function AppInfo() {
           cursor={"pointer"}
         />
       </div>
-      <img src={`/rect19.png`} alt="Benote Logo" className="w-36 h-auto mb-6" />
+      <img src={`/rect19.png`} alt="PP - BAS Logo" className="w-36 h-auto mb-6" />
       <p className="text-lg text-black max-w-2xl">
-        <strong>Benote (Benote)</strong> is an all-in-one
+        <strong>PP - BAS</strong> is an all-in-one
         productivity tool designed to help students and teachers manage tasks,
         collaborate efficiently, and stay organized. It offers features like
         task scheduling, real-time collaboration, mind mapping, Pomodoro timers,
         note-taking, and project tracking. With a user-friendly interface,
         multilingual support (Amharic and Afaan Oromo), and AI-powered features
-        like task prioritization and recommendations, Benote aims to tackle
+        like task prioritization and recommendations, PP - BAS aims to tackle
         procrastination and improve productivity. The app also includes
         gamification elements like leaderboards and rewards, fostering
         motivation and engagement. Whether for individual planning or team
-        collaboration, Benote empowers users to achieve their academic goals
+        collaboration, PP - BAS empowers users to achieve their academic goals
         effectively.
       </p>
     </div>

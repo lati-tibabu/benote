@@ -20,6 +20,8 @@ import {
     PiSlidersHorizontalDuotone,
     PiChartBarDuotone,
     PiClipboardTextDuotone,
+    PiBuildingsDuotone,
+    PiLink,
 } from "react-icons/pi";
 import { HiSearch } from "react-icons/hi";
 import { GeminiIcon } from "../../../features/ai";
@@ -78,7 +80,7 @@ function Sidebar({
                         <>
                             <img src="/rect19.png" alt="Logo" className="h-10 w-auto" />
                             <span className="font-black text-lg tracking-tight text-gray-700">
-                                Benote
+                                PP - BAS
                             </span>
                         </>
                     )}
@@ -287,7 +289,18 @@ function Sidebar({
                     </li>
 
                     <li>
-                        <OpenERPButton />
+                        <div
+                            className={`flex items-center ${collapsedNav && "justify-center"
+                                } gap-2 px-0 py-2 rounded-sm font-medium transition-all hover:bg-gray-50 text-gray-700 cursor-pointer`}
+                            title="Open ERP System"
+                        >
+                            <span className="flex items-center justify-center min-w-[40px] min-h-[40px]">
+                                <PiBuildingsDuotone size={22} />
+                            </span>
+                            <OpenERPButton collapsed={collapsedNav} />
+
+                            <PiLink color="blue"/>
+                        </div>
                     </li>
                     <li>
                         <Link
