@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { HiMenu } from "react-icons/hi";
 import Sidebar from "./Sidebar";
-import Header from "./Header";
 import NotificationBanner from "./NotificationBanner";
 import { SearchModal } from "../../../features/search";
 import { AiOverviewModal } from "../../../features/ai";
@@ -28,12 +26,6 @@ function DashboardLayout() {
 
     const location = useLocation();
     const navigate = useNavigate();
-
-    const workspaceTitle =
-        useSelector((state) => state.workspace.workspace.name) || "Workspace";
-    const teamTitle = useSelector((state) => state.team.team.name) || "Team";
-    const workspaceEmoji =
-        useSelector((state) => state.workspace.workspace.emoji) || "";
 
     const loc = location.pathname.split("/").slice(2);
 
@@ -213,17 +205,6 @@ function DashboardLayout() {
 
                 {/* Main Content */}
                 <main className="w-full flex flex-col h-screen min-h-0 overflow-y-auto scrollbar-hide bg-white/80">
-                    <Header
-                        showSidebar={showSidebar}
-                        loc={loc}
-                        workspaceTitle={workspaceTitle}
-                        workspaceEmoji={workspaceEmoji}
-                        teamTitle={teamTitle}
-                        toggleMobileNav={toggleMobileNav}
-                        setSearchOpened={setSearchOpened}
-                        setAiOverviewOpen={setAiOverviewOpen}
-                    />
-
                     <section className="flex-1 p-4 sm:p-6">
                         <div className="h-full">
                             <Outlet />

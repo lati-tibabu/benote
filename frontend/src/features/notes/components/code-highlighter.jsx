@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import {
   atomDark,
   solarizedlight,
 } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { LuCopy, LuCheck, LuSun, LuMoon } from "react-icons/lu"; // Added Sun and Moon icons
+import { LuCopy, LuCheck, LuSun, LuMoon, LuWrapText, LuHash } from "react-icons/lu";
 
 /**
  * CodeHighlighter Component
@@ -18,23 +18,36 @@ import { LuCopy, LuCheck, LuSun, LuMoon } from "react-icons/lu"; // Added Sun an
  * @param {React.ReactNode} props.children - The actual code content.
  */
 const CodeHighlighter = ({ node, inline, className, children, ...props }) => {
-  // State to manage the "copied" feedback on the button
   const [copied, setCopied] = useState(false);
-  // State to manage the current theme, defaulting to atomDark
-  const [currentTheme, setCurrentTheme] = useState("solarizedLight");
+  const [currentTheme, setCurrentTheme] = useState("solarizedlight");
+  const [showLineNumbers, setShowLineNumbers] = useState(false);
+  const [wrapLines, setWrapLines] = useState(false);
 
-  // Map theme names to their imported style objects
   const themes = {
     atomDark: atomDark,
     solarizedlight: solarizedlight,
   };
 
-  // Extract the code string and remove any trailing newlines which react-markdown might add
-  const codeString = String(children).replace(/\n$/, "");
+  const codeString = useMemo(
+    () => String(children).replace(/\n$/, ""),
+    [children]
+  );
 
-  // Determine the language from the className (e.g., "language-js" -> "js")
-  const match = /language-(\w+)/.exec(className || "");
-  const language = match ? match[1] : "text"; // Default to 'text' if no language is specified
+  const language = useMemo(() => {
+    const match = /language-([a-z0-9+-]+)/i.exec(className || "");
+    return match ? match[1].toLowerCase() : "text";
+  }, [className]);
+
+  const isInlineCode = useMemo(() => {
+    if (typeof inline === "boolean") {
+      return inline;
+    }
+
+    const hasLanguageClass = Boolean(className && className.includes("language-"));
+    const hasMultilineContent = codeString.includes("\n");
+
+    return !hasLanguageClass && !hasMultilineContent;
+  }, [inline, className, codeString]);
 
   /**
    * Handles the copy to clipboard action.
@@ -45,9 +58,9 @@ const CodeHighlighter = ({ node, inline, className, children, ...props }) => {
       .writeText(codeString)
       .then(() => {
         setCopied(true);
-        setTimeout(() => setCopied(false), 2000); // Reset 'copied' state after 2 seconds
+        setTimeout(() => setCopied(false), 2000);
       })
-      .catch((err) => console.error("Failed to copy!", err)); // Log any errors during copy
+      .catch((error) => console.error("Failed to copy!", error));
   };
 
   /**
@@ -59,11 +72,10 @@ const CodeHighlighter = ({ node, inline, className, children, ...props }) => {
     );
   };
 
-  // --- Inline Code Rendering ---
-  if (inline) {
+  if (isInlineCode) {
     return (
       <code
-        className="text-sm font-mono bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-1 py-0.5 rounded"
+        className="text-[0.92em] font-mono bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded-md border border-blue-100"
         {...props}
       >
         {children}
@@ -71,63 +83,116 @@ const CodeHighlighter = ({ node, inline, className, children, ...props }) => {
     );
   }
 
-  // --- Block Code Rendering ---
   return (
-    // Simplified wrapper div: light border, rounded, no shadow
-    <div className="relative rounded-sm border border-gray-300 my-4 overflow-hidden">
-      {/* Header bar for the code block: light border-b, text color adjusted */}
-      <div className="flex justify-between items-center bg-gray-50 text-gray-700 px-4 py-2 text-xs font-semibold border-b border-gray-300">
-        <span className="capitalize">
-          {language === "text" ? "Code" : language}
-        </span>
-        <div className="flex gap-2">
-          {" "}
-          {/* Container for buttons */}
-          {/* Theme Toggle Button */}
+    <div className="relative my-5 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      <div className="flex items-center justify-between gap-2 bg-gradient-to-r from-gray-50 to-slate-50 px-3 py-2 border-b border-gray-200">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-rose-300" />
+            <span className="h-2.5 w-2.5 rounded-full bg-amber-300" />
+            <span className="h-2.5 w-2.5 rounded-full bg-emerald-300" />
+          </div>
+          <span className="inline-flex items-center rounded-full bg-white border border-gray-200 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-600">
+            {language === "text" ? "code" : language}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setWrapLines((prev) => !prev)}
+            className={`p-1.5 rounded-md border transition-colors ${
+              wrapLines
+                ? "bg-blue-50 border-blue-200 text-blue-700"
+                : "bg-white border-gray-200 text-gray-500 hover:text-gray-700"
+            }`}
+            title={wrapLines ? "Disable wrap" : "Wrap long lines"}
+          >
+            <LuWrapText className="text-sm" />
+          </button>
+
+          <button
+            onClick={() => setShowLineNumbers((prev) => !prev)}
+            className={`p-1.5 rounded-md border transition-colors ${
+              showLineNumbers
+                ? "bg-blue-50 border-blue-200 text-blue-700"
+                : "bg-white border-gray-200 text-gray-500 hover:text-gray-700"
+            }`}
+            title={showLineNumbers ? "Hide line numbers" : "Show line numbers"}
+          >
+            <LuHash className="text-sm" />
+          </button>
+
           <button
             onClick={toggleTheme}
-            className="flex items-center gap-1 px-3 py-1 rounded-sm bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+            className="p-1.5 rounded-md border bg-white border-gray-200 text-gray-500 hover:text-gray-700 transition-colors"
             title={
               currentTheme === "atomDark"
-                ? "Switch to Light Theme"
-                : "Switch to Dark Theme"
+                ? "Switch to light syntax"
+                : "Switch to dark syntax"
             }
           >
             {currentTheme === "atomDark" ? (
-              <LuSun className="text-lg" /> // Sun icon for light theme
+              <LuSun className="text-sm" />
             ) : (
-              <LuMoon className="text-lg" /> // Moon icon for dark theme
+              <LuMoon className="text-sm" />
             )}
-            {currentTheme === "atomDark" ? "Light" : "Dark"}
           </button>
-          {/* Copy button */}
+
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1 px-3 py-1 rounded-sm bg-gray-500 hover:bg-gray-600 text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
-            title={copied ? "Copied!" : "Copy code to clipboard"}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              copied
+                ? "bg-emerald-500 text-white"
+                : "bg-gray-900 text-white hover:bg-black"
+            }`}
+            title={copied ? "Copied" : "Copy code"}
           >
-            {copied ? (
-              <>
-                <LuCheck className="text-gray-300" /> Copied!
-              </>
-            ) : (
-              <>
-                <LuCopy className="text-lg" /> Copy
-              </>
-            )}
+            {copied ? <LuCheck className="text-sm" /> : <LuCopy className="text-sm" />}
+            {copied ? "Copied" : "Copy"}
           </button>
         </div>
       </div>
-      {/* SyntaxHighlighter component, using the dynamically chosen style */}
+
       <SyntaxHighlighter
-        className="scrollbar-hide !m-0 !p-4 rounded-b-lg"
+        className="custom-code-scrollbar !m-0"
         language={language}
-        style={themes[currentTheme]} // Dynamically apply the selected theme
+        style={themes[currentTheme]}
+        showLineNumbers={showLineNumbers}
+        wrapLongLines={wrapLines}
+        lineNumberStyle={{
+          minWidth: "2.25em",
+          paddingRight: "1em",
+          color: currentTheme === "atomDark" ? "#6b7280" : "#94a3b8",
+        }}
+        customStyle={{
+          margin: 0,
+          borderRadius: 0,
+          fontSize: "0.875rem",
+          lineHeight: "1.65",
+          padding: "1rem",
+          overflowX: "auto",
+        }}
         PreTag="div"
         {...props}
       >
         {codeString}
       </SyntaxHighlighter>
+
+      <style>{`
+        .custom-code-scrollbar::-webkit-scrollbar {
+          height: 8px;
+        }
+        .custom-code-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-code-scrollbar::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 10px;
+        }
+        .custom-code-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
+        }
+      `}</style>
     </div>
   );
 };

@@ -25,6 +25,10 @@ const profileRoutes = require("./profileRoutes");
 const resourceRoutes = require("./resourceRoutes");
 const materialRoutes = require("./classroomMaterialsRoutes");
 const searchRoutes = require("./search");
+const chatHistoryRoutes = require("./chatHistoryRoutes");
+
+// feature flags
+const FLAGS = require("../config/featureFlags");
 
 const authRoutes = require("./authRoutes");
 const { logoutController } = require("../middlewares/authMiddleware");
@@ -34,14 +38,18 @@ const router = express.Router();
 router.use("/users", userRoutes);
 router.use("/workspaces", workspaceRoutes);
 router.use("/teams", teamRoutes);
-router.use("/classrooms", classroomRoutes);
+if (FLAGS.classroom) {
+  router.use("/classrooms", classroomRoutes);
+}
 router.use("/assignments", assignmentRoutes);
 router.use("/discussions", discussionRoutes);
 router.use("/mindmaps", mindmapRoutes);
 router.use("/mindmapItems", mindmapItemRoutes);
 router.use("/roadmaps", roadmapRoutes);
 router.use("/roadmapItems", roadmapItemRoutes);
-router.use("/studyPlans", studyPlanRoutes);
+if (FLAGS.studyPlans) {
+  router.use("/studyPlans", studyPlanRoutes);
+}
 router.use("/submissions", submissionRoutes);
 router.use("/tasks", taskRoutes);
 router.use("/timeBlocks", timeBlockRoutes);
@@ -57,6 +65,7 @@ router.use("/classroom-materials", materialRoutes);
 
 router.use("/auth", authRoutes);
 router.use("/search", searchRoutes);
+router.use("/chat-history", chatHistoryRoutes);
 
 router.post("/logout", logoutController);
 

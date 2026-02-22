@@ -1,7 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { SHA256 } from "crypto-js";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { HiX } from "react-icons/hi";
+import { AiOutlineSun, AiOutlineMoon } from "react-icons/ai";
 import {
     PiHouseDuotone,
     PiBooksDuotone,
@@ -21,8 +24,10 @@ import {
     PiChartBarDuotone,
     PiClipboardTextDuotone,
 } from "react-icons/pi";
+import { FEATURES } from "../../../config/featureFlags";
 import { HiSearch } from "react-icons/hi";
 import { GeminiIcon } from "../../../features/ai";
+import { toggleTheme } from "../../../redux/slices/themeSlice";
 
 const workspaceSubMenusModern = [
     { icon: <PiChartBarDuotone />, label: "Overview", link: "overview" },
@@ -34,11 +39,16 @@ const workspaceSubMenusModern = [
     },
     { icon: <PiNotePencilDuotone />, label: "Notes", link: "notes" },
     { icon: <PiMapTrifoldDuotone />, label: "Roadmaps", link: "roadmaps" },
-    {
-        icon: <PiCalendarCheckDuotone />,
-        label: "Study Plan",
-        link: "study-plans",
-    },
+    // include study plan only if feature is enabled
+    ...(FEATURES.studyPlans
+        ? [
+              {
+                  icon: <PiCalendarCheckDuotone />,
+                  label: "Study Plan",
+                  link: "study-plans",
+              },
+          ]
+        : []),
     { icon: <PiSlidersHorizontalDuotone />, label: "Settings", link: "settings" },
 ];
 
@@ -57,6 +67,18 @@ function Sidebar({
     onPage,
     handleLogout,
 }) {
+    const dispatch = useDispatch();
+    const theme = useSelector((state) => state.theme.theme);
+    const userData = useSelector((state) => state.auth.user) || {};
+    const email = userData?.email;
+
+    const getGravatarHash = (userEmail) => {
+        if (!userEmail) {
+            return "";
+        }
+        return SHA256(userEmail.trim().toLowerCase()).toString();
+    };
+
     return (
         <aside
             className={`fixed sm:static top-0 left-0 z-40 h-full bg-white/90 border-r border-gray-100 shadow-sm sm:shadow-none p-6 transition-transform duration-300 transform ${isMobileNavOpen ? "translate-x-0" : "-translate-x-full"
@@ -103,30 +125,76 @@ function Sidebar({
                 </div>
             </div>
             <nav className="bg-white max-h-full overflow-auto scrollbar-hide">
-                {/* Quick Search & AI Overview for mobile (show above nav on mobile) */}
-                <div className="flex sm:hidden gap-2 mb-4">
+                {/* Quick tools moved from header into sidebar for all screen sizes */}
+                <div className="flex flex-col gap-2 mb-4">
                     <button
-                        className="flex items-center justify-center gap-2 flex-1 px-2 py-2 rounded-sm bg-gray-50 text-gray-800 font-semibold shadow hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200"
+                        className="flex items-center justify-center gap-2 px-2 py-2 rounded-sm bg-gray-50 text-gray-800 font-semibold shadow hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200 w-full"
                         onClick={() => {
                             setSearchOpened(true);
-                            setIsMobileNavOpen(false); // Close mobile nav when opening modal
+                            setIsMobileNavOpen(false);
                         }}
                         title="Quick Search"
                     >
                         <HiSearch size={22} />
-                        <span className="text-sm">Search</span>
+                        {!collapsedNav && <span className="text-sm">Quick Search</span>}
                     </button>
                     <button
-                        className="flex items-center justify-center gap-2 flex-1 px-2 py-2 rounded-sm bg-gray-50 text-gray-800 font-semibold shadow hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200"
+                        className="flex items-center justify-center gap-2 px-2 py-2 rounded-sm bg-gray-50 text-gray-800 font-semibold shadow hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200 w-full"
                         onClick={() => {
                             setAiOverviewOpen(true);
-                            setIsMobileNavOpen(false); // Close mobile nav when opening modal
+                            setIsMobileNavOpen(false);
                         }}
                         title="AI Overview"
                     >
                         <PiRobotDuotone size={22} />
-                        <span className="text-sm">AI</span>
+                        {!collapsedNav && <span className="text-sm">AI Overview</span>}
                     </button>
+
+                    <div
+                        className={`flex items-center ${collapsedNav ? "justify-center" : "justify-between"
+                            } border border-gray-300 rounded-sm px-2 py-2 bg-white shadow-sm`}
+                        title="Theme"
+                    >
+                        <span className="text-yellow-400">
+                            <AiOutlineSun size={18} />
+                        </span>
+                        <label className="relative inline-flex items-center cursor-pointer mx-2">
+                            <input
+                                type="checkbox"
+                                checked={theme === "dark"}
+                                onChange={() => dispatch(toggleTheme())}
+                                className="sr-only peer"
+                            />
+                            <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-400 rounded-sm peer dark:bg-gray-700 peer-checked:bg-gradient-to-r peer-checked:from-gray-500 peer-checked:to-gray-600 transition-all duration-300"></div>
+                            <div className="absolute left-1 top-1 w-3 h-3 bg-white border border-gray-300 rounded-sm shadow-sm transition-all duration-300 peer-checked:translate-x-4"></div>
+                        </label>
+                        <span className="text-gray-900">
+                            <AiOutlineMoon size={18} />
+                        </span>
+                    </div>
+
+                    <Link
+                        to="profile"
+                        className={`flex items-center ${collapsedNav ? "justify-center" : "justify-between"
+                            } gap-2 px-2 py-2 rounded-sm border border-gray-300 bg-white shadow-sm hover:bg-gray-50 transition-all`}
+                        onClick={() => setIsMobileNavOpen(false)}
+                        title="User Profile"
+                    >
+                        <div className="flex items-center gap-2 min-w-0">
+                            <img
+                                src={`https://gravatar.com/avatar/${getGravatarHash(
+                                    email
+                                )}?s=40`}
+                                className="w-8 h-8 rounded-sm"
+                                alt="User Avatar"
+                            />
+                            {!collapsedNav && (
+                                <span className="text-sm font-medium text-gray-700 truncate">
+                                    User Profile
+                                </span>
+                            )}
+                        </div>
+                    </Link>
                 </div>
                 <ul className="flex flex-col gap-2">
                     {/* Sidebar nav items with fixed icon size */}
@@ -213,23 +281,25 @@ function Sidebar({
                             {!collapsedNav && <span>Teams</span>}
                         </Link>
                     </li>
-                    <li>
-                        <Link
-                            to="classroom"
-                            className={`flex items-center ${collapsedNav && "justify-center"
-                                } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${loc[0] === "classroom"
-                                    ? "bg-gray-100 text-gray-700"
-                                    : "text-gray-700 hover:bg-gray-50"
-                                }`}
-                            onClick={() => setIsMobileNavOpen(false)}
-                            title="Classroom"
-                        >
-                            <span className="flex items-center justify-center min-w-[40px] min-h-[40px]">
-                                <PiChalkboardTeacherDuotone size={22} />
-                            </span>
-                            {!collapsedNav && <span>Classroom</span>}
-                        </Link>
-                    </li>
+                    {FEATURES.classroom && (
+                        <li>
+                            <Link
+                                to="classroom"
+                                className={`flex items-center ${collapsedNav && "justify-center"
+                                    } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${loc[0] === "classroom"
+                                        ? "bg-gray-100 text-gray-700"
+                                        : "text-gray-700 hover:bg-gray-50"
+                                    }`}
+                                onClick={() => setIsMobileNavOpen(false)}
+                                title="Classroom"
+                            >
+                                <span className="flex items-center justify-center min-w-[40px] min-h-[40px]">
+                                    <PiChalkboardTeacherDuotone size={22} />
+                                </span>
+                                {!collapsedNav && <span>Classroom</span>}
+                            </Link>
+                        </li>
+                    )}
                     <li>
                         <Link
                             to="news"

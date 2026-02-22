@@ -20,7 +20,7 @@ const MarkdownRenderer = ({ content, className }) => {
   return (
     // Main container for the markdown output.
     // Provides a flex column layout with consistent gap between markdown elements.
-    <div className={`flex flex-col gap-4 ${className}`}>
+    <div className={`markdown-renderer flex flex-col gap-4 text-gray-700 leading-7 ${className || ""}`}>
       <MarkDown
         // remarkPlugins process the markdown AST (Abstract Syntax Tree) before conversion to HTML.
         // - remarkGfm: Enables GitHub Flavored Markdown features (e.g., tables, task lists, strikethrough).
@@ -60,7 +60,7 @@ const MarkdownRenderer = ({ content, className }) => {
            */
           a: ({ node, ...props }) => (
             <a
-              className="text-gray-600 hover:text-gray-800 underline transition-colors duration-200"
+              className="text-blue-600 hover:text-blue-700 underline decoration-blue-200 underline-offset-2 transition-colors duration-200"
               {...props}
             />
           ),
@@ -82,8 +82,8 @@ const MarkdownRenderer = ({ content, className }) => {
             return (
               <p
                 className={`${startsWithHash
-                    ? "font-bold bg-gray-100  w-fit p-1 rounded-sm text-gray-700  text-sm" // Styling for tag-like paragraphs
-                    : ""
+                    ? "font-bold bg-blue-50 border border-blue-100 w-fit px-2 py-1 rounded-md text-blue-700 text-sm"
+                    : "text-gray-700"
                   }`}
                 {...props}
               />
@@ -98,7 +98,7 @@ const MarkdownRenderer = ({ content, className }) => {
            */
           ul: ({ node, ...props }) => (
             <ul
-              className="list-disc pl-6 space-y-2 marker:text-gray-500"
+              className="list-disc pl-6 space-y-2 marker:text-gray-400"
               {...props}
             />
           ),
@@ -111,7 +111,7 @@ const MarkdownRenderer = ({ content, className }) => {
            */
           ol: ({ node, ...props }) => (
             <ol
-              className="list-decimal pl-6 space-y-2 marker:text-gray-500"
+              className="list-decimal pl-6 space-y-2 marker:text-gray-400"
               {...props}
             />
           ),
@@ -127,7 +127,7 @@ const MarkdownRenderer = ({ content, className }) => {
               return (
                 <input
                   type="checkbox"
-                  className="form-checkbox h-4 w-4 text-gray-600 rounded border-gray-300 focus:ring-gray-500 cursor-pointer"
+                  className="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer"
                   disabled={true} // Checkboxes in markdown are generally non-interactive
                   {...props}
                 />
@@ -145,37 +145,37 @@ const MarkdownRenderer = ({ content, className }) => {
            */
           h1: ({ node, ...props }) => (
             <h1
-              className="text-3xl md:text-4xl font-extrabold border-b border-gray-200 pb-2 mb-4 mt-6 text-gray-900 "
+              className="text-3xl md:text-4xl font-extrabold border-b border-gray-200 pb-2 mb-4 mt-6 text-gray-900"
               {...props}
             />
           ),
           h2: ({ node, ...props }) => (
             <h2
-              className="text-2xl md:text-3xl font-bold border-b border-gray-200 pb-1 mb-3 mt-5 text-gray-800 "
+              className="text-2xl md:text-3xl font-bold border-b border-gray-200 pb-1 mb-3 mt-5 text-gray-800"
               {...props}
             />
           ),
           h3: ({ node, ...props }) => (
             <h3
-              className="text-xl md:text-2xl font-semibold mb-2 mt-4 text-gray-700 "
+              className="text-xl md:text-2xl font-semibold mb-2 mt-4 text-gray-700"
               {...props}
             />
           ),
           h4: ({ node, ...props }) => (
             <h4
-              className="text-lg md:text-xl font-semibold mb-1 mt-3 text-gray-700 "
+              className="text-lg md:text-xl font-semibold mb-1 mt-3 text-gray-700"
               {...props}
             />
           ),
           h5: ({ node, ...props }) => (
             <h5
-              className="text-base md:text-lg font-semibold mt-2 text-gray-600 "
+              className="text-base md:text-lg font-semibold mt-2 text-gray-600"
               {...props}
             />
           ),
           h6: ({ node, ...props }) => (
             <h6
-              className="text-sm md:text-base font-semibold mt-1 text-gray-500 "
+              className="text-sm md:text-base font-semibold mt-1 text-gray-500"
               {...props}
             />
           ),
@@ -187,9 +187,9 @@ const MarkdownRenderer = ({ content, className }) => {
            * @param {object} props - Props passed by react-markdown for a table element.
            */
           table: ({ node, ...props }) => (
-            <div className="overflow-x-auto my-4 rounded-sm border border-gray-200 ">
+            <div className="overflow-x-auto my-4 rounded-lg border border-gray-200 shadow-sm">
               <table
-                className="min-w-full divide-y divide-gray-200 "
+                className="min-w-full divide-y divide-gray-200 bg-white"
                 {...props}
               />
             </div>
@@ -201,7 +201,7 @@ const MarkdownRenderer = ({ content, className }) => {
            * @param {object} props - Props passed by react-markdown for a thead element.
            */
           thead: ({ node, ...props }) => (
-            <thead className="bg-gray-50 " {...props} />
+            <thead className="bg-gray-50" {...props} />
           ),
           /**
            * Custom component for table headers (`<th>` tags).
@@ -211,7 +211,7 @@ const MarkdownRenderer = ({ content, className }) => {
            */
           th: ({ node, ...props }) => (
             <th
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500  uppercase tracking-wider border-b border-gray-200 "
+              className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200"
               {...props}
             />
           ),
@@ -224,7 +224,7 @@ const MarkdownRenderer = ({ content, className }) => {
            */
           td: ({ node, ...props }) => (
             <td
-              className="px-6 py-4 whitespace-nowrap text-sm text-gray-700  border-b border-gray-200 "
+              className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 border-b border-gray-200"
               {...props}
             />
           ),
@@ -237,7 +237,7 @@ const MarkdownRenderer = ({ content, className }) => {
            */
           blockquote: ({ node, ...props }) => (
             <blockquote
-              className="border-l-4 border-gray-400 pl-4 py-1 italic text-gray-700  bg-gray-50/50 /20 rounded-r-md"
+              className="border-l-4 border-blue-200 pl-4 py-2 italic text-gray-700 bg-blue-50/60 rounded-r-md"
               {...props}
             />
           ),
@@ -261,7 +261,13 @@ const MarkdownRenderer = ({ content, className }) => {
            * @param {object} props - Props passed by react-markdown for an hr element.
            */
           hr: ({ node, ...props }) => (
-            <hr className="my-8 border-t-2 border-gray-200 " {...props} />
+            <hr className="my-8 border-t-2 border-gray-200" {...props} />
+          ),
+          strong: ({ node, ...props }) => (
+            <strong className="font-semibold text-gray-900" {...props} />
+          ),
+          em: ({ node, ...props }) => (
+            <em className="text-gray-700" {...props} />
           ),
         }}
       >

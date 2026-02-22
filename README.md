@@ -2,7 +2,9 @@
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/lati-tibabu/benote)
 
-A comprehensive productivity platform designed to enhance academic performance for students through intelligent task management, AI-powered note-taking, team collaboration, and personalized study planning.
+A comprehensive productivity platform designed to help teams and individuals plan, execute, and collaborate through intelligent task management, AI-powered note-taking, and shared workspaces.
+
+> 🚧 **Pivot Notice:** The project has an [education-to-productivity pivot analysis](./docs/PIVOT_PLAN.md) outlining a phased plan for migrating away from academic-specific features toward a more general productivity focus. Refer to the document for details and migration strategy.
 
 ## Key Features
 
@@ -25,11 +27,11 @@ A comprehensive productivity platform designed to enhance academic performance f
 - **Real-time Communication**: Socket.IO powered team discussions and notifications
 - **Resource Sharing**: File upload and sharing within teams [5](#0-4)
 
-### Study Planning
+### Planning & Scheduling
 
-- **Interactive Calendar**: Time-block based study scheduling
-- **AI Study Plans**: Personalized study recommendations
-- **Progress Tracking**: Visual progress monitoring and analytics
+- **Interactive Calendar**: Time-block based scheduling for tasks and projects
+- **AI Planner**: Generate structured plans from natural language goals
+- **Progress Tracking**: Visual status and deadline tracking
 
 ### Smart Notifications
 
@@ -138,6 +140,8 @@ Then edit the generated files with your actual values.
 - `VITE_NEWS_API_KEY`: API key for news services
 - `VITE_API_URL`: Base URL for the backend API
 - `VITE_DEFAULT_GEMINI_MODEL`: Default Gemini model for AI features (gemini-2.5-flash, gemini-2.5-pro, etc.)
+- `VITE_FEATURE_STUDY_PLANS`: Set to `true` to enable the legacy study plan UI (hidden by default during productivity pivot).
+- `VITE_FEATURE_CLASSROOM`: Set to `true` to enable the classroom collaboration UI (off by default while pivot is in progress).
 
 #### Backend (.env in backend/)
 
@@ -177,4 +181,4 @@ We welcome contributions! Please feel free to submit issues, feature requests, o
 
 This project is licensed under the MIT License.
 
-**Notes**: The Benote integrates multiple productivity systems into a cohesive platform, with particular emphasis on AI-enhanced learning and collaborative study environments. The modular architecture supports both individual productivity workflows and team-based academic projects.
+**Notes**: Benote integrates multiple productivity systems into a cohesive platform, emphasizing AI assistance and collaborative work. The modular architecture supports both individual productivity workflows and team projects.

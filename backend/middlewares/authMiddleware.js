@@ -29,7 +29,7 @@ const logoutController = (req, res) => {
 };
 
 const authMiddleware = async (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
+  const token = req.headers.authorization?.split(" ")[1] || req.query.token;
   if (token && blacklist.has(token)) {
     return res.status(401).json({ message: "Unauthorized" });
   }

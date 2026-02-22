@@ -1,5 +1,7 @@
 # Study Plans API
 
+⚠️ **Deprecated**: Study plans are part of the legacy education module being phased out in favor of a task-integrated planning model. The endpoints remain available while the `FEATURE_STUDY_PLANS` flag is enabled and will be removed after the compatibility window.
+
 ## Overview
 
 Study Plans help users organize their learning with structured schedules and progress tracking.

@@ -43,10 +43,10 @@ The Workspace section is a core feature of the application, enabling users to ma
    - **File**: `settings.jsx`
    - **Description**: Configures workspace-specific settings, such as permissions and integrations.
 
-6. **Study Plans**
+6. **Study Plans** (deprecated)
 
-   - **File**: `study-plans.jsx`
-   - **Description**: Enables users to create and manage study plans within the workspace.
+- **File**: `study-plans.jsx`
+- **Description**: Enables users to create and manage study plans within the workspace. This module is part of a legacy education feature set and will be removed in favor of task-integrated planning. Controlled by `VITE_FEATURE_STUDY_PLANS`.
 
 7. **Teams**
 

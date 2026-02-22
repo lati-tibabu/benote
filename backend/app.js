@@ -16,6 +16,11 @@ app.use(cors());
 
 app.use("/api", routes); // in app.js or server.js
 
+// Setup MCP routes
+const { setupMcpRoutes } = require("./mcpServer");
+const { authMiddleware } = require("./middlewares/authMiddleware");
+setupMcpRoutes(app, authMiddleware);
+
 app.get("/", (req, res) => {
   res.send("Hello from the productivity hub backend!");
 });

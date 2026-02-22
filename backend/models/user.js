@@ -98,6 +98,11 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       this.hasOne(models.user, { foreignKey: "userId", as: "profile" });
+
+      this.hasMany(models.chat_history, {
+        foreignKey: "user_id",
+        as: "chat_histories",
+      });
     }
   }
 

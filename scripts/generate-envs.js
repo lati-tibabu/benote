@@ -118,6 +118,11 @@ DB_DIALECT=postgres
 # =================
 # Secret key for signing and verifying JSON Web Tokens
 # Generate a strong, random secret key (at least 32 characters)
+
+# Feature Flags (set to true/false)
+# Use these to toggle legacy education modules during the productivity pivot.
+FEATURE_STUDY_PLANS=true
+FEATURE_CLASSROOM=true
 # You can use: openssl rand -base64 32
 JWT_SECRET_KEY=your_jwt_secret_key
 

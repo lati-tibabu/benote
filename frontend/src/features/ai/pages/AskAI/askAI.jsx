@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import Chatbot from "./contents/chatbot";
 
 function AskAI() {
   return (
-    <div className="p-4 h-fit bg-gray-100">
-      {/* <h1 className="text-2xl font-bold mb-4">AskAI</h1> */}
+    <div className="p-4 md:p-6 min-h-[calc(100vh-72px)] bg-slate-50">
       <Chatbot />
     </div>
   );

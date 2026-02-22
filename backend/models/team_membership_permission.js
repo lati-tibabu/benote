@@ -56,7 +56,12 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
+      // legacy permission used for study plans. Will be replaced by `can_manage_plans`.
       can_create_study_plan: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      can_manage_plans: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },

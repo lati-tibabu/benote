@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 
 const apiURL = import.meta.env.VITE_API_URL;
+import { FEATURES } from "../../../../config/featureFlags";
 
 const Search = () => {
   const [query, setQuery] = useState("");
@@ -17,15 +18,20 @@ const Search = () => {
     { key: "workspace", label: "Workspaces", fields: ["name", "description"] },
     { key: "teams", label: "Teams", fields: ["name"] },
     { key: "tasks", label: "Tasks", fields: ["title", "status"] },
-    { key: "study_plans", label: "Study Plans", fields: ["title"] },
     { key: "roadmaps", label: "Roadmaps", fields: ["title"] },
-    { key: "classrooms", label: "Classrooms", fields: ["name"] },
     {
       key: "notifications",
       label: "Notifications",
       fields: ["message", "type"],
     },
   ];
+
+  if (FEATURES.studyPlans) {
+    categories.splice(3, 0, { key: "study_plans", label: "Study Plans", fields: ["title"] });
+  }
+  if (FEATURES.classroom) {
+    categories.splice(categories.length - 1, 0, { key: "classrooms", label: "Classrooms", fields: ["name"] });
+  }
 
   // Memoize the header to avoid re-creation on every render
   const getAuthHeader = useCallback(() => {
@@ -114,10 +120,14 @@ const Search = () => {
       workspace: "border-gray-200 bg-gray-50 hover:shadow-gray-200",
       teams: "border-gray-200 bg-gray-50 hover:shadow-gray-200",
       tasks: "border-yellow-200 bg-yellow-50 hover:shadow-yellow-200",
-      study_plans: "border-gray-200 bg-gray-50 hover:shadow-gray-200",
       roadmaps: "border-gray-200 bg-gray-50 hover:shadow-gray-200",
-      classrooms: "border-gray-200 bg-gray-50 hover:shadow-gray-200",
       notifications: "border-gray-200 bg-gray-50 hover:shadow-gray-200",
+      ...(FEATURES.studyPlans && {
+        study_plans: "border-gray-200 bg-gray-50 hover:shadow-gray-200",
+      }),
+      ...(FEATURES.classroom && {
+        classrooms: "border-gray-200 bg-gray-50 hover:shadow-gray-200",
+      }),
     };
     return (
       <div

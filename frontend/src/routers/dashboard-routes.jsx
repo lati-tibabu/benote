@@ -10,16 +10,23 @@ import Workspace from "../features/workspace/pages";
 import WorkspaceOpened from "../features/workspace/pages/workspace_opened";
 import Overview from "../features/workspace/pages/OpenedWorkspace/overview";
 import Projects from "../features/workspace/pages/OpenedWorkspace/projects";
-import StudyPlans from "../features/workspace/pages/OpenedWorkspace/study-plans";
 import Tasks from "../features/workspace/pages/OpenedWorkspace/tasks";
 import TodoLists from "../features/workspace/pages/OpenedWorkspace/todo-lists";
 import Teams from "../features/workspace/pages/OpenedWorkspace/teams";
 import Notes from "../features/workspace/pages/OpenedWorkspace/notes";
 import Roadmaps from "../features/workspace/pages/OpenedWorkspace/roadmaps";
 import Settings from "../features/workspace/pages/OpenedWorkspace/settings";
-import StudyPlanOpened from "../features/workspace/pages/OpenedWorkspace/study-plan-open";
 import OpenedNote from "../features/workspace/pages/OpenedWorkspace/Notes/opened-note";
 import OpenedRoadmap from "../features/workspace/pages/OpenedWorkspace/roadmaps/opened-roadmap";
+
+// optional features
+import { FEATURES } from "../config/featureFlags";
+
+let StudyPlans, StudyPlanOpened;
+if (FEATURES.studyPlans) {
+  StudyPlans = require("../features/workspace/pages/OpenedWorkspace/study-plans").default;
+  StudyPlanOpened = require("../features/workspace/pages/OpenedWorkspace/study-plan-open").default;
+}
 
 // Team feature
 import Team from "../features/team/pages/Team";
@@ -36,8 +43,12 @@ import Profile from "../features/profile/pages/Profile";
 import LLMSetting from "../features/settings/pages/LlmSetting";
 import Setting from "../features/settings/pages/Setting";
 import Notification from "../features/notifications/pages/Notification";
-import Classroom from "../features/classroom/pages/Classroom";
-import OpenedClassroom from "../features/classroom/pages/Classroom/contents/opened-classroom";
+// classroom is feature-flagged
+let Classroom, OpenedClassroom;
+if (FEATURES.classroom) {
+  Classroom = require("../features/classroom/pages/Classroom").default;
+  OpenedClassroom = require("../features/classroom/pages/Classroom/contents/opened-classroom").default;
+}
 import News from "../features/news/pages/News";
 import AskAI from "../features/ai/pages/AskAI/askAI";
 
@@ -52,6 +63,7 @@ const dashboardRoutes = {
   element: <ProtectedRoute component={Dashboard} />,
   children: [
     { path: "home", element: <ProtectedRoute component={Home} /> },
+    { ...(FEATURES.classroom && { path: "classroom", element: <ProtectedRoute component={Classroom} /> }) },
     {
       path: "workspace",
       element: <ProtectedRoute component={Workspace} />,
@@ -68,14 +80,14 @@ const dashboardRoutes = {
               path: "projects",
               element: <ProtectedRoute component={Projects} />,
             },
-            {
+                    { ...(FEATURES.studyPlans && {
               path: "study-plans",
               element: <ProtectedRoute component={StudyPlans} />,
-            },
-            {
+            }) },
+            { ...(FEATURES.studyPlans && {
               path: "study-plans/plan/:plan_id",
               element: <ProtectedRoute component={StudyPlanOpened} />,
-            },
+            }) },
             { path: "tasks", element: <ProtectedRoute component={Tasks} /> },
             {
               path: "todo-lists",
