@@ -10,7 +10,6 @@ import {
     PiBooksDuotone,
     PiUsersThreeDuotone,
     PiChalkboardTeacherDuotone,
-    PiNewspaperDuotone,
     PiRobotDuotone,
     PiUserCircleDuotone,
     PiGearDuotone,
@@ -300,23 +299,6 @@ function Sidebar({
                             </Link>
                         </li>
                     )}
-                    <li>
-                        <Link
-                            to="news"
-                            className={`flex items-center ${collapsedNav && "justify-center"
-                                } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${loc[0] === "news"
-                                    ? "bg-gray-100 text-gray-700"
-                                    : "text-gray-700 hover:bg-gray-50"
-                                }`}
-                            onClick={() => setIsMobileNavOpen(false)}
-                            title="News"
-                        >
-                            <span className="flex items-center justify-center min-w-[40px] min-h-[40px]">
-                                <PiNewspaperDuotone size={22} />
-                            </span>
-                            {!collapsedNav && <span>News</span>}
-                        </Link>
-                    </li>
                     <li>
                         <Link
                             to="askAI"

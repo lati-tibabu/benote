@@ -49,7 +49,6 @@ if (FEATURES.classroom) {
   Classroom = require("../features/classroom/pages/Classroom").default;
   OpenedClassroom = require("../features/classroom/pages/Classroom/contents/opened-classroom").default;
 }
-import News from "../features/news/pages/News";
 import AskAI from "../features/ai/pages/AskAI/askAI";
 
 // Error pages
@@ -159,10 +158,6 @@ const dashboardRoutes = {
     {
       path: "classroom/:classroomId",
       element: <ProtectedRoute component={OpenedClassroom} />,
-    },
-    {
-      path: "news",
-      element: <ProtectedRoute component={News} />,
     },
     { path: "profile", element: <ProtectedRoute component={Profile} /> },
     {
