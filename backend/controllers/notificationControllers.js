@@ -1,4 +1,5 @@
-const { notification } = require("../models");
+const { Op } = require("sequelize");
+const { notification, task } = require("../models");
 
 // Create
 const createNotification = async (req, res) => {
@@ -156,6 +157,64 @@ const deleteNotification = async (req, res) => {
   }
 };
 
+const readWorkspaceNotifications = async (req, res) => {
+  try {
+    const receiver_id = req.user.id;
+    const workspaceId = req.params.workspace_id;
+    const limit = Math.max(1, parseInt(req.query.limit, 10) || 10);
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+
+    const allNotifications = await notification.findAll({
+      attributes: ["id", "message", "type", "action", "createdAt", "is_read"],
+      order: [["createdAt", "DESC"]],
+      where: { receiver_id },
+    });
+
+    const taskIds = [
+      ...new Set(
+        allNotifications.map((item) => item.action?.taskId).filter(Boolean)
+      ),
+    ];
+
+    const workspaceTaskIds = new Set();
+    if (taskIds.length) {
+      const relatedTasks = await task.findAll({
+        attributes: ["id"],
+        where: {
+          id: { [Op.in]: taskIds },
+          workspace_id: workspaceId,
+        },
+      });
+      relatedTasks.forEach((item) => workspaceTaskIds.add(item.id));
+    }
+
+    const filtered = allNotifications.filter((item) => {
+      const action = item.action || {};
+      const actionWorkspace = action.workspace || action.workspace_id;
+      return (
+        (actionWorkspace &&
+          String(actionWorkspace) === String(workspaceId)) ||
+        (action.taskId && workspaceTaskIds.has(action.taskId))
+      );
+    });
+
+    const total = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total / limit));
+    const offset = (page - 1) * limit;
+    const notifications = filtered.slice(offset, offset + limit);
+
+    res.json({
+      total,
+      page,
+      limit,
+      totalPages,
+      notifications,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const markNotificationAsRead = async (req, res) => {
   try {
     const receiver_id = req.user.id;
@@ -205,6 +264,7 @@ module.exports = {
   deleteNotification,
   markNotificationAsRead,
   markAllNotificationsAsRead,
+  readWorkspaceNotifications,
   getUnreadNotificationCount,
   // readLatestNotification,
 };

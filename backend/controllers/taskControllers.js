@@ -18,6 +18,65 @@ const allowedUpdates = [
 
 const { sendNotification } = require("../services/notificationService");
 
+const safeSendNotification = async (payload) => {
+  try {
+    await sendNotification(payload);
+  } catch (error) {
+    console.error("Failed to send notification:", error.message);
+  }
+};
+
+const getWorkspaceMemberUserIds = async (workspaceId) => {
+  const workspaceMembers = await workspace_membership.findAll({
+    where: { workspace_id: workspaceId },
+    attributes: ["user_id", "team_id"],
+  });
+
+  const userIds = new Set();
+  const teamIds = new Set();
+
+  for (const member of workspaceMembers) {
+    if (member.user_id) userIds.add(member.user_id);
+    if (member.team_id) teamIds.add(member.team_id);
+  }
+
+  if (teamIds.size) {
+    const teamMembers = await team_membership.findAll({
+      where: { team_id: { [Op.in]: [...teamIds] } },
+      attributes: ["user_id"],
+    });
+    for (const member of teamMembers) {
+      if (member.user_id) userIds.add(member.user_id);
+    }
+  }
+
+  return [...userIds];
+};
+
+const notifyWorkspaceTaskActivity = async ({
+  workspaceId,
+  senderId,
+  message,
+  type = "info",
+  action,
+}) => {
+  if (!workspaceId) return;
+  const memberIds = await getWorkspaceMemberUserIds(workspaceId);
+  if (!memberIds.length) return;
+
+  await Promise.all(
+    memberIds.map((receiver_id) =>
+      safeSendNotification({
+        message,
+        type,
+        receiver_id,
+        sender_id: senderId || null,
+        action,
+      })
+    )
+  );
+};
+
 // Create
 // const createTask = async (req, res) => {
 //   try {
@@ -60,13 +119,27 @@ const createTask = async (req, res) => {
       const _tasks = await task.bulkCreate(req.body);
 
       for (const t of _tasks) {
+        const activityAction = {
+          event: "task_created",
+          taskId: t.id,
+          workspace: t.workspace_id,
+        };
+
+        await notifyWorkspaceTaskActivity({
+          workspaceId: t.workspace_id,
+          senderId: req.user?.id,
+          message: `New task created: "${t.title}"`,
+          type: "info",
+          action: activityAction,
+        });
+
         if (t.assigned_to) {
-          await sendNotification({
+          await safeSendNotification({
             message: `You have been assigned a new task: "${t.title}"`,
             type: "info",
             receiver_id: t.assigned_to,
             sender_id: req.user?.id || null,
-            action: { taskId: t.id },
+            action: { ...activityAction, event: "task_assigned" },
           });
         }
       }
@@ -82,14 +155,27 @@ const createTask = async (req, res) => {
     }
 
     const _task = await task.create(req.body);
+    const activityAction = {
+      event: "task_created",
+      taskId: _task.id,
+      workspace: _task.workspace_id,
+    };
+
+    await notifyWorkspaceTaskActivity({
+      workspaceId: _task.workspace_id,
+      senderId: req.user?.id,
+      message: `New task created: "${_task.title}"`,
+      type: "info",
+      action: activityAction,
+    });
 
     if (_task.assigned_to) {
-      await sendNotification({
+      await safeSendNotification({
         message: `You have been assigned a new task: "${_task.title}"`,
         type: "info",
         receiver_id: _task.assigned_to,
         sender_id: req.user?.id || null,
-        action: { taskId: _task.id },
+        action: { ...activityAction, event: "task_assigned" },
       });
     }
 
@@ -391,6 +477,17 @@ const archiveTask = async (req, res) => {
     const _task = await task.findByPk(req.params.id);
     if (_task) {
       await _task.update({ is_archived: true });
+      await notifyWorkspaceTaskActivity({
+        workspaceId: _task.workspace_id,
+        senderId: req.user?.id,
+        message: `Task archived: "${_task.title}"`,
+        type: "info",
+        action: {
+          event: "task_archived",
+          taskId: _task.id,
+          workspace: _task.workspace_id,
+        },
+      });
       res.json({ message: "Task successfully archived!" });
     } else {
       res.status(404).json({ message: "Task not found!" });
@@ -406,6 +503,17 @@ const unarchiveTask = async (req, res) => {
     const _task = await task.findByPk(req.params.id);
     if (_task) {
       await _task.update({ is_archived: false });
+      await notifyWorkspaceTaskActivity({
+        workspaceId: _task.workspace_id,
+        senderId: req.user?.id,
+        message: `Task restored from archive: "${_task.title}"`,
+        type: "info",
+        action: {
+          event: "task_unarchived",
+          taskId: _task.id,
+          workspace: _task.workspace_id,
+        },
+      });
       res.json({ message: "Task successfully unarchived!" });
     } else {
       res.status(404).json({ message: "Task not found!" });
@@ -435,6 +543,7 @@ const updateTask = async (req, res) => {
   try {
     // Fetch the task by ID
     const _task = await task.findByPk(req.params.id);
+    const previousTask = _task ? { ..._task.get() } : null;
     const { status } = req.query; // Get the status from the query parameters
     if (_task) {
       // Update the task fields
@@ -446,47 +555,39 @@ const updateTask = async (req, res) => {
       await _task.update(req.body, { fields: allowedUpdates });
       const updatedTask = { ..._task.get() };
 
-      if (status) {
-        // Get the workspace ID of the task
-        const workspaceId = _task.workspace_id;
+      const effectiveStatus = status || updatedTask.status;
+      const activityMessage = status
+        ? `Task "${_task.title}" status changed to ${effectiveStatus}.`
+        : `Task updated: "${_task.title}"`;
 
-        const workspaceMembers = await workspace_membership.findAll({
-          where: { workspace_id: workspaceId },
-          attributes: ["user_id", "team_id"],
+      await notifyWorkspaceTaskActivity({
+        workspaceId: _task.workspace_id,
+        senderId: req.user?.id,
+        message: activityMessage,
+        type: "info",
+        action: {
+          event: status ? "task_status_updated" : "task_updated",
+          taskId: _task.id,
+          workspace: _task.workspace_id,
+          status: updatedTask.status,
+        },
+      });
+
+      if (
+        req.body.assigned_to &&
+        req.body.assigned_to !== previousTask?.assigned_to
+      ) {
+        await safeSendNotification({
+          message: `You have been assigned task: "${_task.title}"`,
+          type: "info",
+          receiver_id: req.body.assigned_to,
+          sender_id: req.user?.id || null,
+          action: {
+            event: "task_assigned",
+            taskId: _task.id,
+            workspace: _task.workspace_id,
+          },
         });
-
-        const userIdsSet = new Set();
-
-        for (const member of workspaceMembers) {
-          if (member.user_id) {
-            userIdsSet.add(member.user_id);
-          }
-
-          if (member.team_id) {
-            const teamMembers = await team_membership.findAll({
-              where: { team_id: member.team_id },
-              attributes: ["user_id"],
-            });
-
-            for (const teamMember of teamMembers) {
-              if (teamMember.user_id) {
-                userIdsSet.add(teamMember.user_id);
-              }
-            }
-          }
-        }
-
-        const message = `Task "${_task.title}" has been updated to ${status}.`;
-
-        for (const receiver_id of userIdsSet) {
-          await sendNotification({
-            message,
-            type: "info",
-            receiver_id,
-            sender_id: null,
-            action: { taskId: _task.id, workspace: _task.workspace_id },
-          });
-        }
       }
       // Return the updated task in the response
       res.json(updatedTask);
@@ -503,7 +604,23 @@ const deleteTask = async (req, res) => {
   try {
     const _task = await task.findByPk(req.params.id);
     if (_task) {
+      const taskMeta = {
+        id: _task.id,
+        title: _task.title,
+        workspace_id: _task.workspace_id,
+      };
       await _task.destroy();
+      await notifyWorkspaceTaskActivity({
+        workspaceId: taskMeta.workspace_id,
+        senderId: req.user?.id,
+        message: `Task deleted: "${taskMeta.title}"`,
+        type: "warning",
+        action: {
+          event: "task_deleted",
+          taskId: taskMeta.id,
+          workspace: taskMeta.workspace_id,
+        },
+      });
       res.json({ message: "Task successfully deleted!" });
     } else {
       res.status(404).json({ message: "Task not found!" });

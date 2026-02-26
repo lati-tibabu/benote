@@ -8,6 +8,10 @@ router.use(authMiddleware.authMiddleware);
 
 router.post("/", notificationController.createNotification);
 router.get("/", notificationController.readNotifications);
+router.get(
+  "/workspace/:workspace_id",
+  notificationController.readWorkspaceNotifications
+);
 router.get("/unread-count", notificationController.getUnreadNotificationCount);
 router.put("/read-all", notificationController.markAllNotificationsAsRead);
 router.put("/:id/read", notificationController.markNotificationAsRead);

@@ -38,7 +38,7 @@ const notifyUpcomingDeadlines = async () => {
             type: "warning",
             receiver_id: t.assigned_to,
             sender_id: null,
-            action: { taskId: t.id },
+            action: { taskId: t.id, workspace: t.workspace_id },
           });
         }
       }
