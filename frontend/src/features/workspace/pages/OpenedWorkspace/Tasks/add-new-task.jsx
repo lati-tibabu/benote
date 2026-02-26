@@ -28,23 +28,32 @@ const AddNewTask = () => {
   });
 
   useEffect(() => {
-    if (belongsToTeam) {
-      const fetchUsers = async () => {
-        try {
-          const response = await fetch(`${apiURL}/api/teams/${belongsToTeam}`, {
-            method: "GET",
-            headers: header,
-          });
-          if (!response.ok) throw new Error("Failed to fetch team");
-          const data = await response.json();
-          setUsers(data.members);
-        } catch (error) {
-          console.error("Error fetching the team data", error);
-        }
-      };
+    setTaskData((prev) => ({
+      ...prev,
+      created_by: userData?.id || "",
+      assigned_to: prev.assigned_to || userData?.id || "",
+      workspace_id: workspace?.id || "",
+    }));
+  }, [userData?.id, workspace?.id]);
 
-      fetchUsers();
-    }
+  useEffect(() => {
+    if (!belongsToTeam) return;
+
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch(`${apiURL}/api/teams/${belongsToTeam}`, {
+          method: "GET",
+          headers: header,
+        });
+        if (!response.ok) throw new Error("Failed to fetch team");
+        const data = await response.json();
+        setUsers(data.members || []);
+      } catch (error) {
+        console.error("Error fetching the team data", error);
+      }
+    };
+
+    fetchUsers();
   }, [belongsToTeam]);
 
   const createTask = async (e) => {
@@ -63,25 +72,22 @@ const AddNewTask = () => {
           title: "",
           description: "",
           due_date: "",
+          status: "todo",
         }));
       } else {
         toast.error("Failed to create task");
-        console.log("Error creating task: ", response.statusText);
-        const errorData = await response.json();
-        console.log(errorData);
+        const errorData = await response.json().catch(() => ({}));
+        console.log("Error creating task:", errorData);
       }
     } catch (err) {
-      console.error("Error creating task: ", err);
+      console.error("Error creating task:", err);
       toast.error("Failed to create task");
     }
   };
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-sm">
-      {/* <ToastContainer /> */}
-      <h1 className="text-2xl font-bold mb-4 flex items-center gap-2">
-        📝 Add New Task
-      </h1>
+      <h1 className="text-2xl font-bold mb-4">Add New Task</h1>
       <p className="text-gray-600 mb-4">
         Fill in the form below to create a new task.
       </p>
@@ -101,6 +107,7 @@ const AddNewTask = () => {
             required
           />
         </div>
+
         <div>
           <label className="block text-gray-700">Description</label>
           <textarea
@@ -112,6 +119,7 @@ const AddNewTask = () => {
             className="w-full p-2 border rounded-sm focus:outline-none focus:ring focus:ring-gray-300 text-gray-800 bg-white"
           ></textarea>
         </div>
+
         <div>
           <label className="block text-gray-700">Status</label>
           <select
@@ -126,6 +134,7 @@ const AddNewTask = () => {
             <option value="done">Completed</option>
           </select>
         </div>
+
         <div>
           <label className="block text-gray-700">Due Date</label>
           <input
@@ -134,9 +143,10 @@ const AddNewTask = () => {
             onChange={(e) =>
               setTaskData({ ...taskData, due_date: e.target.value })
             }
-            className="w-full p-2 border rounded-sm focus:outline-none focus:ring focus:ring-gray-300 text-white bg-gray-600"
+            className="w-full p-2 border rounded-sm focus:outline-none focus:ring focus:ring-gray-300 text-gray-800 bg-white"
           />
         </div>
+
         {belongsToTeam && (
           <div>
             <label className="block text-gray-700">Assigned To</label>
@@ -147,7 +157,7 @@ const AddNewTask = () => {
               }
               className="w-full p-2 border rounded-sm focus:outline-none focus:ring focus:ring-gray-300 text-gray-800 bg-white"
             >
-              <option disabled selected>
+              <option value="" disabled>
                 Pick a user
               </option>
               {users.map((user) => (
@@ -158,6 +168,7 @@ const AddNewTask = () => {
             </select>
           </div>
         )}
+
         <button
           type="submit"
           className="btn btn-md border-none w-full text-white py-2 rounded-sm"

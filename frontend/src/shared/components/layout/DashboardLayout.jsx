@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { HiMenu } from "react-icons/hi";
+import { PiBellRingingDuotone } from "react-icons/pi";
+import { useDispatch, useSelector } from "react-redux";
 import Sidebar from "./Sidebar";
 import NotificationBanner from "./NotificationBanner";
 import { SearchModal } from "../../../features/search";
 import { AiOverviewModal } from "../../../features/ai";
 import { sendBrowserNotification } from "../../../utils/sendBrowserNotification";
+import { setWorkspaceRecent } from "../../../redux/slices/workspaceSlice";
 
 function DashboardLayout() {
     const apiURL = import.meta.env.VITE_API_URL;
@@ -23,6 +26,9 @@ function DashboardLayout() {
     const [aiOverviewOpen, setAiOverviewOpen] = useState(false);
     const [aiSummary, setAiSummary] = useState("");
     const [showSidebar, setShowSidebar] = useState(window.innerWidth >= 640);
+    const dispatch = useDispatch();
+    const recentWorkspaces =
+        useSelector((state) => state.workspace.workspaceRecent) || [];
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -74,6 +80,26 @@ function DashboardLayout() {
         return () => clearInterval(intervalId);
     }, []);
 
+    // Fetch recent workspaces for sidebar quick list
+    useEffect(() => {
+        const fetchRecentWorkspaces = async () => {
+            if (recentWorkspaces.length) return;
+            try {
+                const response = await fetch(`${apiURL}/api/workspaces/?home=true`, {
+                    method: "GET",
+                    headers: header,
+                });
+                if (!response.ok) throw new Error("Failed to fetch recent workspaces");
+                const data = await response.json();
+                dispatch(setWorkspaceRecent(Array.isArray(data) ? data : []));
+            } catch (error) {
+                console.error("Error fetching recent workspaces:", error);
+            }
+        };
+
+        fetchRecentWorkspaces();
+    }, [apiURL, token, dispatch]);
+
     // Fetch latest notification
     useEffect(() => {
         const fetchLatestNotification = async () => {
@@ -97,13 +123,25 @@ function DashboardLayout() {
         fetchLatestNotification();
     }, [unreadCount]);
 
+    const handleDismissNotification = () => {
+        if (latestNotification?.id) {
+            fetch(`${apiURL}/api/notifications/${latestNotification.id}/read`, {
+                method: "PUT",
+                headers: header,
+            }).catch((error) =>
+                console.error("Error marking notification as read:", error)
+            );
+        }
+        setNotificationPopping(false);
+        setLatestNotification(null);
+    };
+
     // Auto-dismiss notification after 10 seconds
     useEffect(() => {
         if (latestNotification) {
             setNotificationPopping(true);
             const timer = setTimeout(() => {
-                setNotificationPopping(false);
-                setLatestNotification(null);
+                handleDismissNotification();
             }, 10000);
 
             return () => clearTimeout(timer);
@@ -146,18 +184,13 @@ function DashboardLayout() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    const handleDismissNotification = () => {
-        setNotificationPopping(false);
-        setLatestNotification(null);
-    };
-
     return (
-        <div className="bg-white text-black h-screen min-h-screen w-full flex flex-col overflow-hidden">
+        <div className="h-screen min-h-screen w-full flex flex-col overflow-hidden bg-gradient-to-br from-slate-100 via-gray-50 to-zinc-100 text-gray-900">
             <div className="w-full flex-1 flex flex-col sm:flex-row overflow-hidden">
                 {/* Hamburger for mobile */}
                 {!showSidebar && !isMobileNavOpen && (
                     <button
-                        className="fixed top-4 left-4 z-50 p-2 rounded-sm bg-gray-600 text-white shadow-sm sm:hidden"
+                        className="fixed top-4 left-4 z-50 p-2.5 rounded-xl bg-gray-900 text-white shadow-lg shadow-black/20 sm:hidden"
                         onClick={toggleMobileNav}
                         aria-label="Open sidebar"
                     >
@@ -180,13 +213,13 @@ function DashboardLayout() {
                         showSidebar={showSidebar}
                         isMobileNavOpen={isMobileNavOpen}
                         collapsedNav={collapsedNav}
+                        recentWorkspaces={recentWorkspaces}
                         loc={loc}
                         unreadCount={unreadCount}
                         handleCollapseBar={handleCollapseBar}
                         toggleMobileNav={toggleMobileNav}
                         setIsMobileNavOpen={setIsMobileNavOpen}
                         setSearchOpened={setSearchOpened}
-                        setAiOverviewOpen={setAiOverviewOpen}
                         handleNavigation={handleNavigation}
                         onPage={onPage}
                         handleLogout={handleLogout}
@@ -204,14 +237,29 @@ function DashboardLayout() {
                 />
 
                 {/* Main Content */}
-                <main className="w-full flex flex-col h-screen min-h-0 overflow-y-auto scrollbar-hide bg-white/80">
-                    <section className="flex-1 p-4 sm:p-6">
-                        <div className="h-full">
+                <main className="w-full flex flex-col h-screen min-h-0 overflow-y-auto scrollbar-hide bg-transparent">
+                    <div className="fixed top-4 right-4 z-40">
+                        <button
+                            className="relative flex items-center justify-center h-11 w-11 rounded-xl bg-white text-gray-800 border border-gray-200 shadow-sm hover:bg-gray-50 transition-all"
+                            onClick={() => navigate("/app/notifications")}
+                            aria-label="Notifications"
+                            title="Notifications"
+                        >
+                            <PiBellRingingDuotone size={22} />
+                            {unreadCount > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] rounded-full min-w-5 h-5 px-1 flex items-center justify-center">
+                                    {unreadCount > 9 ? "9+" : unreadCount}
+                                </span>
+                            )}
+                        </button>
+                    </div>
+                    <section className="flex-1 px-3 pb-4 pt-16 sm:p-6">
+                        <div className="h-full max-w-[1440px] mx-auto">
                             <Outlet />
                         </div>
                     </section>
 
-                    <footer className="w-full text-center mt-5 border-t pt-4 text-gray-500 text-xs sm:text-sm px-4">
+                    <footer className="w-full text-center border-t border-gray-200/80 bg-white/60 py-4 text-gray-500 text-xs sm:text-sm px-4">
                         &copy; 2025 Benote
                     </footer>
                 </main>

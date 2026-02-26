@@ -1,28 +1,58 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import * as DarkReader from "darkreader";
+import {
+  DARK_READER_PRESETS,
+  DEFAULT_DARK_READER_PRESET_ID,
+} from "../config/darkReaderPresets";
 
 const DarkReaderManager = () => {
-  DarkReader.setFetchMethod(window.fetch); // Use the same fetch method as the app
-
-  const theme = useSelector((state) => state.theme.theme); // Get the current theme from Redux
+  const theme = useSelector((state) => state.theme.theme);
+  const darkReaderPreset = useSelector((state) => state.theme.darkReaderPreset);
 
   useEffect(() => {
-    if (theme === "dark") {
-      DarkReader.enable({
-        brightness: 100,
-        contrast: 90,
-        sepia: 10,
-      });
+    DarkReader.setFetchMethod(window.fetch);
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const selectedPreset =
+      DARK_READER_PRESETS.find((preset) => preset.id === darkReaderPreset) ||
+      DARK_READER_PRESETS.find(
+        (preset) => preset.id === DEFAULT_DARK_READER_PRESET_ID
+      );
+
+    const applyTheme = () => {
+      const shouldUseDarkReader =
+        theme === "dark" || (theme === "system" && mediaQuery.matches);
+      if (shouldUseDarkReader) {
+        DarkReader.enable(selectedPreset?.settings || {});
+      } else {
+        DarkReader.disable();
+      }
+    };
+
+    applyTheme();
+
+    const handleSystemThemeChange = () => {
+      if (theme === "system") {
+        applyTheme();
+      }
+    };
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", handleSystemThemeChange);
     } else {
-      DarkReader.disable();
+      mediaQuery.addListener(handleSystemThemeChange);
     }
 
-    //    Cleanup when the component is unmounted or theme changes
     return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener("change", handleSystemThemeChange);
+      } else {
+        mediaQuery.removeListener(handleSystemThemeChange);
+      }
       DarkReader.disable();
     };
-  }, [theme]);
+  }, [theme, darkReaderPreset]);
   return null;
 };
 

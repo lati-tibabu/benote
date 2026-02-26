@@ -32,8 +32,8 @@ const readNotifications = async (req, res) => {
   }
   try {
     const receiver_id = req.user.id;
-    const limit = parseInt(req.query.limit) || 10;
-    const page = parseInt(req.query.page) || 1;
+    const limit = Math.max(1, parseInt(req.query.limit, 10) || 10);
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
     const offset = (page - 1) * limit;
 
     // Fetch notifications with pagination
@@ -45,21 +45,11 @@ const readNotifications = async (req, res) => {
       offset,
     });
 
-    // Mark unread notifications as read
-    await notification.update(
-      { is_read: true },
-      {
-        where: {
-          receiver_id,
-          is_read: false,
-        },
-      }
-    );
-
     res.json({
       total: count,
       page,
       limit,
+      totalPages: Math.max(1, Math.ceil(count / limit)),
       notifications,
     });
   } catch (error) {
@@ -107,7 +97,12 @@ const getUnreadNotificationCount = async (req, res) => {
 
 const readNotification = async (req, res) => {
   try {
-    const _notification = await notification.findByPk(req.params.id);
+    const _notification = await notification.findOne({
+      where: {
+        id: req.params.id,
+        receiver_id: req.user.id,
+      },
+    });
     if (_notification) {
       res.json(_notification);
     } else {
@@ -122,7 +117,12 @@ const readNotification = async (req, res) => {
 
 const updateNotification = async (req, res) => {
   try {
-    const _notification = await notification.findByPk(req.params.id);
+    const _notification = await notification.findOne({
+      where: {
+        id: req.params.id,
+        receiver_id: req.user.id,
+      },
+    });
     if (_notification) {
       await _notification.update(req.body);
       const updatednotification = { ..._notification.get() };
@@ -139,7 +139,12 @@ const updateNotification = async (req, res) => {
 
 const deleteNotification = async (req, res) => {
   try {
-    const _notification = await notification.findByPk(req.params.id);
+    const _notification = await notification.findOne({
+      where: {
+        id: req.params.id,
+        receiver_id: req.user.id,
+      },
+    });
     if (_notification) {
       await _notification.destroy();
       res.json({ message: "notification succesfully deleted" });
@@ -151,12 +156,55 @@ const deleteNotification = async (req, res) => {
   }
 };
 
+const markNotificationAsRead = async (req, res) => {
+  try {
+    const receiver_id = req.user.id;
+    const _notification = await notification.findOne({
+      where: {
+        id: req.params.id,
+        receiver_id,
+      },
+    });
+    if (!_notification) {
+      return res.status(404).json({ message: "notification not found!" });
+    }
+
+    await _notification.update({ is_read: true });
+    res.json({ message: "Notification marked as read", id: _notification.id });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const markAllNotificationsAsRead = async (req, res) => {
+  try {
+    const receiver_id = req.user.id;
+    const [updatedCount] = await notification.update(
+      { is_read: true },
+      {
+        where: {
+          receiver_id,
+          is_read: false,
+        },
+      }
+    );
+    res.json({
+      message: "All notifications marked as read",
+      updatedCount,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createNotification,
   readNotifications,
   readNotification,
   updateNotification,
   deleteNotification,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
   getUnreadNotificationCount,
   // readLatestNotification,
 };

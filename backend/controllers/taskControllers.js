@@ -46,8 +46,17 @@ const createTask = async (req, res) => {
       return res.status(400).json({ message: "Invalid task details!" });
     }
 
+    const validateTaskPayload = (payload) =>
+      payload &&
+      payload.title &&
+      String(payload.title).trim().length > 0 &&
+      payload.workspace_id;
+
     // Case: Multiple Tasks
     if (Array.isArray(req.body)) {
+      if (!req.body.length || !req.body.every(validateTaskPayload)) {
+        return res.status(400).json({ message: "Invalid task details!" });
+      }
       const _tasks = await task.bulkCreate(req.body);
 
       for (const t of _tasks) {
@@ -68,6 +77,10 @@ const createTask = async (req, res) => {
     }
 
     // Case: Single Task
+    if (!validateTaskPayload(req.body)) {
+      return res.status(400).json({ message: "Invalid task details!" });
+    }
+
     const _task = await task.create(req.body);
 
     if (_task.assigned_to) {
@@ -118,11 +131,34 @@ const readTasks = async (req, res) => {
         limit: 5,
       });
     } else {
+      const whereClause = {
+        is_archived: false,
+        workspace_id: req.params.id,
+      };
+
+      if (req.query.status) {
+        whereClause.status = req.query.status;
+      }
+      if (req.query.assigned_to) {
+        whereClause.assigned_to = req.query.assigned_to;
+      }
+      if (req.query.search) {
+        whereClause[Op.or] = [
+          {
+            title: {
+              [Op.iLike]: `%${req.query.search}%`,
+            },
+          },
+          {
+            description: {
+              [Op.iLike]: `%${req.query.search}%`,
+            },
+          },
+        ];
+      }
+
       _tasks = await task.findAll({
-        where: {
-          is_archived: false,
-          workspace_id: req.params.id,
-        },
+        where: whereClause,
         include: [
           {
             model: workspace,
@@ -229,7 +265,7 @@ const readTaskNotDone = async (req, res) => {
     });
 
     // _tasks = newTasks;
-    if (_tasks.length === 0) {
+    if (_tasks.rows.length === 0) {
       return res.status(404).json({ message: "No tasks found!" });
     }
 

@@ -8,10 +8,11 @@ router.use(authMiddleware.authMiddleware);
 
 router.post("/", notificationController.createNotification);
 router.get("/", notificationController.readNotifications);
-router.get("/unread-count", notificationController.getUnreadNotificationCount); // ✅ added route
+router.get("/unread-count", notificationController.getUnreadNotificationCount);
+router.put("/read-all", notificationController.markAllNotificationsAsRead);
+router.put("/:id/read", notificationController.markNotificationAsRead);
 router.get("/:id", notificationController.readNotification);
 router.put("/:id", notificationController.updateNotification);
 router.delete("/:id", notificationController.deleteNotification);
-// router.get("/unread", notificationController.readLatestNotification);
 
 module.exports = router;

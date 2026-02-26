@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { AiOutlineMore } from "react-icons/ai";
 import TaskCard from "@features/tasks/components/task-card";
 import AddNewTask from "./Tasks/add-new-task";
@@ -7,9 +7,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { FaWindowMaximize, FaWindowMinimize } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
-import { jwtDecode } from "jwt-decode";
 import { setWorkspace } from "@redux/slices/workspaceSlice";
-import { FaBolt } from "react-icons/fa6";
 import AiGeneratedTask from "./Tasks/ai-generated-task";
 import GeminiIcon from "@features/ai/components/geminiIcon";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -58,6 +56,8 @@ const Tasks = () => {
   const [archivedWindow, setArchivedWindow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [allMemberTasks, setAllMemberTasks] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [dueFilter, setDueFilter] = useState("all");
 
   const dispatch = useDispatch();
 
@@ -234,11 +234,45 @@ const Tasks = () => {
 
   // console.log("Tasks", tasks);
 
-  useEffect(() => {
-    allMemberTasks
-      ? fetchTasks()
-      : setTasks(tasks.filter((task) => task.assigned_to === userData.id));
-  }, [allMemberTasks]);
+  const filteredTasks = useMemo(() => {
+    const now = new Date();
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
+    const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+    return tasks.filter((task) => {
+      const isMine = task.assigned_to === userData.id;
+      const withinMemberScope = allMemberTasks || isMine;
+
+      if (!withinMemberScope) return false;
+
+      const title = (task.title || "").toLowerCase();
+      const description = (task.description || "").toLowerCase();
+      const assigneeName = (task?.user?.name || "").toLowerCase();
+      const keyword = searchQuery.toLowerCase().trim();
+      const matchesSearch =
+        !keyword ||
+        title.includes(keyword) ||
+        description.includes(keyword) ||
+        assigneeName.includes(keyword);
+
+      if (!matchesSearch) return false;
+
+      if (!task.due_date || dueFilter === "all") return true;
+
+      const dueDate = new Date(task.due_date);
+      if (dueFilter === "overdue") {
+        return dueDate < now && task.status !== "done";
+      }
+      if (dueFilter === "today") {
+        return dueDate >= now && dueDate <= endOfToday;
+      }
+      if (dueFilter === "week") {
+        return dueDate >= now && dueDate <= weekFromNow;
+      }
+      return true;
+    });
+  }, [tasks, userData.id, allMemberTasks, searchQuery, dueFilter]);
 
   // function to get workspace detail and store updated information on redux for better UX
   const getWorkspaceDetails = async (id) => {
@@ -311,6 +345,23 @@ const Tasks = () => {
           )}
         </div>
         <div className="flex items-center gap-3">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search tasks..."
+            className="px-3 py-2 rounded-sm border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
+          />
+          <select
+            value={dueFilter}
+            onChange={(e) => setDueFilter(e.target.value)}
+            className="px-3 py-2 rounded-sm border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
+          >
+            <option value="all">All due dates</option>
+            <option value="overdue">Overdue</option>
+            <option value="today">Due today</option>
+            <option value="week">Due in 7 days</option>
+          </select>
           {useGemini && (
             <div
               className="btn transition-all duration-300 shadow-sm bg-gradient-to-tr from-gray-100 to-gray-100 hover:from-gray-200 hover:to-gray-200 text-gray-700 border-white btn-soft rounded-sm flex items-center gap-2 px-4 py-2"
@@ -351,7 +402,7 @@ const Tasks = () => {
                     <span
                       className={`px-2 py-1 ${column.bg} ${column.color} text-xs rounded-sm font-semibold`}
                     >
-                      {tasks.filter((task) => task.status === column.id).length}
+                      {filteredTasks.filter((task) => task.status === column.id).length}
                     </span>
                   </div>
                   <button className="text-gray-400 hover:text-gray-500 transition">
@@ -365,7 +416,7 @@ const Tasks = () => {
                       ref={provided.innerRef}
                       className="flex flex-col gap-3 min-h-[200px]"
                     >
-                      {tasks
+                      {filteredTasks
                         .filter((task) => task.status === column.id)
                         .map((task, index) => (
                           <Draggable
@@ -388,7 +439,7 @@ const Tasks = () => {
                                   status={task.status}
                                   taskName={task.title}
                                   taskDescription={task.description}
-                                  taskAssignedTo={task.user.name}
+                                  taskAssignedTo={task?.user?.name || "Unassigned"}
                                   rawDueDate={task.due_date}
                                   dueDate={new Date(task.due_date).toLocaleString(
                                     "en-US",
@@ -480,7 +531,7 @@ const Tasks = () => {
                       status={task.status}
                       taskName={task.title}
                       taskDescription={task.description}
-                      taskAssignedTo={task.user.name}
+                      taskAssignedTo={task?.user?.name || "Unassigned"}
                       rawDueDate={task.due_date}
                       dueDate={new Date(task.due_date).toLocaleString("en-US", {
                         year: "numeric",

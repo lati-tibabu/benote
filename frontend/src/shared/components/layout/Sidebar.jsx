@@ -1,19 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { SHA256 } from "crypto-js";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { HiX } from "react-icons/hi";
-import { AiOutlineSun, AiOutlineMoon } from "react-icons/ai";
 import {
     PiHouseDuotone,
     PiBooksDuotone,
     PiUsersThreeDuotone,
     PiChalkboardTeacherDuotone,
     PiRobotDuotone,
-    PiUserCircleDuotone,
     PiGearDuotone,
-    PiBellRingingDuotone,
     PiSignOutDuotone,
     PiListChecksDuotone,
     PiNotePencilDuotone,
@@ -25,8 +20,6 @@ import {
 } from "react-icons/pi";
 import { FEATURES } from "../../../config/featureFlags";
 import { HiSearch } from "react-icons/hi";
-import { GeminiIcon } from "../../../features/ai";
-import { toggleTheme } from "../../../redux/slices/themeSlice";
 
 const workspaceSubMenusModern = [
     { icon: <PiChartBarDuotone />, label: "Overview", link: "overview" },
@@ -55,156 +48,138 @@ function Sidebar({
     showSidebar,
     isMobileNavOpen,
     collapsedNav,
+    recentWorkspaces = [],
     loc,
-    unreadCount,
     handleCollapseBar,
     toggleMobileNav,
     setIsMobileNavOpen,
     setSearchOpened,
-    setAiOverviewOpen,
     handleNavigation,
     onPage,
     handleLogout,
 }) {
-    const dispatch = useDispatch();
-    const theme = useSelector((state) => state.theme.theme);
-    const userData = useSelector((state) => state.auth.user) || {};
-    const email = userData?.email;
+    const shellWidth = collapsedNav && showSidebar ? 92 : 272;
+    const navItemClass = (isActive) =>
+        `flex items-center ${collapsedNav ? "justify-center" : ""} gap-2 px-2 py-2.5 rounded-xl font-medium transition-all ${
+            isActive
+                ? "bg-gray-100 text-gray-900 border border-gray-200 shadow-sm"
+                : "text-gray-700 hover:bg-gray-100"
+        }`;
 
-    const getGravatarHash = (userEmail) => {
-        if (!userEmail) {
-            return "";
-        }
-        return SHA256(userEmail.trim().toLowerCase()).toString();
-    };
+    const dedupedRecentWorkspaces = Array.from(
+        new Map(
+            (recentWorkspaces || [])
+                .filter((item) => item?.workspace?.id)
+                .map((item) => [item.workspace.id, item])
+        ).values()
+    ).slice(0, 5);
 
     return (
         <aside
-            className={`fixed sm:static top-0 left-0 z-40 h-full bg-white/90 border-r border-gray-100 shadow-sm sm:shadow-none p-6 transition-transform duration-300 transform ${isMobileNavOpen ? "translate-x-0" : "-translate-x-full"
-                } ${showSidebar ? "sm:translate-x-0" : "sm:-translate-x-full"
-                } scrollbar-hide`}
+            className={`fixed sm:static top-0 left-0 z-40 h-full bg-white/95 border-r border-gray-200 shadow-xl sm:shadow-none p-4 transition-transform duration-300 transform ${
+                isMobileNavOpen ? "translate-x-0" : "-translate-x-full"
+            } ${
+                showSidebar ? "sm:translate-x-0" : "sm:-translate-x-full"
+            } scrollbar-hide`}
             style={{
-                width: collapsedNav && showSidebar ? 90 : 256,
-                minWidth: collapsedNav && showSidebar ? 80 : 256,
+                width: shellWidth,
+                minWidth: shellWidth,
                 maxHeight: "100vh",
                 overflowY: "auto",
             }}
         >
-            {/* Logo, collapse/expand, and profile */}
-            <div className="flex items-center justify-between mb-6 relative ">
+            <div className="flex items-center justify-between mb-4">
                 <Link to="/" className="flex gap-2 items-center">
-                    {/* Show logo only when not collapsed AND on desktop, or on mobile */}
                     {(!collapsedNav || !showSidebar) && (
                         <>
-                            <img src="/rect19.png" alt="Logo" className="h-10 w-auto" />
-                            <span className="font-black text-lg tracking-tight text-gray-700">
+                            <img src="/rect19.png" alt="Logo" className="h-9 w-auto" />
+                            <span className="font-black text-lg tracking-tight text-gray-900">
                                 Benote
                             </span>
                         </>
                     )}
                 </Link>
                 <div className="flex items-center gap-2">
-                    {/* Collapse/Expand button (desktop only) */}
                     <div
-                        className={`hidden sm:flex p-2 hover:bg-gray-50 rounded-sm cursor-pointer ${showSidebar ? "" : "pointer-events-none opacity-0"
-                            }`}
+                        className={`hidden sm:flex p-2 hover:bg-gray-100 rounded-lg cursor-pointer ${
+                            showSidebar ? "" : "pointer-events-none opacity-0"
+                        }`}
                         onClick={handleCollapseBar}
                         title={collapsedNav ? "Expand sidebar" : "Collapse sidebar"}
                     >
                         {collapsedNav ? <FaChevronRight /> : <FaChevronLeft />}
                     </div>
-                    {/* Mobile close button */}
                     <button
                         onClick={toggleMobileNav}
-                        className="sm:hidden focus:outline-none text-gray-600 ml-2"
+                        className="sm:hidden focus:outline-none text-gray-700 ml-2"
                         aria-label="Close sidebar"
                     >
                         <HiX size={28} />
                     </button>
                 </div>
             </div>
-            <nav className="bg-white max-h-full overflow-auto scrollbar-hide">
-                {/* Quick tools moved from header into sidebar for all screen sizes */}
-                <div className="flex flex-col gap-2 mb-4">
-                    <button
-                        className="flex items-center justify-center gap-2 px-2 py-2 rounded-sm bg-gray-50 text-gray-800 font-semibold shadow hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200 w-full"
-                        onClick={() => {
-                            setSearchOpened(true);
-                            setIsMobileNavOpen(false);
-                        }}
-                        title="Quick Search"
-                    >
-                        <HiSearch size={22} />
-                        {!collapsedNav && <span className="text-sm">Quick Search</span>}
-                    </button>
-                    <button
-                        className="flex items-center justify-center gap-2 px-2 py-2 rounded-sm bg-gray-50 text-gray-800 font-semibold shadow hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200 w-full"
-                        onClick={() => {
-                            setAiOverviewOpen(true);
-                            setIsMobileNavOpen(false);
-                        }}
-                        title="AI Overview"
-                    >
-                        <PiRobotDuotone size={22} />
-                        {!collapsedNav && <span className="text-sm">AI Overview</span>}
-                    </button>
 
-                    <div
-                        className={`flex items-center ${collapsedNav ? "justify-center" : "justify-between"
-                            } border border-gray-300 rounded-sm px-2 py-2 bg-white shadow-sm`}
-                        title="Theme"
-                    >
-                        <span className="text-yellow-400">
-                            <AiOutlineSun size={18} />
-                        </span>
-                        <label className="relative inline-flex items-center cursor-pointer mx-2">
-                            <input
-                                type="checkbox"
-                                checked={theme === "dark"}
-                                onChange={() => dispatch(toggleTheme())}
-                                className="sr-only peer"
-                            />
-                            <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-gray-400 rounded-sm peer dark:bg-gray-700 peer-checked:bg-gradient-to-r peer-checked:from-gray-500 peer-checked:to-gray-600 transition-all duration-300"></div>
-                            <div className="absolute left-1 top-1 w-3 h-3 bg-white border border-gray-300 rounded-sm shadow-sm transition-all duration-300 peer-checked:translate-x-4"></div>
-                        </label>
-                        <span className="text-gray-900">
-                            <AiOutlineMoon size={18} />
-                        </span>
+            <nav className="bg-transparent max-h-full overflow-auto scrollbar-hide">
+                <div className="mb-4 rounded-2xl border border-gray-200 bg-gradient-to-br from-white to-gray-50 p-2">
+                    <div className="flex flex-col gap-2">
+                        <button
+                            className="flex items-center justify-center gap-2 px-2 py-2.5 rounded-xl bg-gray-900 text-white font-semibold hover:bg-black focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200 w-full"
+                            onClick={() => {
+                                setSearchOpened(true);
+                                setIsMobileNavOpen(false);
+                            }}
+                            title="Quick Search"
+                        >
+                            <HiSearch size={20} />
+                            {!collapsedNav && <span className="text-sm">Quick Search</span>}
+                        </button>
                     </div>
-
-                    <Link
-                        to="profile"
-                        className={`flex items-center ${collapsedNav ? "justify-center" : "justify-between"
-                            } gap-2 px-2 py-2 rounded-sm border border-gray-300 bg-white shadow-sm hover:bg-gray-50 transition-all`}
-                        onClick={() => setIsMobileNavOpen(false)}
-                        title="User Profile"
-                    >
-                        <div className="flex items-center gap-2 min-w-0">
-                            <img
-                                src={`https://gravatar.com/avatar/${getGravatarHash(
-                                    email
-                                )}?s=40`}
-                                className="w-8 h-8 rounded-sm"
-                                alt="User Avatar"
-                            />
-                            {!collapsedNav && (
-                                <span className="text-sm font-medium text-gray-700 truncate">
-                                    User Profile
-                                </span>
-                            )}
-                        </div>
-                    </Link>
                 </div>
-                <ul className="flex flex-col gap-2">
-                    {/* Sidebar nav items with fixed icon size */}
+
+                <div className="mb-3 px-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500">
+                    {!collapsedNav && "Workspace"}
+                </div>
+                {!collapsedNav && (
+                    <div className="mb-4 rounded-xl border border-gray-200 bg-gray-50 p-2">
+                        {dedupedRecentWorkspaces.length ? (
+                            <ul className="flex flex-col gap-1">
+                                {dedupedRecentWorkspaces.map((item) => (
+                                    <li key={item.workspace.id}>
+                                        <Link
+                                            to={`/app/workspace/open/${item.workspace.id}`}
+                                            onClick={() => setIsMobileNavOpen(false)}
+                                            className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-all"
+                                            title={item.workspace.name}
+                                        >
+                                            <span className="text-base">
+                                                {item.workspace.emoji || "📁"}
+                                            </span>
+                                            <span className="truncate">
+                                                {item.workspace.name || "Untitled Workspace"}
+                                            </span>
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="px-2 py-2 text-xs text-gray-500">
+                                No recent workspaces
+                            </p>
+                        )}
+                        <Link
+                            to="workspace"
+                            onClick={() => setIsMobileNavOpen(false)}
+                            className="mt-2 flex items-center justify-center rounded-lg border border-gray-200 bg-white px-2 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-all"
+                        >
+                            More
+                        </Link>
+                    </div>
+                )}
+                <ul className="flex flex-col gap-1.5">
                     <li>
                         <Link
                             to="home"
-                            className={`flex items-center ${collapsedNav && "justify-center"
-                                } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${loc[0] === "home"
-                                    ? "bg-gray-100 text-gray-700"
-                                    : "text-gray-700 hover:bg-gray-50"
-                                }`}
+                            className={navItemClass(loc[0] === "home")}
                             onClick={() => setIsMobileNavOpen(false)}
                             title="Home"
                         >
@@ -217,11 +192,7 @@ function Sidebar({
                     <li>
                         <Link
                             to="workspace"
-                            className={`flex items-center ${collapsedNav && "justify-center"
-                                } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${loc[0] === "workspace"
-                                    ? "bg-gray-100 text-gray-700"
-                                    : "text-gray-700 hover:bg-gray-50"
-                                }`}
+                            className={navItemClass(loc[0] === "workspace")}
                             onClick={() => setIsMobileNavOpen(false)}
                             title="Workspace"
                         >
@@ -233,19 +204,23 @@ function Sidebar({
                         {/* Submenu */}
                         {loc[1] === "open" && loc[0] === "workspace" && (
                             <ul
-                                className={`${collapsedNav ? "p-1 bg-gray-50 rounded" : "pl-7 p-2"
-                                    } mt-2 flex flex-col gap-1`}
+                                className={`${
+                                    collapsedNav
+                                        ? "p-1 bg-gray-50 rounded-xl"
+                                        : "pl-8 p-2 bg-gray-50 rounded-xl"
+                                } mt-2 flex flex-col gap-1`}
                             >
                                 {workspaceSubMenusModern.map((item, idx) => (
                                     <li
                                         key={idx}
-                                        className={`flex items-center gap-2 py-1 rounded transition-all cursor-pointer ${onPage(item.link)
-                                            ? "bg-gray-200 text-gray-900 font-semibold"
-                                            : "text-gray-600 hover:bg-gray-100"
-                                            }`}
+                                        className={`flex items-center gap-2 py-1.5 rounded-lg transition-all cursor-pointer ${
+                                            onPage(item.link)
+                                                ? "bg-gray-200 text-gray-900 font-semibold"
+                                                : "text-gray-600 hover:bg-gray-100"
+                                        }`}
                                         onClick={() => {
                                             handleNavigation(item.link, loc[2])();
-                                            setIsMobileNavOpen(false); // Close mobile nav after navigation
+                                            setIsMobileNavOpen(false);
                                         }}
                                         title={item.label}
                                     >
@@ -266,11 +241,7 @@ function Sidebar({
                     <li>
                         <Link
                             to="team"
-                            className={`flex items-center ${collapsedNav && "justify-center"
-                                } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${loc[0] === "team"
-                                    ? "bg-gray-100 text-gray-700"
-                                    : "text-gray-700 hover:bg-gray-50"
-                                }`}
+                            className={navItemClass(loc[0] === "team")}
                             onClick={() => setIsMobileNavOpen(false)}
                             title="Teams"
                         >
@@ -284,11 +255,7 @@ function Sidebar({
                         <li>
                             <Link
                                 to="classroom"
-                                className={`flex items-center ${collapsedNav && "justify-center"
-                                    } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${loc[0] === "classroom"
-                                        ? "bg-gray-100 text-gray-700"
-                                        : "text-gray-700 hover:bg-gray-50"
-                                    }`}
+                                className={navItemClass(loc[0] === "classroom")}
                                 onClick={() => setIsMobileNavOpen(false)}
                                 title="Classroom"
                             >
@@ -302,11 +269,7 @@ function Sidebar({
                     <li>
                         <Link
                             to="askAI"
-                            className={`flex items-center ${collapsedNav && "justify-center"
-                                } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${loc[0] === "askAI"
-                                    ? "bg-gray-100 text-gray-700"
-                                    : "text-gray-700 hover:bg-gray-50"
-                                }`}
+                            className={navItemClass(loc[0] === "askAI")}
                             onClick={() => setIsMobileNavOpen(false)}
                             title="AskAI"
                         >
@@ -317,72 +280,19 @@ function Sidebar({
                         </Link>
                     </li>
                 </ul>
-                <hr className="my-4 border-gray-100" />
-                <ul className="flex flex-col gap-2">
-                    <li>
-                        <Link
-                            to="profile"
-                            className={`flex items-center ${collapsedNav && "justify-center"
-                                } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${loc[0] === "profile"
-                                    ? "bg-gray-100 text-gray-700"
-                                    : "text-gray-700 hover:bg-gray-50"
-                                }`}
-                            onClick={() => setIsMobileNavOpen(false)}
-                            title="Profile"
-                        >
-                            <span className="flex items-center justify-center min-w-[40px] min-h-[40px]">
-                                <PiUserCircleDuotone size={22} />
-                            </span>
-                            {!collapsedNav && <span>Profile</span>}
-                        </Link>
-                    </li>
-                    <li>
-                        <Link
-                            to="llm-setting"
-                            className={`flex items-center ${collapsedNav && "justify-center"
-                                } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${loc[0] === "llm-setting"
-                                    ? "bg-gray-100 text-gray-700"
-                                    : "text-gray-700 hover:bg-gray-50"
-                                }`}
-                            onClick={() => setIsMobileNavOpen(false)}
-                            title="LLM Setting"
-                        >
-                            <span className="flex items-center justify-center min-w-[40px] min-h-[40px]">
-                                <GeminiIcon size={22} />
-                            </span>
-                            {!collapsedNav && <span>LLM Setting</span>}
-                        </Link>
-                    </li>
-                    <li>
-                        <Link
-                            to="notifications"
-                            className={`flex items-center ${collapsedNav && "justify-center"
-                                } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${loc[0] === "notifications"
-                                    ? "bg-gray-100 text-gray-700"
-                                    : "text-gray-700 hover:bg-gray-50"
-                                }`}
-                            onClick={() => setIsMobileNavOpen(false)}
-                            title="Notifications"
-                        >
-                            <span className="relative flex items-center justify-center min-w-[40px] min-h-[40px]">
-                                <PiBellRingingDuotone size={22} />
-                                {unreadCount > 0 && (
-                                    <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-sm w-5 h-5 flex items-center justify-center">
-                                        {unreadCount > 9 ? "9+" : unreadCount}
-                                    </span>
-                                )}
-                            </span>
-                            {!collapsedNav && <span>Notifications</span>}
-                        </Link>
-                    </li>
+                <hr className="my-4 border-gray-200" />
+                <div className="mb-3 px-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500">
+                    {!collapsedNav && "Bottom Menu"}
+                </div>
+                <ul className="flex flex-col gap-1.5">
                     <li>
                         <Link
                             to="setting"
-                            className={`flex items-center ${collapsedNav && "justify-center"
-                                } gap-2 px-0 py-2 rounded-sm font-medium transition-all ${loc[0] === "setting"
-                                    ? "bg-gray-100 text-gray-700"
-                                    : "text-gray-700 hover:bg-gray-50"
-                                }`}
+                            className={navItemClass(
+                                loc[0] === "setting" ||
+                                    loc[0] === "llm-setting" ||
+                                    loc[0] === "profile"
+                            )}
                             onClick={() => setIsMobileNavOpen(false)}
                             title="Setting"
                         >
@@ -391,11 +301,58 @@ function Sidebar({
                             </span>
                             {!collapsedNav && <span>Setting</span>}
                         </Link>
+                        {!collapsedNav && (
+                            <ul className="mt-2 ml-9 flex flex-col gap-1">
+                                <li>
+                                    <Link
+                                        to="setting"
+                                        className={`block rounded-lg px-3 py-1.5 text-sm transition-all ${
+                                            loc[0] === "setting"
+                                                ? "bg-gray-200 text-gray-900 font-semibold"
+                                                : "text-gray-600 hover:bg-gray-100"
+                                        }`}
+                                        onClick={() => setIsMobileNavOpen(false)}
+                                    >
+                                        App Settings
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        to="profile"
+                                        className={`block rounded-lg px-3 py-1.5 text-sm transition-all ${
+                                            loc[0] === "profile"
+                                                ? "bg-gray-200 text-gray-900 font-semibold"
+                                                : "text-gray-600 hover:bg-gray-100"
+                                        }`}
+                                        onClick={() => setIsMobileNavOpen(false)}
+                                    >
+                                        Profile
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        to="llm-setting"
+                                        className={`block rounded-lg px-3 py-1.5 text-sm transition-all ${
+                                            loc[0] === "llm-setting"
+                                                ? "bg-gray-200 text-gray-900 font-semibold"
+                                                : "text-gray-600 hover:bg-gray-100"
+                                        }`}
+                                        onClick={() => setIsMobileNavOpen(false)}
+                                    >
+                                        LLM Setting
+                                    </Link>
+                                </li>
+                            </ul>
+                        )}
                     </li>
-                    {/* Logout Button (Moved to bottom of sidebar for better mobile access) */}
+                </ul>
+
+                <ul className="mt-4 flex flex-col gap-1.5">
                     <li>
                         <button
-                            className="w-full flex items-center gap-2 px-0 py-2 text-red-600 hover:bg-red-50 hover:text-red-800 rounded-sm font-medium transition-all"
+                            className={`w-full flex items-center ${
+                                collapsedNav ? "justify-center" : ""
+                            } gap-2 px-2 py-2.5 text-red-600 hover:bg-red-50 hover:text-red-700 rounded-xl font-medium transition-all`}
                             onClick={handleLogout}
                             title="Logout"
                         >
