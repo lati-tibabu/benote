@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import AddNew from "./add_new";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { FaPlus, FaUserFriends, FaTh, FaList } from "react-icons/fa";
+import { FaUserFriends } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { setTeamList } from "../../../../redux/slices/teamReducer";
 import { toast, ToastContainer } from "react-toastify";
@@ -14,12 +14,15 @@ function Team() {
   };
 
   const [teamLoading, setTeamLoading] = useState(false);
-  const [viewMode, setViewMode] = useState("grid"); // State to toggle between grid and list view
   const dispatch = useDispatch();
   const teams = useSelector((state) => state.team.teamList) || [];
   const userId = useSelector((state) => state.auth.user.id) || null;
 
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const selectedTeamId =
+    location.pathname.match(/^\/app\/team\/open\/([^/]+)/)?.[1] || null;
 
   const getTeams = async () => {
     !teams.length && setTeamLoading(true);
@@ -46,169 +49,115 @@ function Team() {
     getTeams();
   }, [location]);
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    if (location.pathname === "/app/team" && teams.length > 0) {
+      navigate(`/app/team/open/${teams[0].team.id}/discussions`, {
+        replace: true,
+      });
+    }
+  }, [location.pathname, navigate, teams]);
 
   const handleTeamOpen = (teamId) => () => {
-    navigate(`/app/team/open/${teamId}`);
+    navigate(`/app/team/open/${teamId}/discussions`);
   };
 
-  const renderGridView = () => (
-    <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      {teams.map((team) => (
-        <li
-          key={team.team.id}
-          onClick={handleTeamOpen(team.team.id)}
-          className="cursor-pointer shadow-sm hover:shadow-sm transition-shadow duration-300"
-        >
-          <div
-            title={team.team.name}
-            className="bg-white rounded-sm overflow-hidden border border-gray-200 hover:border-gray-300"
-          >
-            <div className="bg-gray-100 p-4 flex justify-center items-center">
-              <FaUserFriends className="text-4xl text-gray-600" />
-            </div>
-            <div className="p-4">
-              <h3 className="text-lg font-semibold text-gray-800 truncate">
-                {team.team.name}
-              </h3>
-              <p className="text-sm text-gray-500">
-                {new Date(team.team.createdAt).toLocaleDateString()}
-              </p>
-              <div className="mt-2 flex justify-between items-center">
-                <span
-                  className={`text-xs font-medium px-2 py-1 rounded-sm ${
-                    team.role === "admin"
-                      ? "bg-gray-100 text-gray-600"
-                      : "bg-gray-100 text-gray-600"
-                  }`}
-                >
-                  {team.role === "admin" ? "Admin" : "Member"}
-                </span>
-                {team.team.created_by === userId && (
-                  <span className="text-xs text-gray-500">Owner</span>
-                )}
-              </div>
-              <p className="mt-2 text-sm text-gray-500">
-                {team.team.members.length} Member/s
-              </p>
-            </div>
-          </div>
-        </li>
-      ))}
-    </ul>
-  );
-
-  const renderListView = () => (
-    <table className="w-full text-left border-collapse border border-gray-200">
-      <thead className="bg-gray-100">
-        <tr>
-          <th className="px-4 py-2 border border-gray-200">Name</th>
-          <th className="px-4 py-2 border border-gray-200">Created At</th>
-          <th className="px-4 py-2 border border-gray-200">Role</th>
-          <th className="px-4 py-2 border border-gray-200">Members</th>
-        </tr>
-      </thead>
-      <tbody>
-        {teams.map((team) => (
-          <tr
-            key={team.team.id}
-            onClick={handleTeamOpen(team.team.id)}
-            className="hover:bg-gray-50 transition-colors cursor-pointer"
-          >
-            <td className="px-4 py-2 border border-gray-200">
-              {team.team.name}
-            </td>
-            <td className="px-4 py-2 border border-gray-200">
-              {new Date(team.team.createdAt).toLocaleDateString()}
-            </td>
-            <td className="px-4 py-2 border border-gray-200">
-              <span
-                className={`text-xs font-medium px-2 py-1 rounded-sm ${
-                  team.role === "admin"
-                    ? "bg-gray-100 text-gray-600"
-                    : "bg-gray-100 text-gray-600"
-                }`}
-              >
-                {team.role === "admin" ? "Admin" : "Member"}
-              </span>
-            </td>
-            <td className="px-4 py-2 border border-gray-200">
-              {team.team.members.length} Member/s
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-
   return (
-    <div className="h-full flex flex-col bg-gray-50 p-6">
+    <div className="h-full min-h-0 overflow-hidden bg-gray-50 p-4 sm:p-6">
       <ToastContainer />
-      {location.pathname === "/app/team" ? (
-        <div>
-          <div className="flex justify-between items-center mb-6">
+      <div className="grid h-full min-h-0 grid-cols-1 gap-4 lg:grid-cols-[320px_1fr]">
+        <aside className="flex h-full min-h-0 flex-col rounded-sm border border-gray-200 bg-white shadow-sm">
+          <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-800">Teams</h2>
+              <p className="text-xs text-gray-500">Select a team or create one</p>
+            </div>
             <button
-              className="bg-gray-600 text-white px-4 py-2 rounded-sm shadow hover:bg-gray-700 transition"
+              className="rounded-sm bg-gray-700 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-800"
               onClick={() => document.getElementById("my_modal_3").showModal()}
             >
-              + Create New
+              + New
             </button>
-            <div className="flex gap-2">
-              <button
-                className={`px-4 py-2 rounded-sm shadow ${
-                  viewMode === "grid"
-                    ? "bg-gray-600 text-white"
-                    : "bg-white text-gray-600 border border-gray-200"
-                } hover:bg-gray-700 hover:text-white transition`}
-                onClick={() => setViewMode("grid")}
-              >
-                <FaTh />
-              </button>
-              <button
-                className={`px-4 py-2 rounded-sm shadow ${
-                  viewMode === "list"
-                    ? "bg-gray-600 text-white"
-                    : "bg-white text-gray-600 border border-gray-200"
-                } hover:bg-gray-700 hover:text-white transition`}
-                onClick={() => setViewMode("list")}
-              >
-                <FaList />
-              </button>
-            </div>
           </div>
 
-          {teamLoading ? (
-            <p className="text-center text-gray-500">Loading...</p>
-          ) : teams.length > 0 ? (
-            viewMode === "grid" ? renderGridView() : renderListView()
+          <div className="grow overflow-y-auto p-2">
+            {teamLoading ? (
+              <p className="px-3 py-4 text-sm text-gray-500">Loading teams...</p>
+            ) : teams.length > 0 ? (
+              <ul className="space-y-2">
+                {teams.map((team) => {
+                  const isActive = String(team.team.id) === selectedTeamId;
+                  return (
+                    <li key={team.team.id}>
+                      <button
+                        type="button"
+                        onClick={handleTeamOpen(team.team.id)}
+                        className={`w-full rounded-sm border p-3 text-left transition ${
+                          isActive
+                            ? "border-gray-700 bg-gray-100"
+                            : "border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50"
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="mt-0.5 rounded-sm bg-gray-100 p-2 text-gray-600">
+                            <FaUserFriends />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-semibold text-gray-800">
+                              {team.team.name}
+                            </p>
+                            <p className="mt-1 text-xs text-gray-500">
+                              {team.role === "admin" ? "Admin" : "Member"} - {team.team.members.length} member
+                              {team.team.members.length > 1 ? "s" : ""}
+                            </p>
+                            {team.team.created_by === userId && (
+                              <span className="mt-2 inline-block rounded-sm bg-gray-200 px-2 py-0.5 text-[11px] font-semibold text-gray-700">
+                                Owner
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <div className="px-3 py-6 text-center">
+                <p className="text-sm text-gray-500">No teams yet.</p>
+                <button
+                  className="mt-3 rounded-sm bg-gray-700 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-800"
+                  onClick={() => document.getElementById("my_modal_3").showModal()}
+                >
+                  + Create your first team
+                </button>
+              </div>
+            )}
+          </div>
+        </aside>
+
+        <section className="h-full min-h-0 rounded-sm border border-gray-200 bg-white shadow-sm">
+          {location.pathname === "/app/team" && !teams.length && !teamLoading ? (
+            <div className="flex h-full items-center justify-center p-6">
+              <p className="text-center text-gray-500">
+                Create a team from the left panel to start discussions and collaboration.
+              </p>
+            </div>
           ) : (
-            <div className="flex flex-col items-center justify-center w-full h-96">
-              <h1 className="text-2xl text-gray-500">No teams Found</h1>
-              <button
-                className="mt-4 bg-gray-600 text-white px-4 py-2 rounded-sm shadow hover:bg-gray-700 transition"
-                onClick={() => document.getElementById("my_modal_3").showModal()}
-              >
-                + Create New
-              </button>
+            <div className="h-full min-h-0 overflow-hidden p-4 sm:p-6">
+              <Outlet />
             </div>
           )}
+        </section>
+      </div>
 
-          <dialog id="my_modal_3" className="modal">
-            <div className="modal-box bg-white p-6 rounded-sm shadow-sm w-fit lg:w-1/2 mx-auto mt-10">
-              <form method="dialog">
-                <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-                  ✕
-                </button>
-              </form>
-              <AddNew />
-            </div>
-          </dialog>
+      <dialog id="my_modal_3" className="modal">
+        <div className="modal-box mx-auto mt-10 w-fit rounded-sm bg-white p-6 shadow-sm lg:w-1/2">
+          <form method="dialog">
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">x</button>
+          </form>
+          <AddNew />
         </div>
-      ) : (
-        <div className="h-full">
-          <Outlet />
-        </div>
-      )}
+      </dialog>
     </div>
   );
 }

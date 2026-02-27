@@ -1,4 +1,5 @@
 import React from "react";
+import { Navigate } from "react-router-dom";
 
 import Dashboard from "../pages/dashboard";
 
@@ -37,6 +38,7 @@ import Discussions from "../features/team/pages/Team/OpenedTeam/discussions";
 import TeamSettings from "../features/team/pages/Team/OpenedTeam/settings";
 import Resources from "../features/team/pages/Team/OpenedTeam/resources";
 import TeamTodoLists from "../features/team/pages/Team/OpenedTeam/todo-lists";
+import TeamMembers from "../features/team/pages/Team/OpenedTeam/members";
 
 // Other features
 import Profile from "../features/profile/pages/Profile";
@@ -124,6 +126,10 @@ const dashboardRoutes = {
           element: <ProtectedRoute component={TeamOpened} />,
           children: [
             {
+              index: true,
+              element: <Navigate to="discussions" replace />,
+            },
+            {
               path: "overview",
               element: <ProtectedRoute component={TeamOverview} />,
             },
@@ -142,6 +148,10 @@ const dashboardRoutes = {
             {
               path: "resources",
               element: <ProtectedRoute component={Resources} />,
+            },
+            {
+              path: "members",
+              element: <ProtectedRoute component={TeamMembers} />,
             },
             {
               path: "todo-lists",

@@ -34,6 +34,7 @@ const AddNew = () => {
       const data = await response.json();
       if (response.ok) {
         toast.success("Team succesfully created!");
+        document.getElementById("my_modal_3")?.close();
         navigate(`/app/team/open/${data.id}`);
       } else {
         console.error("Failed to create team:", data);

@@ -1,11 +1,9 @@
 import React, { useEffect } from "react";
 import {
-  PiSquaresFourBold,
   PiCheckCircleBold,
   PiFileTextBold,
-  PiUsersThreeBold,
   PiGearBold,
-  PiArrowLeftBold,
+  PiUsersThreeBold,
   PiDotsThreeOutlineVerticalBold,
   PiTrashBold,
   PiPencilSimpleBold,
@@ -34,13 +32,6 @@ const TeamOpened = () => {
     }
     // eslint-disable-next-line
   }, [teamId]);
-
-  useEffect(() => {
-    if (team) {
-      navigate("overview", { state: { team } });
-    }
-    // eslint-disable-next-line
-  }, []);
 
   const getTeamDetails = async (id) => {
     try {
@@ -91,45 +82,35 @@ const TeamOpened = () => {
   };
 
   return (
-    <div className="h-full flex flex-col rounded-sm shadow-sm bg-gradient-to-br from-white to-gray-50 border border-gray-200">
-      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white rounded-t-2xl">
-        <button
-          type="button"
-          className="p-2 rounded-sm hover:bg-gray-100 transition"
-          onClick={() => navigate("/app/team")}
-        >
-          <PiArrowLeftBold className="text-2xl text-gray-700" />
-        </button>
-        <div className="flex items-center gap-2">
-          <div className="dropdown dropdown-end">
-            <button
-              tabIndex={0}
-              className="p-2 rounded-sm hover:bg-gray-100 transition"
+    <div className="h-full min-h-0 flex flex-col">
+      <div className="flex items-center justify-end border-b border-gray-100 pb-3">
+        <div className="dropdown dropdown-end">
+          <button
+            tabIndex={0}
+            className="p-2 rounded-sm hover:bg-gray-100 transition"
+          >
+            <PiDotsThreeOutlineVerticalBold className="text-2xl text-gray-600" />
+          </button>
+          <ul
+            tabIndex={0}
+            className="dropdown-content menu bg-white rounded-sm shadow-sm w-40 mt-2 border border-gray-100"
+          >
+            <li className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
+              <PiPencilSimpleBold className="text-gray-500" />
+              <span>Edit</span>
+            </li>
+            <li
+              className="flex items-center gap-2 px-4 py-2 hover:bg-red-50 text-red-600 cursor-pointer"
+              onClick={handleTeamDelete(team?.id)}
             >
-              <PiDotsThreeOutlineVerticalBold className="text-2xl text-gray-600" />
-            </button>
-            <ul
-              tabIndex={0}
-              className="dropdown-content menu bg-white rounded-sm shadow-sm w-40 mt-2 border border-gray-100"
-            >
-              <li className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
-                <PiPencilSimpleBold className="text-gray-500" />
-                <span>Edit</span>
-              </li>
-              <li
-                className="flex items-center gap-2 px-4 py-2 hover:bg-red-50 text-red-600 cursor-pointer"
-                onClick={handleTeamDelete(team?.id)}
-              >
-                <PiTrashBold className="text-red-500" />
-                <span>Delete</span>
-              </li>
-            </ul>
-          </div>
+              <PiTrashBold className="text-red-500" />
+              <span>Delete</span>
+            </li>
+          </ul>
         </div>
       </div>
-      <div className="grow flex flex-col">
-        {/* Sub navigation */}
-        <div className="flex items-center gap-2 px-6 pt-4 pb-2 overflow-x-auto scrollbar-hide">
+      <div className="grow min-h-0 flex flex-col">
+        <div className="flex items-center gap-2 pt-4 pb-2 overflow-x-auto scrollbar-hide">
           {menuItems.map((item, index) => (
             <div
               key={index}
@@ -147,7 +128,7 @@ const TeamOpened = () => {
             </div>
           ))}
         </div>
-        <div className="grow w-full px-6 py-4">
+        <div className="grow min-h-0 w-full overflow-y-auto py-4">
           <Outlet />
         </div>
       </div>
@@ -158,9 +139,9 @@ const TeamOpened = () => {
 export default TeamOpened;
 
 const menuItems = [
-  { icon: <PiSquaresFourBold />, label: "Overview", link: "overview" },
-  { icon: <PiCheckCircleBold />, label: "Workspaces", link: "workspaces" },
   { icon: <PiFileTextBold />, label: "Discussions", link: "discussions" },
+  { icon: <PiUsersThreeBold />, label: "Members", link: "members" },
+  { icon: <PiCheckCircleBold />, label: "Workspaces", link: "workspaces" },
   { icon: <PiBookBold />, label: "Resource", link: "resources" },
   // { icon: <PiListChecksBold />, label: "TO-DO Lists", link: "todo-lists" },
   { icon: <PiGearBold />, label: "Settings", link: "settings" },
