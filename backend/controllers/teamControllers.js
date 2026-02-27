@@ -11,6 +11,36 @@ const {
 const { Sequelize, where } = require("sequelize");
 
 const { sendNotification } = require("../services/notificationService");
+const presenceService = require("../services/presenceService");
+
+const getMembership = async (teamId, userId) => {
+  return team_membership.findOne({
+    where: { team_id: teamId, user_id: userId },
+  });
+};
+
+const getTeamAndMembershipContext = async (teamId, actorUserId) => {
+  const _team = await team.findByPk(teamId);
+  if (!_team) {
+    return { error: { status: 404, message: "team not found" } };
+  }
+
+  const actorMembership = await getMembership(teamId, actorUserId);
+  if (!actorMembership) {
+    return {
+      error: {
+        status: 401,
+        message: "Unauthorized: You are not a member of this team",
+      },
+    };
+  }
+
+  return {
+    team: _team,
+    actorMembership,
+    isOwner: String(_team.created_by) === String(actorUserId),
+  };
+};
 
 const createTeam = async (req, res) => {
   const { name } = req.body;
@@ -76,7 +106,9 @@ const createTeam = async (req, res) => {
 
 const giveUserMembership = async (req, res) => {
   try {
-    const _team = await team.findByPk(req.params.team_id);
+    const teamId = req.params.team_id;
+    const targetUserId = req.body.user_id;
+    const _team = await team.findByPk(teamId);
 
     if (!_team) {
       return res.status(404).json({ message: "team not found" });
@@ -84,7 +116,7 @@ const giveUserMembership = async (req, res) => {
 
     const is_member_and_admin = await team_membership.findOne({
       where: {
-        team_id: req.params.team_id,
+        team_id: teamId,
         user_id: req.user.id,
         role: "admin",
       },
@@ -96,9 +128,26 @@ const giveUserMembership = async (req, res) => {
         .json({ message: "Unauthorized: You are not an admin of this team" });
     }
 
+    if (!targetUserId) {
+      return res.status(400).json({ message: "user_id is required" });
+    }
+
+    const existingMembership = await team_membership.findOne({
+      where: {
+        team_id: teamId,
+        user_id: targetUserId,
+      },
+    });
+
+    if (existingMembership) {
+      return res
+        .status(409)
+        .json({ message: "User is already invited or a member of this team" });
+    }
+
     const _membership = await team_membership.create({
-      team_id: req.params.team_id,
-      user_id: req.body.user_id,
+      team_id: teamId,
+      user_id: targetUserId,
       role: "member",
     });
 
@@ -120,118 +169,76 @@ const giveUserMembership = async (req, res) => {
 const promoteTeamAdmin = async (req, res) => {
   try {
     const teamId = req.params.team_id;
-    const userId = req.user.id;
+    const actorUserId = req.user.id;
+    const targetUserId = req.body.user_id;
 
-    const _team = await team.findByPk(teamId);
-
-    if (!_team) {
-      return res.json(404).json({ message: "team not found" });
+    if (!targetUserId) {
+      return res.status(400).json({ message: "user_id is required" });
     }
-    const isTeamCreatedByUser = await team.findOne({
-      where: {
-        id: teamId,
-        created_by: userId,
-      },
-    });
 
-    const is_member_and_admin = await team_membership.findOne({
-      where: {
-        team_id: teamId,
-        user_id: userId,
-        role: "admin",
-      },
-    });
+    const context = await getTeamAndMembershipContext(teamId, actorUserId);
+    if (context.error) {
+      return res.status(context.error.status).json({ message: context.error.message });
+    }
 
-    if (!is_member_and_admin || !isTeamCreatedByUser) {
+    const { actorMembership, isOwner } = context;
+    if (actorMembership.role !== "admin") {
       return res
         .status(401)
         .json({ message: "Unauthorized: You are not an admin of this team" });
     }
 
-    const checkMembership = await team_membership.findOne({
+    const targetMembership = await team_membership.findOne({
       where: {
         team_id: teamId,
-        user_id: req.body.user_id,
+        user_id: targetUserId,
       },
     });
 
-    if (!checkMembership) {
-      const _membership = await team_membership.create({
-        team_id: teamId,
-        user_id: req.body.user_id,
-        role: "admin",
-      });
-      // Create permissions with all true for new admin
-      await team_membership_permission.create({
-        team_membership_id: _membership.id,
-        can_create_workspace: true,
-        can_upload_files: true,
-        can_participate_discussion: true,
-        can_create_task: true,
-        can_create_todo: true,
-        can_create_roadmap: true,
-        can_create_study_plan: true,
-        can_create_notes: true,
-        can_share_notes: true,
-      });
-      res.status(201).json(_membership);
-    } else {
-      const _membership = await team_membership.update(
-        {
-          role: "admin",
-        },
-        {
-          where: {
-            team_id: teamId,
-            user_id: req.body.user_id,
-          },
-        }
-      );
-      // Check if permission exists for this membership
-      const member = await team_membership.findOne({
-        where: {
-          team_id: teamId,
-          user_id: req.body.user_id,
-        },
-      });
-      let permission = await team_membership_permission.findOne({
-        where: { team_membership_id: member.id },
-      });
-      if (permission) {
-        await team_membership_permission.update(
-          {
-            can_create_workspace: true,
-            can_upload_files: true,
-            can_participate_discussion: true,
-            can_create_task: true,
-            can_create_todo: true,
-            can_create_roadmap: true,
-            can_create_study_plan: true,
-            can_manage_plans: true,
-            can_create_notes: true,
-            can_share_notes: true,
-          },
-          {
-            where: { team_membership_id: member.id },
-          }
-        );
-      } else {
-        await team_membership_permission.create({
-          team_membership_id: member.id,
-          can_create_workspace: true,
-          can_upload_files: true,
-          can_participate_discussion: true,
-          can_create_task: true,
-          can_create_todo: true,
-          can_create_roadmap: true,
-          can_create_study_plan: true,
-          can_manage_plans: true,
-          can_create_notes: true,
-          can_share_notes: true,
-        });
-      }
-      res.status(200).json(_membership);
+    if (!targetMembership) {
+      return res.status(404).json({ message: "Target user is not a team member" });
     }
+
+    if (targetMembership.role === "admin") {
+      return res.status(409).json({ message: "User is already an admin" });
+    }
+
+    // Only owner can change admin roles.
+    if (!isOwner) {
+      return res
+        .status(403)
+        .json({ message: "Only the team owner can promote admins" });
+    }
+
+    await targetMembership.update({ role: "admin" });
+
+    let permission = await team_membership_permission.findOne({
+      where: { team_membership_id: targetMembership.id },
+    });
+
+    const adminPermissions = {
+      can_create_workspace: true,
+      can_upload_files: true,
+      can_participate_discussion: true,
+      can_create_task: true,
+      can_create_todo: true,
+      can_create_roadmap: true,
+      can_create_study_plan: true,
+      can_manage_plans: true,
+      can_create_notes: true,
+      can_share_notes: true,
+    };
+
+    if (permission) {
+      await permission.update(adminPermissions);
+    } else {
+      await team_membership_permission.create({
+        team_membership_id: targetMembership.id,
+        ...adminPermissions,
+      });
+    }
+
+    return res.status(200).json({ message: "Member promoted to admin" });
   } catch (error) {
     res
       .status(500)
@@ -242,83 +249,98 @@ const promoteTeamAdmin = async (req, res) => {
 const demoteTeamAdmin = async (req, res) => {
   try {
     const teamId = req.params.team_id;
-    const userId = req.user.id;
+    const actorUserId = req.user.id;
+    const targetUserId = req.body.user_id;
 
-    const _team = await team.findByPk(teamId);
-
-    if (!_team) {
-      return res.json(404).json({ message: "team not found" });
+    if (!targetUserId) {
+      return res.status(400).json({ message: "user_id is required" });
     }
 
-    const isTeamCreatedByUser = await team.findOne({
-      where: {
-        id: teamId,
-        created_by: userId,
-      },
-    });
+    const context = await getTeamAndMembershipContext(teamId, actorUserId);
+    if (context.error) {
+      return res.status(context.error.status).json({ message: context.error.message });
+    }
 
-    const is_member_and_admin = await team_membership.findOne({
-      where: {
-        team_id: teamId,
-        user_id: userId,
-        role: "admin",
-      },
-    });
-
-    if (!is_member_and_admin || !isTeamCreatedByUser) {
+    const { actorMembership, isOwner, team: teamInfo } = context;
+    if (actorMembership.role !== "admin") {
       return res
         .status(401)
         .json({ message: "Unauthorized: You are not an admin of this team" });
     }
 
-    const checkMembership = await team_membership.findOne({
+    const targetMembership = await team_membership.findOne({
       where: {
         team_id: teamId,
-        user_id: req.body.user_id,
+        user_id: targetUserId,
         role: "admin",
       },
     });
 
-    if (checkMembership && userId != req.body.user_id) {
-      const _membership = await team_membership.update(
-        {
-          role: "member",
-        },
-        {
-          where: {
-            team_id: req.params.team_id,
-            user_id: req.body.user_id,
-          },
-        }
-      );
-      // Remove all permissions for demoted admin
-      const member = await team_membership.findOne({
-        where: {
-          team_id: req.params.team_id,
-          user_id: req.body.user_id,
-        },
-      });
-      if (member) {
-        await team_membership_permission.update(
-          {
-            can_create_workspace: false,
-            can_upload_files: false,
-            can_participate_discussion: false,
-            can_create_task: false,
-            can_create_todo: false,
-            can_create_roadmap: false,
-            can_create_study_plan: false,
-            can_manage_plans: false,
-            can_create_notes: false,
-            can_share_notes: false,
-          },
-          {
-            where: { team_membership_id: member.id },
-          }
-        );
-      }
-      res.status(200).json(_membership);
+    if (!targetMembership) {
+      return res.status(404).json({ message: "Target admin not found" });
     }
+
+    if (String(teamInfo.created_by) === String(targetUserId)) {
+      return res.status(400).json({ message: "Team owner cannot be demoted" });
+    }
+
+    if (!isOwner) {
+      return res
+        .status(403)
+        .json({ message: "Only the team owner can demote admins" });
+    }
+
+    await targetMembership.update({ role: "member" });
+
+    await team_membership_permission.update(
+      {
+        can_create_workspace: false,
+        can_upload_files: false,
+        can_participate_discussion: false,
+        can_create_task: false,
+        can_create_todo: false,
+        can_create_roadmap: false,
+        can_create_study_plan: false,
+        can_manage_plans: false,
+        can_create_notes: false,
+        can_share_notes: false,
+      },
+      {
+        where: { team_membership_id: targetMembership.id },
+      }
+    );
+
+    return res.status(200).json({ message: "Admin demoted to member" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+const leaveTeam = async (req, res) => {
+  try {
+    const teamId = req.params.team_id;
+    const userId = req.user.id;
+    const _team = await team.findByPk(teamId);
+
+    if (!_team) {
+      return res.status(404).json({ message: "team not found" });
+    }
+
+    if (String(_team.created_by) === String(userId)) {
+      return res
+        .status(400)
+        .json({ message: "Team owner cannot leave. Transfer ownership first." });
+    }
+
+    const membership = await getMembership(teamId, userId);
+    if (!membership) {
+      return res.status(404).json({ message: "Membership not found" });
+    }
+
+    await membership.destroy();
+    return res.status(200).json({ message: "You have left the team" });
   } catch (error) {
     res
       .status(500)
@@ -369,50 +391,39 @@ const acceptMembershipInvitation = async (req, res) => {
 const removeUserMember = async (req, res) => {
   try {
     const teamId = req.params.team_id;
-    const userId = req.user.id;
-    const targetUser = req.params.user_id;
+    const actorUserId = req.user.id;
+    const targetUserId = req.params.user_id;
 
-    const _team = await team.findByPk(teamId);
-
-    if (!_team) {
-      return res.json(404).json({ message: "team not found" });
+    const context = await getTeamAndMembershipContext(teamId, actorUserId);
+    if (context.error) {
+      return res.status(context.error.status).json({ message: context.error.message });
     }
-    // const isTeamCreatedByUser = await team.findOne({
-    //     where: {
-    //         id: teamId,
-    //         created_by: userId
-    //     }
-    // });
 
-    const is_member_and_admin = await team_membership.findOne({
-      where: {
-        team_id: teamId,
-        user_id: userId,
-        role: "admin",
-      },
-    });
-
-    if (!is_member_and_admin) {
+    const { team: teamInfo, actorMembership, isOwner } = context;
+    if (actorMembership.role !== "admin") {
       return res
         .status(401)
         .json({ message: "Unauthorized: You are not an admin of this team" });
     }
 
-    const checkMembership = await team_membership.findOne({
-      where: {
-        team_id: teamId,
-        user_id: targetUser,
-        role: "member",
-      },
-    });
+    if (String(teamInfo.created_by) === String(targetUserId)) {
+      return res.status(400).json({ message: "Team owner cannot be removed" });
+    }
 
-    if (!checkMembership)
+    const targetMembership = await getMembership(teamId, targetUserId);
+    if (!targetMembership) {
+      return res.status(404).json({ message: "Target membership not found" });
+    }
+
+    // Non-owner admins cannot remove other admins.
+    if (!isOwner && targetMembership.role === "admin") {
       return res
-        .status(400)
-        .json({ message: "admin can only be removed by the owner" });
+        .status(403)
+        .json({ message: "Only owner can remove admins" });
+    }
 
-    await checkMembership.destroy();
-    res.status(200).json({ message: "membership removed" });
+    await targetMembership.destroy();
+    return res.status(200).json({ message: "membership removed" });
   } catch (error) {
     res
       .status(500)
@@ -487,14 +498,25 @@ const readTeam = async (req, res) => {
       name: teamData.name,
       created_by: teamData.created_by,
       createdAt: teamData.createdAt,
-      members: teamData.memberships.map((member) => ({
+      members: [],
+    };
+
+    const memberUserIds = teamData.memberships.map((member) => member.user.id);
+    const presenceByUserId = presenceService.getPresenceForUsers(memberUserIds);
+
+    formattedTeam.members = teamData.memberships.map((member) => {
+      const presence = presenceByUserId[String(member.user.id)] || {};
+      return {
         id: member.user.id,
         name: member.user.name,
         email: member.user.email,
         role: member.role,
         permissions: member.permission || null,
-      })),
-    };
+        is_online: Boolean(presence.is_online),
+        is_active: Boolean(presence.is_active),
+        last_seen_at: presence.last_seen_at || null,
+      };
+    });
 
     return res.status(200).json(formattedTeam);
   } catch (error) {
@@ -537,21 +559,34 @@ const readTeams = async (req, res) => {
     });
 
     // Format the response for better readability <--  this is all chatGPT idea - I swear I didn't write this
-    const formattedTeams = memberships.map((membership) => ({
-      role: membership.role,
-      team: {
-        id: membership.team.id,
-        name: membership.team.name,
-        created_by: membership.team.created_by,
-        createdAt: membership.team.createdAt,
-        members: membership.team.memberships.map((member) => ({
-          id: member.user.id,
-          name: member.user.name,
-          email: member.user.email,
-          role: member.role,
-        })),
-      },
-    }));
+    const allMemberUserIds = memberships.flatMap((membership) =>
+      membership.team.memberships.map((member) => member.user.id)
+    );
+    const presenceByUserId = presenceService.getPresenceForUsers(allMemberUserIds);
+
+    const formattedTeams = memberships.map((membership) => {
+      return {
+        role: membership.role,
+        team: {
+          id: membership.team.id,
+          name: membership.team.name,
+          created_by: membership.team.created_by,
+          createdAt: membership.team.createdAt,
+          members: membership.team.memberships.map((member) => {
+            const presence = presenceByUserId[String(member.user.id)] || {};
+            return {
+              id: member.user.id,
+              name: member.user.name,
+              email: member.user.email,
+              role: member.role,
+              is_online: Boolean(presence.is_online),
+              is_active: Boolean(presence.is_active),
+              last_seen_at: presence.last_seen_at || null,
+            };
+          }),
+        },
+      };
+    });
 
     return res.status(200).json(formattedTeams);
   } catch (error) {
@@ -795,6 +830,7 @@ module.exports = {
   giveUserMembership,
   promoteTeamAdmin,
   demoteTeamAdmin,
+  leaveTeam,
   removeUserMember,
   acceptMembershipInvitation,
   removeWorkspaceFromTeam,

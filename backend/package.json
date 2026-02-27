@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "nodemon dev-server.js",
     "test": "jest",
     "start": "nodemon server.js"
   },

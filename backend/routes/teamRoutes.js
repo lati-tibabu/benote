@@ -20,6 +20,7 @@ router.put("/:team_id/demote", teamController.demoteTeamAdmin);
 
 //remove member
 router.delete("/:team_id/members/:user_id", teamController.removeUserMember);
+router.delete("/:team_id/leave", teamController.leaveTeam);
 
 router.get("/:id", teamController.readTeam);
 router.put("/:id", teamController.updateTeam);

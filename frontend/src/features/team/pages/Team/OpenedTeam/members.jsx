@@ -7,15 +7,17 @@ import { ToastContainer, toast } from "react-toastify";
 import SendInvitation from "../invite_user";
 import { setTeam } from "../../../../../redux/slices/teamReducer";
 
-const getPresence = (value) => {
-  const input = String(value || "");
-  let hash = 0;
-  for (let i = 0; i < input.length; i += 1) {
-    hash = (hash << 5) - hash + input.charCodeAt(i);
-    hash |= 0;
-  }
+const formatLastSeen = (lastSeenAt) => {
+  if (!lastSeenAt) return "last seen unknown";
+  const date = new Date(lastSeenAt);
+  const now = Date.now();
+  const diffMs = now - date.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
 
-  return Math.abs(hash) % 3 === 0 ? "online" : "offline";
+  if (diffMin <= 1) return "active just now";
+  if (diffMin < 60) return `active ${diffMin}m ago`;
+  if (diffMin < 1440) return `active ${Math.floor(diffMin / 60)}h ago`;
+  return `active ${Math.floor(diffMin / 1440)}d ago`;
 };
 
 const normalizeMember = (member, fallbackIndex) => {
@@ -26,6 +28,9 @@ const normalizeMember = (member, fallbackIndex) => {
     email: user?.email || member?.email || "",
     role: (member?.role || user?.role || "member").toLowerCase(),
     joinedAt: member?.createdAt || member?.joinedAt || user?.createdAt || null,
+    isActive: Boolean(member?.is_active),
+    isOnline: Boolean(member?.is_online),
+    lastSeenAt: member?.last_seen_at || null,
   };
 };
 
@@ -66,6 +71,9 @@ const TeamMembers = () => {
 
   useEffect(() => {
     fetchTeamDetails();
+
+    const refreshInterval = setInterval(fetchTeamDetails, 30000);
+    return () => clearInterval(refreshInterval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [teamId]);
 
@@ -101,7 +109,8 @@ const TeamMembers = () => {
   const selectedMember = filteredMembers.find((member) => String(member.id) === String(selectedMemberId));
 
   const myMemberRecord = members.find((member) => String(member.id) === String(currentUser?.id));
-  const canManageMembers = myMemberRecord?.role === "admin" || team?.created_by === currentUser?.id;
+  const isOwner = String(team?.created_by) === String(currentUser?.id);
+  const isAdmin = myMemberRecord?.role === "admin";
 
   const manageMember = async (memberId, action) => {
     const endpoint =
@@ -165,7 +174,6 @@ const TeamMembers = () => {
               <ul className="space-y-1">
                 {filteredMembers.map((member) => {
                   const isSelected = String(member.id) === String(selectedMemberId);
-                  const presence = getPresence(member.id);
                   return (
                     <li key={member.id}>
                       <button
@@ -182,14 +190,16 @@ const TeamMembers = () => {
                             {member.name?.charAt(0)?.toUpperCase() || <FaUserCircle />}
                             <span
                               className={`absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full ring-2 ring-white ${
-                                presence === "online" ? "bg-green-500" : "bg-gray-300"
+                                member.isOnline || member.isActive ? "bg-green-500" : "bg-gray-300"
                               }`}
                             />
                           </div>
                           <div className="min-w-0">
                             <p className="truncate text-sm font-medium text-gray-800">{member.name}</p>
                             <p className="truncate text-xs text-gray-500">
-                              {presence === "online" ? "online now" : "last seen recently"}
+                              {member.isOnline || member.isActive
+                                ? "online now"
+                                : formatLastSeen(member.lastSeenAt)}
                             </p>
                           </div>
                         </div>
@@ -225,7 +235,9 @@ const TeamMembers = () => {
                   <div className="rounded-sm border border-gray-200 bg-gray-50 p-3">
                     <p className="text-xs uppercase tracking-wide text-gray-500">Status</p>
                     <p className="mt-1 text-sm font-medium text-gray-800">
-                      {getPresence(selectedMember.id) === "online" ? "Online now" : "Away"}
+                      {selectedMember.isOnline || selectedMember.isActive
+                        ? "Online now"
+                        : formatLastSeen(selectedMember.lastSeenAt)}
                     </p>
                   </div>
                   <div className="rounded-sm border border-gray-200 bg-gray-50 p-3">
@@ -238,32 +250,53 @@ const TeamMembers = () => {
                   </div>
                 </div>
 
-                {canManageMembers && String(selectedMember.id) !== String(currentUser?.id) ? (
+                {isAdmin && String(selectedMember.id) !== String(currentUser?.id) ? (
                   <div className="mt-6 flex flex-wrap gap-2">
                     {selectedMember.role === "admin" ? (
                       <button
                         type="button"
-                        disabled={actionLoading}
+                        disabled={
+                          actionLoading ||
+                          !isOwner ||
+                          String(selectedMember.id) === String(team?.created_by)
+                        }
                         onClick={() => manageMember(selectedMember.id, "demote")}
                         className="rounded-sm bg-amber-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
+                        title={
+                          isOwner ? "Demote admin" : "Only owner can demote admins"
+                        }
                       >
                         Demote to member
                       </button>
                     ) : (
                       <button
                         type="button"
-                        disabled={actionLoading}
+                        disabled={actionLoading || !isOwner}
                         onClick={() => manageMember(selectedMember.id, "promote")}
                         className="rounded-sm bg-gray-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+                        title={
+                          isOwner ? "Promote member" : "Only owner can promote admins"
+                        }
                       >
                         Promote to admin
                       </button>
                     )}
                     <button
                       type="button"
-                      disabled={actionLoading}
+                      disabled={
+                        actionLoading ||
+                        String(selectedMember.id) === String(team?.created_by) ||
+                        (!isOwner && selectedMember.role === "admin")
+                      }
                       onClick={() => manageMember(selectedMember.id, "remove")}
                       className="rounded-sm bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                      title={
+                        String(selectedMember.id) === String(team?.created_by)
+                          ? "Owner cannot be removed"
+                          : !isOwner && selectedMember.role === "admin"
+                          ? "Only owner can remove admins"
+                          : "Remove member"
+                      }
                     >
                       Remove member
                     </button>

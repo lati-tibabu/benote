@@ -8,6 +8,7 @@ import {
     AiOutlineLeft,
     AiOutlineMoon,
     AiOutlineRight,
+    AiOutlineClose,
     AiOutlineSun,
 } from "react-icons/ai";
 import Sidebar from "./Sidebar";
@@ -184,6 +185,26 @@ function DashboardLayout() {
         return () => clearInterval(intervalId);
     }, [apiURL, token, unreadCount, location.pathname]);
 
+    // Activity heartbeat for presence tracking.
+    useEffect(() => {
+        if (!token) return undefined;
+
+        const sendHeartbeat = async () => {
+            try {
+                await fetch(`${apiURL}/api/users/activity/heartbeat`, {
+                    method: "POST",
+                    headers: header,
+                });
+            } catch (error) {
+                console.error("Heartbeat failed:", error);
+            }
+        };
+
+        sendHeartbeat();
+        const heartbeatInterval = setInterval(sendHeartbeat, 60000);
+        return () => clearInterval(heartbeatInterval);
+    }, [apiURL, token]);
+
     const handleDismissNotification = (snoozeMs = NOTIFICATION_SNOOZE_MS) => {
         if (snoozeMs > 0) {
             setNotificationSnoozeUntil(Date.now() + snoozeMs);
@@ -339,6 +360,14 @@ function DashboardLayout() {
                                 <h3 className="text-sm font-semibold text-gray-800">
                                     Quick Information
                                 </h3>
+                                <button
+                                    className="ml-auto rounded-md p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                                    onClick={() => setIsRightPanelOpen(false)}
+                                    aria-label="Close information panel"
+                                    title="Close panel"
+                                >
+                                    <AiOutlineClose size={16} />
+                                </button>
                             </div>
 
                             <div className="mt-4 space-y-3">

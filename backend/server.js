@@ -2,6 +2,7 @@ require("dotenv").config();
 const http = require("http");
 const { Server } = require("socket.io");
 const app = require("./app");
+const presenceService = require("./services/presenceService");
 
 const port = process.env.PORT || 3060;
 const server = http.createServer(app);
@@ -22,6 +23,7 @@ io.on("connection", (socket) => {
   // Register user socket
   socket.on("register", (userId) => {
     users.set(userId, socket.id);
+    presenceService.registerUserSocket(userId, socket.id);
     console.log(`User ${userId} registered with socket ID: ${socket.id}`);
   });
 
@@ -38,6 +40,7 @@ io.on("connection", (socket) => {
 
   // Clean up on disconnect
   socket.on("disconnect", () => {
+    presenceService.unregisterSocket(socket.id);
     for (const [userId, id] of users.entries()) {
       if (id === socket.id) {
         users.delete(userId);

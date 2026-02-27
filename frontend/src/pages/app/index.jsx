@@ -242,7 +242,7 @@ function Home() {
 
             <div className="mt-10 flex flex-wrap items-center gap-3">
               <Link
-                to="/auth/signup"
+                to="/app/home"
                 className="inline-flex items-center gap-2 bg-slate-900 px-6 py-4 text-base font-semibold text-white transition hover:bg-slate-800"
               >
                 Launch workspace <PiFlowArrow />

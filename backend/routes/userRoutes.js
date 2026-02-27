@@ -7,6 +7,11 @@ const authMiddleware = require("../middlewares/authMiddleware");
 router.post("/", userControllers.createUser);
 router.get("/", /*authMiddleware,*/ userControllers.readUsers);
 router.post("/email", userControllers.readUserByEmail);
+router.post(
+  "/activity/heartbeat",
+  authMiddleware.authMiddleware,
+  userControllers.heartbeat
+);
 router.get("/:id", userControllers.readUser);
 router.put("/", authMiddleware.authMiddleware, userControllers.updateUser);
 router.delete("/", authMiddleware.authMiddleware, userControllers.deleteUser);

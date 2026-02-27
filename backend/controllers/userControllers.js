@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const { user, workspace, workspace_membership } = require("../models");
 const emailService = require("../services/emailService");
+const presenceService = require("../services/presenceService");
 
 // Create
 const createUser = async (req, res) => {
@@ -284,6 +285,22 @@ const sendEmail = async (req, res) => {
     res.status(500).json({ message: "Failed to send email", error });
   }
 };
+
+const heartbeat = async (req, res) => {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    presenceService.markUserActive(req.user.id);
+    return res.status(200).json({
+      message: "Activity heartbeat recorded",
+      presence: presenceService.getUserPresence(req.user.id),
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
 module.exports = {
   createUser,
   readUsers,
@@ -295,4 +312,5 @@ module.exports = {
   sendEmail,
   verifyUser,
   regenerateVerificationToken,
+  heartbeat,
 };
