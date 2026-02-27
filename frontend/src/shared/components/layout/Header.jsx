@@ -14,6 +14,7 @@ import {
 } from "react-icons/pi";
 import { toggleTheme } from "../../../redux/slices/themeSlice";
 import { clearAuthenticatedUser } from "@redux/slices/authSlice";
+import { WorkspaceIcon } from "@shared/components/ui/workspace-icon";
 
 function Header({
     showSidebar,
@@ -92,7 +93,12 @@ function Header({
                     workspaceTitle &&
                     workspaceEmoji ? (
                     <span className="hidden sm:flex border-l-2 border-gray-200 pl-3 max-w-[200px] sm:max-w-xs truncate text-md lg:text-xl md:text-lg text-gray-700 items-center gap-2">
-                        {workspaceEmoji}
+                        <WorkspaceIcon
+                            iconKey={workspaceEmoji}
+                            size={20}
+                            className="text-gray-700"
+                            fallbackClassName="text-xl"
+                        />
                         {workspaceTitle}
                     </span>
                 ) : loc[0] === "team" && loc[1] === "open" && teamTitle ? (

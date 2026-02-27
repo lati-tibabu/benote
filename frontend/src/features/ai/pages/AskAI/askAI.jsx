@@ -1,10 +1,14 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import Chatbot from "./contents/chatbot";
 
 function AskAI() {
+  const location = useLocation();
+  const initialPrompt = location?.state?.initialPrompt || "";
+
   return (
     <div className="p-4 md:p-6 min-h-[calc(100vh-72px)] bg-slate-50">
-      <Chatbot />
+      <Chatbot initialPrompt={initialPrompt} />
     </div>
   );
 }

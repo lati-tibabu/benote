@@ -65,7 +65,7 @@ const TaskCard = (props) => {
             return;
           setShowDetail(true);
         }}
-        className={`flex flex-col border border-gray-200 border-l-4 ${getBorderColor()} rounded-lg p-3 min-w-72 shadow-sm bg-white transition-all hover:shadow-md duration-200 group relative overflow-hidden cursor-pointer hover:bg-gray-50`}
+        className={`flex flex-col border border-slate-200 border-l-4 ${getBorderColor()} rounded-xl p-3 min-w-72 shadow-sm bg-white transition-all hover:shadow-md duration-200 group relative overflow-hidden cursor-pointer hover:bg-slate-50`}
       >
         {/* Drag Handle */}
         <div className="absolute left-3 top-3 opacity-60 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing">
@@ -74,21 +74,17 @@ const TaskCard = (props) => {
         {/* Dropdown Menu */}
         <div className="absolute right-3 top-3 z-10">
           <div className="dropdown dropdown-end">
-            <div
-              tabIndex={0}
-              role="button"
-              className="p-1 hover:bg-gray-100 rounded-md transition"
-            >
-              <AiOutlineMore size={20} className="text-gray-400" />
+            <div tabIndex={0} role="button" className="p-1 hover:bg-slate-100 rounded-md transition">
+              <AiOutlineMore size={20} className="text-slate-400" />
             </div>
             <ul
               tabIndex={0}
-              className="dropdown-content menu bg-white border border-gray-200 rounded-md w-44 p-1 shadow-lg z-[1]"
+              className="dropdown-content menu bg-white border border-slate-200 rounded-xl w-44 p-1 shadow-lg z-[1]"
             >
               {!isArchived && props.status === "todo" && (
                 <li>
                   <button
-                    className="flex items-center gap-2 p-2 text-gray-700 hover:bg-gray-50 rounded-sm text-sm"
+                    className="flex items-center gap-2 p-2 text-slate-700 hover:bg-slate-50 rounded-lg text-sm"
                     onClick={handleEditButton}
                   >
                     <AiFillEdit />
@@ -99,7 +95,7 @@ const TaskCard = (props) => {
               <li>
                 {!isArchived ? (
                   <button
-                    className="flex items-center gap-2 p-2 text-gray-700 hover:bg-gray-50 rounded-sm text-sm"
+                    className="flex items-center gap-2 p-2 text-slate-700 hover:bg-slate-50 rounded-lg text-sm"
                     onClick={handleArchiveButton}
                   >
                     <FaArchive />
@@ -107,7 +103,7 @@ const TaskCard = (props) => {
                   </button>
                 ) : (
                   <button
-                    className="flex items-center gap-2 p-2 text-gray-700 hover:bg-gray-50 rounded-sm text-sm"
+                    className="flex items-center gap-2 p-2 text-slate-700 hover:bg-slate-50 rounded-lg text-sm"
                     onClick={handleUnarchiveButton}
                   >
                     <FaUndo />
@@ -117,7 +113,7 @@ const TaskCard = (props) => {
               </li>
               <li>
                 <button
-                  className="flex items-center gap-2 p-2 text-red-600 hover:bg-red-50 rounded-sm text-sm"
+                  className="flex items-center gap-2 p-2 text-red-600 hover:bg-red-50 rounded-lg text-sm"
                   onClick={handleDeleteButton}
                 >
                   <FaTrash />
@@ -130,14 +126,14 @@ const TaskCard = (props) => {
 
         {/* Card Content */}
         <div className="mt-7 mb-2">
-          <h3 className="font-semibold text-gray-800 leading-snug mb-2 line-clamp-2 text-sm">
+          <h3 className="font-semibold text-slate-800 leading-snug mb-2 line-clamp-2 text-sm">
             {props.taskName}
           </h3>
           <div className="flex flex-wrap gap-2">
             <span
               className={`text-[10px] px-2 py-0.5 rounded-full font-medium border ${isOverdue
                   ? "bg-red-50 text-red-600 border-red-100"
-                  : "bg-gray-100 text-gray-600 border-gray-200"
+                : "bg-slate-100 text-slate-600 border-slate-200"
                 }`}
             >
               {props.daysLeft}
@@ -146,9 +142,9 @@ const TaskCard = (props) => {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100 text-xs text-gray-500">
+        <div className="flex items-center justify-between mt-auto pt-2 border-t border-slate-100 text-xs text-slate-500">
           <div className="flex items-center gap-1.5">
-            <div className="w-5 h-5 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-500">
+            <div className="w-5 h-5 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500">
               <FaUser size={10} />
             </div>
             <span className="truncate max-w-[80px] font-medium">
@@ -158,7 +154,7 @@ const TaskCard = (props) => {
           <div className="flex items-center gap-1">
             <FaCalendarAlt
               size={10}
-              className={isOverdue ? "text-red-400" : "text-gray-400"}
+              className={isOverdue ? "text-red-400" : "text-slate-400"}
             />
             <span className={isOverdue ? "text-red-500 font-medium" : ""}>
               {new Date(props.rawDueDate).toLocaleDateString(undefined, {
@@ -173,14 +169,14 @@ const TaskCard = (props) => {
       {/* Detail Modal */}
       {showDetail && (
         <dialog className="modal modal-open bg-black/20 backdrop-blur-sm z-50">
-          <div className="modal-box w-11/12 max-w-3xl bg-white p-0 rounded-xl shadow-2xl overflow-hidden scrollbar-hide">
+          <div className="modal-box w-11/12 max-w-3xl bg-white p-0 rounded-2xl shadow-2xl overflow-hidden scrollbar-hide border border-slate-200">
             {/* Header */}
             <div
-              className={`p-5 border-b flex justify-between items-start ${isOverdue ? "bg-red-50/50" : "bg-gray-50/50"
+              className={`p-5 border-b border-slate-200 flex justify-between items-start ${isOverdue ? "bg-red-50/60" : "bg-slate-50/70"
                 }`}
             >
               <div className="flex-1 pr-4">
-                <h2 className="text-xl font-bold text-gray-800 leading-tight">
+                <h2 className="text-xl font-bold text-slate-800 leading-tight">
                   {props.taskName}
                 </h2>
                 <div className="flex gap-2 mt-2">
@@ -206,9 +202,9 @@ const TaskCard = (props) => {
                   e.stopPropagation();
                   setShowDetail(false);
                 }}
-                className="btn btn-sm btn-circle btn-ghost hover:bg-gray-200/50"
+                className="btn btn-sm btn-circle btn-ghost hover:bg-slate-200/50"
               >
-                <FaTimes size={18} className="text-gray-500" />
+                <FaTimes size={18} className="text-slate-500" />
               </button>
             </div>
 
@@ -218,10 +214,10 @@ const TaskCard = (props) => {
                 {/* Main Content */}
                 <div className="md:col-span-2 space-y-6">
                   <div>
-                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
                       Description
                     </h4>
-                    <div className="prose prose-sm max-w-none text-gray-700 bg-gray-50/50 p-5 rounded-xl border border-gray-100">
+                    <div className="prose prose-sm max-w-none text-slate-700 bg-slate-50/60 p-5 rounded-xl border border-slate-100">
                       <MarkdownRenderer content={props.taskDescription} />
                     </div>
                   </div>
@@ -229,12 +225,12 @@ const TaskCard = (props) => {
 
                 {/* Sidebar */}
                 <div className="space-y-6">
-                  <div className="bg-gray-50/80 p-5 rounded-xl border border-gray-100 space-y-4">
+                  <div className="bg-slate-50/80 p-5 rounded-xl border border-slate-100 space-y-4">
                     <div>
-                      <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider block mb-1.5">
+                      <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1.5">
                         Assigned to
                       </span>
-                      <div className="flex items-center gap-2.5 font-medium text-gray-700 bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
+                      <div className="flex items-center gap-2.5 font-medium text-slate-700 bg-white p-2 rounded-lg border border-slate-100 shadow-sm">
                         <div className="w-7 h-7 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs">
                           <FaUser />
                         </div>
@@ -242,10 +238,10 @@ const TaskCard = (props) => {
                       </div>
                     </div>
                     <div>
-                      <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider block mb-1.5">
+                      <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1.5">
                         Due Date
                       </span>
-                      <div className="flex items-center gap-2.5 font-medium text-gray-700 bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
+                      <div className="flex items-center gap-2.5 font-medium text-slate-700 bg-white p-2 rounded-lg border border-slate-100 shadow-sm">
                         <div className="w-7 h-7 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs">
                           <FaCalendarAlt />
                         </div>
@@ -253,11 +249,11 @@ const TaskCard = (props) => {
                       </div>
                     </div>
                     <div>
-                      <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider block mb-1.5">
+                      <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1.5">
                         Created
                       </span>
-                      <div className="flex items-center gap-2.5 text-sm text-gray-600 bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
-                        <div className="w-7 h-7 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center text-xs">
+                      <div className="flex items-center gap-2.5 text-sm text-slate-600 bg-white p-2 rounded-lg border border-slate-100 shadow-sm">
+                        <div className="w-7 h-7 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-xs">
                           <FaRegClock />
                         </div>
                         <span className="text-sm">{props.createdAt}</span>
@@ -268,14 +264,14 @@ const TaskCard = (props) => {
                   {/* Actions in Modal */}
                   {!isArchived && (
                     <div className="space-y-3">
-                      <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                      <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                         Move to
                       </span>
                       <div className="grid grid-cols-1 gap-2">
                         {props.status !== "todo" && (
                           <button
                             onClick={() => handleStatusChange("todo")}
-                            className="btn btn-sm bg-white hover:bg-gray-50 border-gray-200 text-gray-700 w-full justify-start font-normal shadow-sm"
+                            className="btn btn-sm bg-white hover:bg-slate-50 border-slate-200 text-slate-700 w-full justify-start font-normal shadow-sm"
                           >
                             To Do
                           </button>
@@ -283,7 +279,7 @@ const TaskCard = (props) => {
                         {props.status !== "doing" && (
                           <button
                             onClick={() => handleStatusChange("doing")}
-                            className="btn btn-sm bg-white hover:bg-yellow-50 border-gray-200 text-gray-700 hover:text-yellow-700 hover:border-yellow-200 w-full justify-start font-normal shadow-sm"
+                            className="btn btn-sm bg-white hover:bg-yellow-50 border-slate-200 text-slate-700 hover:text-yellow-700 hover:border-yellow-200 w-full justify-start font-normal shadow-sm"
                           >
                             In Progress
                           </button>
@@ -291,7 +287,7 @@ const TaskCard = (props) => {
                         {props.status !== "done" && (
                           <button
                             onClick={() => handleStatusChange("done")}
-                            className="btn btn-sm bg-white hover:bg-green-50 border-gray-200 text-gray-700 hover:text-green-700 hover:border-green-200 w-full justify-start font-normal shadow-sm"
+                            className="btn btn-sm bg-white hover:bg-green-50 border-slate-200 text-slate-700 hover:text-green-700 hover:border-green-200 w-full justify-start font-normal shadow-sm"
                           >
                             Completed
                           </button>
@@ -300,12 +296,12 @@ const TaskCard = (props) => {
                     </div>
                   )}
 
-                  <div className="pt-4 border-t border-gray-200">
+                  <div className="pt-4 border-t border-slate-200">
                     <div className="flex flex-col gap-2">
                       {!isArchived && props.status === "todo" && (
                         <button
                           onClick={handleEditButton}
-                          className="btn btn-sm bg-gray-100 hover:bg-gray-200 border-none text-gray-700 w-full justify-start gap-2"
+                          className="btn btn-sm bg-slate-100 hover:bg-slate-200 border-none text-slate-700 w-full justify-start gap-2"
                         >
                           <AiFillEdit /> Edit Task
                         </button>
@@ -313,14 +309,14 @@ const TaskCard = (props) => {
                       {!isArchived ? (
                         <button
                           onClick={handleArchiveButton}
-                          className="btn btn-sm bg-gray-100 hover:bg-gray-200 border-none text-gray-700 w-full justify-start gap-2"
+                          className="btn btn-sm bg-slate-100 hover:bg-slate-200 border-none text-slate-700 w-full justify-start gap-2"
                         >
                           <FaArchive /> Archive
                         </button>
                       ) : (
                         <button
                           onClick={handleUnarchiveButton}
-                          className="btn btn-sm bg-gray-100 hover:bg-gray-200 border-none text-gray-700 w-full justify-start gap-2"
+                          className="btn btn-sm bg-slate-100 hover:bg-slate-200 border-none text-slate-700 w-full justify-start gap-2"
                         >
                           <FaUndo /> Unarchive
                         </button>

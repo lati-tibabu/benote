@@ -3,12 +3,14 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { HiMenu } from "react-icons/hi";
 import { PiBellRingingDuotone } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
+import { AiOutlineMoon, AiOutlineSun } from "react-icons/ai";
 import Sidebar from "./Sidebar";
 import NotificationBanner from "./NotificationBanner";
 import { SearchModal } from "../../../features/search";
 import { AiOverviewModal } from "../../../features/ai";
 import { sendBrowserNotification } from "../../../utils/sendBrowserNotification";
 import { setWorkspaceRecent } from "../../../redux/slices/workspaceSlice";
+import { setTheme } from "../../../redux/slices/themeSlice";
 
 function DashboardLayout() {
     const apiURL = import.meta.env.VITE_API_URL;
@@ -29,6 +31,7 @@ function DashboardLayout() {
     const dispatch = useDispatch();
     const recentWorkspaces =
         useSelector((state) => state.workspace.workspaceRecent) || [];
+    const theme = useSelector((state) => state.theme.theme);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -56,6 +59,11 @@ function DashboardLayout() {
 
     const handleCollapseBar = () => {
         setCollapsedBar((prev) => !prev);
+    };
+
+    const isDarkTheme = theme === "dark";
+    const handleThemeToggle = () => {
+        dispatch(setTheme(isDarkTheme ? "light" : "dark"));
     };
 
     // Fetch unread notification count
@@ -238,7 +246,19 @@ function DashboardLayout() {
 
                 {/* Main Content */}
                 <main className="w-full flex flex-col h-screen min-h-0 overflow-y-auto scrollbar-hide bg-transparent">
-                    <div className="fixed top-4 right-4 z-40">
+                    <div className="fixed top-4 right-4 z-40 flex items-center gap-2">
+                        <button
+                            className="relative flex items-center justify-center h-11 w-11 rounded-xl bg-white text-gray-800 border border-gray-200 shadow-sm hover:bg-gray-50 transition-all"
+                            onClick={handleThemeToggle}
+                            aria-label="Toggle theme"
+                            title={isDarkTheme ? "Switch to light mode" : "Switch to dark mode"}
+                        >
+                            {isDarkTheme ? (
+                                <AiOutlineSun size={20} />
+                            ) : (
+                                <AiOutlineMoon size={20} />
+                            )}
+                        </button>
                         <button
                             className="relative flex items-center justify-center h-11 w-11 rounded-xl bg-white text-gray-800 border border-gray-200 shadow-sm hover:bg-gray-50 transition-all"
                             onClick={() => navigate("/app/notifications")}

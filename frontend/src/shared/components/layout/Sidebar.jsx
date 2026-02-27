@@ -20,6 +20,7 @@ import {
 } from "react-icons/pi";
 import { FEATURES } from "../../../config/featureFlags";
 import { HiSearch } from "react-icons/hi";
+import { WorkspaceIcon } from "@shared/components/ui/workspace-icon";
 
 const workspaceSubMenusModern = [
     { icon: <PiChartBarDuotone />, label: "Overview", link: "overview" },
@@ -152,7 +153,12 @@ function Sidebar({
                                             title={item.workspace.name}
                                         >
                                             <span className="text-base">
-                                                {item.workspace.emoji || "📁"}
+                                                <WorkspaceIcon
+                                                    iconKey={item.workspace.emoji}
+                                                    size={18}
+                                                    className="text-gray-700"
+                                                    fallbackClassName="text-base"
+                                                />
                                             </span>
                                             <span className="truncate">
                                                 {item.workspace.name || "Untitled Workspace"}

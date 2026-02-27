@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PomodoroFocus from "./contents/pomodoro-focus";
-import { AiOutlineClockCircle } from "react-icons/ai";
+import { AiOutlineClockCircle, AiOutlineSend } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { FaCheckCircle, FaGem } from "react-icons/fa";
 import { FaBolt, FaCheck, FaClock, FaDiamond } from "react-icons/fa6";
@@ -8,8 +8,7 @@ import AiSummary from "./contents/ai-summary";
 import { useDispatch, useSelector } from "react-redux";
 import { setWorkspaceRecent } from "@redux/slices/workspaceSlice";
 import { setTasksRecent } from "@redux/slices/tasksSlice";
-import TaskRecommendation from "./contents/task-recommendation";
-import TaskStatus from "./contents/task-status";
+import { WorkspaceIcon } from "@shared/components/ui/workspace-icon";
 import TaskActivityChart from "./contents/task-activity-chart";
 import TodayTodos from "./contents/today-todos";
 import AssignmentList from "./contents/assignment-list";
@@ -48,7 +47,12 @@ const WorkspaceSection = ({
                 onClick={handleWorkspaceOpen(workspace.workspace.id)}
               >
                 <div className="text-4xl mb-3 select-none">
-                  {workspace.workspace.emoji}
+                  <WorkspaceIcon
+                    iconKey={workspace.workspace.emoji}
+                    size={36}
+                    className="text-gray-700"
+                    fallbackClassName="text-4xl"
+                  />
                 </div>
                 <div className="font-semibold text-lg text-gray-900 group-hover:text-gray-700 truncate mb-1">
                   {workspace.workspace.name}
@@ -168,6 +172,44 @@ const LatestTasks = ({ tasks, taskLoading }) => {
   );
 };
 
+const AskAiLauncher = ({ onSubmitPrompt }) => {
+  const [prompt, setPrompt] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const trimmed = prompt.trim();
+    if (!trimmed) return;
+    onSubmitPrompt(trimmed);
+    setPrompt("");
+  };
+
+  return (
+    <div className="w-full bg-white border border-gray-200 rounded-2xl p-5 sm:p-6">
+      <h2 className="text-xl font-semibold mb-2 text-gray-900">Ask AI</h2>
+      <p className="text-sm text-gray-500 mb-4">
+        Type a prompt and press Enter to continue in AskAI.
+      </p>
+      <form onSubmit={handleSubmit} className="flex gap-2">
+        <input
+          type="text"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="Ask anything..."
+          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+          aria-label="Ask AI prompt"
+        />
+        <button
+          type="submit"
+          className="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 text-gray-900 hover:bg-gray-200 transition-colors"
+          aria-label="Send prompt to AskAI"
+        >
+          <AiOutlineSend className="text-lg" />
+        </button>
+      </form>
+    </div>
+  );
+};
+
 const Home = () => {
   const apiURL = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("jwt");
@@ -246,6 +288,10 @@ const Home = () => {
     navigate(`/app/workspace/open/${workspaceId}`);
   };
 
+  const handleAskAiRedirect = (prompt) => {
+    navigate("/app/askAI", { state: { initialPrompt: prompt } });
+  };
+
   const tabConfig = [
     {
       key: "workspaces",
@@ -278,19 +324,14 @@ const Home = () => {
       icon: <FaDiamond className="text-lg" />,
     },
     {
-      key: "status",
-      label: "Task Status",
-      icon: <FaCheck className="text-lg" />,
-    },
-    {
       key: "activity",
       label: "Task Activity",
       icon: <FaClock className="text-lg" />,
     },
     {
-      key: "recommendation",
-      label: "Task Recommendation",
-      icon: <FaBolt className="text-lg" />,
+      key: "chatbot",
+      label: "Ask AI",
+      icon: <FaGem className="text-lg" />,
     },
   ];
 
@@ -366,21 +407,15 @@ const Home = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {viewMode === "default" ? (
-          <>
-            <div className="md:col-span-2 flex flex-col gap-6">
+            <div className="md:col-span-3 flex flex-col gap-6">
               <WorkspaceSection
                 workspaces={workspaces}
                 workspaceLoading={workspaceLoading}
                 handleWorkspaceOpen={handleWorkspaceOpen}
               />
               <LatestTasks tasks={tasks} taskLoading={taskLoading} />
+              <AskAiLauncher onSubmitPrompt={handleAskAiRedirect} />
             </div>
-
-            <div className="md:col-span-1 flex flex-col gap-6">
-              <TaskStatus />
-              <TaskRecommendation />
-            </div>
-          </>
         ) : (
           <div className="md:col-span-3 border border-gray-200 bg-white rounded-2xl overflow-hidden">
             <div className="sticky top-0 z-10 flex gap-1 border-b border-gray-200 bg-white overflow-x-auto whitespace-nowrap scrollbar-hide p-2">
@@ -415,9 +450,10 @@ const Home = () => {
               {activeTab === "todos" && <TodayTodos />}
               {activeTab === "ai" && <AiSummary />}
               {activeTab === "assignments" && <AssignmentList />}
-              {activeTab === "status" && <TaskStatus />}
               {activeTab === "activity" && <TaskActivityChart />}
-              {activeTab === "recommendation" && <TaskRecommendation />}
+              {activeTab === "chatbot" && (
+                <AskAiLauncher onSubmitPrompt={handleAskAiRedirect} />
+              )}
             </div>
           </div>
         )}

@@ -4,6 +4,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { FaPlus, FaTh, FaList, FaSearch } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { setWorkspaceList } from "@redux/slices/workspaceSlice";
+import { WorkspaceIcon } from "@shared/components/ui/workspace-icon";
 
 function Workspace() {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -125,7 +126,14 @@ function Workspace() {
                     onClick={handleWorkspaceOpen(workspace.workspace.id)}
                   >
                     <div className="flex items-center gap-4">
-                      <span className="text-4xl">{workspace.workspace.emoji}</span>
+                      <span className="text-4xl">
+                        <WorkspaceIcon
+                          iconKey={workspace.workspace.emoji}
+                          size={36}
+                          className="text-gray-700"
+                          fallbackClassName="text-4xl"
+                        />
+                      </span>
                       <div>
                         <h3 className="text-xl font-semibold text-gray-800">
                           {workspace.workspace.name}
@@ -167,7 +175,14 @@ function Workspace() {
                       className="hover:bg-gray-50 cursor-pointer"
                     >
                       <td className="px-6 py-3 border flex items-center gap-3">
-                        <span className="text-2xl">{workspace.workspace.emoji}</span>
+                        <span className="text-2xl">
+                          <WorkspaceIcon
+                            iconKey={workspace.workspace.emoji}
+                            size={24}
+                            className="text-gray-700"
+                            fallbackClassName="text-2xl"
+                          />
+                        </span>
                         {workspace.workspace.name}
                       </td>
                       <td className="px-6 py-3 border">{workspace.role}</td>

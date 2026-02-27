@@ -1,12 +1,11 @@
 import React from "react";
-import { AiFillDelete, AiOutlineMore, AiOutlineNumber } from "react-icons/ai";
-import { FaListOl } from "react-icons/fa";
-import { FaListUl, FaMaximize, FaPlus } from "react-icons/fa6";
+import { AiOutlineMore } from "react-icons/ai";
+import { FaListUl } from "react-icons/fa6";
 
 const TodoMinimizedCard = (props) => {
   return (
     <div
-      className={`${props.className} p-3 border-2 flex flex-col rounded-sm bg-gray-100 gap-2 h-fit`}
+      className={`${props.className} p-3 border flex flex-col rounded-xl gap-2 h-fit`}
       onClick={() =>
         props.onOpenTodoList(props.id, props.title, props.createdAt)
       }
@@ -15,37 +14,30 @@ const TodoMinimizedCard = (props) => {
         <FaListUl className="text-sm" />
 
         <div className="dropdown">
-          <AiOutlineMore size={24} role="button" tabIndex={0} className="m-1" />
+          <AiOutlineMore
+            size={22}
+            role="button"
+            tabIndex={0}
+            className="m-1 text-slate-500 hover:text-slate-700"
+          />
           <ul
             tabIndex={0}
-            className="dropdown-content menu dark:bg-gray-100 bg-base-100 rounded-sm w-fit p-2 shadow-sm text-left right-0"
+            className="dropdown-content menu bg-white rounded-xl w-fit p-2 shadow-sm text-left right-0 border border-slate-200"
           >
-            {/* <li className="p-3 hover:text-gray-500">Edit</li> */}
             <li
-              className="p-3 hover:text-red-500 flex"
+              className="p-2 hover:text-red-500 flex rounded-lg hover:bg-red-50"
               onClick={() => props.deleteTodoList(props.id)}
             >
-              {/* <AiFillDelete /> */}
               Delete
             </li>
           </ul>
         </div>
       </div>
-      {/* <div className="flex items-center gap-2"> */}
-      <h1 className="text-sm ">{props.title}</h1>
-      {/* </div> */}
+      <h1 className="text-sm text-slate-800 font-semibold">{props.title}</h1>
 
-      <h1 className="text-xs text-gray-500">
+      <h1 className="text-xs text-slate-500">
         {new Date(props.createdAt).toUTCString().slice(0, 16)}
       </h1>
-      {/* <div className="flex items-center justify-start gap-2">
-        <button
-          className="p-3 rounded-sm bg-gray-200 shadow-sm flex items-center gap-2 w-fit"
-          onClick={props.onClick}
-        >
-          <FaPlus />
-        </button>
-      </div> */}
     </div>
   );
 };

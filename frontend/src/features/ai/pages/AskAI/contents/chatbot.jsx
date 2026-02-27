@@ -21,7 +21,7 @@ import {
 
 import MarkdownRenderer from "@features/notes/components/markdown-renderer";
 
-function Chatbot() {
+function Chatbot({ initialPrompt = "" }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [genAI, setGenAI] = useState(null);
@@ -42,6 +42,7 @@ function Chatbot() {
   const [outputStyle, setOutputStyle] = useState("Actionable");
 
   const messagesEndRef = useRef(null);
+  const hasSentInitialPrompt = useRef(false);
   const navigate = useNavigate();
 
   const apiKey = localStorage.getItem("geminiApiKey");
@@ -420,8 +421,9 @@ function Chatbot() {
     ]);
   };
 
-  const handleSend = async () => {
-    if (!input.trim() || processing) return;
+  const handleSend = async (overrideInput) => {
+    const messageText = (overrideInput ?? input).trim();
+    if (!messageText || processing) return;
 
     let activeSessionId = currentSessionId;
     if (!activeSessionId) {
@@ -438,14 +440,14 @@ function Chatbot() {
       }
     }
 
-    const userMessage = { sender: "user", text: input };
+    const userMessage = { sender: "user", text: messageText };
     const currentMessages = [...messages, userMessage];
 
     setMessages((prev) => [...prev, userMessage]);
-    saveMessageToDB(input, "user", activeSessionId);
+    saveMessageToDB(messageText, "user", activeSessionId);
 
     if (currentMessages.length === 1) {
-      generateSessionName(input, activeSessionId);
+      generateSessionName(messageText, activeSessionId);
     }
 
     setInput("");
@@ -592,6 +594,15 @@ function Chatbot() {
     assistantMode,
     outputStyle,
   ]);
+
+  useEffect(() => {
+    if (!initialPrompt || hasSentInitialPrompt.current) return;
+    if (!genAI || !chatSession || processing) return;
+
+    hasSentInitialPrompt.current = true;
+    setInput(initialPrompt);
+    handleSend(initialPrompt);
+  }, [initialPrompt, genAI, chatSession, processing]);
 
   useEffect(() => {
     const initializeChat = async () => {

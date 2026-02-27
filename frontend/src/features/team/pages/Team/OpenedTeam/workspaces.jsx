@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import AddNew from "@features/workspace/pages/add_new";
 import { setWorkspaceTeam } from "@redux/slices/workspaceSlice";
+import { WorkspaceIcon } from "@shared/components/ui/workspace-icon";
 
 const TeamWorkspaces = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -111,7 +112,14 @@ const TeamWorkspaces = () => {
                   onClick={() => handleWorkspaceOpen(workspace.workspace_id)}
                 >
                   {/* icon */}
-                  <div className="text-3xl">{workspace.workspace.emoji}</div>
+                  <div className="text-3xl">
+                    <WorkspaceIcon
+                      iconKey={workspace.workspace.emoji}
+                      size={30}
+                      className="text-gray-700"
+                      fallbackClassName="text-3xl"
+                    />
+                  </div>
                   {/* main */}
                   <div className="flex justify-between items-center w-full">
                     <div className="border-l-1 pl-3">

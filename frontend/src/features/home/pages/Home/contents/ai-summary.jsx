@@ -5,6 +5,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import MarkdownRenderer from "@features/notes/components/markdown-renderer";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserSummary } from "../../../../../redux/slices/aiResponseSlice";
+import { WorkspaceIcon } from "@shared/components/ui/workspace-icon";
 
 const AiSummary = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -197,7 +198,14 @@ const AiSummary = () => {
                   className="border border-gray-100 rounded-sm p-6 bg-white/90 shadow hover:shadow-sm transition-all duration-200"
                 >
                   <h3 className="text-xl font-semibold mb-2 flex items-center gap-2 text-gray-800">
-                    <span className="text-2xl">{ws?.emoji}</span>
+                    <span className="text-2xl">
+                      <WorkspaceIcon
+                        iconKey={ws?.emoji}
+                        size={22}
+                        className="text-gray-700"
+                        fallbackClassName="text-2xl"
+                      />
+                    </span>
                     {ws?.name}
                   </h3>
                   <div className="flex flex-wrap gap-4 mb-2">

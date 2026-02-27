@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
-const AddNewRoadmapItem = () => {
+const AddNewRoadmapItem = ({ theme = "chalk" }) => {
   const apiURL = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("jwt");
   const header = {
@@ -39,20 +39,21 @@ const AddNewRoadmapItem = () => {
     }
   };
 
-  const navigate = useNavigate();
+  const isWhiteTheme = theme === "white";
+  const wrapperClass = isWhiteTheme
+    ? "roadmap-form roadmap-form-white"
+    : "roadmap-form roadmap-form-chalk";
 
   return (
-    <div className="p-4">
-      Add New Roadmap Item
-      <form
-      // onSubmit={() => handleSubmit}
-      >
-        <fieldset className="flex flex-col relative border-2 p-4 rounded-sm">
-          <legend className="text-lg font-medium text-gray-600 mb-2">
+    <div className={wrapperClass}>
+      <h3 className="roadmap-form-title chalk-text">Add New Roadmap Item</h3>
+      <form>
+        <fieldset className="roadmap-form-fieldset">
+          <legend className="roadmap-form-legend chalk-text">
             Title
           </legend>
           <input
-            className="p-3 border rounded-sm border-gray-300 focus:ring-2 focus:ring-gray-500 bg-transparent"
+            className="roadmap-form-input chalk-text"
             type="text"
             name="title"
             onChange={(e) =>
@@ -60,12 +61,12 @@ const AddNewRoadmapItem = () => {
             }
           />
         </fieldset>
-        <fieldset className="flex flex-col relative border-2 p-4 rounded-sm">
-          <legend className="text-lg font-medium text-gray-600 mb-2">
+        <fieldset className="roadmap-form-fieldset">
+          <legend className="roadmap-form-legend chalk-text">
             Description
           </legend>
           <textarea
-            className="p-3 border rounded-sm border-gray-300 focus:ring-2 focus:ring-gray-500 bg-transparent"
+            className="roadmap-form-input roadmap-form-textarea chalk-text"
             onChange={(e) =>
               setRoadmapItem({ ...roadmapItem, description: e.target.value })
             }
@@ -74,7 +75,7 @@ const AddNewRoadmapItem = () => {
 
         <button
           type="button"
-          className="btn w-full bg-gray-500 text-white hover:bg-gray-600 mt-2"
+          className="roadmap-form-submit chalk-text"
           onClick={handleAddRoadmap}
         >
           Create

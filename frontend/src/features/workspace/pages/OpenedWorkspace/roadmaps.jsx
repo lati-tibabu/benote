@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineMenu, AiOutlineMore, AiOutlinePlus } from "react-icons/ai";
 import { FaMap } from "react-icons/fa6";
-import { FaRegCalendarAlt, FaUser } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import GeminiIcon from "@features/ai/components/geminiIcon";
 import { ToastContainer } from "react-toastify";
 // import AIGeneratedRoadmap from "./roadmaps/ai-generated-roadmap";
 import AIGeneratedRoadmap from "./roadmaps/ai-generated-roadmap";
 import AddNewRoadmap from "./roadmaps/add-new";
-import { useSelector } from "react-redux";
+import "./roadmaps/roadmap-board.css";
 
 const Roadmaps = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -17,14 +16,12 @@ const Roadmaps = () => {
     authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
-  const userData = useSelector((state) => state.auth.user) || {};
-
   const { workspaceId } = useParams();
 
   const [roadmaps, setRoadmaps] = useState([]);
   const [refreshList, setRefreshList] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [viewMode, setViewMode] = useState("list");
+  const [viewMode, setViewMode] = useState("board");
 
   const useGemini = localStorage.getItem("useGemini") === "true" ? true : false;
 
@@ -60,6 +57,30 @@ const Roadmaps = () => {
   const filteredRoadmaps = roadmaps.filter((roadmap) =>
     roadmap.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const boardSpots = [
+    { x: 3, y: 5, rotate: -3 },
+    { x: 28, y: 8, rotate: 2 },
+    { x: 53, y: 7, rotate: -2 },
+    { x: 77, y: 10, rotate: 1 },
+    { x: 8, y: 39, rotate: 2 },
+    { x: 34, y: 41, rotate: -1 },
+    { x: 59, y: 38, rotate: 2 },
+    { x: 80, y: 43, rotate: -2 },
+    { x: 16, y: 70, rotate: -2 },
+    { x: 42, y: 73, rotate: 2 },
+    { x: 68, y: 71, rotate: -1 },
+  ];
+
+  const getCardSpot = (index) => {
+    const spot = boardSpots[index % boardSpots.length];
+    const overflowRow = Math.floor(index / boardSpots.length);
+    return {
+      left: `${spot.x}%`,
+      top: `calc(${spot.y}% + ${overflowRow * 210}px)`,
+      transform: `rotate(${spot.rotate}deg)`,
+    };
+  };
 
   return (
     <div className="min-h-screen bg-white p-4">
@@ -101,7 +122,7 @@ const Roadmaps = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <div className="flex gap-1 items-center justify-end mt-2 sm:mt-0">
+      <div className="flex gap-1 items-center justify-end mt-2 sm:mt-0">
           <button
             className={`p-2 rounded-sm ${
               viewMode === "list"
@@ -115,12 +136,12 @@ const Roadmaps = () => {
           </button>
           <button
             className={`p-2 rounded-sm ${
-              viewMode === "grid"
+              viewMode === "board"
                 ? "bg-gray-100 text-gray-600"
                 : "bg-gray-100 text-gray-400"
             }`}
-            title="Grid view"
-            onClick={() => setViewMode("grid")}
+            title="Board view"
+            onClick={() => setViewMode("board")}
           >
             <AiOutlineMore size={18} />
           </button>
@@ -177,34 +198,43 @@ const Roadmaps = () => {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="roadmap-whiteboard">
             {filteredRoadmaps.length === 0 ? (
-              <p className="text-gray-400 text-center py-8 col-span-full">
+              <p className="text-gray-200 text-center py-20 col-span-full chalk-text text-2xl">
                 No roadmaps found.
               </p>
             ) : (
-              filteredRoadmaps.map((roadmap, index) => (
+              <div
+                className="roadmap-whiteboard-canvas"
+                style={{
+                  minHeight: `${
+                    650 + Math.max(0, Math.floor(filteredRoadmaps.length / 11)) * 230
+                  }px`,
+                }}
+              >
+                {filteredRoadmaps.map((roadmap, index) => (
                 <div
                   key={roadmap.id}
-                  className="bg-white border border-gray-100 rounded-sm shadow-sm p-4 flex flex-col gap-2 hover:shadow-sm transition cursor-pointer group"
+                  className="chalk-card cursor-pointer group"
+                  style={getCardSpot(index)}
                   onClick={() => handleOpenRoadmap(roadmap.id)}
                 >
-                  <div className="flex items-center gap-2 mb-1">
-                    <FaMap size={20} className="text-gray-400" />
-                    <span className="font-semibold text-gray-700 truncate max-w-[120px]">
+                  <div className="flex items-center gap-2 mb-1 chalk-text">
+                    <FaMap size={20} className="text-teal-100" />
+                    <span className="font-semibold text-teal-50 truncate max-w-[180px]">
                       {roadmap.title}
                     </span>
                   </div>
-                  {/* Add more roadmap info here if available */}
                   <button
-                    className="self-end p-1 rounded hover:bg-gray-100 transition text-gray-500 mt-2"
+                    className="self-end p-1 rounded hover:bg-white/10 transition text-teal-50 mt-2"
                     title="More"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <AiOutlineMore size={15} />
                   </button>
                 </div>
-              ))
+                ))}
+              </div>
             )}
           </div>
         )}

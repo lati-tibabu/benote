@@ -5,7 +5,7 @@ import {
   AiOutlineWifi,
 } from "react-icons/ai";
 import { FaReply } from "react-icons/fa";
-import { FaPaperPlane, FaXmark } from "react-icons/fa6";
+import { FaXmark } from "react-icons/fa6";
 import { FaRegComments, FaUserCircle } from "react-icons/fa";
 import { BsSendFill } from "react-icons/bs";
 import { useParams } from "react-router-dom";
@@ -205,43 +205,44 @@ const Discussions = () => {
   const DiscussionThread = ({ discussion }) => {
     const isOwn =
       discussion["user.email"] === (localStorage.getItem("userEmail") || "");
+    const userName = discussion["user.name"] || "Unknown";
+
     return (
-      <div
-        className={`flex ${
-          isOwn ? "justify-end" : "justify-start"
-        } w-full mb-2`}
-      >
-        <div
-          className={`max-w-[70%] flex flex-col ${
-            isOwn ? "items-end" : "items-start"
-          }`}
-        >
-          <div
-            className={`flex items-center gap-2 ${
-              isOwn ? "flex-row-reverse" : ""
-            }`}
-          >
-            <div className="w-8 h-8 flex items-center justify-center rounded-sm bg-gray-100 text-gray-600">
-              <FaUserCircle size={22} />
-            </div>
-            <span className="text-xs font-semibold text-gray-600">
-              {discussion["user.name"]}
-            </span>
+      <div className="w-full rounded-sm px-2 py-2 hover:bg-gray-50 transition">
+        <div className="flex items-start gap-3">
+          <div className="w-9 h-9 shrink-0 flex items-center justify-center rounded-full bg-gray-200 text-gray-700 font-bold text-sm overflow-hidden">
+            {userName[0]?.toUpperCase() || <FaUserCircle size={18} />}
           </div>
-          <div
-            className={`mt-1 px-4 py-2 rounded-sm shadow-sm border ${
-              isOwn
-                ? "bg-gray-100 border-gray-200 text-gray-900"
-                : "bg-white border-gray-200 text-gray-800"
-            }`}
-          >
-            <MarkdownRenderer content={discussion.content} />
-            <div className="flex items-center justify-between mt-1">
-              <span className="text-[10px] text-gray-400">
+
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm font-semibold text-gray-800">{userName}</span>
+              <span className="text-xs text-gray-500">
                 {formatPostDate(discussion.createdAt)}
               </span>
+
+              {isOwn && (
+                <button
+                  className="ml-auto text-xs text-gray-500 hover:text-red-500"
+                  onClick={() => handleDeleteDiscussion(discussion.id)}
+                  title="Delete"
+                >
+                  <AiOutlineDelete />
+                </button>
+              )}
+            </div>
+
+            <div
+              className={`mt-1 text-sm leading-6 break-words ${
+                isOwn ? "text-gray-800" : "text-gray-700"
+              }`}
+            >
+              <MarkdownRenderer content={discussion.content} />
+            </div>
+
+            <div className="mt-2 flex items-center gap-3">
               <button
-                className="ml-2 text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1"
+                className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1"
                 onClick={() => {
                   setReplyData({
                     replying: true,
@@ -252,28 +253,19 @@ const Discussions = () => {
               >
                 <FaReply className="text-gray-400" /> Reply
                 {discussion.replies?.length > 0 && (
-                  <span className="ml-1 text-gray-400">
+                  <span className="ml-1 text-gray-500">
                     ({discussion.replies.length})
                   </span>
                 )}
               </button>
-              {isOwn && (
-                <button
-                  className="ml-2 text-xs text-red-400 hover:text-red-600"
-                  onClick={() => handleDeleteDiscussion(discussion.id)}
-                  title="Delete"
-                >
-                  <AiOutlineDelete />
-                </button>
-              )}
             </div>
-          </div>
-          {/* Replies */}
-          <div className="pl-6 mt-1 w-full">
+
+            <div className="mt-3 pl-4 border-l border-gray-200 space-y-1">
             {discussion.replies?.length > 0 &&
               discussion.replies.map((reply) => (
                 <DiscussionThread key={reply.id} discussion={reply} />
               ))}
+            </div>
           </div>
         </div>
       </div>
@@ -305,7 +297,6 @@ const Discussions = () => {
       setDiscussionData({ content: "", team_id: teamId, discussion_id: null });
       setReplyData({ replying: false, replyingTo: null, content: "" });
       fetchDiscussions();
-      toast.success("Discussion submitted!"); // Added toast notification
     } catch (error) {
       console.error(error);
       toast.error("Failed to submit discussion."); // Added toast notification
@@ -318,15 +309,19 @@ const Discussions = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white p-0 sm:p-6 flex flex-col">
+    <div className="h-[72vh] min-h-[420px] max-h-[78vh] rounded-sm overflow-hidden border border-gray-200 bg-white flex flex-col">
       <ToastContainer />
-      {/* Header */}
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100 bg-white/80 shadow-sm">
-        <FaRegComments className="text-gray-500" size={22} />
-        <h1 className="font-bold text-lg text-gray-900">Team Discussions</h1>
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-200 bg-white">
+        <FaRegComments className="text-gray-600" size={20} />
+        <div>
+          <h1 className="font-semibold text-base text-gray-800"># team-discussions</h1>
+          <p className="text-xs text-gray-500">Group chat for this team</p>
+        </div>
         <span
-          className={`ml-auto text-xs font-bold flex items-center gap-1 ${
-            isConnected ? "text-gray-600" : "text-red-500"
+          className={`ml-auto text-xs font-semibold flex items-center gap-1 px-2 py-1 rounded-sm border ${
+            isConnected
+              ? "text-green-700 border-green-200 bg-green-50"
+              : "text-red-700 border-red-200 bg-red-50"
           }`}
         >
           {isConnected ? (
@@ -340,16 +335,16 @@ const Discussions = () => {
           )}
         </span>
       </div>
-      {/* Chat Area */}
-      <div className="flex-1 flex flex-col justify-end max-w-3xl mx-auto w-full">
-        <div className="flex flex-col gap-2 px-2 py-4 overflow-y-auto scrollbar-hide">
+
+      <div className="flex-1 min-h-0 bg-gray-50">
+        <div className="h-full overflow-y-auto px-2 py-3">
           {discussions && discussions.length > 0 ? (
             discussions.map((discussion) => (
               <DiscussionThread key={discussion.id} discussion={discussion} />
             ))
           ) : discussions && discussions.length === 0 ? (
-            <div className="flex justify-center items-center h-full text-gray-500">
-              No discussions yet. Start one!
+            <div className="flex justify-center items-center h-full text-gray-500 text-sm">
+              No messages yet. Start the conversation.
             </div>
           ) : (
             <div className="flex justify-center items-center h-full">
@@ -359,16 +354,16 @@ const Discussions = () => {
           <div ref={bottomRef} />
         </div>
       </div>
-      {/* Reply Preview */}
+
       {replyData.replying && (
-        <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 border-t border-gray-200">
+        <div className="flex items-center gap-2 px-4 py-2 bg-white border-t border-gray-200">
           <FaReply className="text-gray-400" />
-          <span className="text-xs text-gray-700">Replying to:</span>
+          <span className="text-xs text-gray-700">Replying to</span>
           <span className="text-xs text-gray-500 truncate max-w-xs">
             {(replyData.content || "No content").slice(0, 50) + "..."}
           </span>
           <FaXmark
-            className="ml-auto text-red-400 cursor-pointer hover:text-red-600"
+            className="ml-auto text-gray-400 cursor-pointer hover:text-red-500"
             size={18}
             onClick={() =>
               setReplyData({ replying: false, replyingTo: null, content: "" })
@@ -376,22 +371,31 @@ const Discussions = () => {
           />
         </div>
       )}
-      {/* Input Area */}
+
       <form
-        className="flex items-center gap-2 px-4 py-3 bg-white border-t border-gray-100 shadow-sm max-w-3xl mx-auto w-full"
+        className="flex items-end gap-2 px-4 py-3 bg-white border-t border-gray-200"
         onSubmit={handleSubmit}
       >
         <textarea
           name="content"
           onChange={handleInputChange}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              if (discussionData.content.trim()) {
+                handleSubmit(e);
+              }
+            }
+          }}
           value={discussionData.content}
-          placeholder="Type a message..."
-          className="w-full h-12 p-2 text-sm rounded-sm resize-none bg-gray-100 focus:ring-2 focus:ring-gray-400 focus:outline-none border border-gray-200 transition-all"
+          placeholder="Message #team-discussions"
+          className="w-full h-12 max-h-32 p-3 text-sm rounded-sm resize-none bg-gray-50 text-gray-800 placeholder:text-gray-400 focus:ring-2 focus:ring-gray-300 focus:outline-none border border-gray-200 transition-all"
         ></textarea>
         <button
-          className="flex items-center justify-center bg-gray-600 hover:bg-gray-700 text-white rounded-sm p-3 shadow-sm transition"
+          className="flex items-center justify-center bg-gray-600 hover:bg-gray-700 text-white rounded-sm p-3 transition disabled:opacity-50"
           type="submit"
           title="Send"
+          disabled={!discussionData.content.trim()}
         >
           <BsSendFill size={18} />
         </button>

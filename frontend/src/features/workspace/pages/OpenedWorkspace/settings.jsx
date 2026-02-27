@@ -1,8 +1,4 @@
-import data from "@emoji-mart/data";
-import Picker from "@emoji-mart/react";
 import React, { useState, useEffect } from "react";
-import { AiOutlineDelete } from "react-icons/ai";
-import { FaRegSmile } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
@@ -11,6 +7,11 @@ import {
   setWorkspace,
 } from "@redux/slices/workspaceSlice";
 import WorkspaceToTeam from "./Settings/workspace_to_team";
+import {
+  DEFAULT_WORKSPACE_ICON,
+  WORKSPACE_ICON_OPTIONS,
+  WorkspaceIcon,
+} from "@shared/components/ui/workspace-icon";
 // import WorkspaceToTeam from "../../Setting/content/workspace_to_team";
 
 const Settings = () => {
@@ -27,12 +28,12 @@ const Settings = () => {
   const [updatedWorkspace, setUpdatedWorkspace] = useState({
     name: workspace?.name,
     description: workspace?.description,
-    emoji: workspace?.emoji,
+    emoji: workspace?.emoji || DEFAULT_WORKSPACE_ICON,
     privacy: workspace?.belongs_to_team ? "Team-based" : "Private",
     ownedBy: workspace?.creator?.name,
     team: workspace?.belongs_to_team,
   });
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showIconPicker, setShowIconPicker] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ const Settings = () => {
     setUpdatedWorkspace({
       name: workspace?.name,
       description: workspace?.description,
-      emoji: workspace?.emoji,
+      emoji: workspace?.emoji || DEFAULT_WORKSPACE_ICON,
       privacy: workspace?.belongs_to_team ? "Team-based" : "Private",
       ownedBy: workspace?.creator?.name,
       team: workspace?.belongs_to_team,
@@ -106,12 +107,12 @@ const Settings = () => {
     }
   };
 
-  const handleEmojiSelect = (emoji) => {
+  const handleIconSelect = (iconKey) => {
     setUpdatedWorkspace({
       ...updatedWorkspace,
-      emoji: emoji.native,
+      emoji: iconKey,
     });
-    setShowEmojiPicker(false);
+    setShowIconPicker(false);
   };
 
   const getWorkspaceDetails = async (id) => {
@@ -170,36 +171,45 @@ const Settings = () => {
         </fieldset>
         <fieldset className="flex flex-col relative border border-gray-200 p-6 rounded-sm bg-white/90">
           <legend className="text-lg font-semibold text-gray-600 mb-2 px-2">
-            Emoji
+            Workspace Icon
           </legend>
           <div className="flex items-center gap-4">
-            <input
-              type="text"
-              disabled
-              className="p-2 text-4xl rounded-sm bg-transparent focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-950 w-16 text-center"
-              value={updatedWorkspace.emoji}
-            />
+            <div className="w-14 h-14 rounded-xl border border-gray-300 flex items-center justify-center bg-white">
+              <WorkspaceIcon
+                iconKey={updatedWorkspace.emoji}
+                size={30}
+                className="text-gray-700"
+                fallbackClassName="text-2xl"
+              />
+            </div>
             <button
               type="button"
               className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-800 rounded-sm hover:bg-gray-300 transition"
-              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              onClick={() => setShowIconPicker(!showIconPicker)}
             >
-              <FaRegSmile className="text-xl" />
-              {showEmojiPicker ? "Hide" : "Select Emoji"}
+              {showIconPicker ? "Hide" : "Select Icon"}
             </button>
-            <AiOutlineDelete
-              className="hover:text-red-600 cursor-pointer text-2xl"
-              onClick={() => {
-                setUpdatedWorkspace({ ...updatedWorkspace, emoji: "" });
-              }}
-            />
           </div>
-          {showEmojiPicker && (
+          {showIconPicker && (
             <div className="absolute top-16 left-1/2 transform -translate-x-1/2 bg-white shadow-sm rounded-sm z-50 p-4 border border-gray-200">
-              <h3 className="text-center text-lg font-semibold mb-2">
-                Select an Emoji
-              </h3>
-              <Picker data={data} onEmojiSelect={handleEmojiSelect} />
+              <h3 className="text-center text-lg font-semibold mb-2">Select an Icon</h3>
+              <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                {WORKSPACE_ICON_OPTIONS.map((icon) => (
+                  <button
+                    key={icon.key}
+                    type="button"
+                    title={icon.label}
+                    onClick={() => handleIconSelect(icon.key)}
+                    className={`h-11 w-11 rounded-lg border flex items-center justify-center transition ${
+                      updatedWorkspace.emoji === icon.key
+                        ? "border-gray-700 bg-gray-100"
+                        : "border-gray-200 hover:bg-gray-50"
+                    }`}
+                  >
+                    <icon.Icon size={22} className="text-gray-700" />
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </fieldset>
