@@ -414,6 +414,42 @@ function Chatbot({ initialPrompt = "" }) {
     return JSON.parse(text);
   };
 
+  const parseNoteContentWithLlm = async (content) => {
+    const model = genAI.getGenerativeModel({
+      model: selectedModel,
+      generationConfig: {
+        temperature: 0.2,
+        topP: 0.95,
+        topK: 40,
+        maxOutputTokens: 4096,
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: "object",
+          properties: {
+            title: { type: "string" },
+            content: { type: "string" },
+          },
+          required: ["title", "content"],
+        },
+      },
+    });
+
+    const prompt = [
+      "Convert the following generated content into a single note JSON.",
+      "Rules:",
+      "- Return valid JSON only according to schema.",
+      "- Create a concise, specific title.",
+      "- Preserve important details in markdown-friendly content.",
+      "",
+      "Generated content:",
+      content,
+    ].join("\n");
+
+    const result = await model.generateContent(prompt);
+    const text = result.response.text();
+    return JSON.parse(text);
+  };
+
   const handleAddGeneratedContent = async () => {
     if (!sourceContent?.trim()) {
       toast.error("No generated content selected.");
@@ -466,54 +502,83 @@ function Chatbot({ initialPrompt = "" }) {
         return;
       }
 
-      const parsedRoadmap = await parseRoadmapContentWithLlm(sourceContent);
-      const roadmapResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/roadmaps`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          title: parsedRoadmap?.title?.trim() || "AI Generated Roadmap",
-          description:
-            parsedRoadmap?.description?.trim() ||
-            "Roadmap generated from AI assistant content.",
-          workspace_id: selectedWorkspaceId,
-          created_by: userData?.id,
-        }),
-      });
-
-      if (!roadmapResponse.ok) {
-        const errorText = await roadmapResponse.text();
-        throw new Error(errorText || "Failed to create roadmap.");
-      }
-
-      const createdRoadmap = await roadmapResponse.json();
-      const roadmapItems = Array.isArray(parsedRoadmap?.roadmapItems)
-        ? parsedRoadmap.roadmapItems
-        : [];
-
-      if (roadmapItems.length > 0) {
-        await fetch(`${import.meta.env.VITE_API_URL}/api/roadmapItems`, {
+      if (addTargetType === "roadmap") {
+        const parsedRoadmap = await parseRoadmapContentWithLlm(sourceContent);
+        const roadmapResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/roadmaps`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            items: roadmapItems.map((item) => ({
-              title: item.title?.trim() || "Untitled step",
-              description: item.description?.trim() || "",
-              status: item.status?.trim() || "pending",
-              roadmap_id: createdRoadmap.id,
-            })),
+            title: parsedRoadmap?.title?.trim() || "AI Generated Roadmap",
+            description:
+              parsedRoadmap?.description?.trim() ||
+              "Roadmap generated from AI assistant content.",
+            workspace_id: selectedWorkspaceId,
+            created_by: userData?.id,
           }),
         });
+
+        if (!roadmapResponse.ok) {
+          const errorText = await roadmapResponse.text();
+          throw new Error(errorText || "Failed to create roadmap.");
+        }
+
+        const createdRoadmap = await roadmapResponse.json();
+        const roadmapItems = Array.isArray(parsedRoadmap?.roadmapItems)
+          ? parsedRoadmap.roadmapItems
+          : [];
+
+        if (roadmapItems.length > 0) {
+          await fetch(`${import.meta.env.VITE_API_URL}/api/roadmapItems`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              items: roadmapItems.map((item) => ({
+                title: item.title?.trim() || "Untitled step",
+                description: item.description?.trim() || "",
+                status: item.status?.trim() || "pending",
+                roadmap_id: createdRoadmap.id,
+              })),
+            }),
+          });
+        }
+
+        toast.success("Generated content added to roadmap.");
+        setShowAddModal(false);
+        navigate(
+          `/app/workspace/open/${selectedWorkspaceId}/roadmaps/${createdRoadmap.id}`
+        );
+        return;
       }
 
-      toast.success("Generated content added to roadmap.");
+      const parsedNote = await parseNoteContentWithLlm(sourceContent);
+      const noteResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/notes`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: parsedNote?.title?.trim() || "AI Generated Note",
+          content: parsedNote?.content?.trim() || sourceContent,
+          workspace_id: selectedWorkspaceId,
+          owned_by: userData?.id,
+        }),
+      });
+
+      if (!noteResponse.ok) {
+        const errorText = await noteResponse.text();
+        throw new Error(errorText || "Failed to create note.");
+      }
+
+      toast.success("Generated content added to notes.");
       setShowAddModal(false);
-      navigate(`/app/workspace/open/${selectedWorkspaceId}/roadmaps/${createdRoadmap.id}`);
+      navigate(`/app/workspace/open/${selectedWorkspaceId}/notes`);
     } catch (error) {
       console.error("Error adding generated content:", error);
       toast.error(error.message || "Failed to add generated content.");
@@ -1246,54 +1311,90 @@ function Chatbot({ initialPrompt = "" }) {
         )}
 
         {showAddModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-            <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg">
-              <h3 className="text-lg font-bold text-gray-900 mb-1">
-                Add Generated Content to {addTargetType === "task" ? "Tasks" : "Roadmap"}
-              </h3>
-              <p className="text-sm text-gray-600 mb-4">
-                Content will be converted by LLM automatically before saving.
-              </p>
-
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Select Workspace
-              </label>
-              <select
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 mb-4"
-                value={selectedWorkspaceId}
-                onChange={(e) => setSelectedWorkspaceId(e.target.value)}
-                disabled={isAddingContent}
-              >
-                {normalizedWorkspaceOptions.length === 0 ? (
-                  <option value="">No workspace found</option>
-                ) : (
-                  normalizedWorkspaceOptions.map((ws) => (
-                    <option key={ws.id} value={ws.id}>
-                      {ws.name}
-                    </option>
-                  ))
-                )}
-              </select>
-
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs text-gray-600 max-h-36 overflow-y-auto">
-                {sourceContent?.slice(0, 500)}
-                {sourceContent?.length > 500 ? "..." : ""}
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-sm px-4">
+            <div className="bg-white rounded-3xl shadow-2xl p-6 sm:p-7 w-full max-w-xl border border-gray-100">
+              <div className="flex items-start justify-between gap-3 mb-5">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 leading-tight">
+                    Add Generated Content
+                  </h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Choose a workspace and save as a {addTargetType}.
+                  </p>
+                </div>
+                <span className="text-[11px] uppercase tracking-wide bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full font-semibold">
+                  {addTargetType}
+                </span>
               </div>
 
-              <div className="flex justify-end gap-2 mt-5">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-5">
+                {["task", "roadmap", "note"].map((target) => (
+                  <button
+                    key={target}
+                    type="button"
+                    onClick={() => setAddTargetType(target)}
+                    disabled={isAddingContent}
+                    className={`px-3 py-2 rounded-xl text-sm border transition-colors ${
+                      addTargetType === target
+                        ? "bg-blue-600 text-white border-blue-600"
+                        : "bg-white text-gray-700 border-gray-200 hover:border-blue-300"
+                    }`}
+                  >
+                    {target.charAt(0).toUpperCase() + target.slice(1)}
+                  </button>
+                ))}
+              </div>
+
+              <h4 className="text-sm font-semibold text-gray-800 mb-2">
+                Select Workspace
+              </h4>
+              <div className="rounded-xl border border-gray-200 bg-gray-50/60 p-2 mb-4">
+                <select
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2.5 bg-white text-sm"
+                  value={selectedWorkspaceId}
+                  onChange={(e) => setSelectedWorkspaceId(e.target.value)}
+                  disabled={isAddingContent}
+                >
+                  {normalizedWorkspaceOptions.length === 0 ? (
+                    <option value="">No workspace found</option>
+                  ) : (
+                    normalizedWorkspaceOptions.map((ws) => (
+                      <option key={ws.id} value={ws.id}>
+                        {ws.name}
+                      </option>
+                    ))
+                  )}
+                </select>
+              </div>
+
+              <h4 className="text-sm font-semibold text-gray-800 mb-2">
+                Content Preview
+              </h4>
+              <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-600 max-h-40 overflow-y-auto leading-relaxed">
+                {sourceContent?.slice(0, 700)}
+                {sourceContent?.length > 700 ? "..." : ""}
+              </div>
+
+              <p className="text-xs text-gray-500 mt-3">
+                This uses LLM conversion under the hood before creating data.
+              </p>
+
+              <div className="flex justify-end gap-2 mt-6">
                 <button
-                  className="px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50"
+                  className="px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50"
                   onClick={() => setShowAddModal(false)}
                   disabled={isAddingContent}
                 >
                   Cancel
                 </button>
                 <button
-                  className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60"
+                  className="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60"
                   onClick={handleAddGeneratedContent}
                   disabled={isAddingContent || normalizedWorkspaceOptions.length === 0}
                 >
-                  {isAddingContent ? "Adding..." : `Add to ${addTargetType}`}
+                  {isAddingContent
+                    ? "Adding..."
+                    : `Add to ${addTargetType.charAt(0).toUpperCase() + addTargetType.slice(1)}`}
                 </button>
               </div>
             </div>
@@ -1440,6 +1541,13 @@ function Chatbot({ initialPrompt = "" }) {
                         >
                           <AiOutlinePlus className="w-3 h-3" />
                           Add to Roadmap
+                        </button>
+                        <button
+                          className="text-[10px] text-gray-400 hover:text-blue-600 flex items-center gap-1 bg-gray-50 px-2 py-1 rounded hover:bg-gray-100 transition-colors mr-1"
+                          onClick={() => openAddContentModal("note", msg.text)}
+                        >
+                          <AiOutlinePlus className="w-3 h-3" />
+                          Add to Note
                         </button>
                         <button
                           className="text-[10px] text-gray-400 hover:text-blue-600 flex items-center gap-1 bg-gray-50 px-2 py-1 rounded hover:bg-gray-100 transition-colors"
