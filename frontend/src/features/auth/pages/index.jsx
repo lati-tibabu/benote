@@ -1,39 +1,50 @@
-import React from "react";
 import { Link, Outlet } from "react-router-dom";
-import { AiOutlineInfo } from "react-icons/ai";
-import { Footer } from "@shared/components/layout";
+import { PiSparkle } from "react-icons/pi";
 
 function AuthPages() {
   return (
-    <div className="bg-gray-100 min-h-screen flex flex-col">
-      {/* Header */}
-      <header className="bg-white py-4 px-6 sticky top-0 z-10 flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <Link to="/">
-            <img src="/rect19.png" alt="Logo" className="cursor-pointer w-12" />
+    <div
+      className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-cyan-50/40 text-slate-900"
+      style={{ fontFamily: "'Sora', 'Manrope', 'Segoe UI', sans-serif" }}
+    >
+      <div className="relative mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8">
+        <header className="flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-3">
+            <img src="/rect19.png" alt="Benote logo" className="h-10 w-10 rounded-lg" />
+            <span className="text-lg font-semibold tracking-wide">Benote</span>
           </Link>
-          <h1 className="text-lg font-bold text-gray-800 hidden md:block">
-            Benote
-          </h1>
-        </div>
-        {/* <Link to="/info" className="hidden md:block">
-          <div className="bg-gray-800 text-white p-2 rounded-sm hover:bg-gray-700 transition">
-            <AiOutlineInfo size={24} />
+
+          <div className="rounded-full border border-cyan-200 bg-cyan-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-cyan-700">
+            Productivity Suite
           </div>
-        </Link> */}
-      </header>
+        </header>
 
-      {/* Main Content */}
-      <main className="flex-grow flex items-center justify-center py-10">
-        <div className="w-full max-w-4xl bg-white shadow-sm rounded-sm p-6">
-          <Outlet />
-        </div>
-      </main>
+        <main className="grid flex-1 grid-cols-1 items-center gap-8 py-8 lg:grid-cols-12 lg:py-12">
+          <aside className="hidden rounded-2xl border border-slate-200 bg-white/90 p-8 shadow-sm lg:col-span-5 lg:block">
+            <p className="inline-flex items-center gap-2 rounded-full border border-cyan-200 bg-cyan-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-cyan-700">
+              <PiSparkle /> Benote access
+            </p>
+            <h1 className="mt-5 text-3xl font-semibold leading-tight text-slate-900">
+              Keep your work, study, and team execution in one place.
+            </h1>
+            <p className="mt-4 text-sm leading-relaxed text-slate-600">
+              Sign in to continue where you left off, or create your account to launch
+              a focused productivity workspace.
+            </p>
+            <ul className="mt-6 space-y-3 text-sm text-slate-700">
+              <li className="rounded-lg bg-slate-50 px-3 py-2">Plan tasks with structure</li>
+              <li className="rounded-lg bg-slate-50 px-3 py-2">Generate AI summaries instantly</li>
+              <li className="rounded-lg bg-slate-50 px-3 py-2">Collaborate with team context</li>
+            </ul>
+          </aside>
 
-      {/* Footer */}
-      <footer className="bg-gray-200 py-4 text-center text-sm text-gray-600">
-        <Footer />
-      </footer>
+          <section className="lg:col-span-7">
+            <div className="mx-auto w-full max-w-xl rounded-2xl border border-slate-200 bg-white/95 p-5 shadow-sm sm:p-8">
+              <Outlet />
+            </div>
+          </section>
+        </main>
+      </div>
     </div>
   );
 }

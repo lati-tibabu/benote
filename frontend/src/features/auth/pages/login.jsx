@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { jwtDecode } from "jwt-decode";
@@ -72,13 +72,17 @@ function Login() {
   };
 
   return (
-    <div className="m-5 min-w-80 max-w-md mx-auto bg-white p-8 rounded-sm shadow-sm">
-      <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome back!</h1>
-      <p className="text-sm text-gray-600">Enter your credentials to log in</p>
+    <div>
+      <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
+        Welcome back
+      </h1>
+      <p className="mt-1 text-sm text-slate-500">
+        Sign in to continue your productivity workflow.
+      </p>
 
-      <form onSubmit={handleLogin} className="mt-8 flex flex-col gap-4">
+      <form onSubmit={handleLogin} className="mt-7 flex flex-col gap-4">
         <div>
-          <label htmlFor="email" className="text-sm font-medium text-gray-700">
+          <label htmlFor="email" className="text-sm font-medium text-slate-700">
             Email
           </label>
           <input
@@ -89,17 +93,23 @@ function Login() {
             onChange={handleChange}
             disabled={loading}
             placeholder="you@example.com"
-            className="mt-1 p-3 w-full rounded-sm border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:outline-none"
+            className="mt-1 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-100"
+            required
           />
         </div>
 
         <div>
-          <label
-            htmlFor="password"
-            className="text-sm font-medium text-gray-700"
-          >
-            Password
-          </label>
+          <div className="flex items-center justify-between">
+            <label htmlFor="password" className="text-sm font-medium text-slate-700">
+              Password
+            </label>
+            <Link
+              to="/auth/forgot-password"
+              className="text-xs font-medium text-cyan-700 hover:underline"
+            >
+              Forgot password?
+            </Link>
+          </div>
           <input
             id="password"
             name="password"
@@ -107,61 +117,55 @@ function Login() {
             value={formData.password}
             onChange={handleChange}
             disabled={loading}
-            placeholder="••••••••"
-            className="mt-1 p-3 w-full rounded-sm border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:outline-none"
+            placeholder="********"
+            className="mt-1 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-100"
+            required
           />
         </div>
 
-        <div className="text-right">
-          <Link
-            to="/auth/forgot-password"
-            className="text-sm text-gray-600 hover:underline"
-          >
-            Forgot your password?
-          </Link>
-        </div>
-
-        {errorMsg && <p className="text-red-500 text-sm">{errorMsg}</p>}
+        {errorMsg && (
+          <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+            {errorMsg}
+          </p>
+        )}
 
         <button
           type="submit"
           disabled={loading}
-          className={`w-full py-3 rounded-sm font-medium text-white transition duration-300 ${
+          className={`w-full rounded-xl py-3 text-sm font-semibold text-white transition ${
             loading
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-gray-600 hover:bg-gray-700"
+              ? "cursor-not-allowed bg-slate-400"
+              : "bg-slate-900 hover:bg-slate-800"
           }`}
         >
-          {loading ? "Logging in..." : "Log In"}
+          {loading ? "Logging in..." : "Log in"}
         </button>
 
-        <div className="flex items-center my-4">
-          <hr className="flex-grow border-gray-300" />
-          <span className="px-4 text-sm text-gray-500">or</span>
-          <hr className="flex-grow border-gray-300" />
+        <div className="flex items-center gap-3 py-1">
+          <span className="h-px flex-1 bg-slate-200" />
+          <span className="text-xs uppercase tracking-[0.18em] text-slate-400">or</span>
+          <span className="h-px flex-1 bg-slate-200" />
         </div>
 
         <button
           type="button"
           disabled={loading}
           onClick={handleGoogleRedirect}
-          className={`flex items-center justify-center gap-3 p-3 w-full rounded-sm border border-gray-300 bg-gray-50 hover:shadow-sm transition ${
+          className={`flex w-full items-center justify-center gap-3 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 ${
             loading ? "cursor-not-allowed opacity-70" : ""
           }`}
         >
-          <img src="/google-color-icon.svg" alt="Google" className="w-6 h-6" />
-          <span className="text-sm font-medium text-gray-700">
-            Continue with Google
-          </span>
+          <img src="/google-color-icon.svg" alt="Google" className="h-5 w-5" />
+          Continue with Google
         </button>
       </form>
 
-      <div className="mt-6 text-center text-sm text-gray-600">
-        Don’t have an account?{" "}
-        <Link to="/auth/signup" className="text-gray-600 hover:underline">
-          Register here!
+      <p className="mt-6 text-center text-sm text-slate-600">
+        Don&apos;t have an account?{" "}
+        <Link to="/auth/signup" className="font-medium text-cyan-700 hover:underline">
+          Create one
         </Link>
-      </div>
+      </p>
     </div>
   );
 }

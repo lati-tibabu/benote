@@ -6,6 +6,16 @@
 
 :root {
   font-family: "Stack Sans Text","Nunito", sans-serif, "Times New Roman";
+  --rounded-box: 0rem;
+  --rounded-btn: 0rem;
+  --rounded-badge: 0rem;
+  --tab-radius: 0rem;
+}
+
+*,
+*::before,
+*::after {
+  border-radius: 0 !important;
 }
 
 /* Hide scrollbar for Chrome, Safari, and Edge */

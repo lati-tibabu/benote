@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { DEFAULT_DARK_READER_PRESET_ID } from "../../config/darkReaderPresets";
 
 const initialState = {
-  theme: "system", // 'system' | 'light' | 'dark'
+  theme: "light", // 'system' | 'light' | 'dark'
   darkReaderPreset: DEFAULT_DARK_READER_PRESET_ID,
 };
 
