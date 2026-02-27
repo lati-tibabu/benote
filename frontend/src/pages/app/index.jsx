@@ -1,273 +1,259 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Footer } from "@shared/components/layout";
-import { AiOutlineArrowRight } from "react-icons/ai";
 import {
-  FaTasks,
-  FaUsers,
-  FaBell,
-  FaChartLine,
-  FaStickyNote,
-  FaUpload,
-  FaComments,
-} from "react-icons/fa";
+  PiBellRinging,
+  PiBrain,
+  PiCalendarCheck,
+  PiChatsCircle,
+  PiCheckCircle,
+  PiClockCountdown,
+  PiFiles,
+  PiFlowArrow,
+  PiKanban,
+  PiLightning,
+  PiSparkle,
+  PiTarget,
+  PiUsersThree,
+} from "react-icons/pi";
 
-import { PiBell, PiChat, PiDot, PiHamburger, PiNote, PiProjectorScreen, PiRobot, PiUpload, PiUsers } from "react-icons/pi"
+const features = [
+  {
+    icon: PiKanban,
+    title: "Task command board",
+    description:
+      "Track priorities, deadlines, and progress in one focused workspace.",
+  },
+  {
+    icon: PiBrain,
+    title: "AI work assistant",
+    description:
+      "Generate plans, summarize notes, and break down projects instantly.",
+  },
+  {
+    icon: PiUsersThree,
+    title: "Team collaboration",
+    description:
+      "Share resources, assign tasks, and keep everyone aligned in real time.",
+  },
+  {
+    icon: PiFiles,
+    title: "Smart notes and docs",
+    description:
+      "Convert files to structured notes and chat with your content.",
+  },
+  {
+    icon: PiBellRinging,
+    title: "Signal over noise",
+    description:
+      "Actionable notifications designed to keep focus, not interrupt it.",
+  },
+  {
+    icon: PiCalendarCheck,
+    title: "Study and sprint plans",
+    description:
+      "Build adaptive study plans and execution blocks that actually stick.",
+  },
+];
+
+const metricCards = [
+  { label: "Projects in motion", value: "12", icon: PiTarget },
+  { label: "Tasks completed this week", value: "43", icon: PiCheckCircle },
+  { label: "Focus sessions", value: "18", icon: PiClockCountdown },
+  { label: "Team responses", value: "97%", icon: PiChatsCircle },
+];
 
 function Home() {
-  const location = useLocation();
-  const page = location.pathname;
-  const [buttonHovered, setButtonHovered] = useState(false);
-
   return (
-    <div className="flex flex-col items-center bg-gradient-to-br from-gray-50 via-white to-gray-100 text-gray-800 min-h-screen w-screen">
-
-      {/* Header Section */}
-      <header className="p-10 w-full flex flex-row justify-between items-center backdrop-blur-sm z-20 animate-fade-in">
-        <div className="flex items-center gap-4">
-          <img src="rect19.png" alt="Logo" className="w-14 animate-logo-pop" />
-          <span className="ml-2 text-xl font-bold text-gray-700 hidden sm:inline">
-            Benote
-          </span>
+    <div
+      className="min-h-screen bg-slate-950 text-slate-100"
+      style={{ fontFamily: "'Sora', 'Manrope', 'Segoe UI', sans-serif" }}
+    >
+      <div className="relative overflow-hidden">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-24 left-[-10%] h-72 w-72 rounded-full bg-cyan-400/20 blur-3xl" />
+          <div className="absolute top-24 right-[-8%] h-80 w-80 rounded-full bg-emerald-400/15 blur-3xl" />
+          <div className="absolute bottom-0 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-sky-500/20 blur-3xl" />
         </div>
-        <div className="flex gap-3">
-          <Link to="/auth/login">
-            <button className="flex items-center gap-2 px-4 py-2 rounded-sm bg-white text-gray-700 border border-gray-600 hover:bg-gray-50 font-semibold shadow-sm transition-all duration-200">
-              <span className="text-lg">
-                <i className="">
-                  <svg
-                    width="1em"
-                    height="1em"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </i>
-              </span>
-              Login
-            </button>
-          </Link>
-          <Link to="/auth/signup">
-            <button className="flex items-center gap-2 px-4 py-2 rounded-sm bg-gray-600 text-white hover:bg-gray-700 font-semibold shadow-sm transition-all duration-200">
-              <span className="text-lg">
-                <i className="">
-                  <svg
-                    width="1em"
-                    height="1em"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h8v-2h2v2h6v-2c0-2.66-5.33-4-8-4z"
-                      fill="currentColor"
-                    />
-                    <path
-                      d="M17 11v-2h-2V7h-2v2h-2v2h2v2h2v-2h2z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </i>
-              </span>
-              Sign Up
-            </button>
-          </Link>
-        </div>
-      </header>
 
-      {/* Main Container of the page */}
+        <header className="relative mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-6 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-3">
+            <img src="/rect19.png" alt="Benote logo" className="h-9 w-9 rounded-lg" />
+            <span className="text-lg font-semibold tracking-wide">Benote</span>
+          </div>
 
-      <div className="p-14 max-w-7xl">
-        {/* Hero Section */}
-        <section className="h-screen/2 xl:h-fit text-center m-3 flex flex-col-reverse md:flex-row items-center gap-8 animate-fade-in-up delay-100">
-          <div className="flex-1 flex flex-col justify-center items-center bg-transparent">
-            <h1 className="text-5xl md:text-6xl font-extrabold mb-6 drop-shadow-sm animate-title-pop">
-               Benote
-            </h1>
-            <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-xl animate-fade-in-up delay-200">
-              Your ultimate platform to boost academic performance and manage
-              tasks efficiently.
-            </p>
-            <Link to="/app/home">
-              <button
-                onMouseEnter={() => setButtonHovered(true)}
-                onMouseLeave={() => setButtonHovered(false)}
-                className="btn flex flex-row"
-              >
-                Get Started
-                <AiOutlineArrowRight
-                  className={`transition-all duration-100 ${
-                    buttonHovered ? "w-6 h-6 opacity-100 ml-1" : "w-0 opacity-0"
-                  }`}
-                />
-              </button>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/auth/login"
+              className="rounded-lg border border-slate-700 bg-slate-900/70 px-4 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
+            >
+              Log in
+            </Link>
+            <Link
+              to="/auth/signup"
+              className="rounded-lg bg-gradient-to-r from-cyan-400 to-emerald-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:brightness-110"
+            >
+              Start free
             </Link>
           </div>
-        </section>
+        </header>
 
-        {/* About Section */}
-        <section className="flex flex-col md:flex-row justify-between items-center p-8 md:p-16 gap-8 bg-white/90 shadow-sm border-1 rounded-sm mt-20">
-          <div className="w-full md:w-1/2">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-700">
-              Boost Your Personal Productivity
-            </h2>
-            <p className="text-lg text-gray-600">
-              Benote offers a powerful set of tools and features designed to help you stay organized, work efficiently, and reach your goals across any area of life.
+        <section className="relative mx-auto grid w-full max-w-7xl grid-cols-1 gap-10 px-4 pb-20 pt-8 sm:px-6 lg:grid-cols-2 lg:px-8 lg:pt-12">
+          <div className="flex flex-col justify-center">
+            <p className="mb-4 inline-flex w-fit items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200">
+              <PiSparkle /> Productivity Suite
             </p>
+            <h1 className="text-balance text-4xl font-semibold leading-tight text-white sm:text-5xl lg:text-6xl">
+              One command center for focused work, study, and collaboration.
+            </h1>
+            <p className="mt-5 max-w-xl text-base text-slate-300 sm:text-lg">
+              Benote combines planning, execution, AI support, notes, and team sync
+              in a single workspace designed for deep productivity.
+            </p>
+
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Link
+                to="/auth/signup"
+                className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
+              >
+                Launch workspace <PiFlowArrow />
+              </Link>
+              <Link
+                to="/auth/login"
+                className="inline-flex items-center gap-2 rounded-xl border border-slate-600 bg-slate-900/70 px-5 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
+              >
+                Continue where you left off
+              </Link>
+            </div>
+
+            <div className="mt-8 grid max-w-xl grid-cols-2 gap-3">
+              {metricCards.map(({ label, value, icon: Icon }) => (
+                <div
+                  key={label}
+                  className="rounded-xl border border-slate-800 bg-slate-900/70 p-4 backdrop-blur"
+                >
+                  <div className="flex items-center gap-2 text-cyan-300">
+                    <Icon />
+                    <span className="text-xs uppercase tracking-wide">{label}</span>
+                  </div>
+                  <p className="mt-2 text-2xl font-semibold text-white">{value}</p>
+                </div>
+              ))}
+            </div>
           </div>
-        </section>
 
-        {/* Features Section */}
-        <section className="p-8 md:p-16 gap-8 bg-white/90 shadow-sm border-1 rounded-sm">
-          <h3 className="text-3xl md:text-4xl font-bold mb-12 text-center text-gray-700">
-            Key Features
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
-            {/* Feature Cards */}
-            <div className="feature-item text-center bg-white/90 rounded-sm shadow-sm p-8 border-1 border-gray-200">
-              {/* <FaTasks className="text-4xl text-gray-600 mb-4 mx-auto" /> */}
-              <PiProjectorScreen className="text-4xl text-gray-600 mb-4 mx-auto" />
-              <h4 className="text-xl font-bold mb-2 text-gray-700">
-                Task Management
-              </h4>
-              <p className="text-gray-600 text-base">
-                Stay organized by creating and managing tasks, setting deadlines,
-                and receiving AI-powered recommendations.
-              </p>
-            </div>
+          <div className="relative">
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/85 p-4 shadow-2xl shadow-cyan-900/30 backdrop-blur-sm sm:p-5">
+              <div className="mb-4 flex items-center justify-between border-b border-slate-800 pb-3">
+                <div>
+                  <p className="text-sm font-semibold text-white">Today&apos;s execution panel</p>
+                  <p className="text-xs text-slate-400">Friday sprint view</p>
+                </div>
+                <span className="rounded-full bg-emerald-400/20 px-2 py-1 text-xs font-semibold text-emerald-300">
+                  Focus mode
+                </span>
+              </div>
 
-            <div className="feature-item text-center bg-white/90 rounded-sm shadow-sm p-8 border-1 border-gray-200">
-              {/* <FaChartLine className="text-4xl text-gray-600 mb-4 mx-auto" /> */}
-              <PiRobot className="text-4xl text-gray-600 mb-4 mx-auto" />
-              <h4 className="text-xl font-bold mb-2 text-gray-700">
-                AI-Powered Study Planner
-              </h4>
-              <p className="text-gray-600 text-base">
-                Create personalized study plans with AI to optimize your learning
-                experience.
-              </p>
-            </div>
+              <div className="space-y-3">
+                {[
+                  { label: "Finalize roadmap draft", status: "In progress", tone: "cyan" },
+                  { label: "Review class assignments", status: "Due soon", tone: "amber" },
+                  { label: "Sync with workspace team", status: "Scheduled", tone: "emerald" },
+                ].map((item) => (
+                  <div
+                    key={item.label}
+                    className="rounded-xl border border-slate-800 bg-slate-950/70 p-3"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-sm font-medium text-slate-100">{item.label}</p>
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                          item.tone === "cyan"
+                            ? "bg-cyan-400/20 text-cyan-300"
+                            : item.tone === "amber"
+                            ? "bg-amber-400/20 text-amber-300"
+                            : "bg-emerald-400/20 text-emerald-300"
+                        }`}
+                      >
+                        {item.status}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
 
-            <div className="feature-item text-center bg-white/90 rounded-sm shadow-sm p-8 border-1 border-gray-200">
-              {/* <FaUsers className="text-4xl text-gray-600 mb-4 mx-auto" /> */}
-              <PiUsers className="text-4xl text-gray-600 mb-4 mx-auto" />
-              <h4 className="text-xl font-bold mb-2 text-gray-700">
-                Collaboration Tools
-              </h4>
-              <p className="text-gray-600 text-base">
-                Work seamlessly with peers on group projects with integrated chat
-                and file-sharing features.
-              </p>
-            </div>
-            
-            <div className="feature-item text-center bg-white/90 rounded-sm shadow-sm p-8 border-1 border-gray-200">
-              {/* <FaBell className="text-4xl text-gray-600 mb-4 mx-auto" /> */}
-              <PiBell className="text-4xl text-gray-600 mb-4 mx-auto" />
-              <h4 className="text-xl font-bold mb-2 text-gray-700">
-                Real-Time Notifications
-              </h4>
-              <p className="text-gray-600 text-base">
-                Get timely reminders for deadlines, tasks, and study goals.
-              </p>
-            </div>
-
-            <div className="feature-item text-center bg-white/90 rounded-sm shadow-sm p-8 border-1 border-gray-200">
-              {/* <FaStickyNote className="text-4xl text-gray-600 mb-4 mx-auto" /> */}
-              <PiNote className="text-4xl text-gray-600 mb-4 mx-auto" />
-
-              <h4 className="text-xl font-bold mb-2 text-gray-700">
-                AI Note Creation
-              </h4>
-              <p className="text-gray-600 text-base">
-                Create and organize notes effortlessly with AI-powered tools.
-              </p>
-            </div>
-
-            <div className="feature-item text-center bg-white/90 rounded-sm shadow-sm p-8 border-1 border-gray-200">
-              {/* <FaUpload className="text-4xl text-gray-600 mb-4 mx-auto" /> */}
-              <PiUpload className="text-4xl text-gray-600 mb-4 mx-auto" />
-              <h4 className="text-xl font-bold mb-2 text-gray-700">
-                Document Upload
-              </h4>
-              <p className="text-gray-600 text-base">
-                Upload documents and convert them into notes for easy access and
-                management.
-              </p>
-            </div>
-
-            <div className="feature-item text-center bg-white/90 rounded-sm shadow-sm p-8 border-1 border-gray-200">
-              {/* <FaComments className="text-4xl text-gray-600 mb-4 mx-auto" /> */}
-              <PiChat className="text-4xl text-gray-600 mb-4 mx-auto" />
-              <h4 className="text-xl font-bold mb-2 text-gray-700">
-                Chat with Notes
-              </h4>
-              <p className="text-gray-600 text-base">
-                Interact with your notes using AI-powered chat for better
-                understanding and insights.
-              </p>
-            </div>
-
-            <div className="feature-item text-center bg-white/90 rounded-sm shadow-sm p-8 border-1 border-gray-200">
-              {/* <FaComments className="text-4xl text-gray-600 mb-4 mx-auto" /> */}
-              <PiHamburger className="text-4xl text-gray-600 mb-4 mx-auto" />
-              <h4 className="text-xl font-bold mb-2 text-gray-700">
-                More
-              </h4>
-              <p className="text-gray-600 text-base">
-                Explore as you dive 
-              </p>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3">
+                  <p className="text-xs uppercase tracking-wide text-slate-400">AI Suggestion</p>
+                  <p className="mt-1 text-sm text-slate-200">
+                    Block 45m for deep work before opening chat.
+                  </p>
+                </div>
+                <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3">
+                  <p className="text-xs uppercase tracking-wide text-slate-400">Team Signal</p>
+                  <p className="mt-1 text-sm text-slate-200">
+                    2 mentions need your response.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
-
-        {/* Call to Action Section */}
-        <section className="text-center p-8 md:p-16 gap-8 bg-white/90 shadow-sm border-1 rounded-sm">
-          <h3 className="text-3xl md:text-4xl font-bold mb-4">
-            Start Boosting Your Productivity Today
-          </h3>
-          <p className="text-lg mb-6">
-            Join the Benote and take control of your academic
-            journey. Start managing your tasks, collaborating with classmates, and
-            improving your study habits with ease.
-          </p>
-          <Link to="/app/home">
-            <button className="btn btn-outline btn-white text-gray-600 bg-white hover:bg-gray-100 px-8 py-3 rounded-sm font-semibold shadow-sm border-2 border-white hover:text-gray-700 transition-all duration-200 animate-btn-bounce">
-              Get Started
-            </button>
-          </Link>
-        </section>
-
-        {/* Footer */}
-        <Footer />
       </div>
-      {/* Custom Animations */}
-      <style>{`
-        .animate-fade-in { animation: fadeIn 1s ease; }
-        .animate-fade-in-up { animation: fadeInUp 1s ease; }
-        .animate-title-pop { animation: popIn 0.7s cubic-bezier(.68,-0.55,.27,1.55); }
-        .animate-btn-bounce { animation: bounceIn 0.7s cubic-bezier(.68,-0.55,.27,1.55); }
-        .animate-btn-slide-in { animation: slideInRight 0.7s cubic-bezier(.68,-0.55,.27,1.55); }
-        .animate-logo-pop { animation: popIn 0.7s cubic-bezier(.68,-0.55,.27,1.55); }
-        .animate-img-float { animation: floatImg 3s ease-in-out infinite alternate; }
-        .animate-icon-spin { animation: iconSpin 2s linear infinite; }
-        .animate-icon-spin-slow { animation: iconSpin 4s linear infinite; }
-        .animate-icon-bounce { animation: iconBounce 1.5s infinite alternate; }
-        .animate-icon-pop { animation: popIn 0.7s cubic-bezier(.68,-0.55,.27,1.55); }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes popIn { 0% { transform: scale(0.7); opacity: 0; } 80% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); } }
-        @keyframes bounceIn { 0% { transform: scale(0.7); opacity: 0; } 60% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); } }
-        @keyframes slideInRight { from { opacity: 0; transform: translateX(60px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes floatImg { 0% { transform: translateY(0); } 100% { transform: translateY(-18px); } }
-        @keyframes cardPop { 0% { transform: scale(0.8); opacity: 0; } 80% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); } }
-        @keyframes iconSpin { 100% { transform: rotate(360deg); } }
-        @keyframes iconBounce { 0% { transform: translateY(0); } 100% { transform: translateY(-10px); } }
-      `}</style>
+
+      <section className="mx-auto w-full max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
+        <div className="mb-8 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300">
+              Capabilities
+            </p>
+            <h2 className="mt-2 text-3xl font-semibold text-white sm:text-4xl">
+              Built for serious productivity workflows
+            </h2>
+          </div>
+          <p className="hidden max-w-sm text-right text-sm text-slate-400 md:block">
+            From individual focus to coordinated team execution, everything lives in
+            one coherent operating layer.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {features.map(({ icon: Icon, title, description }) => (
+            <article
+              key={title}
+              className="group rounded-2xl border border-slate-800 bg-slate-900/70 p-5 transition hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-900/20"
+            >
+              <div className="mb-4 inline-flex rounded-lg bg-slate-800 p-2 text-cyan-300 transition group-hover:bg-cyan-400/20">
+                <Icon size={20} />
+              </div>
+              <h3 className="text-lg font-semibold text-white">{title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-300">{description}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto w-full max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
+        <div className="rounded-2xl border border-slate-800 bg-gradient-to-r from-slate-900 to-slate-800 p-6 sm:p-8">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h3 className="text-2xl font-semibold text-white sm:text-3xl">
+                Ready to run your day like a productivity suite?
+              </h3>
+              <p className="mt-2 text-sm text-slate-300 sm:text-base">
+                Start free and move your tasks, notes, and team workflows into one system.
+              </p>
+            </div>
+            <Link
+              to="/auth/signup"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:brightness-110 sm:w-auto"
+            >
+              Create your workspace <PiLightning />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
     </div>
   );
 }

@@ -1,9 +1,15 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { HiMenu } from "react-icons/hi";
 import { PiBellRingingDuotone } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
-import { AiOutlineMoon, AiOutlineSun } from "react-icons/ai";
+import {
+    AiOutlineInfoCircle,
+    AiOutlineLeft,
+    AiOutlineMoon,
+    AiOutlineRight,
+    AiOutlineSun,
+} from "react-icons/ai";
 import Sidebar from "./Sidebar";
 import NotificationBanner from "./NotificationBanner";
 import { SearchModal } from "../../../features/search";
@@ -11,6 +17,10 @@ import { AiOverviewModal } from "../../../features/ai";
 import { sendBrowserNotification } from "../../../utils/sendBrowserNotification";
 import { setWorkspaceRecent } from "../../../redux/slices/workspaceSlice";
 import { setTheme } from "../../../redux/slices/themeSlice";
+
+const NOTIFICATION_SNOOZE_MS = 3 * 60 * 1000;
+const LAST_SHOWN_NOTIFICATION_KEY = "last_shown_notification_id";
+const NOTIFICATION_SNOOZE_UNTIL_KEY = "notification_banner_snooze_until";
 
 function DashboardLayout() {
     const apiURL = import.meta.env.VITE_API_URL;
@@ -27,8 +37,12 @@ function DashboardLayout() {
     const [searchOpened, setSearchOpened] = useState(false);
     const [aiOverviewOpen, setAiOverviewOpen] = useState(false);
     const [aiSummary, setAiSummary] = useState("");
+    const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
     const [showSidebar, setShowSidebar] = useState(window.innerWidth >= 640);
     const dispatch = useDispatch();
+    const lastShownNotificationIdRef = useRef(
+        localStorage.getItem(LAST_SHOWN_NOTIFICATION_KEY) || ""
+    );
     const recentWorkspaces =
         useSelector((state) => state.workspace.workspaceRecent) || [];
     const theme = useSelector((state) => state.theme.theme);
@@ -37,6 +51,38 @@ function DashboardLayout() {
     const navigate = useNavigate();
 
     const loc = location.pathname.split("/").slice(2);
+    const currentSection = loc.length
+        ? loc[loc.length - 1].replace(/-/g, " ")
+        : "home";
+    const latestNotificationText =
+        latestNotification?.message ||
+        latestNotification?.title ||
+        "No new notifications right now.";
+    const latestNotificationTime = latestNotification?.createdAt
+        ? new Date(latestNotification.createdAt).toLocaleString()
+        : "Up to date";
+
+    const getNotificationSnoozeUntil = () =>
+        Number(localStorage.getItem(NOTIFICATION_SNOOZE_UNTIL_KEY) || "0");
+
+    const setNotificationSnoozeUntil = (timestampMs) => {
+        localStorage.setItem(NOTIFICATION_SNOOZE_UNTIL_KEY, String(timestampMs));
+    };
+
+    const rememberLastShownNotification = (id) => {
+        const idValue = String(id || "");
+        lastShownNotificationIdRef.current = idValue;
+        localStorage.setItem(LAST_SHOWN_NOTIFICATION_KEY, idValue);
+    };
+
+    const shouldPresentNotification = (notification) => {
+        if (!notification?.id) return false;
+        if (location.pathname.includes("/app/notifications")) return false;
+        if (Date.now() < getNotificationSnoozeUntil()) return false;
+
+        const incomingId = String(notification.id);
+        return incomingId !== lastShownNotificationIdRef.current;
+    };
 
     const handleNavigation = (link, workspaceId) => () => {
         navigate(`/app/workspace/open/${workspaceId}/${link}`);
@@ -108,7 +154,7 @@ function DashboardLayout() {
         fetchRecentWorkspaces();
     }, [apiURL, token, dispatch]);
 
-    // Fetch latest notification
+    // Fetch latest notification and only surface unseen ones.
     useEffect(() => {
         const fetchLatestNotification = async () => {
             try {
@@ -118,53 +164,71 @@ function DashboardLayout() {
 
                 if (response.status === 204) {
                     setLatestNotification(null);
+                    setNotificationPopping(false);
                     return;
                 }
 
                 const data = await response.json();
                 setLatestNotification(data);
+                if (shouldPresentNotification(data)) {
+                    rememberLastShownNotification(data.id);
+                    setNotificationPopping(true);
+                }
             } catch (error) {
                 console.error("Error fetching latest notification:", error);
             }
         };
 
         fetchLatestNotification();
-    }, [unreadCount]);
+        const intervalId = setInterval(fetchLatestNotification, 20000);
+        return () => clearInterval(intervalId);
+    }, [apiURL, token, unreadCount, location.pathname]);
 
-    const handleDismissNotification = () => {
-        if (latestNotification?.id) {
-            fetch(`${apiURL}/api/notifications/${latestNotification.id}/read`, {
-                method: "PUT",
-                headers: header,
-            }).catch((error) =>
-                console.error("Error marking notification as read:", error)
-            );
+    const handleDismissNotification = (snoozeMs = NOTIFICATION_SNOOZE_MS) => {
+        if (snoozeMs > 0) {
+            setNotificationSnoozeUntil(Date.now() + snoozeMs);
         }
         setNotificationPopping(false);
-        setLatestNotification(null);
     };
 
-    // Auto-dismiss notification after 10 seconds
-    useEffect(() => {
-        if (latestNotification) {
-            setNotificationPopping(true);
-            const timer = setTimeout(() => {
-                handleDismissNotification();
-            }, 10000);
-
-            return () => clearTimeout(timer);
+    const handleMarkNotificationAsRead = async () => {
+        if (!latestNotification?.id) {
+            handleDismissNotification(0);
+            return;
         }
-    }, [latestNotification]);
+        try {
+            const response = await fetch(
+                `${apiURL}/api/notifications/${latestNotification.id}/read`,
+                {
+                    method: "PUT",
+                    headers: header,
+                }
+            );
+            if (!response.ok) {
+                throw new Error("Failed to mark notification as read");
+            }
+            setUnreadCount((prev) => Math.max(0, prev - 1));
+        } catch (error) {
+            console.error("Error marking notification as read:", error);
+        } finally {
+            handleDismissNotification(0);
+        }
+    };
 
-    // Send browser notification
+    const handleOpenNotifications = () => {
+        setNotificationPopping(false);
+        navigate("/app/notifications");
+    };
+
+    // Send browser notifications only when tab is in background.
     useEffect(() => {
-        if (latestNotification) {
+        if (latestNotification && notificationPopping && document.hidden) {
             sendBrowserNotification(
                 latestNotification.message,
                 latestNotification.type
             );
         }
-    }, [latestNotification]);
+    }, [latestNotification, notificationPopping]);
 
     // Handle AI overview
     useEffect(() => {
@@ -246,6 +310,114 @@ function DashboardLayout() {
 
                 {/* Main Content */}
                 <main className="w-full flex flex-col h-screen min-h-0 overflow-y-auto scrollbar-hide bg-transparent">
+                    <button
+                        className="fixed right-0 top-1/2 z-40 -translate-y-1/2 rounded-l-xl border border-r-0 border-gray-300 bg-white px-2 py-3 text-gray-700 shadow-sm hover:bg-gray-50"
+                        onClick={() => setIsRightPanelOpen((prev) => !prev)}
+                        aria-label={
+                            isRightPanelOpen
+                                ? "Collapse information panel"
+                                : "Expand information panel"
+                        }
+                        title={
+                            isRightPanelOpen
+                                ? "Hide quick info"
+                                : "Show quick info"
+                        }
+                    >
+                        {isRightPanelOpen ? <AiOutlineRight size={16} /> : <AiOutlineLeft size={16} />}
+                    </button>
+
+                    <aside
+                        className={`fixed right-0 top-0 z-40 h-screen w-[320px] max-w-[90vw] border-l border-gray-200 bg-white/95 backdrop-blur-sm shadow-xl transition-transform duration-300 ${
+                            isRightPanelOpen ? "translate-x-0" : "translate-x-full"
+                        }`}
+                        aria-hidden={!isRightPanelOpen}
+                    >
+                        <div className="h-full overflow-y-auto p-4 pt-20">
+                            <div className="flex items-center gap-2">
+                                <AiOutlineInfoCircle className="text-gray-500" />
+                                <h3 className="text-sm font-semibold text-gray-800">
+                                    Quick Information
+                                </h3>
+                            </div>
+
+                            <div className="mt-4 space-y-3">
+                                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                                    <p className="text-xs uppercase tracking-wide text-gray-500">
+                                        Current Section
+                                    </p>
+                                    <p className="mt-1 text-sm font-medium text-gray-800 capitalize">
+                                        {currentSection}
+                                    </p>
+                                </div>
+
+                                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                                    <p className="text-xs uppercase tracking-wide text-gray-500">
+                                        Unread Notifications
+                                    </p>
+                                    <p className="mt-1 text-lg font-semibold text-gray-900">
+                                        {unreadCount}
+                                    </p>
+                                    <button
+                                        className="mt-2 text-xs font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+                                        onClick={() => navigate("/app/notifications")}
+                                    >
+                                        Open notification center
+                                    </button>
+                                </div>
+
+                                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                                    <p className="text-xs uppercase tracking-wide text-gray-500">
+                                        Latest Notification
+                                    </p>
+                                    <p className="mt-1 text-sm text-gray-800 line-clamp-3">
+                                        {latestNotificationText}
+                                    </p>
+                                    <p className="mt-1 text-xs text-gray-500">
+                                        {latestNotificationTime}
+                                    </p>
+                                </div>
+
+                                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                                    <p className="text-xs uppercase tracking-wide text-gray-500">
+                                        Recent Workspaces
+                                    </p>
+                                    {recentWorkspaces.length ? (
+                                        <ul className="mt-2 space-y-1 text-sm text-gray-800">
+                                            {recentWorkspaces.slice(0, 4).map((workspaceItem) => (
+                                                <li key={workspaceItem.id || workspaceItem.name}>
+                                                    {workspaceItem.name}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p className="mt-1 text-sm text-gray-600">
+                                            No workspace data yet.
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                                    <p className="text-xs uppercase tracking-wide text-gray-500">
+                                        Productivity Snapshot
+                                    </p>
+                                    <p className="mt-1 text-sm text-gray-700">
+                                        Theme: {isDarkTheme ? "Dark" : "Light"}
+                                    </p>
+                                    <p className="mt-1 text-sm text-gray-700">
+                                        AI Summary: {aiSummary ? "Ready" : "Not generated"}
+                                    </p>
+                                    <button
+                                        className="mt-3 rounded-md bg-gray-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-800"
+                                        onClick={() => setAiOverviewOpen(true)}
+                                    >
+                                        Open AI Overview
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+
                     <div className="fixed top-4 right-4 z-40 flex items-center gap-2">
                         <button
                             className="relative flex items-center justify-center h-11 w-11 rounded-xl bg-white text-gray-800 border border-gray-200 shadow-sm hover:bg-gray-50 transition-all"
@@ -290,6 +462,8 @@ function DashboardLayout() {
                 <NotificationBanner
                     notification={latestNotification}
                     onDismiss={handleDismissNotification}
+                    onMarkAsRead={handleMarkNotificationAsRead}
+                    onOpenNotifications={handleOpenNotifications}
                 />
             )}
         </div>

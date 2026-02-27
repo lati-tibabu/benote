@@ -1,6 +1,13 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AiOutlineCheckCircle, AiOutlineCloseCircle } from "react-icons/ai";
+import {
+  AiOutlineBell,
+  AiOutlineCheck,
+  AiOutlineCheckCircle,
+  AiOutlineClockCircle,
+  AiOutlineCloseCircle,
+  AiOutlineFilter,
+} from "react-icons/ai";
 
 const Notifications = () => {
   const apiURL = import.meta.env.VITE_API_URL;
@@ -16,11 +23,36 @@ const Notifications = () => {
   const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [activeFilter, setActiveFilter] = useState("all");
 
   const unreadCount = useMemo(
     () => notifications.filter((n) => !n.is_read).length,
     [notifications]
   );
+
+  const filteredNotifications = useMemo(() => {
+    if (activeFilter === "unread") {
+      return notifications.filter((item) => !item.is_read);
+    }
+    if (activeFilter === "invitation") {
+      return notifications.filter((item) => item.type === "invitation");
+    }
+    return notifications;
+  }, [notifications, activeFilter]);
+
+  const formatRelativeTime = (input) => {
+    if (!input) return "Unknown time";
+    const value = new Date(input).getTime();
+    if (Number.isNaN(value)) return "Unknown time";
+    const diffMinutes = Math.floor((Date.now() - value) / 60000);
+    if (diffMinutes < 1) return "Just now";
+    if (diffMinutes < 60) return `${diffMinutes}m ago`;
+    const diffHours = Math.floor(diffMinutes / 60);
+    if (diffHours < 24) return `${diffHours}h ago`;
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return new Date(input).toLocaleDateString();
+  };
 
   const fetchNotifications = async () => {
     try {
@@ -109,97 +141,169 @@ const Notifications = () => {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-gray-900">Notifications</h1>
-        <button
-          className="px-3 py-2 text-sm rounded-lg border border-gray-200 bg-white hover:bg-gray-50 disabled:opacity-50"
-          onClick={markAllAsRead}
-          disabled={unreadCount === 0}
-        >
-          Mark all as read
-        </button>
-      </div>
+    <div className="mx-auto w-full max-w-4xl space-y-5">
+      <header className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+              Notifications
+            </h1>
+            <p className="mt-1 text-sm text-gray-500">
+              {unreadCount > 0
+                ? `${unreadCount} unread message${unreadCount > 1 ? "s" : ""}`
+                : "All caught up"}
+            </p>
+          </div>
+
+          <button
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+            onClick={markAllAsRead}
+            disabled={unreadCount === 0}
+          >
+            <AiOutlineCheck />
+            Mark all as read
+          </button>
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <div className="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-2 py-1">
+            <AiOutlineFilter className="text-gray-500" />
+            <button
+              className={`rounded-md px-3 py-1 text-xs font-medium transition ${
+                activeFilter === "all"
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+              onClick={() => setActiveFilter("all")}
+            >
+              All
+            </button>
+            <button
+              className={`rounded-md px-3 py-1 text-xs font-medium transition ${
+                activeFilter === "unread"
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+              onClick={() => setActiveFilter("unread")}
+            >
+              Unread
+            </button>
+            <button
+              className={`rounded-md px-3 py-1 text-xs font-medium transition ${
+                activeFilter === "invitation"
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+              onClick={() => setActiveFilter("invitation")}
+            >
+              Invitations
+            </button>
+          </div>
+        </div>
+      </header>
 
       {loading ? (
-        <div className="text-sm text-gray-500">Loading notifications...</div>
-      ) : notifications.length === 0 ? (
-        <div className="rounded-xl border border-gray-200 bg-white p-6 text-sm text-gray-500">
-          No notifications yet.
+        <div className="space-y-3">
+          {[...Array(3)].map((_, idx) => (
+            <div
+              key={`skeleton-${idx}`}
+              className="h-28 animate-pulse rounded-xl border border-gray-200 bg-white"
+            />
+          ))}
+        </div>
+      ) : filteredNotifications.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-10 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-500">
+            <AiOutlineBell size={24} />
+          </div>
+          <h2 className="mt-3 text-base font-semibold text-gray-900">
+            No notifications to show
+          </h2>
+          <p className="mt-1 text-sm text-gray-500">
+            Try switching your filter or check back later.
+          </p>
         </div>
       ) : (
         <div className="flex flex-col gap-3">
-          {notifications.map((notification) => (
-            <div
+          {filteredNotifications.map((notification) => (
+            <article
               key={notification.id}
-              className={`border rounded-xl p-4 bg-white transition-shadow ${
+              className={`rounded-xl border bg-white p-4 shadow-sm transition hover:shadow-md ${
                 notification.is_read
                   ? "border-gray-200"
-                  : "border-blue-200 shadow-sm"
+                  : "border-gray-300 ring-1 ring-gray-200"
               }`}
             >
-              <div className="flex justify-between items-start gap-3">
-                <div>
-                  <p className="text-sm font-medium text-gray-800">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-gray-900">
                     {notification.message}
                   </p>
-                  <div className="mt-2 flex items-center gap-2">
-                    <span className="inline-block px-2 py-0.5 text-xs font-medium text-gray-700 bg-gray-100 rounded-md">
-                      {notification.type}
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">
+                      {notification.type || "general"}
                     </span>
                     {!notification.is_read && (
-                      <span className="inline-block px-2 py-0.5 text-xs font-medium text-blue-700 bg-blue-50 rounded-md">
+                      <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
                         Unread
                       </span>
                     )}
                   </div>
                 </div>
-                <p className="text-xs text-gray-500 whitespace-nowrap">
-                  {new Date(notification.createdAt).toLocaleString()}
-                </p>
+                <div className="shrink-0 text-right">
+                  <p className="inline-flex items-center gap-1 text-xs text-gray-500">
+                    <AiOutlineClockCircle />
+                    {formatRelativeTime(notification.createdAt)}
+                  </p>
+                  <p className="mt-1 text-[11px] text-gray-400">
+                    {new Date(notification.createdAt).toLocaleString()}
+                  </p>
+                </div>
               </div>
 
-              <div className="mt-3 flex gap-2">
+              <div className="mt-3 flex flex-wrap gap-2">
                 {!notification.is_read && (
                   <button
-                    className="px-3 py-2 text-sm rounded-lg border border-gray-200 bg-white hover:bg-gray-50"
+                    className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
                     onClick={() => markAsRead(notification.id)}
                   >
+                    <AiOutlineCheckCircle />
                     Mark as read
                   </button>
                 )}
                 {notification.type === "invitation" && (
                   <>
                     <button
-                      className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-gray-600 rounded-lg hover:bg-gray-700"
+                      className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-gray-800"
                       onClick={() => handleAcceptInvitation(notification)}
                     >
                       <AiOutlineCheckCircle /> Accept
                     </button>
-                    <button className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600">
+                    <button className="inline-flex items-center gap-2 rounded-lg bg-red-500 px-3 py-2 text-sm font-medium text-white hover:bg-red-600">
                       <AiOutlineCloseCircle /> Ignore
                     </button>
                   </>
                 )}
               </div>
-            </div>
+            </article>
           ))}
         </div>
       )}
 
-      <div className="flex justify-center gap-4 mt-6">
+      <div className="flex items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white p-3">
         <button
-          className="btn btn-sm btn-outline"
+          className="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50"
           onClick={() => setPage((prev) => prev - 1)}
           disabled={page === 1}
         >
           Previous
         </button>
-        <span className="self-center text-sm text-gray-600">
-          Page {page} of {totalPages}
+        <span className="text-sm text-gray-600">
+          Page <span className="font-semibold text-gray-900">{page}</span> of{" "}
+          <span className="font-semibold text-gray-900">{totalPages}</span>
         </span>
         <button
-          className="btn btn-sm btn-outline"
+          className="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50"
           onClick={() => setPage((prev) => prev + 1)}
           disabled={page === totalPages}
         >
