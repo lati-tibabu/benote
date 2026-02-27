@@ -12,8 +12,8 @@ const notesSlice = createSlice({
       state.notes = action.payload;
     },
     updateNotes: (state, action) => {
-      state.notes.map((note) =>
-        note.id === action.payload.id ? { ...note, ...action.payload } : note,
+      state.notes = state.notes.map((note) =>
+        note.id === action.payload.id ? { ...note, ...action.payload } : note
       );
     },
     clearNotes: (state) => {

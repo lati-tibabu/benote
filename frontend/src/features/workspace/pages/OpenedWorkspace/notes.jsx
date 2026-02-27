@@ -1,13 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { FaTrash } from "react-icons/fa";
-import { AiOutlineFile, AiOutlinePlus } from "react-icons/ai";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  AiOutlineFile,
+  AiOutlinePlus,
+  AiOutlineSearch,
+} from "react-icons/ai";
 import {
   PiCaretLeftBold,
   PiCaretRightBold,
   PiGridFour,
   PiList,
+  PiSparkle,
   PiUploadSimple,
 } from "react-icons/pi";
+import { FaTrash } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,27 +24,96 @@ import FileToNoteUploader from "@features/notes/components/FileToNoteUploader";
 const Notes = () => {
   const apiURL = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("jwt");
-  const header = {
-    authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
+  const header = useMemo(
+    () => ({
+      authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    }),
+    [token]
+  );
+
   const { workspaceId } = useParams();
   const useGemini = localStorage.getItem("useGemini") === "true";
-  const notes = useSelector((state) => state.notes.notes) || [];
-  const [loading, setLoading] = useState(false);
+  const notesState = useSelector((state) => state.notes.notes);
+  const notes = useMemo(
+    () => (Array.isArray(notesState) ? notesState : []),
+    [notesState]
+  );
   const userData = useSelector((state) => state.auth.user) || {};
-  const [viewMode, setViewMode] = useState("list"); // 'list' or 'grid'
 
-  // Pagination states
+  const [loading, setLoading] = useState(false);
+  const [viewMode, setViewMode] = useState("list");
+  const [searchTerm, setSearchTerm] = useState("");
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [pageSize, setPageSize] = useState(10); // Default page size
+  const [pageSize, setPageSize] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // adding new note
+  const formatDate = useCallback(
+    (dateValue) =>
+      new Date(dateValue).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      }),
+    []
+  );
+
+  const fetchNotes = useCallback(
+    async (page, size) => {
+      if (!notes.length) setLoading(true);
+
+      try {
+        const response = await fetch(
+          `${apiURL}/api/notes/${workspaceId}?page=${page}&pageSize=${size}`,
+          {
+            method: "GET",
+            headers: header,
+          }
+        );
+
+        if (!response.ok) {
+          dispatch(clearNotes());
+          const errorData = await response.json();
+          toast.error(errorData.message || "Failed to fetch notes.");
+          return;
+        }
+
+        const data = await response.json();
+        dispatch(setNotes(data.notes || []));
+        setTotalItems(data.totalItems || 0);
+        setTotalPages(data.totalPages || 1);
+        setCurrentPage(data.currentPage || 1);
+        setPageSize(data.pageSize || 10);
+      } catch (error) {
+        console.error("Error fetching notes:", error);
+        toast.error("Network error or server unavailable.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [apiURL, dispatch, header, notes.length, workspaceId]
+  );
+
+  useEffect(() => {
+    fetchNotes(currentPage, pageSize);
+  }, [currentPage, fetchNotes, pageSize, workspaceId]);
+
+  const filteredNotes = useMemo(() => {
+    const normalized = searchTerm.trim().toLowerCase();
+    if (!normalized) return notes;
+
+    return notes.filter((note) => {
+      const title = note.title?.toLowerCase() || "";
+      const owner = note.user?.name?.toLowerCase() || "";
+      return title.includes(normalized) || owner.includes(normalized);
+    });
+  }, [notes, searchTerm]);
+
   const handleAddNewNote = async () => {
     const newTitle = `Note_${new Date()
       .toISOString()
@@ -47,11 +121,9 @@ const Notes = () => {
       .replace(/:/g, "-")
       .replace(/T/g, "_")}`;
 
-    const userId = userData.id;
-
     const newNoteData = {
       workspace_id: workspaceId,
-      owned_by: userId,
+      owned_by: userData.id,
       title: newTitle,
       content: "",
     };
@@ -63,84 +135,44 @@ const Notes = () => {
         body: JSON.stringify(newNoteData),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        toast.success("Note created successfully");
-        fetchNotes(currentPage, pageSize); // Re-fetch notes to include the new one
-        navigate(data.id); // Navigate to the newly created note
-      } else {
-        const errorData = await response.text();
+      if (!response.ok) {
         toast.error("Error creating the note");
-        console.error("Error creating note:", errorData);
+        return;
       }
+
+      const data = await response.json();
+      toast.success("Note created");
+      fetchNotes(currentPage, pageSize);
+      navigate(data.id);
     } catch (error) {
       console.error("Network error creating note:", error);
       toast.error("Network error or server unavailable.");
     }
   };
 
-  //fetching all notes for the given workspace with pagination
-  const fetchNotes = async (page, size) => {
-    !notes.length && setLoading(true); // Show loading only if no notes are currently loaded
-    try {
-      const response = await fetch(
-        `${apiURL}/api/notes/${workspaceId}?page=${page}&pageSize=${size}`,
-        {
-          method: "GET",
-          headers: header,
-        }
-      );
-
-      if (!response.ok) {
-        dispatch(clearNotes());
-        const errorData = await response.json();
-        toast.error(errorData.message || "Failed to fetch notes.");
-      } else {
-        const data = await response.json();
-        dispatch(setNotes(data.notes));
-        setTotalItems(data.totalItems);
-        setTotalPages(data.totalPages);
-        setCurrentPage(data.currentPage);
-        setPageSize(data.pageSize);
-      }
-    } catch (error) {
-      console.error("Error fetching notes:", error);
-      toast.error("Network error or server unavailable.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  //fetching all notes for the given workspace upon mounting the component
-  useEffect(() => {
-    fetchNotes(currentPage, pageSize);
-  }, [workspaceId, currentPage, pageSize]);
-
-  //deleting note
   const handleDeleteNote = async (id) => {
     try {
-      if (window.confirm("Are you sure you want to delete this note?")) {
-        const response = await fetch(`${apiURL}/api/notes/${id}`, {
-          method: "DELETE",
-          headers: header,
-        });
-        if (response.ok) {
-          toast.success("Note deleted successfully!");
-          fetchNotes(currentPage, pageSize); // Re-fetch notes after deletion
-        } else {
-          toast.error("Error deleting the note!");
-          console.error("Error deleting note:", await response.text());
-        }
+      if (!window.confirm("Delete this note permanently?")) return;
+
+      const response = await fetch(`${apiURL}/api/notes/${id}`, {
+        method: "DELETE",
+        headers: header,
+      });
+
+      if (!response.ok) {
+        toast.error("Error deleting note");
+        return;
       }
+
+      toast.success("Note deleted");
+      fetchNotes(currentPage, pageSize);
     } catch (error) {
-      toast.error("Error deleting the note!");
+      toast.error("Error deleting note");
       console.error("Network error deleting note:", error);
     }
   };
 
-  const selectNote = (id) => {
-    navigate(id);
-  };
+  const selectNote = (id) => navigate(id);
 
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
@@ -149,276 +181,249 @@ const Notes = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 font-sans">
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+    <div className="mx-auto flex min-h-[calc(100vh-7rem)] w-full max-w-[1480px] flex-col gap-4 rounded-2xl border border-gray-200 bg-gradient-to-br from-white to-gray-50 p-3 shadow-sm sm:p-5">
+      <ToastContainer position="top-right" autoClose={2400} hideProgressBar />
 
-      {/* Header and Actions */}
-      <div className="flex flex-col sm:flex-row items-center justify-between pb-4 mb-8 bg-white rounded-sm shadow-sm px-6 py-4 border border-gray-100">
-        <h1 className="font-semibold text-2xl text-gray-800 flex items-center gap-3 mb-4 sm:mb-0">
-          <AiOutlineFile className="text-gray-500" size={24} />
-          Notes
-        </h1>
-        <div className="flex items-center gap-3">
-          {useGemini && (
+      <header className="rounded-xl border border-gray-200 bg-white p-3 shadow-sm sm:p-4">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="space-y-1">
+            <h1 className="flex items-center gap-2 text-2xl font-semibold text-gray-900">
+              <AiOutlineFile className="text-blue-600" size={24} />
+              Workspace Notes
+            </h1>
+            <p className="text-sm text-gray-600">
+              {totalItems} notes in this workspace
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {useGemini && (
+              <button
+                className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 transition hover:bg-gray-50"
+                onClick={() => document.getElementById("ai_gen_note")?.showModal()}
+              >
+                <GeminiIcon size={16} />
+                AI Note
+              </button>
+            )}
+
             <button
-              className="flex items-center gap-2 px-4 py-2 rounded-sm bg-gradient-to-r from-gray-600 to-gray-700 text-white font-medium text-sm shadow-sm hover:from-gray-700 hover:to-gray-800 transition transform hover:-translate-y-0.5"
-              onClick={() => document.getElementById("ai_gen_note").showModal()}
+              className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 transition hover:bg-gray-50"
+              onClick={() =>
+                document.getElementById("upload_note_modal")?.showModal()
+              }
             >
-              <GeminiIcon size={18} />
-              AI Note
+              <PiUploadSimple size={16} />
+              Upload
             </button>
-          )}
-          <button
-            className="flex items-center gap-2 px-4 py-2 rounded-sm bg-white text-gray-600 border border-gray-200 font-medium text-sm shadow-sm hover:bg-gray-50 hover:border-gray-300 transition transform hover:-translate-y-0.5"
-            onClick={() =>
-              document.getElementById("upload_note_modal").showModal()
-            }
-          >
-            <PiUploadSimple size={18} /> Upload
-          </button>
-          <button
-            className="flex items-center gap-2 px-4 py-2 rounded-sm bg-gray-600 text-white font-medium text-sm shadow-sm hover:bg-gray-700 transition transform hover:-translate-y-0.5"
-            onClick={handleAddNewNote}
-          >
-            <AiOutlinePlus size={18} /> New Note
-          </button>
-        </div>
-      </div>
 
-      {/* View Controls */}
-      <div className="flex justify-end mb-6">
-        <div className="flex gap-2 p-1 bg-gray-100 rounded-sm">
-          <button
-            className={`p-2 rounded-sm transition ${
-              viewMode === "list"
-                ? "bg-white text-gray-600 shadow-sm"
-                : "text-gray-500 hover:bg-gray-200"
-            }`}
-            title="List view"
-            onClick={() => setViewMode("list")}
-          >
-            <PiList size={20} />
-          </button>
-          <button
-            className={`p-2 rounded-sm transition ${
-              viewMode === "grid"
-                ? "bg-white text-gray-600 shadow-sm"
-                : "text-gray-500 hover:bg-gray-200"
-            }`}
-            title="Grid view"
-            onClick={() => setViewMode("grid")}
-          >
-            <PiGridFour size={20} />
-          </button>
+            <button
+              className="inline-flex items-center gap-1 rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-black"
+              onClick={handleAddNewNote}
+            >
+              <AiOutlinePlus size={16} />
+              New Note
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* Notes Display Area */}
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <label className="flex w-full items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 sm:max-w-sm">
+            <AiOutlineSearch className="text-gray-500" size={16} />
+            <input
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Search by title or owner"
+              className="w-full bg-transparent text-sm text-gray-700 outline-none"
+              aria-label="Search notes"
+            />
+          </label>
+
+          <div className="inline-flex w-fit items-center rounded-lg border border-gray-200 bg-gray-50 p-1">
+            <button
+              className={`rounded-md px-2 py-1 text-sm transition ${
+                viewMode === "list" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600"
+              }`}
+              onClick={() => setViewMode("list")}
+              title="List view"
+            >
+              <PiList size={18} />
+            </button>
+            <button
+              className={`rounded-md px-2 py-1 text-sm transition ${
+                viewMode === "grid" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600"
+              }`}
+              onClick={() => setViewMode("grid")}
+              title="Grid view"
+            >
+              <PiGridFour size={18} />
+            </button>
+          </div>
+        </div>
+      </header>
+
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {[...Array(pageSize)].map((_, index) => (
             <div
               key={index}
-              className="bg-white rounded-sm shadow-sm p-5 h-32 flex flex-col justify-between animate-pulse"
+              className="h-32 animate-pulse rounded-xl border border-gray-200 bg-white p-4"
             >
-              <div className="h-6 bg-gray-200 rounded w-3/4 mb-3"></div>
+              <div className="mb-3 h-5 w-3/4 rounded bg-gray-200" />
               <div className="space-y-2">
-                <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                <div className="h-3 rounded bg-gray-100" />
+                <div className="h-3 w-4/5 rounded bg-gray-100" />
               </div>
             </div>
           ))}
-        </div>
-      ) : notes.length === 0 ? (
-        <div className="flex flex-col items-center justify-center bg-white rounded-sm shadow-sm py-16 px-6 text-gray-500">
-          <AiOutlineFile size={48} className="text-gray-300 mb-4" />
-          <p className="text-lg font-medium">No notes found.</p>
-          <p className="text-sm mt-2 text-center max-w-sm">
-            Start by creating a new note or uploading an existing file to get
-            started.
-          </p>
+        </section>
+      ) : filteredNotes.length === 0 ? (
+        <section className="flex flex-col items-center rounded-xl border border-dashed border-gray-300 bg-white px-6 py-14 text-center text-gray-500">
+          <PiSparkle size={34} className="mb-3 text-gray-300" />
+          <h2 className="text-lg font-semibold text-gray-700">No matching notes</h2>
+          <p className="mt-1 text-sm">Try another search or create a new note.</p>
           <button
             onClick={handleAddNewNote}
-            className="mt-6 flex items-center gap-2 px-6 py-3 rounded-sm bg-gray-600 text-white font-semibold shadow-sm hover:bg-gray-700 transition transform hover:-translate-y-1"
+            className="mt-5 inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-black"
           >
-            <AiOutlinePlus size={20} /> Create Your First Note
+            <AiOutlinePlus size={16} />
+            Create Note
           </button>
-        </div>
+        </section>
       ) : viewMode === "list" ? (
-        <div className="overflow-x-auto rounded-sm shadow-sm bg-white border border-gray-100">
-          <table className="min-w-full text-md text-left text-gray-700">
-            <caption className="p-4 text-sm text-gray-500 text-right">
-              <span className="font-semibold">Total Notes:</span> {totalItems}
-            </caption>
-            <thead className="bg-gray-50 border-b border-gray-100">
-              <tr>
-                <th className="py-3 px-6 font-semibold text-gray-600 w-12">
-                  #
-                </th>
-                <th className="py-3 px-6 font-semibold text-gray-600">Title</th>
-                <th className="py-3 px-6 font-semibold text-gray-600 whitespace-nowrap">
-                  Created On
-                </th>
-                <th className="py-3 px-6 font-semibold text-gray-600 whitespace-nowrap">
-                  Last Updated
-                </th>
-                <th className="py-3 px-6 font-semibold text-gray-600">Owner</th>
-                <th className="py-3 px-6 font-semibold text-gray-600 text-right w-24">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {notes.map((note, index) => (
-                <tr
-                  key={note.id}
-                  className="border-b border-gray-50 hover:bg-gray-50 transition even:bg-white odd:bg-gray-50/50"
-                >
-                  <td className="py-3 px-6 text-gray-400">
-                    {(currentPage - 1) * pageSize + index + 1}
-                  </td>
-                  <td
-                    className="py-3 px-6 flex items-center gap-2 cursor-pointer text-gray-700 font-medium hover:underline"
-                    onClick={() => selectNote(note.id)}
-                  >
-                    <AiOutlineFile size={18} className="text-gray-400" />
-                    <span className="truncate max-w-[200px]">{note.title}</span>
-                  </td>
-                  <td className="py-3 px-6 text-sm text-gray-600 whitespace-nowrap">
-                    {new Date(note.createdAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </td>
-                  <td className="py-3 px-6 text-sm text-gray-600 whitespace-nowrap">
-                    {new Date(note.updatedAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </td>
-                  <td className="py-3 px-6 text-sm text-gray-700">
-                    {note.user.name}
-                  </td>
-                  <td className="py-3 px-6 text-right">
-                    <button
-                      className="p-2 rounded-sm text-red-500 hover:bg-red-100 transition"
-                      title="Delete"
-                      onClick={() => handleDeleteNote(note.id)}
-                    >
-                      <FaTrash size={15} />
-                    </button>
-                  </td>
+        <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-left text-sm text-gray-700">
+              <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
+                <tr>
+                  <th className="px-4 py-3">#</th>
+                  <th className="px-4 py-3">Title</th>
+                  <th className="px-4 py-3">Created</th>
+                  <th className="px-4 py-3">Updated</th>
+                  <th className="px-4 py-3">Owner</th>
+                  <th className="px-4 py-3 text-right">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {filteredNotes.map((note, index) => (
+                  <tr key={note.id} className="border-t border-gray-100 hover:bg-gray-50">
+                    <td className="px-4 py-3 text-gray-500">
+                      {(currentPage - 1) * pageSize + index + 1}
+                    </td>
+                    <td className="px-4 py-3">
+                      <button
+                        className="inline-flex max-w-[20rem] items-center gap-2 truncate font-medium text-gray-800 hover:text-blue-700"
+                        onClick={() => selectNote(note.id)}
+                      >
+                        <AiOutlineFile className="text-gray-400" size={16} />
+                        <span className="truncate">{note.title}</span>
+                      </button>
+                    </td>
+                    <td className="px-4 py-3 text-gray-600">{formatDate(note.createdAt)}</td>
+                    <td className="px-4 py-3 text-gray-600">{formatDate(note.updatedAt)}</td>
+                    <td className="px-4 py-3 text-gray-700">{note.user?.name || "-"}</td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        className="rounded-md p-2 text-red-500 transition hover:bg-red-50"
+                        title="Delete"
+                        onClick={() => handleDeleteNote(note.id)}
+                      >
+                        <FaTrash size={13} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {notes.map((note) => (
-            <div
+        <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {filteredNotes.map((note) => (
+            <article
               key={note.id}
-              className="bg-white border border-gray-100 rounded-sm shadow-sm p-5 flex flex-col gap-3 hover:shadow-sm transition cursor-pointer group relative"
+              className="group relative flex cursor-pointer flex-col gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow"
               onClick={() => selectNote(note.id)}
             >
-              <div className="flex items-center gap-3 mb-2">
-                <AiOutlineFile size={22} className="text-gray-500" />
-                <span className="font-semibold text-lg text-gray-800 truncate">
+              <div className="flex items-start gap-2">
+                <AiOutlineFile size={18} className="mt-0.5 text-blue-600" />
+                <h2 className="line-clamp-2 text-base font-semibold text-gray-800">
                   {note.title}
-                </span>
+                </h2>
               </div>
-              <div className="flex flex-col gap-1 text-sm text-gray-600">
-                <span>
-                  **Created:**{" "}
-                  {new Date(note.createdAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </span>
-                <span>
-                  **Updated:**{" "}
-                  {new Date(note.updatedAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </span>
-                <span>
-                  **Owner:**{" "}
-                  <span className="font-medium">{note.user.name}</span>
-                </span>
+
+              <div className="space-y-1 text-sm text-gray-600">
+                <p>Created: {formatDate(note.createdAt)}</p>
+                <p>Updated: {formatDate(note.updatedAt)}</p>
+                <p>
+                  Owner: <span className="font-medium text-gray-700">{note.user?.name || "-"}</span>
+                </p>
               </div>
+
               <button
-                className="absolute top-4 right-4 p-2 rounded-sm text-red-500 opacity-0 group-hover:opacity-100 bg-white shadow-sm hover:bg-red-100 transition"
+                className="absolute right-3 top-3 rounded-md p-2 text-red-500 opacity-0 transition hover:bg-red-50 group-hover:opacity-100"
                 title="Delete"
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevent card click when deleting
+                onClick={(event) => {
+                  event.stopPropagation();
                   handleDeleteNote(note.id);
                 }}
               >
-                <FaTrash size={16} />
+                <FaTrash size={13} />
               </button>
-            </div>
+            </article>
           ))}
-        </div>
+        </section>
       )}
 
-      {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-4 mt-8 py-3 bg-white rounded-sm shadow-sm border border-gray-100">
+        <footer className="flex items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700">
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className="p-2 rounded-sm bg-gray-600 text-white hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            className="rounded-md border border-gray-200 p-2 text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            <PiCaretLeftBold size={18} />
+            <PiCaretLeftBold size={16} />
           </button>
-          <span className="text-gray-700 font-medium">
+          <span>
             Page {currentPage} of {totalPages}
           </span>
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="p-2 rounded-sm bg-gray-600 text-white hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            className="rounded-md border border-gray-200 p-2 text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            <PiCaretRightBold size={18} />
+            <PiCaretRightBold size={16} />
           </button>
-        </div>
+        </footer>
       )}
 
-      {/* Upload Note Modal */}
-      <dialog id="upload_note_modal" className="modal backdrop:bg-gray-900/50">
-        <div className="modal-box bg-white p-8 rounded-sm shadow-sm w-11/12 max-w-lg relative">
-          <form method="dialog" className="absolute top-4 right-4">
+      <dialog id="upload_note_modal" className="modal backdrop:bg-black/50">
+        <div className="modal-box max-w-xl rounded-xl border border-gray-200 bg-white p-6">
+          <form method="dialog" className="absolute right-3 top-3">
             <button className="btn btn-sm btn-circle btn-ghost text-gray-500 hover:bg-gray-100">
-              ✕
+              x
             </button>
           </form>
-          <h3 className="font-bold text-xl text-gray-800 mb-4 flex items-center gap-3">
-            <PiUploadSimple className="text-gray-600" size={24} />
+
+          <h3 className="mb-2 flex items-center gap-2 text-lg font-semibold text-gray-800">
+            <PiUploadSimple size={20} className="text-blue-600" />
             Upload File to Create Note
           </h3>
-          <p className="text-sm text-gray-600 mb-6">
-            Supported file types: <span className="font-semibold">.doc</span>,{" "}
-            <span className="font-semibold">.docx</span>,{" "}
-            <span className="font-semibold">.txt</span>
+          <p className="mb-5 text-sm text-gray-600">
+            Supported types: <span className="font-medium">.doc .docx .txt</span>
           </p>
+
           <FileToNoteUploader />
         </div>
       </dialog>
 
-      {/* AI Note Modal */}
-      <dialog id="ai_gen_note" className="modal backdrop:bg-gray-900/50">
-        <div className="modal-box bg-transparent p-0 rounded-sm shadow-sm w-11/12 max-w-none h-[90vh] overflow-hidden">
-          <form method="dialog" className="absolute top-4 right-4 z-10">
-            <button className="btn btn-sm btn-circle btn-ghost text-white bg-black/30 hover:bg-black/50">
-              ✕
+      <dialog id="ai_gen_note" className="modal backdrop:bg-black/60">
+        <div className="modal-box h-[90vh] w-11/12 max-w-none overflow-hidden rounded-xl bg-transparent p-0 shadow-lg">
+          <form method="dialog" className="absolute right-3 top-3 z-10">
+            <button className="btn btn-sm btn-circle btn-ghost bg-black/40 text-white hover:bg-black/60">
+              x
             </button>
           </form>
-          {/* Ensure AiGeneratedNote itself has proper styling or is contained */}
           <AiGeneratedNote />
         </div>
       </dialog>
