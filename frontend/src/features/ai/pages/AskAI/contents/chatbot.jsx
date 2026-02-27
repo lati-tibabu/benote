@@ -7,6 +7,7 @@ import {
   AiOutlineEdit,
   AiOutlineBulb,
   AiOutlineCalendar,
+  AiOutlinePlus,
 } from "react-icons/ai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { useSelector } from "react-redux";
@@ -34,6 +35,12 @@ function Chatbot({ initialPrompt = "" }) {
 
   const [chatSessions, setChatSessions] = useState([]);
   const [currentSessionId, setCurrentSessionId] = useState(null);
+  const [workspaces, setWorkspaces] = useState([]);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [addTargetType, setAddTargetType] = useState("task");
+  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState("");
+  const [sourceContent, setSourceContent] = useState("");
+  const [isAddingContent, setIsAddingContent] = useState(false);
 
   const [aiTone, setAiTone] = useState("Friendly");
   const [aiPurpose, setAiPurpose] = useState("Everyday assistant");
@@ -264,6 +271,254 @@ function Chatbot({ initialPrompt = "" }) {
       setChatSessions(sessions);
     } catch (error) {
       console.error("Error fetching chat sessions:", error);
+    }
+  };
+
+  const fetchWorkspaces = async () => {
+    if (!token) return;
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/workspaces`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      if (!Array.isArray(data)) return;
+      setWorkspaces(data);
+    } catch (error) {
+      console.error("Error fetching workspaces:", error);
+    }
+  };
+
+  const normalizedWorkspaceOptions = [...new Map(
+    (workspaces || [])
+      .map((entry) => {
+        const ws = entry?.workspace || entry;
+        if (!ws?.id || !ws?.name) return null;
+        return [ws.id, { id: ws.id, name: ws.name }];
+      })
+      .filter(Boolean)
+  ).values()];
+
+  const openAddContentModal = (targetType, content) => {
+    setAddTargetType(targetType);
+    setSourceContent(content || "");
+    setSelectedWorkspaceId(normalizedWorkspaceOptions[0]?.id || "");
+    setShowAddModal(true);
+  };
+
+  const normalizeTaskStatus = (status) => {
+    const value = String(status || "").toLowerCase().trim();
+    if (["done", "completed", "complete"].includes(value)) return "done";
+    if (["in_progress", "in progress", "doing", "ongoing"].includes(value)) {
+      return "in_progress";
+    }
+    return "todo";
+  };
+
+  const parseTaskContentWithLlm = async (content) => {
+    const model = genAI.getGenerativeModel({
+      model: selectedModel,
+      generationConfig: {
+        temperature: 0.2,
+        topP: 0.95,
+        topK: 40,
+        maxOutputTokens: 8192,
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: "object",
+          properties: {
+            tasks: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                  description: { type: "string" },
+                  status: { type: "string" },
+                  due_date: { type: "string" },
+                },
+                required: ["title", "description", "status"],
+              },
+            },
+          },
+          required: ["tasks"],
+        },
+      },
+    });
+
+    const prompt = [
+      "Convert the following generated content into task objects.",
+      "Rules:",
+      "- Return valid JSON only according to schema.",
+      "- Create 1-8 actionable tasks.",
+      "- status must be one of: todo, in_progress, done.",
+      "- due_date should be ISO 8601 if inferable, otherwise use current date + 3 days.",
+      `Current time: ${new Date().toISOString()}`,
+      "",
+      "Generated content:",
+      content,
+    ].join("\n");
+
+    const result = await model.generateContent(prompt);
+    const text = result.response.text();
+    return JSON.parse(text);
+  };
+
+  const parseRoadmapContentWithLlm = async (content) => {
+    const model = genAI.getGenerativeModel({
+      model: selectedModel,
+      generationConfig: {
+        temperature: 0.2,
+        topP: 0.95,
+        topK: 40,
+        maxOutputTokens: 8192,
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: "object",
+          properties: {
+            title: { type: "string" },
+            description: { type: "string" },
+            roadmapItems: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                  description: { type: "string" },
+                  status: { type: "string" },
+                },
+                required: ["title", "description", "status"],
+              },
+            },
+          },
+          required: ["title", "description", "roadmapItems"],
+        },
+      },
+    });
+
+    const prompt = [
+      "Convert the following generated content into a roadmap JSON.",
+      "Rules:",
+      "- Return valid JSON only according to schema.",
+      "- Include a concise roadmap title and summary description.",
+      "- Create 3-12 roadmapItems with practical steps.",
+      "- status values should be short labels like pending, in-progress, done.",
+      "",
+      "Generated content:",
+      content,
+    ].join("\n");
+
+    const result = await model.generateContent(prompt);
+    const text = result.response.text();
+    return JSON.parse(text);
+  };
+
+  const handleAddGeneratedContent = async () => {
+    if (!sourceContent?.trim()) {
+      toast.error("No generated content selected.");
+      return;
+    }
+    if (!selectedWorkspaceId) {
+      toast.error("Please select a workspace.");
+      return;
+    }
+    if (!genAI) {
+      toast.error("AI model is not ready.");
+      return;
+    }
+
+    setIsAddingContent(true);
+    try {
+      if (addTargetType === "task") {
+        const parsed = await parseTaskContentWithLlm(sourceContent);
+        const parsedTasks = Array.isArray(parsed?.tasks) ? parsed.tasks : [];
+        if (!parsedTasks.length) {
+          throw new Error("No tasks parsed from content.");
+        }
+
+        const payload = parsedTasks.map((item) => ({
+          title: item.title?.trim() || "Untitled task",
+          description: item.description?.trim() || "Task generated from AI content.",
+          status: normalizeTaskStatus(item.status),
+          due_date: item.due_date || null,
+          workspace_id: selectedWorkspaceId,
+          assigned_to: userData?.id,
+        }));
+
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/tasks`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText || "Failed to create tasks.");
+        }
+
+        toast.success("Generated content added to tasks.");
+        setShowAddModal(false);
+        navigate(`/app/workspace/open/${selectedWorkspaceId}/tasks`);
+        return;
+      }
+
+      const parsedRoadmap = await parseRoadmapContentWithLlm(sourceContent);
+      const roadmapResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/roadmaps`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: parsedRoadmap?.title?.trim() || "AI Generated Roadmap",
+          description:
+            parsedRoadmap?.description?.trim() ||
+            "Roadmap generated from AI assistant content.",
+          workspace_id: selectedWorkspaceId,
+          created_by: userData?.id,
+        }),
+      });
+
+      if (!roadmapResponse.ok) {
+        const errorText = await roadmapResponse.text();
+        throw new Error(errorText || "Failed to create roadmap.");
+      }
+
+      const createdRoadmap = await roadmapResponse.json();
+      const roadmapItems = Array.isArray(parsedRoadmap?.roadmapItems)
+        ? parsedRoadmap.roadmapItems
+        : [];
+
+      if (roadmapItems.length > 0) {
+        await fetch(`${import.meta.env.VITE_API_URL}/api/roadmapItems`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            items: roadmapItems.map((item) => ({
+              title: item.title?.trim() || "Untitled step",
+              description: item.description?.trim() || "",
+              status: item.status?.trim() || "pending",
+              roadmap_id: createdRoadmap.id,
+            })),
+          }),
+        });
+      }
+
+      toast.success("Generated content added to roadmap.");
+      setShowAddModal(false);
+      navigate(`/app/workspace/open/${selectedWorkspaceId}/roadmaps/${createdRoadmap.id}`);
+    } catch (error) {
+      console.error("Error adding generated content:", error);
+      toast.error(error.message || "Failed to add generated content.");
+    } finally {
+      setIsAddingContent(false);
     }
   };
 
@@ -607,6 +862,7 @@ function Chatbot({ initialPrompt = "" }) {
   useEffect(() => {
     const initializeChat = async () => {
       await fetchChatSessions();
+      await fetchWorkspaces();
     };
 
     if (token) {
@@ -620,8 +876,6 @@ function Chatbot({ initialPrompt = "" }) {
         const latestSession = chatSessions[0];
         setCurrentSessionId(latestSession.session_id);
         await fetchMessagesForSession(latestSession.session_id);
-      } else if (chatSessions.length === 0 && token && !currentSessionId) {
-        await createNewSession();
       }
     };
 
@@ -991,6 +1245,61 @@ function Chatbot({ initialPrompt = "" }) {
           </div>
         )}
 
+        {showAddModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+            <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg">
+              <h3 className="text-lg font-bold text-gray-900 mb-1">
+                Add Generated Content to {addTargetType === "task" ? "Tasks" : "Roadmap"}
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Content will be converted by LLM automatically before saving.
+              </p>
+
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Select Workspace
+              </label>
+              <select
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 mb-4"
+                value={selectedWorkspaceId}
+                onChange={(e) => setSelectedWorkspaceId(e.target.value)}
+                disabled={isAddingContent}
+              >
+                {normalizedWorkspaceOptions.length === 0 ? (
+                  <option value="">No workspace found</option>
+                ) : (
+                  normalizedWorkspaceOptions.map((ws) => (
+                    <option key={ws.id} value={ws.id}>
+                      {ws.name}
+                    </option>
+                  ))
+                )}
+              </select>
+
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs text-gray-600 max-h-36 overflow-y-auto">
+                {sourceContent?.slice(0, 500)}
+                {sourceContent?.length > 500 ? "..." : ""}
+              </div>
+
+              <div className="flex justify-end gap-2 mt-5">
+                <button
+                  className="px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50"
+                  onClick={() => setShowAddModal(false)}
+                  disabled={isAddingContent}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60"
+                  onClick={handleAddGeneratedContent}
+                  disabled={isAddingContent || normalizedWorkspaceOptions.length === 0}
+                >
+                  {isAddingContent ? "Adding..." : `Add to ${addTargetType}`}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="flex-1 p-6 overflow-y-auto space-y-6 custom-scrollbar bg-gradient-to-b from-slate-50/70 to-white">
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-center space-y-4 animate-fade-in px-4">
@@ -1118,6 +1427,20 @@ function Chatbot({ initialPrompt = "" }) {
                     <div className="prose prose-sm max-w-none prose-blue prose-p:my-1 prose-headings:my-2 prose-ul:my-1">
                       <MarkdownRenderer content={msg.text} />
                       <div className="flex justify-end mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          className="text-[10px] text-gray-400 hover:text-blue-600 flex items-center gap-1 bg-gray-50 px-2 py-1 rounded hover:bg-gray-100 transition-colors mr-1"
+                          onClick={() => openAddContentModal("task", msg.text)}
+                        >
+                          <AiOutlinePlus className="w-3 h-3" />
+                          Add to Task
+                        </button>
+                        <button
+                          className="text-[10px] text-gray-400 hover:text-blue-600 flex items-center gap-1 bg-gray-50 px-2 py-1 rounded hover:bg-gray-100 transition-colors mr-1"
+                          onClick={() => openAddContentModal("roadmap", msg.text)}
+                        >
+                          <AiOutlinePlus className="w-3 h-3" />
+                          Add to Roadmap
+                        </button>
                         <button
                           className="text-[10px] text-gray-400 hover:text-blue-600 flex items-center gap-1 bg-gray-50 px-2 py-1 rounded hover:bg-gray-100 transition-colors"
                           onClick={() => handleCopy(msg.text)}
