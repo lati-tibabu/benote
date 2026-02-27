@@ -13,7 +13,6 @@ import {
   PiFlowArrow,
   PiKanban,
   PiLightning,
-  PiSparkle,
   PiTarget,
   PiUsersThree,
 } from "react-icons/pi";
@@ -233,9 +232,6 @@ function Home() {
 
         <RevealSection className="relative mx-auto grid min-h-[85vh] w-full max-w-7xl grid-cols-1 items-center gap-12 px-4 pb-24 pt-10 sm:px-6 lg:grid-cols-2 lg:px-8" id="hero">
           <div className="flex flex-col justify-center">
-            <p className="mb-5 inline-flex w-fit items-center gap-2 border border-slate-300 bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-700">
-              <PiSparkle /> Productivity Suite
-            </p>
             <h1 className="text-balance text-5xl font-semibold leading-tight text-slate-900 sm:text-6xl lg:text-7xl">
               Build momentum every day, not just plans.
             </h1>

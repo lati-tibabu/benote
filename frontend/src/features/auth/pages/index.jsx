@@ -1,10 +1,9 @@
 import { Link, Outlet } from "react-router-dom";
-import { PiSparkle } from "react-icons/pi";
 
 function AuthPages() {
   return (
     <div
-      className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-cyan-50/40 text-slate-900"
+      className="min-h-screen bg-slate-100 text-slate-900"
       style={{ fontFamily: "'Sora', 'Manrope', 'Segoe UI', sans-serif" }}
     >
       <div className="relative mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 py-6 sm:px-6 lg:px-8">
@@ -14,16 +13,10 @@ function AuthPages() {
             <span className="text-lg font-semibold tracking-wide">Benote</span>
           </Link>
 
-          <div className="rounded-full border border-cyan-200 bg-cyan-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-cyan-700">
-            Productivity Suite
-          </div>
         </header>
 
         <main className="grid flex-1 grid-cols-1 items-center gap-8 py-8 lg:grid-cols-12 lg:py-12">
           <aside className="hidden rounded-2xl border border-slate-200 bg-white/90 p-8 shadow-sm lg:col-span-5 lg:block">
-            <p className="inline-flex items-center gap-2 rounded-full border border-cyan-200 bg-cyan-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-cyan-700">
-              <PiSparkle /> Benote access
-            </p>
             <h1 className="mt-5 text-3xl font-semibold leading-tight text-slate-900">
               Keep your work, study, and team execution in one place.
             </h1>
