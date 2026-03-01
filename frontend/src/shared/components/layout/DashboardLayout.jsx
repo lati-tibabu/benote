@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { HiMenu } from "react-icons/hi";
-import { PiBellRingingDuotone } from "react-icons/pi";
+import { PiBellRingingDuotone, PiChatCircle } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import {
     AiOutlineInfoCircle,
@@ -15,6 +15,7 @@ import Sidebar from "./Sidebar";
 import NotificationBanner from "./NotificationBanner";
 import { SearchModal } from "../../../features/search";
 import { AiOverviewModal } from "../../../features/ai";
+import Chatbot from "../../../features/ai/pages/AskAI/contents/chatbot";
 import { sendBrowserNotification } from "../../../utils/sendBrowserNotification";
 import { setWorkspaceRecent } from "../../../redux/slices/workspaceSlice";
 import { setTheme } from "../../../redux/slices/themeSlice";
@@ -37,10 +38,13 @@ function DashboardLayout() {
     const [notificationPopping, setNotificationPopping] = useState(false);
     const [searchOpened, setSearchOpened] = useState(false);
     const [aiOverviewOpen, setAiOverviewOpen] = useState(false);
+    const [isQuickAiOpen, setIsQuickAiOpen] = useState(false);
     const [aiSummary, setAiSummary] = useState("");
     const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
     const [showSidebar, setShowSidebar] = useState(window.innerWidth >= 640);
     const dispatch = useDispatch();
+    const quickAiRef = useRef(null);
+    const quickAiButtonRef = useRef(null);
     const lastShownNotificationIdRef = useRef(
         localStorage.getItem(LAST_SHOWN_NOTIFICATION_KEY) || ""
     );
@@ -277,6 +281,32 @@ function DashboardLayout() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
+    useEffect(() => {
+        if (!isQuickAiOpen) return undefined;
+
+        const handleKeyDown = (event) => {
+            if (event.key === "Escape") {
+                setIsQuickAiOpen(false);
+            }
+        };
+
+        const handleClickOutside = (event) => {
+            if (!quickAiRef.current) return;
+            if (quickAiButtonRef.current?.contains(event.target)) return;
+            if (!quickAiRef.current.contains(event.target)) {
+                setIsQuickAiOpen(false);
+            }
+        };
+
+        document.addEventListener("keydown", handleKeyDown);
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isQuickAiOpen]);
+
     return (
         <div className="h-screen min-h-screen w-full flex flex-col overflow-hidden bg-gradient-to-br from-slate-100 via-gray-50 to-zinc-100 text-gray-900">
             <div className="w-full flex-1 flex flex-col sm:flex-row overflow-hidden">
@@ -449,6 +479,19 @@ function DashboardLayout() {
 
                     <div className="fixed top-4 right-4 z-40 flex items-center gap-2">
                         <button
+                            ref={quickAiButtonRef}
+                            className={`relative flex items-center justify-center h-11 w-11 rounded-xl border shadow-sm transition-all ${
+                                isQuickAiOpen
+                                    ? "bg-blue-600 text-white border-blue-600"
+                                    : "bg-white text-gray-800 border-gray-200 hover:bg-gray-50"
+                            }`}
+                            onClick={() => setIsQuickAiOpen((prev) => !prev)}
+                            aria-label="Quick AskAI"
+                            title="Quick AskAI"
+                        >
+                            <PiChatCircle size={21} />
+                        </button>
+                        <button
                             className="relative flex items-center justify-center h-11 w-11 rounded-xl bg-white text-gray-800 border border-gray-200 shadow-sm hover:bg-gray-50 transition-all"
                             onClick={handleThemeToggle}
                             aria-label="Toggle theme"
@@ -474,6 +517,18 @@ function DashboardLayout() {
                             )}
                         </button>
                     </div>
+
+                    {isQuickAiOpen && (
+                        <div
+                            ref={quickAiRef}
+                            className="fixed top-[68px] right-4 z-50 w-[min(92vw,360px)] h-[min(70vh,520px)]"
+                        >
+                            <Chatbot
+                                variant="quick"
+                                onClose={() => setIsQuickAiOpen(false)}
+                            />
+                        </div>
+                    )}
                     <section className="flex-1 px-3 pb-4 pt-16 sm:p-6">
                         <div className="h-full max-w-[1440px] mx-auto">
                             <Outlet />

@@ -18,11 +18,13 @@ import {
   PiFolder,
   PiCheckCircle,
   PiTrash,
+  PiWarningCircle,
 } from "react-icons/pi";
 
 import MarkdownRenderer from "@features/notes/components/markdown-renderer";
 
-function Chatbot({ initialPrompt = "" }) {
+function Chatbot({ initialPrompt = "", variant = "full", onClose }) {
+  const isQuickVariant = variant === "quick";
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [genAI, setGenAI] = useState(null);
@@ -32,6 +34,7 @@ function Chatbot({ initialPrompt = "" }) {
   const [actionResult, setActionResult] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [showQuickMenu, setShowQuickMenu] = useState(false);
 
   const [chatSessions, setChatSessions] = useState([]);
   const [currentSessionId, setCurrentSessionId] = useState(null);
@@ -49,6 +52,7 @@ function Chatbot({ initialPrompt = "" }) {
   const [outputStyle, setOutputStyle] = useState("Actionable");
 
   const messagesEndRef = useRef(null);
+  const quickMenuRef = useRef(null);
   const hasSentInitialPrompt = useRef(false);
   const navigate = useNavigate();
 
@@ -121,6 +125,10 @@ function Chatbot({ initialPrompt = "" }) {
       prompt: "Give me 10 creative ideas and rank the top 3 with reasons.",
     },
   ];
+
+  const latestAiMessage = [...messages]
+    .reverse()
+    .find((msg) => msg.sender === "ai" && typeof msg.text === "string");
 
   const checkUserIntent = (userMessage) => {
     const toolCalls = [];
@@ -727,6 +735,60 @@ function Chatbot({ initialPrompt = "" }) {
     setInput(action.prompt);
   };
 
+  const buildFriendlyAiError = (error) => {
+    const rawMessage = String(error?.message || "Something went wrong.");
+    const lower = rawMessage.toLowerCase();
+
+    const retryInMatch =
+      rawMessage.match(/retry in\s+([\d.]+)s/i) ||
+      rawMessage.match(/"retryDelay":"(\d+)s"/i);
+    const retryAfterSeconds = retryInMatch
+      ? Math.max(1, Math.ceil(Number(retryInMatch[1])))
+      : null;
+
+    if (
+      lower.includes("429") ||
+      lower.includes("rate limit") ||
+      lower.includes("quota") ||
+      lower.includes("exceeded your current quota")
+    ) {
+      return {
+        title: "Rate limit reached",
+        detail:
+          "Gemini request quota is temporarily exceeded for the selected model.",
+        hint: retryAfterSeconds
+          ? `Please wait about ${retryAfterSeconds}s, then try again.`
+          : "Please wait a few seconds and retry.",
+        kind: "rate_limit",
+      };
+    }
+
+    if (lower.includes("api key") || lower.includes("401") || lower.includes("403")) {
+      return {
+        title: "Authentication issue",
+        detail: "Gemini API authentication failed.",
+        hint: "Check API key validity and model access in settings.",
+        kind: "auth",
+      };
+    }
+
+    if (lower.includes("network") || lower.includes("failed to fetch")) {
+      return {
+        title: "Network issue",
+        detail: "Could not reach the AI service.",
+        hint: "Check connection and try again.",
+        kind: "network",
+      };
+    }
+
+    return {
+      title: "AI request failed",
+      detail: "The assistant could not complete this request.",
+      hint: "Please try again.",
+      kind: "generic",
+    };
+  };
+
   const handleSavePreferences = () => {
     setShowSettings(false);
     setChatSession(null);
@@ -785,6 +847,7 @@ function Chatbot({ initialPrompt = "" }) {
       return;
     }
 
+    let requestFailed = false;
     try {
       const toolCalls = checkUserIntent(userMessage.text);
       let mcpActionResult = null;
@@ -840,16 +903,24 @@ function Chatbot({ initialPrompt = "" }) {
       setMessages((prev) => [...prev, { sender: "ai", text: textResponse }]);
       saveMessageToDB(textResponse, "ai", activeSessionId);
     } catch (error) {
+      requestFailed = true;
+      const friendlyError = buildFriendlyAiError(error);
       setMessages((prev) => [
         ...prev,
         {
           sender: "system",
-          text: `Error from AI: ${error.message || "Something went wrong."}. Please try again.`,
+          type: "ai_error",
+          text: friendlyError.detail,
+          meta: friendlyError,
         },
       ]);
+      setStatusMessage(friendlyError.title);
+      setTimeout(() => setStatusMessage(""), 3500);
     } finally {
       setProcessing(false);
-      setStatusMessage("");
+      if (!requestFailed) {
+        setStatusMessage("");
+      }
     }
   };
 
@@ -947,11 +1018,36 @@ function Chatbot({ initialPrompt = "" }) {
     initializeSession();
   }, [chatSessions, currentSessionId, token]);
 
+  useEffect(() => {
+    if (!showQuickMenu) return undefined;
+
+    const handleOutside = (event) => {
+      if (!quickMenuRef.current?.contains(event.target)) {
+        setShowQuickMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, [showQuickMenu]);
+
   if (!useGemini) {
     return (
-      <div className="flex flex-col h-full w-full max-w-none mx-auto bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden animate-fade-in">
+      <div
+        className={`flex flex-col h-full w-full bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden animate-fade-in ${
+          isQuickVariant ? "max-w-none" : "max-w-none mx-auto"
+        }`}
+      >
         <div className="bg-white p-4 flex items-center justify-between border-b border-gray-200">
           <h2 className="text-xl font-semibold">AI Assistant</h2>
+          {isQuickVariant && onClose && (
+            <button
+              className="text-xs text-gray-500 hover:text-gray-700"
+              onClick={onClose}
+            >
+              Close
+            </button>
+          )}
         </div>
         <div className="flex-1 p-4 flex items-center justify-center text-gray-600">
           <p>
@@ -964,9 +1060,21 @@ function Chatbot({ initialPrompt = "" }) {
   }
 
   return (
-    <div className="flex h-[86vh] w-full max-w-7xl mx-auto bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200 font-sans">
+    <div
+      className={`flex w-full bg-white shadow-sm overflow-hidden border border-gray-200 font-sans ${
+        isQuickVariant
+          ? "h-full max-w-none rounded-2xl"
+          : "h-[86vh] max-w-7xl mx-auto rounded-2xl"
+      }`}
+    >
       {showSidebar && (
-        <div className="w-80 bg-slate-50 border-r border-gray-200 flex flex-col">
+        <div
+          className={`bg-slate-50 border-r border-gray-200 flex flex-col ${
+            isQuickVariant
+              ? "absolute inset-y-0 left-0 z-20 w-[78%] shadow-lg"
+              : "w-80"
+          }`}
+        >
           <div className="p-4 border-b border-gray-200">
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-semibold text-gray-800 flex items-center gap-2 text-sm uppercase tracking-wide">
@@ -987,6 +1095,14 @@ function Chatbot({ initialPrompt = "" }) {
                 >
                   New Chat
                 </button>
+                {isQuickVariant && (
+                  <button
+                    onClick={() => setShowSidebar(false)}
+                    className="px-2 py-1 bg-white border border-gray-200 text-gray-700 text-xs rounded-md hover:bg-gray-50 transition-colors"
+                  >
+                    Close
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -1038,22 +1154,39 @@ function Chatbot({ initialPrompt = "" }) {
           </div>
         </div>
       )}
+      {isQuickVariant && showSidebar && (
+        <button
+          className="absolute inset-0 z-10 bg-black/10"
+          aria-label="Close chat history"
+          onClick={() => setShowSidebar(false)}
+        />
+      )}
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 relative">
         <ToastContainer
           position="top-center"
           autoClose={2000}
           hideProgressBar={true}
         />
 
-        <div className="bg-white border-b border-gray-200 px-5 py-4 flex items-center justify-between sticky top-0 z-10">
+        <div
+          className={`bg-white border-b border-gray-200 flex items-center justify-between sticky z-10 ${
+            isQuickVariant ? "px-3 py-2.5 top-0" : "px-5 py-4 top-0"
+          }`}
+        >
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-100">
-              <PiChatCircle size={24} />
+            <div
+              className={`rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-100 ${
+                isQuickVariant ? "w-8 h-8" : "w-10 h-10"
+              }`}
+            >
+              <PiChatCircle size={isQuickVariant ? 18 : 24} />
             </div>
 
             <div className="min-w-0">
-              <h2 className="text-base font-bold text-gray-900">Benote Assistant</h2>
+              <h2 className="text-base font-bold text-gray-900">
+                {isQuickVariant ? "Quick AskAI" : "Benote Assistant"}
+              </h2>
               <div className="flex items-center gap-1.5 animate-fade-in text-xs">
                 {statusMessage ? (
                   <svg
@@ -1088,6 +1221,8 @@ function Chatbot({ initialPrompt = "" }) {
                     ? statusMessage
                     : processing
                     ? "Thinking..."
+                    : isQuickVariant
+                    ? "Ready"
                     : "Ready for chat, coding, content, and more"}
                 </span>
               </div>
@@ -1095,20 +1230,128 @@ function Chatbot({ initialPrompt = "" }) {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all duration-200"
-              title="Chat History"
-              onClick={() => setShowSidebar((prev) => !prev)}
-            >
-              <PiChatCircle size={20} />
-            </button>
-            <button
-              className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all duration-200"
-              title="AI Settings"
-              onClick={() => setShowSettings(true)}
-            >
-              <PiGearSixBold size={24} />
-            </button>
+            {isQuickVariant ? (
+              <div className="flex items-center gap-1.5">
+                <button
+                  className="w-7 h-7 inline-flex items-center justify-center text-sm font-semibold border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50"
+                  onClick={() => createNewSession()}
+                  title="New quick chat"
+                  aria-label="New quick chat"
+                >
+                  +
+                </button>
+                <div className="relative" ref={quickMenuRef}>
+                <button
+                  className="px-2.5 py-1.5 text-xs font-medium border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50"
+                  onClick={() => setShowQuickMenu((prev) => !prev)}
+                  title="More options"
+                >
+                  More
+                </button>
+                {showQuickMenu && (
+                  <div className="absolute right-0 mt-2 w-44 rounded-xl border border-gray-200 bg-white shadow-lg p-1.5 z-30">
+                    <button
+                      className="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-gray-50"
+                      onClick={() => {
+                        setShowSidebar((prev) => !prev);
+                        setShowQuickMenu(false);
+                      }}
+                    >
+                      Chat history
+                    </button>
+                    <button
+                      className="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-gray-50"
+                      onClick={() => {
+                        setShowSettings(true);
+                        setShowQuickMenu(false);
+                      }}
+                    >
+                      AI settings
+                    </button>
+                    <button
+                      className="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-gray-50"
+                      onClick={() => {
+                        createNewSession();
+                        setShowQuickMenu(false);
+                      }}
+                    >
+                      New chat
+                    </button>
+                    <button
+                      className="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-gray-50"
+                      onClick={() => {
+                        openAddContentModal("task", latestAiMessage?.text || "");
+                        setShowQuickMenu(false);
+                      }}
+                    >
+                      Add to task
+                    </button>
+                    <button
+                      className="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-gray-50"
+                      onClick={() => {
+                        openAddContentModal("roadmap", latestAiMessage?.text || "");
+                        setShowQuickMenu(false);
+                      }}
+                    >
+                      Add to roadmap
+                    </button>
+                    <button
+                      className="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-gray-50"
+                      onClick={() => {
+                        openAddContentModal("note", latestAiMessage?.text || "");
+                        setShowQuickMenu(false);
+                      }}
+                    >
+                      Add to note
+                    </button>
+                    <button
+                      className="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-gray-50"
+                      onClick={() => {
+                        navigate("/app/askAI");
+                        setShowQuickMenu(false);
+                        onClose?.();
+                      }}
+                    >
+                      Open full AskAI
+                    </button>
+                  </div>
+                )}
+              </div>
+              </div>
+            ) : (
+              <>
+                <button
+                  className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all duration-200"
+                  title="Chat History"
+                  onClick={() => setShowSidebar((prev) => !prev)}
+                >
+                  <PiChatCircle size={20} />
+                </button>
+                <button
+                  className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all duration-200"
+                  title="AI Settings"
+                  onClick={() => setShowSettings(true)}
+                >
+                  <PiGearSixBold size={24} />
+                </button>
+              </>
+            )}
+            {isQuickVariant && onClose && (
+              <button
+                className="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50"
+                title="Close quick chat"
+                onClick={onClose}
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
         </div>
 
@@ -1119,7 +1362,9 @@ function Chatbot({ initialPrompt = "" }) {
                 navigate(`/workspaces/${actionResult.id}`);
               }
             }}
-            className={`bg-blue-50/80 backdrop-blur-sm border-b border-blue-100 py-2 px-4 flex items-center justify-center gap-2 text-blue-700 text-xs font-medium animate-slide-in-top sticky top-[73px] z-10 ${
+            className={`bg-blue-50/80 backdrop-blur-sm border-b border-blue-100 py-2 px-4 flex items-center justify-center gap-2 text-blue-700 text-xs font-medium animate-slide-in-top sticky ${
+              isQuickVariant ? "top-[52px]" : "top-[73px]"
+            } z-10 ${
               actionResult ? "cursor-pointer hover:bg-blue-100" : ""
             }`}
             title={actionResult ? "Click to view created item" : "Processing..."}
@@ -1401,21 +1646,30 @@ function Chatbot({ initialPrompt = "" }) {
           </div>
         )}
 
-        <div className="flex-1 p-6 overflow-y-auto space-y-6 custom-scrollbar bg-gradient-to-b from-slate-50/70 to-white">
+        <div
+          className={`flex-1 overflow-y-auto space-y-6 custom-scrollbar bg-gradient-to-b from-slate-50/70 to-white ${
+            isQuickVariant ? "p-3" : "p-6"
+          }`}
+        >
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-center space-y-4 animate-fade-in px-4">
-              <div className="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mb-2 border border-blue-100">
-                <PiChatCircle className="text-blue-600" size={40} />
+              <div
+                className={`bg-blue-50 rounded-2xl flex items-center justify-center mb-2 border border-blue-100 ${
+                  isQuickVariant ? "w-14 h-14" : "w-20 h-20"
+                }`}
+              >
+                <PiChatCircle className="text-blue-600" size={isQuickVariant ? 28 : 40} />
               </div>
-              <h3 className="text-xl font-bold text-gray-900">
-                Smarter assistant for your daily work
+              <h3 className={`${isQuickVariant ? "text-base" : "text-xl"} font-bold text-gray-900`}>
+                {isQuickVariant ? "Quick assistant" : "Smarter assistant for your daily work"}
               </h3>
-              <p className="text-gray-600 max-w-2xl text-sm">
+              <p className={`text-gray-600 text-sm ${isQuickVariant ? "max-w-sm" : "max-w-2xl"}`}>
                 Ask for everyday help, coding/debugging, writing, study support,
                 workspace actions, or image prompt generation.
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-4 max-w-4xl w-full">
+              {!isQuickVariant && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-4 max-w-4xl w-full">
                 {quickActions.map((action) => {
                   const Icon = action.icon;
                   return (
@@ -1439,9 +1693,10 @@ function Chatbot({ initialPrompt = "" }) {
                     </button>
                   );
                 })}
-              </div>
+                </div>
+              )}
 
-              <div className="flex flex-wrap justify-center gap-2 mt-2 max-w-2xl">
+              <div className={`flex flex-wrap justify-center gap-2 mt-2 ${isQuickVariant ? "max-w-sm" : "max-w-2xl"}`}>
                 {[
                   "Create a workspace called Design Lab",
                   "Review this function for bugs",
@@ -1484,9 +1739,15 @@ function Chatbot({ initialPrompt = "" }) {
                     ? "bg-blue-600 text-white rounded-2xl rounded-tr-sm animate-slide-in-right"
                     : msg.sender === "ai"
                     ? "bg-white text-gray-800 border border-gray-100 rounded-2xl rounded-tl-sm animate-slide-in-left"
+                    : msg.sender === "system" && msg.type === "ai_error"
+                    ? "bg-amber-50 text-amber-900 border border-amber-200 rounded-xl shadow-sm max-w-[92%]"
                     : "text-xs text-gray-500 bg-gray-100/80 px-4 py-2 rounded-full mx-auto shadow-none border-none italic my-1"
                 }`}
-                style={msg.sender === "system" ? { maxWidth: "fit-content" } : {}}
+                style={
+                  msg.sender === "system" && msg.type !== "ai_error"
+                    ? { maxWidth: "fit-content" }
+                    : {}
+                }
               >
                 {msg.sender === "ai" ? (
                   msg.type === "workspace_list" ? (
@@ -1571,6 +1832,21 @@ function Chatbot({ initialPrompt = "" }) {
                       </div>
                     </div>
                   )
+                ) : msg.sender === "system" && msg.type === "ai_error" ? (
+                  <div className="space-y-2">
+                    <div className="flex items-start gap-2">
+                      <PiWarningCircle className="text-amber-700 mt-0.5" size={16} />
+                      <div>
+                        <p className="text-sm font-semibold text-amber-900">
+                          {msg.meta?.title || "AI request failed"}
+                        </p>
+                        <p className="text-xs text-amber-800 mt-0.5">{msg.text}</p>
+                      </div>
+                    </div>
+                    <p className="text-xs text-amber-700 bg-amber-100/60 px-2 py-1 rounded-md">
+                      {msg.meta?.hint || "Please try again in a moment."}
+                    </p>
+                  </div>
                 ) : (
                   msg.text
                 )}
@@ -1610,8 +1886,8 @@ function Chatbot({ initialPrompt = "" }) {
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="p-4 bg-white border-t border-gray-100">
-          <div className="flex flex-wrap gap-2 mb-3">
+        <div className={`bg-white border-t border-gray-100 ${isQuickVariant ? "p-3" : "p-4"}`}>
+          {!isQuickVariant && <div className="flex flex-wrap gap-2 mb-3">
             {modeOptions.map((mode) => (
               <button
                 key={mode}
@@ -1625,7 +1901,7 @@ function Chatbot({ initialPrompt = "" }) {
                 {mode}
               </button>
             ))}
-          </div>
+          </div>}
 
           <div className="relative flex items-end bg-gray-50 border border-gray-200 rounded-2xl focus-within:ring-2 focus-within:ring-blue-100 focus-within:border-blue-400 transition-all shadow-sm">
             <textarea
@@ -1665,9 +1941,11 @@ function Chatbot({ initialPrompt = "" }) {
             <span className="text-[10px] text-gray-400">
               AI can make mistakes. Verify important information.
             </span>
-            <span className="text-[10px] text-gray-400">
-              Enter to send • Shift+Enter for new line
-            </span>
+            {!isQuickVariant && (
+              <span className="text-[10px] text-gray-400">
+                Enter to send • Shift+Enter for new line
+              </span>
+            )}
           </div>
         </div>
 

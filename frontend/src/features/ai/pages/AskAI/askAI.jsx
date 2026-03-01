@@ -8,7 +8,7 @@ function AskAI() {
 
   return (
     <div className="p-4 md:p-6 min-h-[calc(100vh-72px)] bg-slate-50">
-      <Chatbot initialPrompt={initialPrompt} />
+      <Chatbot variant="full" initialPrompt={initialPrompt} />
     </div>
   );
 }
